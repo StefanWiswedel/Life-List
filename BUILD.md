@@ -38,15 +38,15 @@ the headline metrics**; leaf top-1 is a diagnostic.
 
 ### 0.2 The second thing Arter got wrong **[added]**
 
-You said you like Arter but it is Danish-only. That is a real constraint for a naturalist
-trained in an English-language tradition — the literature, the keys, and half the memory are in
-English, while the local records and the people are in Danish.
+You like Arter but it is Danish-only, and you want English. So: **the UI is English throughout.**
+Scientific names are always present and never translated; English vernaculars lead.
 
-So bilingual is not a nice-to-have buried in §4.4. **Danish and English vernaculars are
-first-class throughout**: both shown on result cards, both searchable, both exported, with a
-setting for which leads. Scientific name is always present and never translated. This is cheap
-to build if designed in from the start and miserable to retrofit, so it is in the Room schema
-from commit one.
+One engineering note rather than a product one. GBIF supplies Danish vernaculars for free
+alongside the English ones, and the app is Denmark-scoped, so the `vernacular_da` column stays in
+the schema as a nullable field and the pipeline keeps populating it. It costs nothing now, it
+makes the data searchable against Danish sources and Arter records, and it means adding a
+language toggle later is a UI change rather than a migration plus a retrain. **No bilingual UI
+gets built** — this is just declining to throw away data we are handed.
 
 ### 0.3 Scope: two modalities **[added]**
 
@@ -64,8 +64,9 @@ and it turns out to fix the vision model's worst weakness. See §3.
 3. **Answer at the deepest defensible rank**, never deeper.
 4. **Fresh codebase.** No code imported or adapted from another repository.
 5. **Light theme, herbarium aesthetic** (§7). Must not resemble Seek or Arter.
-6. Target device: Pixel 6a (Tensor G1). minSdk 29, targetSdk 35.
-7. **Bilingual Danish/English throughout.** **[added]**
+6. Target device: **Pixel 9a (Tensor G4)**. minSdk 29, targetSdk 35. **[changed]**
+7. **English UI.** Scientific names always shown; Danish vernaculars stored but not surfaced.
+   **[changed]**
 8. **Two modalities — image and audio — sharing one taxonomy, one life list, and one rollup.**
    **[added]**
 
@@ -266,10 +267,34 @@ EP-agnostic behind an interface, ship a benchmark harness that measures CPU / XN
 the actual device, and let data pick. NNAPI is at most an opt-in experiment. This keeps the
 decision cheap and late rather than baked into a deprecated API.
 
-**[open]** If INT8 ViT-B/16 on CPU misses the 1.5 s budget on a Tensor G1 — which is plausible —
-what gives: the budget, the input resolution, or the backbone? My instinct is the budget, since
-1.5 s is an assertion rather than a measured requirement, and a naturalist waiting two seconds
-for an honest answer is not obviously worse off. But it is your app.
+### 4.1a The Pixel 9a changes the budget — and reopens a closed decision **[changed]**
+
+The brief targeted a Pixel 6a (Tensor G1, 2021). You have a **Pixel 9a — Tensor G4**, three
+generations on, with a substantially stronger CPU cluster. Two consequences:
+
+**The 1.5 s budget stops being the binding constraint.** An INT8 ViT-B/16 on a G4's CPU EP should
+clear it with room to spare. The worry in §4.1 was a G1 concern; it largely evaporates. Good
+news, and it means the CPU-EP-first decision is now comfortable rather than a compromise.
+
+**It reopens the backbone choice, which the brief closed.** §2.2 of the original ruled out
+BioCLIP 2 (ViT-L/14) as "too heavy for on-device inference" — a judgement made against a 2021
+midrange chip. ViT-L/14 is roughly 3–4× the compute of ViT-B/16, so on a G4 it moves from
+implausible to *arguably feasible*, especially quantised and with the 1.5 s budget relaxed.
+
+BioCLIP 2 is materially more accurate, and accuracy is what buys deeper honest ranks — a better
+backbone doesn't just improve top-1, it lets the rollup stop *lower down* more often, which is
+the actual product. That makes this worth measuring rather than assuming.
+
+**[open]** Worth benchmarking ViT-L/14 on the 9a before committing to ViT-B/16? It costs one
+export and one on-device timing run, and the downside of not checking is shipping a needlessly
+shallow model on hardware that could carry a better one. My recommendation is yes — but ViT-B/16
+stays the default until numbers say otherwise, since a bigger APK and slower cold start are real
+costs too.
+
+**[open]** If a backbone does miss the budget, what gives: the budget, the input resolution, or
+the backbone? My instinct is the budget — 1.5 s is an assertion rather than a measured
+requirement, and a naturalist waiting two seconds for an honest answer is not obviously worse
+off. But it is your app.
 
 ### 4.2 iNaturalist open data **[changed]**
 
