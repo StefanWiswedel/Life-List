@@ -1,0 +1,45 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lifelist-train"
+version = "0.1.0"
+description = "Training pipeline for Life List — Danish organism identification"
+requires-python = ">=3.10"
+dependencies = [
+    "numpy>=1.26",
+    "pandas>=2.1",
+    "pyarrow>=15.0",
+    "requests>=2.31",
+    "tqdm>=4.66",
+]
+
+[project.optional-dependencies]
+# Heavy, Colab-side only. The rollup/fusion core deliberately depends on numpy alone
+# so its tests run anywhere in seconds.
+torch = ["torch>=2.2", "open_clip_torch>=2.24", "pillow>=10.2"]
+export = ["onnx>=1.16", "onnxruntime>=1.17"]
+dev = ["pytest>=8.0", "pytest-cov>=4.1", "ruff>=0.4"]
+
+[project.scripts]
+lifelist-taxa = "lifelist_train.cli.taxa:main"
+lifelist-images = "lifelist_train.cli.images:main"
+lifelist-embed = "lifelist_train.cli.embed:main"
+lifelist-train-head = "lifelist_train.cli.train_head:main"
+lifelist-eval = "lifelist_train.cli.evaluate:main"
+lifelist-export = "lifelist_train.cli.export:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]

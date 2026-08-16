@@ -1,0 +1,17 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+*.egg-info/
+build/
+dist/
+.venv/
+# Model artefacts are built by the training pipeline, never committed
+app/src/main/assets/*.onnx
+training/data/
+training/cache/
+# Android
+.gradle/
+local.properties
+*.apk
+*.keystore
