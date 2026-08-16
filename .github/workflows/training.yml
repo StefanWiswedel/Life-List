@@ -1,0 +1,40 @@
+name: training
+
+on:
+  push:
+    branches: [main]
+    paths: ['training/**', 'shared/**', '.github/workflows/training.yml']
+  pull_request:
+    paths: ['training/**', 'shared/**', '.github/workflows/training.yml']
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Install
+        working-directory: training
+        run: pip install -e '.[dev]'
+
+      - name: Lint
+        working-directory: training
+        run: ruff check src tests
+
+      - name: Test
+        working-directory: training
+        run: pytest tests -q --cov=lifelist_train --cov-report=term-missing
+
+      # The golden fixture is the cross-language contract. If Python's output drifts
+      # from what is committed, the Kotlin side is silently wrong too — so regenerating
+      # it must be a deliberate act, visible in a diff, not a side effect of a test run.
+      - name: Golden fixture is in sync
+        working-directory: training
+        run: |
+          python tools/gen_golden.py --check
