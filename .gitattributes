@@ -1,0 +1,20 @@
+# The repo is authored on Windows and built in Linux CI. Store LF, check out LF,
+# everywhere. Without this, a fresh Windows clone rewrites all 43 files to CRLF and
+# every diff becomes unreadable noise.
+* text=auto eol=lf
+
+# Windows-only scripts must keep CRLF or cmd.exe mis-parses them.
+*.bat  text eol=crlf
+*.cmd  text eol=crlf
+
+# Never touched.
+*.jar    binary
+*.onnx   binary
+*.tflite binary
+*.png    binary
+*.jpg    binary
+*.jpeg   binary
+*.bundle binary
+
+# Notebooks are JSON; diffing them as text is already painful enough.
+*.ipynb text eol=lf

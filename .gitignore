@@ -16,3 +16,6 @@ local.properties
 *.apk
 *.keystore
 .ruff_cache/
+
+# Exported by a Cowork session; not part of the repo.
+*.bundle
