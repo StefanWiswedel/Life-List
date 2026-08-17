@@ -78,17 +78,70 @@ def test_bornholm_is_inside_the_default_box():
 # -- table reading --------------------------------------------------------------
 
 
-def test_read_table_from_a_directory(tmp_path):
+def test_open_table_streams_chunks_from_a_directory(tmp_path):
     tables = write_tables(tmp_path)
-    df = images_cli.read_table(tables, "observations")
 
-    assert len(df) == 4
-    assert "quality_grade" in df.columns
+    with images_cli.open_table(tables, "observations") as chunks:
+        frames = list(chunks)
+
+    assert sum(len(f) for f in frames) == 4
+    assert "quality_grade" in frames[0].columns
 
 
-def test_read_table_reports_a_missing_file(tmp_path):
-    with pytest.raises(FileNotFoundError, match="observations"):
-        images_cli.read_table(tmp_path, "observations")
+def test_open_table_reports_a_missing_file(tmp_path):
+    with (
+        pytest.raises(FileNotFoundError, match="observations"),
+        images_cli.open_table(tmp_path, "observations") as chunks,
+    ):
+        list(chunks)
+
+
+def test_open_table_reads_a_tar_archive_without_extracting_it(tmp_path):
+    """The uncompressed set is tens of gigabytes; it must never hit disk."""
+    import tarfile
+
+    tables = write_tables(tmp_path)
+    archive = tmp_path / "bundle.tar.gz"
+    with tarfile.open(archive, "w:gz") as tar:
+        for name in ("observations.csv", "photos.csv"):
+            tar.add(tables / name, arcname=name)
+
+    with images_cli.open_table(archive, "photos") as chunks:
+        total = sum(len(f) for f in chunks)
+
+    assert total == 4
+
+
+def test_streaming_result_matches_a_whole_table_read(tmp_path):
+    """Chunking must not change the answer — only the peak memory."""
+    from lifelist_train.inat import filter_observation_chunks, filter_observations
+
+    tables = write_tables(tmp_path)
+    whole = pd.read_csv(tables / "observations.csv", sep="\t")
+
+    with images_cli.open_table(tables, "observations") as chunks:
+        streamed = filter_observation_chunks(chunks, images_cli.DENMARK_BBOX)
+
+    direct = filter_observations(whole, images_cli.DENMARK_BBOX)
+
+    assert set(streamed["observation_uuid"]) == set(direct["observation_uuid"])
+
+
+def test_empty_result_is_treated_as_a_schema_problem(tmp_path, caplog):
+    """Zero Danish observations means the schema moved, not that Denmark is empty."""
+    pd.DataFrame(
+        [("obs-1", 100, "research", 0.0, 0.0)],  # off the coast of Africa
+        columns=["observation_uuid", "taxon_id", "quality_grade", "latitude", "longitude"],
+    ).to_csv(tmp_path / "observations.csv", sep="\t", index=False)
+    pd.DataFrame(
+        [("ph-1", 1, "obs-1", "jpg", "CC0")],
+        columns=["photo_uuid", "photo_id", "observation_uuid", "extension", "license"],
+    ).to_csv(tmp_path / "photos.csv", sep="\t", index=False)
+
+    code = images_cli.main(["--archive", str(tmp_path), "--cache-dir", str(tmp_path / "c")])
+
+    assert code == 1
+    assert "schema change" in caplog.text
 
 
 # -- the stop-and-ask gate ------------------------------------------------------

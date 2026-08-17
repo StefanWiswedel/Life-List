@@ -11,14 +11,17 @@ from __future__ import annotations
 
 import argparse
 import tarfile
+from collections.abc import Iterator
+from contextlib import contextmanager
 from pathlib import Path
 
 import pandas as pd
 
 from ..inat import (
+    DEFAULT_CHUNK_SIZE,
     coverage,
-    filter_observations,
-    filter_photos,
+    filter_observation_chunks,
+    filter_photo_chunks,
     join_photos_to_taxa,
     sample_photos,
     select_taxa,
@@ -61,18 +64,30 @@ def build_parser() -> argparse.ArgumentParser:
     return add_common_args(parser)
 
 
-def read_table(archive: Path, table: str) -> pd.DataFrame:
-    """Read one table from the archive, or from a directory of extracted files."""
+@contextmanager
+def open_table(archive: Path, table: str) -> Iterator[Iterator[pd.DataFrame]]:
+    """Yield an iterator of chunks for one table, from an archive or a directory.
+
+    Chunked because the tables do not fit in memory anywhere: as of 2021 the archive held
+    42M observations and 70M photos, and it has grown several-fold since. Reading whole
+    tables would fail on a laptop and on a Colab high-RAM runtime alike.
+
+    The tar member is streamed rather than extracted, so no uncompressed copy is ever
+    written to disk — which matters when the uncompressed set is tens of gigabytes.
+    """
     filename = TABLE_FILES[table]
+    reader_kwargs = {"sep": "\t", "chunksize": DEFAULT_CHUNK_SIZE, "low_memory": False}
 
     if archive.is_dir():
         for candidate in (archive / filename, archive / f"{filename}.gz"):
             if candidate.exists():
-                LOG.info("reading %s", candidate)
-                return pd.read_csv(candidate, sep="\t", low_memory=False)
+                LOG.info("streaming %s", candidate)
+                with pd.read_csv(candidate, **reader_kwargs) as reader:
+                    yield reader
+                return
         raise FileNotFoundError(f"{filename} not found in {archive}")
 
-    LOG.info("reading %s from %s", filename, archive)
+    LOG.info("streaming %s from %s", filename, archive)
     with tarfile.open(archive, "r:*") as tar:
         member = next(
             (m for m in tar.getmembers() if Path(m.name).name.startswith(filename)),
@@ -83,18 +98,30 @@ def read_table(archive: Path, table: str) -> pd.DataFrame:
         handle = tar.extractfile(member)
         if handle is None:
             raise OSError(f"could not read {member.name}")
-        return pd.read_csv(handle, sep="\t", low_memory=False)
+        with pd.read_csv(handle, **reader_kwargs) as reader:
+            yield reader
 
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     setup_logging(args.verbose)
 
-    observations = filter_observations(read_table(args.archive, "observations"), DENMARK_BBOX)
+    with open_table(args.archive, "observations") as chunks:
+        observations = filter_observation_chunks(chunks, DENMARK_BBOX)
     LOG.info("%d research-grade Danish observations", len(observations))
 
-    photos = filter_photos(read_table(args.archive, "photos"))
-    LOG.info("%d openly licensed photos", len(photos))
+    if observations.empty:
+        LOG.error(
+            "no observations survived the filter. That is far more likely to be a schema "
+            "change than a fact about Denmark — check the table headers before adjusting "
+            "the filter to fit."
+        )
+        return 1
+
+    wanted = set(observations["observation_uuid"])
+    with open_table(args.archive, "photos") as chunks:
+        photos = filter_photo_chunks(chunks, wanted)
+    LOG.info("%d openly licensed photos of those observations", len(photos))
 
     joined = join_photos_to_taxa(observations, photos)
     coverages = coverage(joined)

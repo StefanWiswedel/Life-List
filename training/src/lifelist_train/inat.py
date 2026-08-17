@@ -10,6 +10,7 @@ worse, filter to the wrong rows and look plausible.
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from dataclasses import dataclass
 
 import pandas as pd
@@ -24,6 +25,13 @@ REQUIRED_COLUMNS = {
     "observations": {"observation_uuid", "taxon_id", "quality_grade", "latitude", "longitude"},
     "photos": {"photo_uuid", "photo_id", "observation_uuid", "extension", "license"},
 }
+
+# The tables do not fit in memory on any machine we plan to use. As of 2021 the archive
+# was 4.5 GB compressed / 11.6 GB uncompressed with 42M observations and 70M photos, and
+# it has grown several-fold since. Danish research-grade data is a fraction of a percent
+# of that, so streaming in chunks and keeping only survivors turns an impossible read
+# into a small one.
+DEFAULT_CHUNK_SIZE = 500_000
 
 PHOTO_SIZE = "medium"  # 500 px — we resize to 224 anyway; `original` is ~10x the bytes
 
@@ -85,6 +93,55 @@ def filter_photos(photos: pd.DataFrame, licences: frozenset[str] = OPEN_LICENCES
     assert_columns(photos, "photos")
     normalised = photos["license"].astype(str).str.upper().str.replace("_", "-", regex=False)
     return photos[normalised.isin({lic.upper() for lic in licences})].copy()
+
+
+def filter_observation_chunks(
+    chunks: Iterable[pd.DataFrame],
+    bbox: tuple[float, float, float, float] | None = None,
+    quality_grade: str = RESEARCH_GRADE,
+) -> pd.DataFrame:
+    """Stream the observations table, keeping only Danish research-grade rows.
+
+    Only the four columns downstream needs are retained per chunk, so peak memory is
+    one chunk plus the (small) accumulated result rather than the whole table.
+    """
+    kept: list[pd.DataFrame] = []
+    for chunk in chunks:
+        assert_columns(chunk, "observations")
+        survivors = filter_observations(chunk, bbox, quality_grade)
+        if not survivors.empty:
+            kept.append(survivors[["observation_uuid", "taxon_id"]])
+    if not kept:
+        return pd.DataFrame(columns=["observation_uuid", "taxon_id"])
+    return pd.concat(kept, ignore_index=True)
+
+
+def filter_photo_chunks(
+    chunks: Iterable[pd.DataFrame],
+    observation_uuids: set[str],
+    licences: frozenset[str] = OPEN_LICENCES,
+) -> pd.DataFrame:
+    """Stream the photos table, keeping only open-licence photos of kept observations.
+
+    Filtering on the observation set *before* the licence check is deliberate: the
+    membership test discards ~99% of rows for a fraction of the cost of normalising a
+    licence string on every one of a quarter-billion records.
+    """
+    kept: list[pd.DataFrame] = []
+    for chunk in chunks:
+        assert_columns(chunk, "photos")
+        relevant = chunk[chunk["observation_uuid"].isin(observation_uuids)]
+        if relevant.empty:
+            continue
+        survivors = filter_photos(relevant, licences)
+        if not survivors.empty:
+            kept.append(survivors[["photo_uuid", "photo_id", "observation_uuid",
+                                   "extension", "license"]])
+    if not kept:
+        return pd.DataFrame(
+            columns=["photo_uuid", "photo_id", "observation_uuid", "extension", "license"]
+        )
+    return pd.concat(kept, ignore_index=True)
 
 
 def join_photos_to_taxa(observations: pd.DataFrame, photos: pd.DataFrame) -> pd.DataFrame:

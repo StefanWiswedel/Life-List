@@ -157,8 +157,12 @@ The cost is that a developer preview is a moving target. Mitigation: pin the exa
 record it in `model_meta.json`, and treat a BirdNET upgrade as a deliberate retrain-and-revalidate
 step rather than something that drifts in.
 
-**[open]** Confirm this. If you would rather have the stable model, V2.4 works — it costs a
-TFLite dependency and the non-bird coverage.
+**[decided]** V3.0, pinned. The pinned release goes in `model_meta.json` as `birdnet_version`,
+and a BirdNET upgrade is a deliberate retrain-and-revalidate step, never a drift. Because the
+preview's labels will change before release, the taxonomy bridge (§3.5) is re-run on every
+version bump and its unmatched report is read, not skimmed — a label file that quietly gains or
+loses classes shifts every index after the change and would misattribute every detection past
+that point.
 
 ### 3.2 Why audio is not just a bird feature
 
@@ -285,11 +289,11 @@ BioCLIP 2 is materially more accurate, and accuracy is what buys deeper honest r
 backbone doesn't just improve top-1, it lets the rollup stop *lower down* more often, which is
 the actual product. That makes this worth measuring rather than assuming.
 
-**[open]** Worth benchmarking ViT-L/14 on the 9a before committing to ViT-B/16? It costs one
-export and one on-device timing run, and the downside of not checking is shipping a needlessly
-shallow model on hardware that could carry a better one. My recommendation is yes — but ViT-B/16
-stays the default until numbers say otherwise, since a bigger APK and slower cold start are real
-costs too.
+**[decided]** Benchmark ViT-L/14 on the 9a before committing. ViT-B/16 remains the default until
+numbers say otherwise — a bigger APK and slower cold start are real costs — but the comparison
+gets run rather than assumed. Stage 5 reports both backbones on: quantised top-1, **mean returned
+rank** (the metric that actually matters, since a better backbone should let the rollup stop
+lower down more often), on-device latency, and asset size.
 
 **[open]** If a backbone does miss the budget, what gives: the budget, the input resolution, or
 the backbone? My instinct is the budget — 1.5 s is an assertion rather than a measured
@@ -351,6 +355,46 @@ life-list/
 
 `ml/rollup/` is deliberately its own package, not nested under `vision/`. It serves both
 modalities and it is the thing the app is for.
+
+---
+
+## 5A. Where each stage runs **[added]**
+
+Only stage 3 needs Colab. Everything else runs on the Ryzen laptop, and mostly runs *better*
+there — free-tier Colab disconnects at around 90 minutes, which is inconveniently close to how
+long stage 1 takes.
+
+| stage | what it needs | where |
+|---|---|---|
+| 1 — taxon list | network, CPU, ~30–90 min | **laptop** (no session timeout) |
+| 2 — image filtering | ~5–20 GB disk, streaming CPU | **laptop** |
+| 3 — embedding | GPU, hours | **Colab T4** |
+| 4 — head training | CPU on cached embeddings | **laptop** |
+| 5 — evaluation | CPU | **laptop** |
+| 6 — export | CPU, ONNX | **laptop** |
+
+The notebooks are thin wrappers over the CLI, so running locally is just the CLI:
+
+```bash
+pip install -e training
+lifelist-taxa --country DK --cache-dir cache -v
+lifelist-images --archive inaturalist-open-data-latest.tar.gz --cache-dir cache -v
+```
+
+### 5A.1 Memory **[changed]**
+
+Stage 2 streams. This is not an optimisation — it is the difference between working and not.
+As of 2021 the archive was 4.5 GB compressed / 11.6 GB uncompressed, with 42M observations and
+70M photos; it has grown several-fold since. Reading whole tables into pandas fails on a laptop
+*and* on a Colab high-RAM runtime.
+
+The tables are read in chunks straight out of the tar stream, so no uncompressed copy is ever
+written to disk. Observations are filtered first; the surviving UUID set then filters photos.
+Danish research-grade data is a fraction of a percent of the global set, so what accumulates is
+small. Peak memory is roughly one chunk plus the Danish subset — comfortably under 4 GB.
+
+Disk is the real laptop constraint: budget for the compressed archive plus room to grow, so
+~20–30 GB free.
 
 ---
 
