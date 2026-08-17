@@ -1,0 +1,131 @@
+"""Stage 1 — build the Danish taxon list from GBIF.
+
+    lifelist-taxa --country DK --max-taxa 5000 --cache-dir cache
+
+Produces `taxa_raw.json` (GBIF records plus synonyms) for stage 2. The taxonomy tree
+itself is only assembled once stage 2 has decided which taxa clear the image threshold —
+building it here would bake in taxa we then discard, and the leaf indices must match the
+model's output dimension exactly.
+"""
+
+from __future__ import annotations
+
+import argparse
+
+from ..gbif import GbifClient, collect_synonyms, parse_backbone_record, pick_vernacular
+from ._common import LOG, add_common_args, cache_path, load_json, setup_logging, write_json
+
+
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(description="Build the Danish taxon candidate list")
+    parser.add_argument("--country", default="DK")
+    parser.add_argument(
+        "--max-taxa",
+        type=int,
+        default=20000,
+        help="stop after this many species keys, commonest first",
+    )
+    parser.add_argument(
+        "--min-occurrences",
+        type=int,
+        default=10,
+        help="skip species with fewer than this many national occurrence records",
+    )
+    parser.add_argument("--no-vernaculars", action="store_true", help="skip vernacular lookup")
+    return add_common_args(parser)
+
+
+def main(argv: list[str] | None = None) -> int:
+    args = build_parser().parse_args(argv)
+    setup_logging(args.verbose)
+
+    out_path = cache_path(args.cache_dir, "taxa_raw.json")
+    if out_path.exists() and not args.force:
+        cached = load_json(out_path)
+        LOG.info(
+            "using cached %s (%d taxa) — pass --force to rebuild",
+            out_path,
+            len(cached["taxa"]),
+        )
+        return 0
+
+    client = GbifClient()
+
+    LOG.info("fetching %s occurrence facets", args.country)
+    keys: list[tuple[int, int]] = []
+    for key, count in client.occurrence_species_keys(country=args.country):
+        if count < args.min_occurrences:
+            continue
+        keys.append((key, count))
+        if len(keys) >= args.max_taxa:
+            break
+    LOG.info("%d species keys above %d occurrences", len(keys), args.min_occurrences)
+
+    taxa: list[dict] = []
+    synonyms: list[tuple[str, int]] = []
+    skipped = 0
+
+    for position, (key, count) in enumerate(keys, start=1):
+        if position % 250 == 0:
+            LOG.info("  %d/%d", position, len(keys))
+        try:
+            record = client.species(key)
+        except Exception as exc:  # noqa: BLE001 — one bad key must not end the run
+            LOG.warning("species %s failed: %s", key, exc)
+            skipped += 1
+            continue
+
+        taxon = parse_backbone_record(record)
+        if taxon is None:
+            skipped += 1
+            continue
+
+        vernacular_en = vernacular_da = None
+        if not args.no_vernaculars:
+            try:
+                names = client.vernacular_names(key)
+                vernacular_en = pick_vernacular(names, "eng")
+                vernacular_da = pick_vernacular(names, "dan")
+            except Exception as exc:  # noqa: BLE001
+                LOG.debug("vernaculars for %s failed: %s", key, exc)
+
+        taxa.append(
+            {
+                "key": taxon.key,
+                "scientific_name": taxon.scientific_name,
+                "rank": taxon.rank,
+                "status": taxon.status,
+                "lineage": taxon.lineage,
+                "lineage_names": taxon.lineage_names,
+                "vernacular_en": vernacular_en,
+                "vernacular_da": vernacular_da,
+                "occurrences": count,
+            }
+        )
+
+        try:
+            synonyms.extend(collect_synonyms(client.synonyms(key)))
+        except Exception as exc:  # noqa: BLE001
+            LOG.debug("synonyms for %s failed: %s", key, exc)
+
+    write_json(
+        out_path,
+        {
+            "country": args.country,
+            "taxa": taxa,
+            "synonyms": [{"name": n, "accepted_key": k} for n, k in synonyms],
+        },
+    )
+
+    LOG.info(
+        "%d taxa, %d synonyms, %d skipped. Next: lifelist-images --cache-dir %s",
+        len(taxa),
+        len(synonyms),
+        skipped,
+        args.cache_dir,
+    )
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -155,6 +155,11 @@ class Taxonomy:
     def node(self, taxon_id: int) -> Taxon:
         return self.nodes[taxon_id]
 
+    def children(self, taxon_id: int) -> list[int]:
+        """Child ids, ascending. Mirrors Kotlin's `Taxonomy.children` — the two
+        implementations should present the same surface, not merely the same answers."""
+        return self.nodes[taxon_id].children
+
     def leaf_id(self, leaf_index: int) -> int:
         return self._leaf_ids[leaf_index]
 

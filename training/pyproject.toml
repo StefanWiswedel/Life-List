@@ -23,12 +23,12 @@ export = ["onnx>=1.16", "onnxruntime>=1.17"]
 dev = ["pytest>=8.0", "pytest-cov>=4.1", "ruff>=0.4"]
 
 [project.scripts]
+# Only implemented stages are declared. Stages 3-6 (embed, train-head, evaluate,
+# export) depend on torch and onnx, which cannot be exercised in this development
+# environment, so they are written when there is somewhere to run them rather than
+# declared now and left to fail at the prompt.
 lifelist-taxa = "lifelist_train.cli.taxa:main"
 lifelist-images = "lifelist_train.cli.images:main"
-lifelist-embed = "lifelist_train.cli.embed:main"
-lifelist-train-head = "lifelist_train.cli.train_head:main"
-lifelist-eval = "lifelist_train.cli.evaluate:main"
-lifelist-export = "lifelist_train.cli.export:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
