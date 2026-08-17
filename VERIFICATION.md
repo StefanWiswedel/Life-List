@@ -261,6 +261,53 @@ the max, and that is a judgement about what a GBIF facet split means. Six rows i
 changes nothing structural — but it should be an explicit decision with a test, not a silent
 `max()`.
 
+## 12. Stage 2 ran: the number the build has been waiting for
+
+Full run, 17 Aug 2026, against the 27 July 2026 snapshot.
+
+| | |
+|---|---|
+| research-grade Danish observations | 1,019,878 |
+| openly licensed photos of those | 1,531,899 |
+| taxa with at least one usable photo | 12,483 |
+
+| min observations | taxa | photos (capped 500/taxon) |
+|---|---|---|
+| 50 | 2,378 | 725,459 |
+| 80 | 1,903 | 673,499 |
+| 120 | 1,509 | 608,546 |
+| 200 | 1,085 | 502,865 |
+
+Breakdown by group, because "1,903 taxa" does not say whether they are worth having:
+
+| group | 50 | 80 | 120 | 200 |
+|---|---|---|---|---|
+| Insects | 1,053 | 819 | 642 | 439 |
+| Plants | 748 | 622 | 501 | 380 |
+| Birds | 207 | 183 | 160 | 136 |
+| Fungi | 131 | 95 | 66 | 40 |
+| Arachnids | 72 | 51 | 41 | 26 |
+| Molluscs | 54 | 42 | 34 | 22 |
+| Mammals | 29 | 26 | 20 | 13 |
+| Ray-finned fish | 18 | 12 | 4 | 1 |
+| Amphibians | 11 | 9 | 9 | 7 |
+| Reptiles | 6 | 5 | 5 | 5 |
+| Other animals | 39 | 33 | 22 | 12 |
+
+**The schema questions in §3 are closed.** `quality_grade == "research"` and the licence column
+values are as coded — `assert_columns` passed and a million rows survived, which is not what a
+wrong guess looks like.
+
+**Two things worth noticing before picking a threshold.** Danish herpetofauna is a floor, not a
+curve: 6 reptiles and 11 amphibians at 50, and 5 and 7 at 200. Tightening the threshold barely
+costs you there, because that is close to the country's actual species count. Fish are the
+opposite — 18 at 50 collapsing to 1 at 200, which is a statement about how people photograph
+fish, not about Danish waters. Any threshold above ~120 effectively drops the class.
+
+**Timings, for BUILD.md's estimates.** Observations: 3 min download, 13 min filter. Photos: 4 min
+download, **2 h 0 min filter** (19.6 GB, checked against a 1.02M-uuid set). Budget three hours
+for stage 2, not the "streaming CPU" the plan implies.
+
 ---
 
 ## Open questions
