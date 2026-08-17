@@ -366,8 +366,8 @@ long stage 1 takes.
 
 | stage | what it needs | where |
 |---|---|---|
-| 1 — taxon list | network, CPU, ~30–90 min | **laptop** (no session timeout) |
-| 2 — image filtering | ~5–20 GB disk, streaming CPU | **laptop** |
+| 1 — taxon list | network, CPU, **~40 min at `--workers 8`** | **laptop** (no session timeout) |
+| 2 — image filtering | **~20 GB disk**, streaming CPU | **laptop** |
 | 3 — embedding | GPU, hours | **Colab T4** |
 | 4 — head training | CPU on cached embeddings | **laptop** |
 | 5 — evaluation | CPU | **laptop** |
@@ -384,17 +384,34 @@ lifelist-images --archive inaturalist-open-data-latest.tar.gz --cache-dir cache 
 ### 5A.1 Memory **[changed]**
 
 Stage 2 streams. This is not an optimisation — it is the difference between working and not.
-As of 2021 the archive was 4.5 GB compressed / 11.6 GB uncompressed, with 42M observations and
-70M photos; it has grown several-fold since. Reading whole tables into pandas fails on a laptop
-*and* on a Colab high-RAM runtime.
+Reading whole tables into pandas fails on a laptop *and* on a Colab high-RAM runtime.
 
 The tables are read in chunks straight out of the tar stream, so no uncompressed copy is ever
 written to disk. Observations are filtered first; the surviving UUID set then filters photos.
 Danish research-grade data is a fraction of a percent of the global set, so what accumulates is
 small. Peak memory is roughly one chunk plus the Danish subset — comfortably under 4 GB.
 
-Disk is the real laptop constraint: budget for the compressed archive plus room to grow, so
-~20–30 GB free.
+### 5A.2 Disk **[changed 17 Aug 2026]**
+
+The 2021 figures this section used to quote — 4.5 GB compressed, 11.6 GB uncompressed — are long
+gone. Measured against the bucket on 17 Aug 2026 (`VERIFICATION.md` §7):
+
+| file | size |
+|---|---|
+| `inaturalist-open-data-latest.tar.gz` | 34.2 GB |
+| `observations.csv.gz` | 12.7 GB |
+| `photos.csv.gz` | 19.6 GB |
+
+So "budget ~20–30 GB free" was wrong: the tarball alone needs 34 GB before a row is read.
+
+The bucket also publishes each table separately, which the earlier verification pass denied.
+Since stage 2 finishes with observations before it opens photos, the two never need to coexist:
+fetch observations → filter → cache the Danish subset → delete → fetch photos → filter → delete.
+**Peak disk 20 GB**, and it survives an interrupted download of either table.
+
+`training/tools/stage2_sequenced.py` does exactly that, calling the same filter functions with
+the same bbox as `lifelist-images`. Use it when disk is tight; use `lifelist-images --archive`
+when it is not.
 
 ---
 

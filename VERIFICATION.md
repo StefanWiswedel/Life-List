@@ -118,6 +118,151 @@ float accumulation order, threshold inclusivity).
 
 ---
 
+# Second pass — 17 August 2026
+
+Checked from a Cowork cloud session that, unlike the sandbox this repo was written in, could
+reach Maven Central, GBIF and the iNaturalist bucket. So these are measurements, not readings.
+
+## 6. CI had never run — the Gradle wrapper was never committed
+
+`.github/workflows/core.yml` ends with `./gradlew :core:test --no-daemon`. `gradlew`,
+`gradlew.bat` and `gradle/wrapper/` were not in the tree — only `gradle/libs.versions.toml`.
+`git log --diff-filter=A -- gradlew` returns nothing, so they were never committed at all: the
+sandbox could not reach the Gradle distribution server, and the gap went unnoticed because the
+workflow's red X looked like the known network limitation.
+
+So the "written, never compiled" row in `CLAUDE.md` was optimistic in one direction and
+pessimistic in the other: nothing had ever compiled it, *and* nobody would have found out.
+
+**Fixed.** Wrapper pinned at Gradle 8.10.2, committed with the exec bit set. `:core:test`
+compiles and passes all five `RollupGoldenTest` cases, including `every golden case reproduces
+exactly`. The Kotlin and Python rollups are now demonstrated to agree rather than asserted to.
+
+**Note for a fresh laptop:** `core` pins `jvmToolchain(17)`, so a machine with only a newer JDK
+fails with `Cannot find a Java installation ... languageVersion=17`. Either install a JDK 17 or
+add the `foojay-resolver-convention` plugin to `settings.gradle.kts` and let Gradle fetch one.
+
+## 7. The iNaturalist archive is 34 GB, not 4.5 GB — §3 and BUILD.md §8 are stale
+
+`BUILD.md` line 387 carries the 2021 figures: 4.5 GB compressed, 11.6 GB uncompressed, 42M
+observations. Measured today by `Content-Length`:
+
+| file | size |
+|---|---|
+| `inaturalist-open-data-latest.tar.gz` | **34.2 GB** (Last-Modified 27 Jul 2026) |
+| `observations.csv.gz` | 12.7 GB |
+| `photos.csv.gz` | 19.6 GB |
+| `taxa.csv.gz` | 39.5 MB |
+| `observers.csv.gz` | 16.6 MB |
+
+The "budget ~20–30 GB free" advice in BUILD.md §8 is therefore wrong by a factor of two or more.
+Downloading the tarball alone needs 34 GB before a single row is read.
+
+## 8. The bucket *does* publish the tables separately — correcting finding §3
+
+Finding §3 above says the bucket "publishes a single archive … not six" and tells you to plan
+around one large download. That is wrong. The per-table `.csv.gz` files listed in §7 exist at the
+bucket root and are individually addressable.
+
+This is not pedantry, it is what makes the stage runnable on a normal disk. `cli/images.py`
+already reads observations to completion *before* it opens photos, and `open_table` already
+accepts a directory of `.csv.gz` files. So the two tables never need to be resident together:
+fetch observations (12.7 GB) → filter → cache the Danish subset → delete → fetch photos
+(19.6 GB) → filter against the surviving uuids → delete. Peak disk is 20 GB, not 34 GB, and no
+uncompressed copy is ever written.
+
+That sequencing is what `tools/stage2_sequenced.py` does. It calls the same
+`filter_observation_chunks` / `filter_photo_chunks` / `coverage` functions with the same
+`DENMARK_BBOX`; only the I/O order differs.
+
+## 9. Stage 1 was ~50 hours; it is now ~40 minutes
+
+`GbifClient._get` did `session = self._session or requests` — and nothing ever passed a session,
+so every call went through the module-level `requests.get`, which opens and TLS-handshakes a new
+connection each time. Stage 1 makes three calls per taxon (`species`, `vernacularNames`,
+`synonyms`) across a default 20,000 taxa: 60,000 handshakes.
+
+Measured, 100 taxa, clean network:
+
+| | per taxon | 20,000 taxa |
+|---|---|---|
+| original (new connection per call) | ~9 s* | ~50 h |
+| pooled session, `--workers 1` | 0.81 s | ~4.5 h |
+| pooled session, `--workers 8` | **0.13 s** | **~43 min** |
+
+\* the 9 s figure was measured while a 12.7 GB download was saturating the link, so treat it as
+indicative rather than exact. The clean serial-to-concurrent comparison is the 6.2× in the last
+two rows; connection reuse accounts for the rest.
+
+`GbifClient` already took a `session` argument — it was simply never used. The fix is a pooled
+`requests.Session` created on first use, plus a `--workers` flag on `lifelist-taxa`.
+
+**Determinism is preserved deliberately.** `ThreadPoolExecutor.map` yields in submission order,
+so `taxa_raw.json` is byte-identical at 1 worker and 8 — verified live (100 taxa, both settings,
+identical output) and in unit tests where the fake client sleeps longer on odd-numbered keys, so
+a completion-ordered implementation would fail. This matters because leaf indices are assigned
+from this ordering and a reshuffle silently invalidates every exported model.
+
+## 10. GBIF's facet endpoint is not perfectly reproducible — stage 1's candidate list can drop a common species
+
+One paired run came back different: the serial list contained *Columba palumbus* (wood pigeon,
+704,651 Danish occurrences — top five nationally) and the concurrent list did not, with the
+remaining 49 taxa in identical relative order.
+
+Chased down, because an ordering bug here would be serious:
+
+- three back-to-back direct calls to `/occurrence/search?facet=speciesKey` returned **identical**
+  1,000-key pages, wood pigeon included;
+- a clean re-run of the same serial/concurrent pair was **byte-identical**;
+- the shared 49 taxa were in identical order in both, which is not what a race would produce.
+
+So this is transient flakiness in GBIF's faceting, not in our fetch. But the consequence is real
+and belongs on the record: **stage 1's candidate list is not guaranteed reproducible, and the
+failure mode is a silently missing species rather than an error.** A wood pigeon dropping out of
+a Danish organism identifier is not a subtle defect.
+
+*Needs your call:* once you commit to a taxon set, the key list should be frozen as a checked-in
+fixture and re-fetches diffed against it, rather than re-derived from a live facet query each
+time. Cheap, and it converts a silent omission into a visible diff.
+
+## 11. Stage 1 ran: 19,998 taxa — with six duplicate keys
+
+Full run, `--workers 8`, 39 minutes (14:48–15:27). 19,998 taxa, 229,993 synonyms, 2 keys skipped.
+
+| | |
+|---|---|
+| ranks | species only (19,998) |
+| status | ACCEPTED 19,803, DOUBTFUL 195 |
+| kingdoms | Animalia 9,869 · Fungi 4,769 · Plantae 3,833 · Bacteria 822 · Chromista 586 · Protozoa 102 · Viruses 16 |
+| Danish vernaculars | 11,138 (56%) |
+| English vernaculars | 10,528 (53%) |
+| occurrences | 776,374 (*Anas platyrhynchos*) down to 14 |
+
+**Defect found: six taxa appear twice.** `parse_backbone_record` keys on
+`nubKey or key or usageKey`, and GBIF's facet can return two distinct `speciesKey`s that resolve
+to the same nub key. The pairs:
+
+| key | name | occurrences |
+|---|---|---|
+| 1536449 | *Episyrphus balteatus* | 4,716 + 4,718 |
+| 2493551 | *Locustella luscinioides* | 4,710 + 4,718 |
+| 3146791 | *Erigeron canadensis* | 4,695 + 4,701 |
+| 2325755 | *Ampharete finmarchica* | 1,696 + 1,696 |
+| 2529223 | *Cortinarius anserinus* | 847 + 847 |
+| 7351210 | *Protoperidinium depressum* | 847 + 847 |
+
+Not fatal — `build_taxonomy_nodes` already does `if taxon.key in nodes: continue`, so the
+taxonomy tree gets one node. But the *occurrence count is split across both rows*, so a
+hoverfly with ~9,400 Danish records is recorded twice as ~4,700. Anything that ranks or
+thresholds on `occurrences` reads those six as half as common as they are.
+
+Deliberately not fixed here: merging duplicates means choosing whether to sum the counts or take
+the max, and that is a judgement about what a GBIF facet split means. Six rows in 19,998, so it
+changes nothing structural — but it should be an explicit decision with a test, not a silent
+`max()`.
+
+---
+
 ## Open questions
 
 1. **Inference backend.** Accept the CPU-EP-first proposal in §1 above, or hold NNAPI as the

@@ -206,3 +206,115 @@ def test_needs_id_observations_never_reach_the_manifest(tmp_path):
     manifest = pd.read_parquet(cache / "photo_manifest.parquet")
 
     assert 4 not in set(manifest["photo_id"])
+
+
+# -- stage 1 concurrent fetch ---------------------------------------------------
+#
+# The network client is injected, so the ordering guarantee that leaf indices depend on
+# can be asserted without touching GBIF.
+
+
+class FakeClient:
+    """A GbifClient-shaped stub with deliberately uneven latency.
+
+    The sleeps are what make the test meaningful: with a thread pool, the fast keys
+    finish first, so anything that appended results as they completed would come back
+    reordered. Ordering by input is what keeps taxa_raw.json stable across runs.
+    """
+
+    def __init__(self, failing: set[int] | None = None):
+        self.failing = failing or set()
+        self.seen: list[int] = []
+
+    def species(self, key: int) -> dict:
+        import time
+
+        time.sleep(0.02 if key % 2 else 0.001)
+        self.seen.append(key)
+        if key in self.failing:
+            raise RuntimeError("boom")
+        return {
+            "key": key,
+            "rank": "SPECIES",
+            "canonicalName": f"Species {key}",
+            "taxonomicStatus": "ACCEPTED",
+            "genusKey": 900,
+            "genus": "Genus",
+        }
+
+    def vernacular_names(self, key: int) -> list[dict]:
+        return [{"language": "eng", "vernacularName": f"name {key}", "preferred": True}]
+
+    def synonyms(self, key: int) -> list[dict]:
+        return [
+            {
+                "canonicalName": f"Synonym {key}",
+                "taxonomicStatus": "SYNONYM",
+                "acceptedKey": key,
+            }
+        ]
+
+
+def test_fetch_taxa_preserves_input_order_under_concurrency():
+    keys = [(k, 100 - k) for k in range(1, 21)]
+
+    taxa, _, skipped = taxa_cli.fetch_taxa(FakeClient(), keys, workers=8)
+
+    assert skipped == 0
+    assert [t["key"] for t in taxa] == [k for k, _ in keys]
+
+
+def test_fetch_taxa_is_identical_serial_and_concurrent():
+    keys = [(k, 100 - k) for k in range(1, 21)]
+
+    serial, serial_synonyms, _ = taxa_cli.fetch_taxa(FakeClient(), keys, workers=1)
+    concurrent, concurrent_synonyms, _ = taxa_cli.fetch_taxa(FakeClient(), keys, workers=8)
+
+    assert serial == concurrent
+    assert serial_synonyms == concurrent_synonyms
+
+
+def test_fetch_taxa_skips_a_failing_key_without_ending_the_run():
+    keys = [(k, 10) for k in range(1, 6)]
+
+    taxa, _, skipped = taxa_cli.fetch_taxa(FakeClient(failing={3}), keys, workers=4)
+
+    assert skipped == 1
+    assert [t["key"] for t in taxa] == [1, 2, 4, 5]
+
+
+def test_fetch_taxon_can_skip_vernaculars():
+    taxon, _ = taxa_cli.fetch_taxon(FakeClient(), 7, 42, with_vernaculars=False)
+
+    assert taxon is not None
+    assert taxon["vernacular_en"] is None
+    assert taxon["occurrences"] == 42
+
+
+def test_taxa_workers_default():
+    assert taxa_cli.build_parser().parse_args([]).workers == 8
+
+
+def test_gbif_client_only_talks_to_the_injected_session():
+    from lifelist_train.gbif import GbifClient
+
+    class FakeResponse:
+        def raise_for_status(self):
+            return None
+
+        def json(self):
+            return {"ok": True}
+
+    class FakeSession:
+        def __init__(self):
+            self.calls = []
+
+        def get(self, url, params=None, timeout=None):
+            self.calls.append((url, params))
+            return FakeResponse()
+
+    session = FakeSession()
+    client = GbifClient(pause_s=0, session=session)
+
+    assert client.species(123) == {"ok": True}
+    assert session.calls[0][0].endswith("/species/123")

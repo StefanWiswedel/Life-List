@@ -201,20 +201,46 @@ def build_index(taxa: Iterable[GbifTaxon], synonyms: Iterable[tuple[str, int]]) 
 class GbifClient:
     """Thin GBIF REST client. The only thing here that touches the network.
 
-    Not exercised in unit tests by design — GBIF is unreachable from the development
-    sandbox, and mocking an HTTP client mostly tests the mock. The parsing above is what
-    carries the logic, and that is tested against captured fixtures.
+    Mostly not exercised in unit tests by design — mocking an HTTP client mostly tests
+    the mock, and the parsing above is what carries the logic. What *is* tested is that
+    an injected session is the only thing this class talks to, because that injection
+    point is what makes the concurrent fetch in `cli/taxa.py` testable without a network.
     """
 
-    def __init__(self, base_url: str = GBIF_API, pause_s: float = 0.1, session: Any = None):
+    def __init__(
+        self,
+        base_url: str = GBIF_API,
+        pause_s: float = 0.1,
+        session: Any = None,
+        pool_size: int = 16,
+    ):
         self.base_url = base_url.rstrip("/")
         self.pause_s = pause_s
         self._session = session
+        self._pool_size = pool_size
+
+    def _ensure_session(self) -> Any:
+        """A pooled, connection-reusing session, created on first use.
+
+        Calling `requests.get` directly opens and TLS-handshakes a fresh connection per
+        request. Stage 1 makes three requests per taxon over tens of thousands of taxa,
+        so the handshake dominated the run: measured against GBIF, per-taxon time was
+        ~9 s without keep-alive. The pool is sized for the worker count in
+        `cli/taxa.py`, since a smaller pool silently serialises the workers.
+        """
+        if self._session is None:
+            import requests
+            from requests.adapters import HTTPAdapter
+
+            session = requests.Session()
+            adapter = HTTPAdapter(pool_connections=self._pool_size, pool_maxsize=self._pool_size)
+            session.mount("https://", adapter)
+            session.mount("http://", adapter)
+            self._session = session
+        return self._session
 
     def _get(self, path: str, **params: Any) -> dict[str, Any]:
-        import requests
-
-        session = self._session or requests
+        session = self._ensure_session()
         response = session.get(f"{self.base_url}{path}", params=params, timeout=60)
         response.raise_for_status()
         time.sleep(self.pause_s)  # be a good citizen against a free public API

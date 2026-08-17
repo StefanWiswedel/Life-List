@@ -23,8 +23,9 @@ trade in favour of the rollup.
 | | |
 |---|---|
 | contracts + spec | done |
-| `training/` — rollup, fusion, audio, splits, names, GBIF, iNat, stages 1–2 | done, 176 tests |
-| `core/` — Kotlin rollup + golden parity test | **written, never compiled** |
+| `training/` — rollup, fusion, audio, splits, names, GBIF, iNat, stages 1–2 | done, 182 tests |
+| `core/` — Kotlin rollup + golden parity test | **compiles; 5 parity tests pass** (17 Aug 2026) |
+| Gradle wrapper | added 17 Aug 2026 — it had never been committed, so CI had never run |
 | stages 3–6 (embed, train head, eval, export) | not written — need GPU/torch/ONNX |
 | `app/` — Android | not started |
 
@@ -53,6 +54,13 @@ A cloud sandbox wrote most of this and could not reach Maven Central, Google's M
 distribution server, GBIF, iNaturalist, or S3. Hence: `core/` is pure Kotlin/JVM so CI can test
 the rollup without the Android SDK; network access is confined to thin clients; all logic is pure
 functions over already-fetched records. Keep that shape — it is why any of this is testable.
+
+**[changed 17 Aug 2026]** A Cowork cloud session *can* reach all of those. Maven Central resolved,
+`:core:test` ran, GBIF answered, and the iNaturalist bucket served 12.7 GB at ~65 MB/s. The
+constraint that shaped this repo no longer binds. Keep the shape anyway — the reason it is worth
+having was never the sandbox, it is that pure functions over fetched records are the only part of
+a pipeline you can test in a second rather than an hour. Nothing here should be rewritten to
+assume the network.
 
 ## Commands
 
