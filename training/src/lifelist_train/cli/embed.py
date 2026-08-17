@@ -23,8 +23,7 @@ import pandas as pd
 from ..embed import (
     embed_shard,
     load_shards,
-    pending_shards,
-    plan_shards,
+    plan_remaining,
     shard_failures,
     write_shard,
 )
@@ -65,6 +64,11 @@ def build_parser() -> argparse.ArgumentParser:
         "--dry-run",
         action="store_true",
         help="report what remains and exit, without torch or network",
+    )
+    parser.add_argument(
+        "--retry-failures",
+        action="store_true",
+        help="re-attempt photos previously recorded as failed (default: leave them be)",
     )
     return add_common_args(parser)
 
@@ -160,27 +164,29 @@ def main(argv: list[str] | None = None) -> int:
     out_dir = cache_path(args.cache_dir, "embeddings")
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    shards = plan_shards(manifest, args.shard_size)
-    remaining = pending_shards(shards, out_dir)
+    remaining = plan_remaining(
+        manifest, args.shard_size, out_dir, retry_failures=args.retry_failures
+    )
+    outstanding = sum(len(s) for s in remaining)
     LOG.info(
-        "%d photos, %d taxa, %d shards of %d — %d done, %d to go",
+        "%d photos, %d taxa — %d already resolved, %d to go in %d shards of %d",
         len(manifest),
         manifest["taxon_id"].nunique(),
-        len(shards),
-        args.shard_size,
-        len(shards) - len(remaining),
+        len(manifest) - outstanding,
+        outstanding,
         len(remaining),
+        args.shard_size,
     )
 
     if args.dry_run:
         failures = shard_failures(out_dir)
         if len(failures):
-            LOG.info("%d photos failed so far", len(failures))
+            LOG.info("%d photos failed so far (--retry-failures to re-attempt)", len(failures))
         return 0
 
     if not remaining:
         embedded = load_shards(out_dir)
-        LOG.info("nothing to do: %d embeddings across %d shards", len(embedded), len(shards))
+        LOG.info("nothing to do: %d embeddings on disk", len(embedded))
         return 0
 
     if args.max_shards is not None:
@@ -223,14 +229,14 @@ def main(argv: list[str] | None = None) -> int:
 
     total = load_shards(out_dir)
     failures = shard_failures(out_dir)
+    still_to_do = sum(len(s) for s in plan_remaining(manifest, args.shard_size, out_dir))
     LOG.info(
-        "%d embeddings, %d failures, %d/%d shards complete",
+        "%d embeddings, %d failures, %d photos still to go",
         len(total),
         len(failures),
-        len(list(out_dir.glob("shard-*.npz"))),
-        len(shards),
+        still_to_do,
     )
-    if len(remaining) < len(pending_shards(shards, out_dir)) + len(remaining):
+    if still_to_do:
         LOG.info("re-run the same command to continue")
     return 0
 

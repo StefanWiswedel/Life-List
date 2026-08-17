@@ -18,7 +18,9 @@ from lifelist_train.embed import (
     l2_normalise,
     load_shards,
     missing_photos,
+    next_shard_index,
     pending_shards,
+    plan_remaining,
     plan_shards,
     shard_failures,
     write_shard,
@@ -177,3 +179,78 @@ def test_write_shard_rejects_mismatched_lengths(tmp_path):
 
     with pytest.raises(ValueError):
         write_shard(tmp_path, shard, np.zeros((2, EMBED_DIM)), [100])
+
+
+# -- resuming by photo id, so the photo cap stays a reversible decision ----------
+
+
+def test_plan_remaining_matches_plan_shards_on_a_fresh_directory(tmp_path):
+    frame = manifest(10)
+
+    fresh = plan_remaining(frame, 4, tmp_path)
+    plain = plan_shards(frame, 4)
+
+    assert [s.index for s in fresh] == [s.index for s in plain]
+    assert [s.rows["photo_id"].tolist() for s in fresh] == [
+        s.rows["photo_id"].tolist() for s in plain
+    ]
+
+
+def test_plan_remaining_skips_photos_already_embedded(tmp_path):
+    frame = manifest(10)
+    first = plan_shards(frame, 4)[0]
+    embeddings, kept, failures = embed_shard(first, fake_fetch, fake_encode)
+    write_shard(tmp_path, first, embeddings, kept, failures)
+
+    remaining = plan_remaining(frame, 4, tmp_path)
+
+    planned = [p for s in remaining for p in s.rows["photo_id"].tolist()]
+    assert planned == [104, 105, 106, 107, 108, 109]
+    assert [s.index for s in remaining] == [1, 2]  # continues past shard 0
+
+
+def test_a_bigger_manifest_only_embeds_the_new_photos(tmp_path):
+    """Raising the photo cap must not re-embed what is already done.
+
+    A cap of 300 yields a strict superset of a cap of 150 — same seed, same sampling
+    order — so topping up should cost only the new photos. Planning by shard index
+    would renumber every boundary and redo all of it.
+    """
+    small = manifest(6)
+    for shard in plan_shards(small, 3):
+        embeddings, kept, failures = embed_shard(shard, fake_fetch, fake_encode)
+        write_shard(tmp_path, shard, embeddings, kept, failures)
+
+    bigger = manifest(10)
+    assert set(small["photo_id"]) <= set(bigger["photo_id"])
+
+    remaining = plan_remaining(bigger, 3, tmp_path)
+
+    planned = [p for s in remaining for p in s.rows["photo_id"].tolist()]
+    assert sorted(planned) == [106, 107, 108, 109]
+    assert min(s.index for s in remaining) == 2  # no collision with shards 0 and 1
+
+
+def test_failed_photos_are_not_retried_by_default_but_can_be(tmp_path):
+    def flaky(photo_id: int, extension: str) -> bytes:
+        if photo_id == 101:
+            raise OSError("404")
+        return fake_fetch(photo_id, extension)
+
+    frame = manifest(4)
+    shard = plan_shards(frame, 4)[0]
+    embeddings, kept, failures = embed_shard(shard, flaky, fake_encode)
+    write_shard(tmp_path, shard, embeddings, kept, failures)
+
+    assert plan_remaining(frame, 4, tmp_path) == []
+
+    retried = plan_remaining(frame, 4, tmp_path, retry_failures=True)
+    assert [p for s in retried for p in s.rows["photo_id"].tolist()] == [101]
+
+
+def test_next_shard_index_ignores_junk_filenames(tmp_path):
+    (tmp_path / "shard-00003.npz").write_bytes(b"")
+    (tmp_path / "shard-nonsense.npz").write_bytes(b"")
+    (tmp_path / "notes.txt").write_bytes(b"")
+
+    assert next_shard_index(tmp_path) == 4

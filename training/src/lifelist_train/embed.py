@@ -69,8 +69,68 @@ def pending_shards(shards: Sequence[Shard], out_dir: Path) -> list[Shard]:
     file that exists is a file that finished. A half-written shard from a hard kill
     would otherwise be indistinguishable from a good one, and the failure mode —
     silently truncated training data — is invisible until accuracy is mysteriously bad.
+
+    Correct only while the manifest is unchanged. `plan_remaining` is what a run should
+    actually use; this stays because shard-file presence is still the thing that decides
+    whether a *shard* finished.
     """
     return [s for s in shards if not (out_dir / s.name).exists()]
+
+
+def resolved_photo_ids(out_dir: Path, include_failures: bool = True) -> set[int]:
+    """Photo ids already dealt with: embedded, or recorded as permanently failed.
+
+    Only the id arrays are read, not the embeddings, so this stays cheap across a
+    hundred shards.
+    """
+    resolved: set[int] = set()
+    if not out_dir.exists():
+        return resolved
+    for path in sorted(out_dir.glob(SHARD_GLOB)):
+        with np.load(path, allow_pickle=False) as data:
+            resolved.update(int(x) for x in data["photo_id"])
+            if include_failures and "failed_photo_id" in data:
+                resolved.update(int(x) for x in data["failed_photo_id"])
+    return resolved
+
+
+def next_shard_index(out_dir: Path) -> int:
+    """One past the highest shard already written, so new shards never collide."""
+    if not out_dir.exists():
+        return 0
+    indices = []
+    for path in out_dir.glob(SHARD_GLOB):
+        try:
+            indices.append(int(path.stem.split("-")[1]))
+        except (IndexError, ValueError):
+            continue
+    return max(indices) + 1 if indices else 0
+
+
+def plan_remaining(
+    manifest: pd.DataFrame,
+    shard_size: int,
+    out_dir: Path,
+    retry_failures: bool = False,
+) -> list[Shard]:
+    """Shard only the photos that still need embedding.
+
+    Resuming by *photo id* rather than by shard file is what makes the photo cap a
+    reversible decision. Raising `--max-photos-per-taxon` from 150 to 300 produces a
+    strict superset of the same manifest (same seed, same sampling order), so a top-up
+    should embed only the 211k new photos. Planning by shard index instead would
+    renumber every boundary and re-embed all 334k already done.
+
+    On an untouched output directory this returns exactly `plan_shards`, so a first run
+    is unaffected and its boundaries still depend only on the manifest.
+    """
+    resolved = resolved_photo_ids(out_dir, include_failures=not retry_failures)
+    remaining = manifest[~manifest["photo_id"].isin(resolved)]
+    offset = next_shard_index(out_dir)
+    return [
+        Shard(index=shard.index + offset, rows=shard.rows)
+        for shard in plan_shards(remaining, shard_size)
+    ]
 
 
 def write_shard(
@@ -85,8 +145,13 @@ def write_shard(
         raise ValueError(f"{len(embeddings)} embeddings for {len(photo_ids)} photos")
 
     out_dir.mkdir(parents=True, exist_ok=True)
-    keep = shard.rows[shard.rows["photo_id"].isin(list(photo_ids))]
-    keep = keep.set_index("photo_id").loc[list(photo_ids)].reset_index()
+    # drop_duplicates before the lookup: `.loc[list]` against a duplicated index returns
+    # *every* matching row, so one repeated photo_id silently lengthened taxon_id and
+    # observation_uuid past photo_id and embedding, and the shard failed to load later.
+    # The manifest should not contain duplicates (see `drop_ambiguous_photos`), but a
+    # writer that corrupts its own output when it does is not a writer worth having.
+    lookup = shard.rows.drop_duplicates("photo_id").set_index("photo_id")
+    keep = lookup.loc[list(photo_ids)].reset_index()
 
     destination = out_dir / shard.name
     temporary = destination.with_suffix(".npz.tmp")

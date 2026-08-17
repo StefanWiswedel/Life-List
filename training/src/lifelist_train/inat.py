@@ -10,10 +10,13 @@ worse, filter to the wrong rows and look plausible.
 
 from __future__ import annotations
 
+import logging
 from collections.abc import Iterable
 from dataclasses import dataclass
 
 import pandas as pd
+
+LOG = logging.getLogger("lifelist")
 
 # Licences we may derive embeddings from. We redistribute embeddings, never images, but
 # provenance is logged per photo regardless (build plan §3 stage 2).
@@ -145,12 +148,52 @@ def filter_photo_chunks(
 
 
 def join_photos_to_taxa(observations: pd.DataFrame, photos: pd.DataFrame) -> pd.DataFrame:
-    """Attach each surviving photo to its observation's taxon."""
-    return photos.merge(
+    """Attach each surviving photo to its observation's taxon, then drop ambiguity.
+
+    See `drop_ambiguous_photos` — the same photo_id really does appear under several
+    observations in the open-data export, and the join is where that becomes a label.
+    """
+    joined = photos.merge(
         observations[["observation_uuid", "taxon_id"]],
         on="observation_uuid",
         how="inner",
     )
+    return drop_ambiguous_photos(joined)
+
+
+def drop_ambiguous_photos(joined: pd.DataFrame) -> pd.DataFrame:
+    """Remove photos that carry more than one taxon, and de-duplicate the rest.
+
+    The photos table is not one row per photo. A `photo_id` can appear under several
+    `observation_uuid`s, and in the Danish subset 565 of them end up under **different
+    taxa**. Two consequences, both bad, both silent:
+
+    1. *Label noise.* The same JPEG becomes a training example for two species. The head
+       cannot satisfy both, so it learns to be unsure about exactly the pairs a user is
+       most likely to confuse.
+    2. *Leakage the existing assertion cannot see.* `assert_no_observation_leakage`
+       splits on observations, correctly. But one photo sitting in two observations can
+       be placed in train *and* validation while every observation stays on one side —
+       the split looks clean and the validation number is inflated.
+
+    So: a photo whose taxon is ambiguous is dropped rather than assigned. That is the
+    "never guess a taxon" rule applied to images — refusing is right, and picking one of
+    two labels silently is how a beetle gets filed as a plant. Photos duplicated *within*
+    one taxon are simply collapsed to one row; there is no ambiguity, just repetition.
+    """
+    if joined.empty:
+        return joined
+
+    taxa_per_photo = joined.groupby("photo_id")["taxon_id"].nunique()
+    ambiguous = set(taxa_per_photo[taxa_per_photo > 1].index)
+    if ambiguous:
+        LOG.warning(
+            "%d photos map to more than one taxon and were dropped as unlabelable",
+            len(ambiguous),
+        )
+
+    clean = joined[~joined["photo_id"].isin(ambiguous)]
+    return clean.drop_duplicates("photo_id", keep="first").reset_index(drop=True)
 
 
 def coverage(joined: pd.DataFrame) -> list[TaxonCoverage]:

@@ -95,8 +95,8 @@ better there, since free Colab disconnects near 90 minutes and it takes 30–90.
 
 ## Next action
 
-The threshold is **decided: 50 observations, 150 photos per taxon** — 2,378 taxa, 333,947 photos
-(VERIFICATION.md §12–13). `cache/photo_manifest.parquet` is built. Do not re-derive it; leaf
+The threshold is **decided: 50 observations, 150 photos per taxon** — 2,376 taxa, 333,702 photos
+(VERIFICATION.md §12–14). `cache/photo_manifest.parquet` is built. Do not re-derive it; leaf
 indices come from it.
 
 Run stage 3, which is resumable — re-run the same command after any interruption:

@@ -5,6 +5,7 @@ from __future__ import annotations
 import pandas as pd
 import pytest
 
+from lifelist_train import inat
 from lifelist_train.inat import (
     SchemaError,
     assert_columns,
@@ -281,3 +282,60 @@ def test_photo_url_tolerates_a_leading_dot_extension():
 
 def test_photo_url_defaults_a_missing_extension():
     assert photo_url(1, "").endswith("/medium.jpg")
+
+
+# -- one photo, two taxa --------------------------------------------------------
+#
+# The photos table is not one row per photo. Found by running stage 3 over the real
+# manifest: 565 Danish photo_ids carry more than one taxon.
+
+
+def _obs(rows):
+    return pd.DataFrame(rows, columns=["observation_uuid", "taxon_id"])
+
+
+def _photos(rows):
+    return pd.DataFrame(
+        rows, columns=["photo_uuid", "photo_id", "observation_uuid", "extension", "license"]
+    )
+
+
+def test_a_photo_under_two_taxa_is_dropped_not_guessed():
+    observations = _obs([("obs-a", 11), ("obs-b", 22)])
+    photos = _photos(
+        [
+            ("pu-1", 1, "obs-a", "jpg", "CC0"),
+            ("pu-1", 1, "obs-b", "jpg", "CC0"),
+            ("pu-2", 2, "obs-a", "jpg", "CC0"),
+        ]
+    )
+
+    joined = inat.join_photos_to_taxa(observations, photos)
+
+    assert joined["photo_id"].tolist() == [2]
+
+
+def test_a_photo_repeated_within_one_taxon_is_collapsed_not_dropped():
+    observations = _obs([("obs-a", 11), ("obs-b", 11)])
+    photos = _photos(
+        [
+            ("pu-1", 1, "obs-a", "jpg", "CC0"),
+            ("pu-1", 1, "obs-b", "jpg", "CC0"),
+        ]
+    )
+
+    joined = inat.join_photos_to_taxa(observations, photos)
+
+    assert joined["photo_id"].tolist() == [1]
+    assert joined["taxon_id"].tolist() == [11]
+
+
+def test_photo_ids_are_unique_after_the_join():
+    observations = _obs([(f"obs-{i}", i % 3) for i in range(12)])
+    photos = _photos(
+        [(f"pu-{i % 5}", i % 5, f"obs-{i}", "jpg", "CC0") for i in range(12)]
+    )
+
+    joined = inat.join_photos_to_taxa(observations, photos)
+
+    assert joined["photo_id"].is_unique

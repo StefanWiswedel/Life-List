@@ -348,6 +348,46 @@ similarity **0.751 within a taxon against 0.314 across taxa**. The signal is rea
 333,947, not the 9–18 estimated before measuring. A T4 would be bound by S3 rather than the
 model.
 
+## 14. One photo, two species — found by running stage 3 over the real manifest
+
+The photos table is not one row per photo. A `photo_id` appears under several
+`observation_uuid`s, and in the Danish subset **565 photo_ids carry more than one taxon**.
+1,367 rows were duplicated overall.
+
+This surfaced as a crash, not as a suspicion: `write_shard` looked its rows up with
+`.loc[list_of_ids]` against an index holding duplicates, which returns *every* match, so
+`taxon_id` came out length 202 for 200 photos and the shard would not load again. Both are
+fixed — the writer de-duplicates before the lookup, and there is a test.
+
+The crash was the lucky part. The underlying data problem is silent and worse:
+
+1. **Label noise.** The same JPEG becomes a training example for two species. The head cannot
+   satisfy both, so it learns to be unsure about exactly the pairs a user is most likely to
+   confuse.
+2. **Leakage the existing assertion cannot see.** `assert_no_observation_leakage` splits on
+   observations, which is right. But one photo sitting in two observations can land in train
+   *and* validation with every observation still on one side. The split looks clean and the
+   validation number is inflated — the precise failure the "split by observation" rule exists
+   to prevent, arriving by a route it does not cover.
+
+**Resolved by refusing, not guessing.** `join_photos_to_taxa` now drops any photo whose taxon is
+ambiguous and collapses photos duplicated within a single taxon. Dropping 565 photos costs
+nothing; assigning one of two labels silently is how a beetle gets filed as a plant.
+
+Revised figures, replacing §12–13:
+
+| | before | after |
+|---|---|---|
+| photos with a taxon | 1,531,899 | 1,530,595 |
+| taxa at threshold 50 | 2,378 | **2,376** |
+| manifest at cap 150 | 333,947 | **333,702** |
+
+Two taxa fell below 50 observations once their ambiguous photos were removed, which is the
+correct outcome: their coverage was partly other species.
+
+Stage 3 was re-verified end to end after the fix — 700 photos, four shards, an extension from
+400 to 700 embedding only the 300 new photos, zero duplicates, manifest fully covered.
+
 ---
 
 ## Open questions
