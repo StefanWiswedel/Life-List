@@ -23,12 +23,15 @@ export = ["onnx>=1.16", "onnxruntime>=1.17"]
 dev = ["pytest>=8.0", "pytest-cov>=4.1", "ruff>=0.4"]
 
 [project.scripts]
-# Only implemented stages are declared. Stages 3-6 (embed, train-head, evaluate,
-# export) depend on torch and onnx, which cannot be exercised in this development
-# environment, so they are written when there is somewhere to run them rather than
-# declared now and left to fail at the prompt.
+# Only implemented stages are declared. Stages 4-6 (train-head, evaluate, export) are
+# still unwritten: they depend on having real embeddings to train against, and untested
+# code in a stage that costs hours to re-run is the worst place to be wrong.
 lifelist-taxa = "lifelist_train.cli.taxa:main"
 lifelist-images = "lifelist_train.cli.images:main"
+# Stage 3 needs the torch extra at runtime, but its sharding, resume and failure logic
+# is pure and tested without it — so the entry point is declared and `--dry-run` works
+# on a machine with no GPU and no torch.
+lifelist-embed = "lifelist_train.cli.embed:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

@@ -26,7 +26,8 @@ trade in favour of the rollup.
 | `training/` — rollup, fusion, audio, splits, names, GBIF, iNat, stages 1–2 | done, 182 tests |
 | `core/` — Kotlin rollup + golden parity test | **compiles; 5 parity tests pass** (17 Aug 2026) |
 | Gradle wrapper | added 17 Aug 2026 — it had never been committed, so CI had never run |
-| stages 3–6 (embed, train head, eval, export) | not written — need GPU/torch/ONNX |
+| stage 3 (`lifelist-embed`) | written, resumable, run against real BioCLIP + S3 |
+| stages 4–6 (train head, eval, export) | not written — need real embeddings first |
 | `app/` — Android | not started |
 
 ## Rules that have already earned their place
@@ -45,8 +46,10 @@ trade in favour of the rollup.
 - **Count observations, not photos.** Ten photos of one beetle is one piece of evidence.
 - **Assert external schemas, loudly.** The iNaturalist columns are undocumented. A wrong guess
   filters to zero rows and reads as a fact about Denmark rather than a bug in us.
-- **Don't write code you cannot test.** Stages 3–6 are unwritten on purpose — untested download
-  and retry logic in the stage that costs hours to re-run is the worst place to be wrong.
+- **Don't write code you cannot test.** Stages 4–6 are unwritten on purpose — untested logic in a
+  stage that costs hours to re-run is the worst place to be wrong. Stage 3 is written because
+  there is now somewhere to run it, and it follows the same rule: sharding, resume and failure
+  handling are pure and tested; the fetcher and the encoder are injected.
 
 ## Environment constraints that shaped the above
 
@@ -75,7 +78,9 @@ python tools/gen_golden.py --check
 
 ## Where each stage runs
 
-Only stage 3 needs Colab (GPU + S3 bandwidth). Stages 1, 2, 4, 5, 6 run on the laptop — stage 1
+Stage 3 runs anywhere with bandwidth: measured at 6.4 photos/s on 2 weak cloud cores, so 4–6 h
+on an 8-core laptop and less on a T4, where S3 rather than the model is the limit. Stages 1, 2,
+4, 5, 6 run on the laptop — stage 1
 better there, since free Colab disconnects near 90 minutes and it takes 30–90.
 
 ## Decided, don't relitigate
@@ -90,6 +95,15 @@ better there, since free Colab disconnects near 90 minutes and it takes 30–90.
 
 ## Next action
 
-Run `lifelist-taxa` then `lifelist-images`. The second prints the taxon-count table and **stops**
-— that number sets the model's output dimension and every accuracy figure downstream. It wants a
-human decision, not a default.
+The threshold is **decided: 50 observations, 150 photos per taxon** — 2,378 taxa, 333,947 photos
+(VERIFICATION.md §12–13). `cache/photo_manifest.parquet` is built. Do not re-derive it; leaf
+indices come from it.
+
+Run stage 3, which is resumable — re-run the same command after any interruption:
+
+```bash
+cd training && pip install -e '.[torch]'
+lifelist-embed --cache-dir cache --shard-size 4000 --download-workers 24 -v
+```
+
+4–6 hours on an 8-core laptop, measured. Then stages 4–6 are still to write.

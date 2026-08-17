@@ -308,6 +308,46 @@ fish, not about Danish waters. Any threshold above ~120 effectively drops the cl
 download, **2 h 0 min filter** (19.6 GB, checked against a 1.02M-uuid set). Budget three hours
 for stage 2, not the "streaming CPU" the plan implies.
 
+## 13. Stage 3 written and exercised — threshold 50, cap 150
+
+**Decided:** `--min-observations 50`, `--max-photos-per-taxon 150`. 2,378 taxa, **333,947
+photos**, 291,490 observations. Cap 150 rather than 500 halves the embedding job and costs
+almost nothing: the cap only bites on species that are already well covered.
+
+Stage 3 (`lifelist-embed`) is written, and unlike stages 4–6 it is written *because* there is
+now somewhere to run it. The rule it respects is the same one: the parts that can silently
+corrupt a training set are pure and tested, and the parts that cannot be tested — fetching
+bytes, running the model — are injected, the same shape `GbifClient` has.
+
+**Resumability, verified rather than asserted:**
+
+| behaviour | check |
+|---|---|
+| completed shards are skipped | re-ran, went from 84 pending to 83 |
+| a finished run is a no-op | re-ran, "3 done, 0 to go" |
+| a hard kill mid-shard does not count as done | dropped a `.npz.tmp` in place, run correctly saw it as pending |
+| a dead photo costs one photo, not the shard | unit test with a 404-ing fetcher |
+| a shard where *everything* fails still completes | otherwise a permanently dead shard loops forever |
+
+The atomic write matters more than it looks. `np.savez_compressed` appends `.npz` to any path
+lacking it, which silently defeated the temp-then-rename on the first attempt and would have
+left truncated shards looking finished — training data quietly missing rows, invisible until
+accuracy was mysteriously bad. It is written through a file handle now, and there is a test.
+
+**Ran for real against BioCLIP and the S3 photo bucket:** 600 photos, 263 taxa, 3 shards, zero
+failures. open_clip reported the preprocessing config as `size (224, 224)`, mean
+`0.48145466, 0.4578275, 0.40821073`, std `0.26862954, 0.26130258, 0.27577711` — matching §2
+exactly, which is the first time those constants have been confirmed from a loaded model rather
+than a config file.
+
+Embeddings sanity-checked: 512-d, unit norm to 4 decimal places, no NaNs, and mean cosine
+similarity **0.751 within a taxon against 0.314 across taxa**. The signal is real.
+
+**Throughput.** 6.4 photos/s on this container's 2 Xeon cores, download included. A Ryzen 7 PRO
+5850U has 8 Zen 3 cores, so 20–25 photos/s is the reasonable expectation: **4–6 hours** for all
+333,947, not the 9–18 estimated before measuring. A T4 would be bound by S3 rather than the
+model.
+
 ---
 
 ## Open questions
