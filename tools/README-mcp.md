@@ -33,8 +33,22 @@ removes the friction and keeps the containment.
 | `pytest_run` | the Python suite |
 | `ruff_check` | the linter |
 | `embed_status` | shard count and newest shard time |
+| `job_result(id)` | collect a background job |
+| `jobs` | every job this server has run |
 
 `:app:installDebug` is deliberately absent: it waits for a device and would hang.
+
+## Nothing blocks on a subprocess
+
+The MCP client abandons a tool call after about 60 seconds. On this setup `git push`,
+`git status` and `ruff` all take longer than that, and the first push through this server
+reported a timeout for a push that had already succeeded. A tool that lies about failing is
+worse than a slow one.
+
+So every command runs on a thread and the tool returns a handle. If it finishes within
+`FAST_ENOUGH_SECONDS` (8) the output comes back in the same call, which is the common case;
+otherwise `job_result(id)` collects it whenever it is done. A command that cannot start at all
+reports why rather than hanging until the timeout.
 
 ## Install (Windows)
 

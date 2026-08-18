@@ -24,6 +24,10 @@ import os
 import re
 import subprocess
 import sys
+import threading
+import time
+import uuid
+from dataclasses import dataclass, field
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
@@ -37,6 +41,13 @@ ALLOWED_GRADLE_TASKS = frozenset(
 PATCH_NAME = re.compile(r"^[A-Za-z0-9._-]+\.patch$")
 MAX_OUTPUT = 20_000
 TIMEOUT_SECONDS = 1800
+
+# The MCP client gives up on a tool call after ~60 s. Measured on this setup, `git push`,
+# `ruff` and `git status` all exceed that — and the first time it happened the push had in
+# fact succeeded, so the agent was told "timed out" about work that was done. A tool that
+# lies about failing is worse than a slow one, so anything that spawns a process returns a
+# job id immediately and the result is collected separately.
+FAST_ENOUGH_SECONDS = 8
 
 
 class Refused(ValueError):
@@ -87,6 +98,61 @@ def run(argv: list[str], cwd: Path | None = None) -> str:
     return f"exit {completed.returncode}\n{output}".strip()
 
 
+@dataclass
+class Job:
+    """One background command and whatever it has produced so far."""
+
+    label: str
+    started: float = field(default_factory=time.monotonic)
+    finished: float | None = None
+    result: str | None = None
+
+    @property
+    def elapsed(self) -> float:
+        return (self.finished or time.monotonic()) - self.started
+
+    def describe(self, job_id: str) -> str:
+        if self.result is None:
+            return f"{job_id} — {self.label}: running, {self.elapsed:.0f}s elapsed"
+        return f"{job_id} — {self.label}: finished in {self.elapsed:.0f}s\n{self.result}"
+
+
+JOBS: dict[str, Job] = {}
+_JOBS_LOCK = threading.Lock()
+
+
+def start(label: str, argv: list[str], cwd: Path | None = None) -> str:
+    """Run in the background and return a job id immediately.
+
+    Returning a handle rather than blocking is what keeps the tool honest: the client's
+    timeout no longer decides whether the caller is told the truth about what happened.
+    """
+    job_id = f"job-{uuid.uuid4().hex[:6]}"
+    job = Job(label=label)
+    with _JOBS_LOCK:
+        JOBS[job_id] = job
+
+    def work() -> None:
+        try:
+            output = run(argv, cwd)
+        except Exception as exc:  # noqa: BLE001 — the message is the whole point
+            output = f"failed to run: {type(exc).__name__}: {exc}"
+        with _JOBS_LOCK:
+            job.result = output
+            job.finished = time.monotonic()
+
+    threading.Thread(target=work, daemon=True, name=job_id).start()
+
+    # Most commands finish quickly. Wait briefly so the common case still reads as one call.
+    deadline = time.monotonic() + FAST_ENOUGH_SECONDS
+    while time.monotonic() < deadline:
+        with _JOBS_LOCK:
+            if job.result is not None:
+                return job.describe(job_id)
+        time.sleep(0.2)
+    return job.describe(job_id) + "\n(call job_result to collect it)"
+
+
 def build_server():  # pragma: no cover — wiring, exercised by running it
     from mcp.server.fastmcp import FastMCP
 
@@ -95,51 +161,71 @@ def build_server():  # pragma: no cover — wiring, exercised by running it
     @mcp.tool()
     def git_status() -> str:
         """Working tree status and the last few commits."""
-        return run(["git", "status", "--short", "--branch"]) + "\n" + run(
-            ["git", "log", "--oneline", "-5"]
-        )
+        return start("git status", ["git", "status", "--short", "--branch"])
 
     @mcp.tool()
     def git_apply_patch(filename: str) -> str:
         """Apply a .patch file from the repository root with `git am`."""
         patch = validated_patch(filename)
-        return run(["git", "am", str(patch)])
+        return start(f"git am {patch.name}", ["git", "am", str(patch)])
 
     @mcp.tool()
     def git_am_abort() -> str:
         """Abort a failed `git am`, restoring the working tree."""
-        return run(["git", "am", "--abort"])
+        return start("git am --abort", ["git", "am", "--abort"])
 
     @mcp.tool()
     def git_push(tags: bool = False) -> str:
         """Push main to origin. Never force: rewriting published history stays manual."""
-        return run(["git", "push", "--tags"] if tags else ["git", "push"])
+        return start("git push", ["git", "push", "--tags"] if tags else ["git", "push"])
 
     @mcp.tool()
     def git_tag(name: str) -> str:
         """Create a version tag. Must look like v1.2.3."""
         if not re.match(r"^v\d+\.\d+\.\d+$", name):
             raise Refused(f"{name!r} is not a version tag like v0.2.0")
-        return run(["git", "tag", name])
+        return start(f"git tag {name}", ["git", "tag", name])
 
     @mcp.tool()
     def gradle(task: str) -> str:
         """Run one of a fixed set of Gradle tasks."""
         wrapper = "gradlew.bat" if os.name == "nt" else "./gradlew"
-        return run([wrapper, validated_gradle_task(task), "--no-daemon"])
+        return start(f"gradle {task}", [wrapper, validated_gradle_task(task), "--no-daemon"])
 
     @mcp.tool()
     def pytest_run() -> str:
         """Run the Python test suite."""
-        return run([sys.executable, "-m", "pytest", "tests", "-q"], cwd=REPO / "training")
+        return start(
+            "pytest", [sys.executable, "-m", "pytest", "tests", "-q"], cwd=REPO / "training"
+        )
 
     @mcp.tool()
     def ruff_check() -> str:
         """Lint the Python sources."""
-        return run(
-            [sys.executable, "-m", "ruff", "check", "src", "tests", "tools"],
+        return start(
+            "ruff", [sys.executable, "-m", "ruff", "check", "src", "tests", "tools"],
             cwd=REPO / "training",
         )
+
+    @mcp.tool()
+    def job_result(job_id: str) -> str:
+        """Collect a background job started by any of the tools above."""
+        with _JOBS_LOCK:
+            job = JOBS.get(job_id)
+        if job is None:
+            known = ", ".join(sorted(JOBS)) or "none"
+            raise Refused(f"no job {job_id!r}; known jobs: {known}")
+        return job.describe(job_id)
+
+    @mcp.tool()
+    def jobs() -> str:
+        """Every job this server has run, newest last."""
+        with _JOBS_LOCK:
+            if not JOBS:
+                return "no jobs yet"
+            return "\n".join(
+                job.describe(job_id).splitlines()[0] for job_id, job in JOBS.items()
+            )
 
     @mcp.tool()
     def embed_status() -> str:
