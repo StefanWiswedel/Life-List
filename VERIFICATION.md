@@ -586,6 +586,38 @@ product decision and this document does not get to make it.
 
 `design/my-list.html` shows the screen this implies.
 
+## 20. Three decisions from using the app — 18 Aug 2026
+
+**Records hang on the node they were determined at, and every ancestor shows them.** A sighting
+kept at *Carabus* is visible when browsing Carabidae, alongside a species-level record from the
+next day. Two sightings, two photos, two ranks, both real. No "unidentified" bucket to one side —
+that is where the other apps put things and where nobody looks again. The rank ladder on a record
+shows explicitly what is settled and what is still open, so "species: not identified yet" is a
+state the app displays rather than an absence it hides.
+
+**The user can break a tie the model cannot.** Speckled and Great Green bush-cricket sit at 41%
+and 44%; no threshold makes that a species answer, but a person who can see the wing length can.
+So the candidate list is selectable, each option carrying the field mark that actually separates
+it — not a thumbnail, which is only reassurance.
+
+*And the record stores that the user decided.* A determination by tap is not a determination by
+model, and reporting one as the other would be the same overclaim as Arter's 80% species guess,
+relocated. `model_version` and `threshold` stay attached either way (§4.4).
+
+**Reference photo beside your photo, during identification.** Seek does this and it is the right
+call: comparison is how identification actually works. It also makes the candidate list useful
+rather than decorative.
+
+*Consequence, flagged now rather than at the end:* reference photos come from iNaturalist under CC
+licences, and BUILD.md §8 already calls attribution a real obligation. This is the screen where it
+bites. Photographer credit has to be stored per photo in the manifest — which stage 2 kept, so the
+data is there — and shown somewhere findable.
+
+*Still open:* whether refining a genus record to species dates the species tick to the sighting or
+the refinement.
+
+`design/identify-and-refine.html` is all three.
+
 ---
 
 ## Open questions

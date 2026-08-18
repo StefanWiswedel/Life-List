@@ -1,0 +1,185 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>Life List — v3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#FBF7F0;--card:#fff;--ink:#2A2621;--soft:#7A736A;--rust:#C2603A;--ochre:#D9A339;
+--sage:#7C8471;--moss:#4E6151;--line:#EDE6DA;--display:"Fraunces",Georgia,serif;--ui:"Nunito Sans",sans-serif}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:var(--paper);font-family:var(--ui);color:var(--ink);-webkit-font-smoothing:antialiased}
+.wrap{max-width:1220px;margin:0 auto;padding:38px 24px 80px}
+h1{font-family:var(--display);font-size:26px;font-weight:600;margin:0 0 4px}
+.sub{color:var(--soft);font-size:15px;margin:0 0 30px;max-width:70ch}
+.cols{display:grid;gap:26px;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));align-items:start}
+.cap{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--soft);margin:0 0 8px 6px;font-weight:700}
+.phone{background:var(--card);border-radius:28px;overflow:hidden;
+  box-shadow:0 1px 2px rgba(42,38,33,.05),0 12px 32px -12px rgba(42,38,33,.18)}
+.body{padding:18px 18px 20px}
+/* compare strip: your photo vs reference */
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:2px;background:var(--line)}
+.ph{height:150px;position:relative;display:grid;place-items:center;
+  background:linear-gradient(150deg,#E8E0D2,#D3C7B0)}
+.ph.g{background:linear-gradient(150deg,#DCE6D6,#B9C9AF)}
+.ph.g2{background:linear-gradient(150deg,#E2E9DC,#C6D3BB)}
+.ph span{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:rgba(42,38,33,.34);font-weight:700}
+.ph b{position:absolute;top:8px;left:8px;background:rgba(255,255,255,.9);border-radius:999px;
+  padding:4px 9px;font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--soft)}
+.ans{display:flex;gap:12px;align-items:flex-start;margin-bottom:4px}
+.ring{flex:none;width:52px;height:52px;position:relative}
+.ring span{position:absolute;inset:0;display:grid;place-items:center;font-weight:700;font-size:14px}
+.nm{font-family:var(--display);font-size:22px;font-weight:600;line-height:1.15;margin:0}
+.sc{font-family:var(--display);font-style:italic;font-size:14px;color:var(--soft);margin:1px 0 0}
+.sc .rom{font-style:normal}
+.say{font-size:15px;line-height:1.5;margin:12px 0 0}
+/* the chooser */
+.choose{margin-top:14px;border-top:1px solid var(--line);padding-top:12px}
+.choose h4{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--soft);margin:0 0 10px;font-weight:700}
+.opt{display:flex;gap:11px;align-items:center;padding:10px;border:1.5px solid var(--line);border-radius:16px;margin-bottom:9px;cursor:pointer}
+.opt:hover{border-color:var(--sage)}
+.opt.sel{border-color:var(--rust);background:#FDF6F2}
+.opt .t{width:52px;height:52px;border-radius:13px;flex:none;background:linear-gradient(150deg,#DCE6D6,#B4C7A8);position:relative}
+.opt .t::after{content:"ref";position:absolute;inset:0;display:grid;place-items:center;font-size:9px;
+  letter-spacing:.1em;text-transform:uppercase;color:rgba(42,38,33,.35);font-weight:700}
+.opt .n{font-family:var(--display);font-size:16px;font-weight:600;margin:0;line-height:1.2}
+.opt .s{font-family:var(--display);font-style:italic;font-size:12.5px;color:var(--soft);margin:1px 0 3px}
+.opt .tell{font-size:12.5px;color:var(--moss);line-height:1.35}
+.opt .p{margin-left:auto;font-weight:700;font-size:13px;color:var(--soft)}
+.keepgen{display:flex;gap:10px;align-items:center;padding:11px;border:1.5px dashed var(--line);border-radius:16px;font-size:13.5px;color:var(--soft)}
+.act{display:flex;gap:9px;margin-top:14px}
+.btn{flex:1;text-align:center;border-radius:999px;padding:13px;font-weight:700;font-size:14px}
+.btn.p{background:var(--rust);color:#fff}.btn.s{background:#F4EEE4}
+/* rank ladder */
+.ladder{margin-top:14px;border-top:1px solid var(--line);padding-top:12px}
+.step{display:flex;gap:10px;align-items:center;padding:6px 0;font-size:14px}
+.step .r{width:66px;flex:none;font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--soft);font-weight:700}
+.step .v{font-family:var(--display)}
+.step.done .v{font-weight:600}
+.step.open .v{color:var(--soft);font-style:italic;font-family:var(--ui);font-size:13.5px;font-style:normal}
+.step .badge{margin-left:auto;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  padding:3px 8px;border-radius:999px;background:#EDF0EA;color:var(--moss)}
+.step.open .badge{background:#F4EEE4;color:var(--soft)}
+/* browse */
+.crumb{display:flex;gap:6px;align-items:center;font-size:12.5px;color:var(--soft);padding:16px 18px 0;flex-wrap:wrap}
+.crumb b{font-weight:700;color:var(--ink)}
+.grp h3{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--soft);margin:16px 0 2px;font-weight:700}
+.rec{display:flex;gap:11px;align-items:center;padding:11px 0;border-bottom:1px solid var(--line)}
+.rec:last-child{border-bottom:0}
+.rec .t{width:46px;height:46px;border-radius:13px;flex:none;background:linear-gradient(150deg,#E6DCCB,#D0C0A4)}
+.rec .t.g{background:linear-gradient(150deg,#DCE6D6,#B4C7A8)}
+.rec .d{font-size:12px;color:var(--soft);margin-top:2px}
+.rk{margin-left:auto;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  padding:4px 9px;border-radius:999px;white-space:nowrap}
+.rk.sp{background:#EDF0EA;color:var(--moss)}.rk.gen{background:#FBF0DA;color:#8A6410}
+.rk.fam{background:#F6E9E3;color:#8E4527}
+.notes{margin-top:46px;max-width:72ch}
+.notes h3{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--soft);margin:0 0 10px}
+.notes p{font-size:15.5px;line-height:1.55;margin:0 0 12px}
+.notes .k{border-left:3px solid var(--rust);padding-left:14px}
+</style></head><body><div class="wrap">
+<h1>Life List — v3</h1>
+<p class="sub">Your photo beside a reference. When the model cannot separate two species, you get to.
+And a record stays visible at every rank above it, so “a ground beetle” from today is still there
+when tomorrow’s better photo makes it <i>Carabus granulatus</i>.</p>
+
+<div class="cols">
+
+  <div>
+    <p class="cap">Identifying — you break the tie</p>
+    <div class="phone">
+      <div class="compare">
+        <div class="ph"><b>yours</b><span>your photo</span></div>
+        <div class="ph g"><b>reference</b><span>Tettigonia</span></div>
+      </div>
+      <div class="body">
+        <div class="ans">
+          <div class="ring"><svg width="52" height="52"><circle cx="26" cy="26" r="22" fill="none" stroke="#EDE6DA" stroke-width="5"/>
+            <circle cx="26" cy="26" r="22" fill="none" stroke="#D9A339" stroke-width="5" stroke-linecap="round"
+              stroke-dasharray="138" stroke-dashoffset="21" transform="rotate(-90 26 26)"/></svg><span>85%</span></div>
+          <div><p class="nm">A bush-cricket</p><p class="sc">Tettigoniidae</p></div>
+        </div>
+        <p class="say">Two species fit almost equally well. If you can see the wing length or the
+        stripe on the back, you can settle it.</p>
+
+        <div class="choose">
+          <h4>Which one is it?</h4>
+          <div class="opt sel"><span class="t"></span>
+            <div><p class="n">Great Green Bush-cricket</p><p class="s">Tettigonia viridissima</p>
+            <p class="tell">Wings reach past the abdomen. Brown stripe down the back.</p></div>
+            <span class="p">44%</span></div>
+          <div class="opt"><span class="t"></span>
+            <div><p class="n">Speckled Bush-cricket</p><p class="s">Leptophyes punctatissima</p>
+            <p class="tell">Wings tiny or absent. Body finely speckled black.</p></div>
+            <span class="p">41%</span></div>
+          <div class="keepgen">Neither — keep it as <b>&nbsp;a bush-cricket</b></div>
+        </div>
+
+        <div class="act"><span class="btn p">Save my choice</span><span class="btn s">Not sure</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <p class="cap">A record, and what is still open</p>
+    <div class="phone">
+      <div class="compare"><div class="ph"><b>17 Aug</b><span>your photo</span></div>
+        <div class="ph g2"><b>reference</b><span>Carabus</span></div></div>
+      <div class="body">
+        <div class="ans">
+          <div class="ring"><svg width="52" height="52"><circle cx="26" cy="26" r="22" fill="none" stroke="#EDE6DA" stroke-width="5"/>
+            <circle cx="26" cy="26" r="22" fill="none" stroke="#D9A339" stroke-width="5" stroke-linecap="round"
+              stroke-dasharray="138" stroke-dashoffset="37" transform="rotate(-90 26 26)"/></svg><span>73%</span></div>
+          <div><p class="nm">A ground beetle</p><p class="sc">Carabus <span class="rom">sp.</span></p></div>
+        </div>
+        <div class="ladder">
+          <div class="step done"><span class="r">Order</span><span class="v">Coleoptera</span><span class="badge">known</span></div>
+          <div class="step done"><span class="r">Family</span><span class="v">Carabidae</span><span class="badge">known</span></div>
+          <div class="step done"><span class="r">Genus</span><span class="v">Carabus</span><span class="badge">known</span></div>
+          <div class="step open"><span class="r">Species</span><span class="v">not identified yet</span><span class="badge">open</span></div>
+        </div>
+        <div class="act"><span class="btn p">Add a better photo</span><span class="btn s">Identify myself</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <p class="cap">Browsing at family — both records are here</p>
+    <div class="phone">
+      <div class="crumb">My list <b>›</b> Insects <b>›</b> Beetles <b>›</b> <b>Carabidae</b></div>
+      <div class="body" style="padding-top:8px">
+        <div class="grp">
+          <h3>Identified to species</h3>
+          <div class="rec"><span class="t"></span><div><p class="nm" style="font-size:16px">Granulated Ground Beetle</p>
+            <p class="sc">Carabus granulatus</p><p class="d">18 Aug 2026 · you identified it</p></div>
+            <span class="rk sp">species</span></div>
+        </div>
+        <div class="grp">
+          <h3>Kept at genus</h3>
+          <div class="rec"><span class="t g"></span><div><p class="nm" style="font-size:16px">A ground beetle</p>
+            <p class="sc">Carabus <span class="rom">sp.</span></p><p class="d">17 Aug 2026 · species still open</p></div>
+            <span class="rk gen">genus</span></div>
+        </div>
+        <p class="say" style="color:var(--soft);font-size:13.5px">Yesterday’s record did not disappear
+        when today’s went deeper. Two sightings, two photos, two ranks.</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="notes">
+  <h3>What this commits to</h3>
+  <p class="k"><b>A record hangs on the node it was determined at, and every ancestor shows it.</b>
+  Browsing Carabidae shows both the species record and the genus one. That is the tree doing the
+  work — no "unidentified" bucket off to one side, which is where other apps put things and where
+  users never look again.</p>
+  <p><b>Your determination is stored as yours.</b> When you break the tie between two bush-crickets,
+  the record says you decided, not the model. Overwriting the model's answer with a user tap and
+  then reporting it as an identification would be the same overclaim in a new place.</p>
+  <p><b>The reference photo is not decoration.</b> It is there to be compared against, so each
+  candidate carries the one feature that actually separates it — wing length, the stripe. A
+  thumbnail with no field mark is just reassurance.</p>
+  <p>Open: reference photos come from iNaturalist under CC licences, so each needs its photographer
+  credited in-app. §8 already flags attribution as a real obligation — this is the screen where it
+  bites, and it is worth deciding now whether credits sit under the photo or on a per-species page.</p>
+</div>
+</div></body></html>
