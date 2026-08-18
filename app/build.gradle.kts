@@ -18,13 +18,32 @@ android {
         versionName = (project.findProperty("versionName") as String?) ?: "0.0.0-dev"
     }
 
+    signingConfigs {
+        create("sideload") {
+            // A committed keystore, with a password in plain sight, on purpose.
+            //
+            // Android refuses to update an app signed by a different key, and Gradle's
+            // built-in debug key is generated per machine — so every CI run produced a
+            // differently-signed APK and every update failed until the app was uninstalled.
+            //
+            // This key protects nothing. It is not a Play upload key and it identifies no
+            // one; its only job is to be *the same key every time*, so v0.6 can replace v0.5
+            // on the phone. Publishing anywhere real needs a proper key from CI secrets, and
+            // that will be a different signing config, not this one with a better password.
+            storeFile = file("keystore/sideload.jks")
+            storePassword = "sideload"
+            keyAlias = "sideload"
+            keyPassword = "sideload"
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
-            // Debug-signed on purpose: this is a sideloaded app with no Play listing, and a
-            // real signing key does not belong in a public repo. Swap in a keystore from CI
-            // secrets when there is something worth signing properly.
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("sideload")
+        }
+        debug {
+            signingConfig = signingConfigs.getByName("sideload")
         }
     }
 

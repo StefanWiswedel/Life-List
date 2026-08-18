@@ -115,6 +115,11 @@ jobs:
           body: |
             Sideload build of Life List ${{ steps.version.outputs.name }}.
 
+            Signed with the repository's sideload key, so this installs *over* the previous
+            version. Builds before v0.5.1 were each signed with a different per-run debug
+            key and could only be installed after uninstalling — if you are coming from one
+            of those, uninstall once and this will be the last time.
+
             **This APK is around 430 MB.** It carries the whole model: a 335 MB fp32
             BioCLIP graph that does its own resizing, because a bilinear resize instead of
             antialiased bicubic costs 8% of predictions and int8 quantisation costs about

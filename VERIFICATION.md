@@ -843,6 +843,32 @@ existed.
 
 Still unrun on a device, as ever.
 
+## 27. Every build was signed with a different key
+
+Installing a new APK over an old one failed and needed an uninstall first. Signature mismatch:
+Android will not let a differently-signed APK replace an installed one, and the release build
+used `signingConfigs.getByName("debug")` — a key Gradle generates **per machine**, so every CI
+run signed with a fresh one.
+
+The reasoning behind that choice was sound and the consequence was not considered. "A real
+signing key does not belong in a public repo" is true; it does not follow that a *random* key
+per build is the alternative.
+
+Fixed by committing a keystore at `app/keystore/sideload.jks`, password `sideload`, in plain
+sight. That looks like a mistake and is not:
+
+- It protects nothing. It is not a Play upload key, it identifies nobody, and the APK it signs
+  is a sideload build from a public repository that anyone can rebuild.
+- Its only job is to be **the same key every time**, so v0.6 can replace v0.5 on the phone.
+- Distributing anywhere real needs a proper key from CI secrets — and that will be a *different*
+  signing config, not this one with a better password. The distinction matters: a secret-backed
+  key that people have got used to seeing committed is worse than no secret at all.
+
+Debug builds use it too, so a locally-built APK and a CI one can also replace each other.
+
+**One more uninstall.** Anything already on the phone was signed by a key that no longer exists,
+so v0.5.1 needs a clean install. Everything after that updates in place.
+
 ---
 
 ## Open questions
