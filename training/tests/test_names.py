@@ -250,3 +250,135 @@ def test_index_length_counts_resolvable_names():
     )
 
     assert len(index) == 3
+
+
+# -- precedence: an exact accepted name beats a contested fallback --------------
+#
+# Found against real GBIF data. Anas crecca carolinensis is accepted under a different
+# key than Anas crecca crecca, which made the *binomial* an unsafe guess — and the old
+# index let that poison the exact accepted name too. 347 Danish species were refused,
+# among them teal, bullfinch, common frog and chanterelle: 17% of the training photos.
+
+
+def contested_index() -> SynonymIndex:
+    index = SynonymIndex()
+    index.add("Anas crecca", 8214667)  # accepted, unambiguous
+    index.add("Anas crecca crecca", 8214667)
+    index.add("Anas crecca nimia", 8214667)
+    index.add("Anas crecca carolinensis", 2498125)  # a different accepted taxon
+    return index
+
+
+def test_an_exact_accepted_name_resolves_though_its_subspecies_disagree():
+    assert contested_index().resolve("Anas crecca") == 8214667
+
+
+def test_such_a_name_is_not_reported_as_ambiguous():
+    assert not contested_index().is_ambiguous("Anas crecca")
+
+
+def test_the_binomial_is_still_unsafe_to_reach_by_fallback():
+    """An unknown trinomial must not be guessed onto a contested binomial."""
+    index = SynonymIndex()
+    index.add("Anas crecca crecca", 8214667)
+    index.add("Anas crecca carolinensis", 2498125)
+
+    assert index.resolve("Anas crecca ssp. nowhere") is None
+    assert "anas crecca" in index.ambiguous_binomials
+
+
+def test_a_true_homonym_still_refuses():
+    """Two accepted taxa, one spelling. Refusing is correct — spec §1.3, never guess."""
+    index = SynonymIndex()
+    index.add("Prunella", 100)  # the plant
+    index.add("Prunella", 200)  # the bird
+
+    assert index.resolve("Prunella") is None
+    assert index.is_ambiguous("Prunella")
+    assert "prunella" in index.ambiguous_names
+
+
+def test_a_homonym_is_not_rescued_by_the_binomial_path():
+    index = SynonymIndex()
+    index.add("Prunella", 100)
+    index.add("Prunella", 200)
+
+    assert index.resolve("Prunella modularis subsp. whatever") is None
+
+
+def test_is_ambiguous_agrees_with_resolve_across_the_index():
+    index = contested_index()
+    index.add("Prunella", 100)
+    index.add("Prunella", 200)
+
+    for name in ("Anas crecca", "Anas crecca crecca", "Prunella", "Unknown name"):
+        refused_for_ambiguity = index.is_ambiguous(name)
+        resolved = index.resolve(name)
+        if refused_for_ambiguity:
+            assert resolved is None, f"{name}: called ambiguous but resolved"
+
+
+# -- strong and weak claims -----------------------------------------------------
+#
+# GBIF publishes duplicate backbone entries. On the Danish list 134 names carry more
+# than one accepted entry; 133 of those pairs sit in the same family and 89 are an
+# ACCEPTED/DOUBTFUL pair. Refusing all of them was refusing GBIF's own answer.
+
+
+def test_an_accepted_entry_beats_a_doubtful_duplicate():
+    index = build_synonym_index(
+        accepted={2426760: "Rana dalmatina", 8252035: "Rana dalmatina"},
+        synonyms=[],
+        doubtful_ids=frozenset({8252035}),
+    )
+
+    assert index.resolve("Rana dalmatina") == 2426760
+    assert not index.is_ambiguous("Rana dalmatina")
+
+
+def test_order_of_addition_does_not_decide_it():
+    """The doubtful entry must lose whether it is seen first or second."""
+    forwards = build_synonym_index(
+        {1: "Helvella crispa", 2: "Helvella crispa"}, [], frozenset({2})
+    )
+    backwards = build_synonym_index(
+        {2: "Helvella crispa", 1: "Helvella crispa"}, [], frozenset({2})
+    )
+
+    assert forwards.resolve("Helvella crispa") == 1
+    assert backwards.resolve("Helvella crispa") == 1
+
+
+def test_two_accepted_entries_of_equal_standing_still_refuse():
+    """Two ACCEPTED entries is a real disagreement. Refusing is the honest answer."""
+    index = build_synonym_index({10: "Prunella", 20: "Prunella"}, [], frozenset())
+
+    assert index.resolve("Prunella") is None
+    assert index.is_ambiguous("Prunella")
+
+
+def test_two_doubtful_entries_also_refuse():
+    index = build_synonym_index({10: "Dubium dubium", 20: "Dubium dubium"}, [], frozenset({10, 20}))
+
+    assert index.resolve("Dubium dubium") is None
+
+
+def test_an_accepted_name_outranks_a_synonym_that_collides_with_it():
+    index = build_synonym_index(
+        accepted={100: "Aster tripolium"},
+        synonyms=[("Aster tripolium", 200)],
+    )
+
+    assert index.resolve("Aster tripolium") == 100
+
+
+def test_a_synonym_still_resolves_when_nothing_contests_it():
+    index = build_synonym_index({100: "Tripolium pannonicum"}, [("Aster tripolium", 100)])
+
+    assert index.resolve("Aster tripolium") == 100
+
+
+def test_doubtful_ids_default_to_empty_so_callers_need_not_care():
+    index = build_synonym_index({1: "Bellis perennis"}, [])
+
+    assert index.resolve("Bellis perennis") == 1

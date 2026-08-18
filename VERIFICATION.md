@@ -388,6 +388,68 @@ correct outcome: their coverage was partly other species.
 Stage 3 was re-verified end to end after the fix — 700 photos, four shards, an extension from
 400 to 700 embedding only the 300 new photos, zero duplicates, manifest fully covered.
 
+## 15. The name index was refusing 17% of the training photos
+
+Stage 4 needs the photos labelled with GBIF keys, because the taxonomy tree is GBIF. The
+manifest labels them with **iNaturalist** taxon ids. Nothing in the repo bridges the two —
+there is a BirdNET→GBIF bridge (§3.5) but no iNaturalist→GBIF one, so this had to be measured
+before stage 4 could be written at all.
+
+Bridging by name through `SynonymIndex` matched **83.0%** of the 2,376 manifest taxa. The 17%
+that failed were not obscure: teal, bullfinch, common crossbill, common frog, brown rat,
+chanterelle. That is not a plausible failure rate for a Danish species list, so it was a bug,
+not a fact.
+
+**Two defects, both in `names.py`, both the same mistake — precedence.**
+
+*One.* `Anas crecca carolinensis` is accepted under a different key than `Anas crecca crecca`,
+which correctly makes the **binomial unsafe to reach by fallback** from an unknown trinomial.
+But the old index stored that in the same `_ambiguous` set the exact-name lookup consults, so
+`resolve("Anas crecca")` refused — despite *Anas crecca* being an accepted name with exactly one
+key. A fact about the fallback was poisoning the direct hit. Split into two sets; exact accepted
+names now win. **83.0% → 93.1%.**
+
+*Two.* GBIF publishes duplicate backbone entries. On this list 134 names carry more than one
+accepted entry — but **133 of those pairs sit in the same family**, and 89 are an
+ACCEPTED/DOUBTFUL pair where the doubtful entry has two orders of magnitude fewer occurrences
+(*Rana dalmatina*: 6,210 against 54). Exactly **one** is a genuine cross-kingdom homonym.
+Refusing all 134 was refusing GBIF's own answer.
+
+Claims are now strong or weak. A DOUBTFUL entry and a synonym are weak; they lose a collision
+rather than causing one, and only two claims of equal standing make a name ambiguous. That one
+real homonym still refuses. **93.1% → 97.2%.**
+
+This is not a softening of "never guess a taxon". Reading the status field GBIF publishes for
+exactly this purpose is not guessing. Two ACCEPTED entries still refuse, and there is a test
+that says so.
+
+| | matched | photos dropped |
+|---|---|---|
+| as found | 83.0% | 56,974 (17.1%) |
+| exact name beats contested fallback | 93.1% | 22,978 (6.9%) |
+| ACCEPTED beats DOUBTFUL, synonyms weak | **97.2%** | **9,243 (2.8%)** |
+
+The BirdNET bridge resolves through the same index, so its match rate improves too — unmeasured
+until the labels file is in the repo.
+
+**What still does not bridge, and why it is a decision rather than a bug.** 54 taxa remain
+unmatched and 13 ambiguous.
+
+| rank | count | |
+|---|---|---|
+| species | 32 | genuine misses, and 12 more with two equal ACCEPTED entries |
+| genus | 14 | *Carabus*, *Cepaea*, *Syrphus* — observations identified only to genus |
+| hybrid | 4 | correctly refused; §1.3 forbids resolving a hybrid to a parent |
+| subgenus / complex | 4 | ranks the spec does not model |
+
+The genus-rank rows are the interesting ones. iNaturalist observers frequently stop at genus,
+and stage 1 fetched **species only** (all 19,998 are rank `species`), so a genus label has
+nothing to match against. Whether the model should have genus-level leaves — so "a *Carabus*,
+species indeterminate" is a trainable class rather than discarded data — is a real fork, and
+BUILD.md §8 says to raise those rather than invent them.
+
+*Needs your call — added to the open questions below.*
+
 ---
 
 ## Open questions
@@ -396,5 +458,10 @@ Stage 3 was re-verified end to end after the fix — 700 photos, four shards, an
    default until benchmarked on your actual Pixel 6a?
 2. **Backbone checkpoint.** Spend one Colab session comparing `bioclip` against
    `bioclip-vit-b-16-inat-only` before committing?
-3. **The 1.5 s budget.** If an INT8 ViT-B/16 on CPU misses it on a Tensor G1, which gives —
+3. **Genus-level leaves.** 14 manifest taxa are genus-rank observations with no species
+   attached, and stage 1 fetched species only. Should a genus be a trainable leaf where the
+   data supports it — making "a *Carabus*" an answer the model can give directly rather than
+   only by rollup — or should genus-only observations be discarded? The rollup already returns
+   genus-level answers, so this is about training signal, not about display.
+4. **The 1.5 s budget.** If an INT8 ViT-B/16 on CPU misses it on a Tensor G1, which gives —
    the budget, the resolution, or the backbone?
