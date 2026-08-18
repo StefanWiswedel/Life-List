@@ -61,6 +61,28 @@ class IndeterminateLeafTest {
     }
 
     @Test
+    fun `it is not reported as a species-level determination`() {
+        // Found by building the result screen: the app said "Confident at species level"
+        // about a specimen it had explicitly declined to identify to species.
+        val p = floatArrayOf(0.90f, 0.05f, 0.05f)
+        val answer = Presentation.present(taxonomy, Rollup.rollup(taxonomy, p, threshold = 0.70f))
+
+        assertEquals(AnswerKind.INDETERMINATE, answer.kind)
+        assertTrue(!answer.explanation.contains("species level"))
+        assertTrue(answer.explanation.contains("Carabus"))
+        assertEquals("genus", answer.rankLabel, "the rank determined, not the synthetic node's own")
+    }
+
+    @Test
+    fun `an ordinary species is still reported as one`() {
+        val p = floatArrayOf(0.02f, 0.95f, 0.03f)
+        val answer = Presentation.present(taxonomy, Rollup.rollup(taxonomy, p, threshold = 0.70f))
+
+        assertEquals(AnswerKind.LEAF, answer.kind)
+        assertEquals("Confident at species level.", answer.explanation)
+    }
+
+    @Test
     fun `presentation never renders it as a bare genus`() {
         val p = floatArrayOf(0.90f, 0.05f, 0.05f)
         val answer = Presentation.present(taxonomy, Rollup.rollup(taxonomy, p, threshold = 0.70f))

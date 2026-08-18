@@ -28,6 +28,16 @@ enum class AnswerKind {
     /** Landed on a leaf — the deepest thing the taxonomy models. */
     LEAF,
 
+    /**
+     * Landed on an indeterminate leaf — `Carabus sp.`, spec §1.1a.
+     *
+     * Structurally a leaf, and rank `species`, but it is a *genus-level* determination.
+     * Treating it as [LEAF] made the app say "confident at species level" about a
+     * specimen it had explicitly declined to identify to species, which is the exact
+     * overclaim this whole app exists to avoid. Caught by building the screen.
+     */
+    INDETERMINATE,
+
     /** Stopped above the leaves. The interesting case, and the reason this app exists. */
     HIGHER_RANK,
 
@@ -145,10 +155,20 @@ object Presentation {
      * rather than invent them, and final copy is a fork. They live in one place so changing
      * them is one edit and one test.
      */
-    fun explain(kind: AnswerKind, rank: String, threshold: Float): String =
+    fun explain(
+        kind: AnswerKind,
+        rank: String,
+        threshold: Float,
+        parentName: String? = null,
+    ): String =
         when (kind) {
             AnswerKind.LEAF ->
                 "Confident at species level."
+
+            AnswerKind.INDETERMINATE ->
+                "Confident to genus${parentName?.let { " — this is a $it" } ?: ""}, and the " +
+                    "species is not determined. That is the answer the evidence supports, " +
+                    "not a shortfall."
 
             AnswerKind.HIGHER_RANK ->
                 "This is a $rank-level answer. The species below it are too close to " +
@@ -170,11 +190,13 @@ object Presentation {
     fun present(taxonomy: Taxonomy, result: RollupResult): Answer {
         val kind = when {
             result.isUnidentified -> AnswerKind.UNIDENTIFIED
+            result.taxonId < 0 -> AnswerKind.INDETERMINATE
             taxonomy.node(result.taxonId).isLeaf -> AnswerKind.LEAF
             else -> AnswerKind.HIGHER_RANK
         }
 
         val node = taxonomy.node(result.taxonId)
+        val parent = node.parentId?.let { taxonomy.node(it) }
         val lineageIds = taxonomy.lineage(result.taxonId)
 
         val candidates = result.candidates.map { candidate ->
@@ -196,8 +218,14 @@ object Presentation {
                 if (kind == AnswerKind.UNIDENTIFIED) emptyList()
                 else styleName(node.scientificName, node.rank),
             vernacular = if (kind == AnswerKind.UNIDENTIFIED) null else node.vernacularEn,
-            rankLabel = if (kind == AnswerKind.HIGHER_RANK) result.rank else null,
-            explanation = explain(kind, result.rank, result.threshold),
+            rankLabel = when (kind) {
+                AnswerKind.HIGHER_RANK -> result.rank
+                // The useful label is the rank actually determined, not the synthetic
+                // node's own `species`.
+                AnswerKind.INDETERMINATE -> parent?.rank
+                else -> null
+            },
+            explanation = explain(kind, result.rank, result.threshold, parent?.scientificName),
             confidence = confidence(result.probability),
             lineage = lineageIds.map { id ->
                 val step = taxonomy.node(id)
