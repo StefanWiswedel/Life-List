@@ -36,7 +36,8 @@ When trading off, trade in favour of a record being keepable at the rank the evi
 | Gradle wrapper | added 17 Aug 2026 — it had never been committed, so CI had never run |
 | stage 3 (`lifelist-embed`) | written, resumable, run against real BioCLIP + S3 |
 | stage 4 (`head.py`) | written, trained, first numbers in RESULTS.md |
-| stages 5–6 (eval, export) | not written |
+| stage 6 (`export.py`) | written; fp32 ONNX exact, int8 rejected — VERIFICATION.md §21 |
+| stage 5 (eval) | partial — metrics live in `head.py`, no per-group table yet |
 | `app/` — Android | **shell + camera, builds a real APK** (18 Aug 2026) — no model yet |
 | release workflow | tag `v*` → GitHub Release with an APK attached |
 
@@ -102,6 +103,8 @@ better there, since free Colab disconnects near 90 minutes and it takes 30–90.
 - Audio: **BirdNET V3.0, pinned**. ONNX (one runtime), CC BY-SA, covers insects and amphibians —
   the vision model's blind spot.
 - Inference: **CPU execution provider**, tuned threads. NNAPI is deprecated as of Android 15.
+- Precision: **fp32, not int8** — measured at 196 ms/image on two weak cores, so the 1.5 s budget
+  is not binding, and int8 changes ~6% of identifications (§21).
 - UI: **English only**. Danish vernaculars stored but not surfaced.
 - Target: Pixel 9a (Tensor G4), minSdk 29, targetSdk 35.
 - **Genus is a trainable leaf** where genus-only observations support it, via a synthetic

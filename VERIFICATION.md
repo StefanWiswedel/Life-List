@@ -618,6 +618,58 @@ the refinement.
 
 `design/identify-and-refine.html` is all three.
 
+## 21. Export: int8 costs more than the budget saves — 18 Aug 2026
+
+Stage 6 exports BioCLIP's image tower to ONNX and then checks that the export still computes
+what torch computed. The check earned itself immediately.
+
+| variant | size | ms/image (2 weak cores) | min cosine vs torch | top-1 agreement |
+|---|---|---|---|---|
+| fp32 | 329 MB | 196 | **1.00000** | **100%** |
+| int8 dynamic, per-tensor | 84 MB | 74 | 0.918 | 93.8% |
+| int8 dynamic, per-channel | 84 MB | 72 | 0.915 | 90.6% |
+| fp16 | 165 MB | impractical | — | — |
+
+**fp32 is exact.** Not "close": cosine 1.00000 to five places on all 32 real photos, and the head
+picks the same class every time.
+
+**int8 changes roughly one identification in fifteen.** Per-channel quantisation, the usual fix
+for transformers, did not help — marginally better cosine, slightly worse agreement.
+
+**fp16 is a dead end on CPU.** ONNX Runtime's CPU provider has no native fp16 kernels, so it
+inserts casts around every operator; the parity run did not finish in fifteen minutes against
+fp32's six seconds. Half the size, many times the latency.
+
+### The §4.1 budget is not the binding constraint
+
+This is the useful part. §4.1 worried that an INT8 ViT-B/16 might miss 1.5 s, and treated
+quantisation as necessary. Measured: **fp32 runs at 196 ms per image on two throttled Xeon
+cores.** A Tensor G4 has eight and is not throttled. The budget has room; the reason to quantise
+would be APK size, not speed — and paying ~6% of identifications for 245 MB is a bad trade for a
+sideloaded app whose entire argument is not overclaiming.
+
+**Recommendation: ship fp32.** Revisit only if the APK becomes a real obstacle.
+
+### Two methodology notes, because both nearly produced a wrong answer
+
+The first parity run used **random normal tensors** as input and reported int8 top-1 agreement of
+16.7%. That was an artefact: random noise is nothing like a CLIP-normalised photograph, and the
+comparison also skipped the L2 normalisation the head was trained behind. Re-run on 32 real
+iNaturalist photos with normalisation applied, the true figure is 93.8%. A parity harness fed
+synthetic inputs measures the harness.
+
+**"Top-1 agreement" is not "accuracy loss".** A disagreement can move either way, and 6% of
+predictions changing might cost 6 points or none. Measuring the real delta means embedding a test
+split through the int8 graph and re-running stage 5 — worth doing before any decision to quantise,
+and not worth doing to justify shipping fp32, which is exact.
+
+### Also fixed here
+
+The first export traced at batch 1, which folded the batch dimension into the attention reshapes.
+It ran at batch 1 and threw at batch 5 — exactly the size the app uses for multi-photo fusion, so
+the failure would have appeared only on the feature the export exists to serve. Traced at batch 2
+now, and the parity harness runs batches 1, 5 and 24 before it reports anything.
+
 ---
 
 ## Open questions
