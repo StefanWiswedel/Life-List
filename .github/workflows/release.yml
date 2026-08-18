@@ -55,6 +55,30 @@ jobs:
       - name: Rollup parity must hold before anything ships
         run: ./gradlew :core:test --no-daemon
 
+      # The 335 MB model is not in the repo. It is rebuilt here from the 4 MB head and a
+      # pinned public checkpoint, so a release APK is reproducible from source rather than
+      # a binary someone once made and nobody can regenerate.
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Cache the BioCLIP checkpoint
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/huggingface
+          key: bioclip-v1
+
+      - name: Export the model
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e 'training[torch,export]' --extra-index-url https://download.pytorch.org/whl/cpu
+          lifelist-export \
+            --head shared/model/head.npz \
+            --meta shared/model/model_meta.json \
+            --out app/src/main/assets/lifelist.onnx -v
+          cp shared/model/taxonomy.json shared/model/model_meta.json app/src/main/assets/
+          ls -lh app/src/main/assets/
+
       - name: Build release APK
         run: |
           ./gradlew :app:assembleRelease --no-daemon \
@@ -81,6 +105,11 @@ jobs:
           generate_release_notes: true
           body: |
             Sideload build of Life List ${{ steps.version.outputs.name }}.
+
+            **This APK is around 430 MB.** It carries the whole model: a 335 MB fp32
+            BioCLIP graph that does its own resizing, because a bilinear resize instead of
+            antialiased bicubic costs 8% of predictions and int8 quantisation costs about
+            6%. Accuracy was worth more than the megabytes.
 
             Signed with the Android debug key, so Android will warn on install and this
             cannot upgrade a differently-signed build. Enable installation from unknown

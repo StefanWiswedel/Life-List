@@ -10,7 +10,9 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,11 +26,21 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun App() {
+    val context = LocalContext.current
     var showingCamera by remember { mutableStateOf(true) }
     var threshold by remember { mutableFloatStateOf(0.70f) }
-    // Rotates through the demo cases so all four answers are reachable on device without a
-    // model. Remove when stage 6 exports one.
+    // Rotates through the demo cases, used only when no model asset is present.
     var caseIndex by remember { mutableIntStateOf(0) }
+
+    // Loading a 335 MB session takes a moment, so it happens off the main thread and the
+    // absence of a model is a state rather than a crash.
+    val loaded by produceState<Loaded?>(initialValue = null) {
+        value = runCatching {
+            val taxonomy = TaxonomyAssets.loadTaxonomy(context)
+            val meta = TaxonomyAssets.loadMeta(context)
+            Loaded(Identifier.openOrNull(context, taxonomy, meta.temperature), meta)
+        }.getOrElse { Loaded(null, null) }
+    }
 
     if (showingCamera) {
         CameraScreen(onCapture = { showingCamera = false })
@@ -41,6 +53,14 @@ fun App() {
                 caseIndex = (caseIndex + 1) % Demo.cases.size
                 showingCamera = true
             },
+            modelNote = when {
+                loaded == null -> "Loading model…"
+                loaded?.identifier != null ->
+                    "Model ${loaded?.meta?.version ?: "?"} · ${loaded?.meta?.nTaxa ?: 0} taxa"
+                else -> "No model in this build — showing example results"
+            },
         )
     }
 }
+
+data class Loaded(val identifier: Identifier?, val meta: TaxonomyAssets.Meta?)

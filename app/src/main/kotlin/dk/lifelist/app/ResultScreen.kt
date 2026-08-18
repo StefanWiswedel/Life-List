@@ -62,6 +62,7 @@ fun ResultScreen(
     onThresholdChange: (Float) -> Unit,
     onRetake: () -> Unit,
     modifier: Modifier = Modifier,
+    modelNote: String? = null,
 ) {
     Column(
         modifier
@@ -84,6 +85,10 @@ fun ResultScreen(
             contentAlignment = Alignment.Center,
         ) {
             Text("TAKE ANOTHER PHOTO", style = Type.field.copy(color = Ink.Rust))
+        }
+        if (modelNote != null) {
+            Spacer(Modifier.height(14.dp))
+            Text(modelNote.uppercase(), style = Type.field)
         }
         Spacer(Modifier.height(28.dp))
     }

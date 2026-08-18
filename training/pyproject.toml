@@ -19,7 +19,7 @@ dependencies = [
 # Heavy, Colab-side only. The rollup/fusion core deliberately depends on numpy alone
 # so its tests run anywhere in seconds.
 torch = ["torch>=2.2", "open_clip_torch>=2.24", "pillow>=10.2"]
-export = ["onnx>=1.16", "onnxruntime>=1.17"]
+export = ["onnx>=1.16", "onnxruntime>=1.17", "onnxscript>=0.1", "open_clip_torch>=2.24"]
 dev = ["pytest>=8.0", "pytest-cov>=4.1", "ruff>=0.4"]
 
 [project.scripts]
@@ -32,6 +32,7 @@ lifelist-images = "lifelist_train.cli.images:main"
 # is pure and tested without it — so the entry point is declared and `--dry-run` works
 # on a machine with no GPU and no torch.
 lifelist-embed = "lifelist_train.cli.embed:main"
+lifelist-export = "lifelist_train.cli.export:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

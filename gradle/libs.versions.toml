@@ -7,6 +7,7 @@ activity-compose = "1.9.3"
 lifecycle = "2.8.7"
 compose-bom = "2024.10.01"
 camerax = "1.4.0"
+onnxruntime = "1.20.0"
 accompanist-permissions = "0.36.0"
 
 [libraries]
@@ -27,6 +28,7 @@ camerax-camera2 = { module = "androidx.camera:camera-camera2", version.ref = "ca
 camerax-lifecycle = { module = "androidx.camera:camera-lifecycle", version.ref = "camerax" }
 camerax-view = { module = "androidx.camera:camera-view", version.ref = "camerax" }
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist-permissions" }
+onnxruntime-android = { module = "com.microsoft.onnxruntime:onnxruntime-android", version.ref = "onnxruntime" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

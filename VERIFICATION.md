@@ -709,6 +709,37 @@ attempt failed the ONNX checker. Better than passing.
 **Softmax and temperature stay outside the graph.** The threshold is adjustable at display time
 (§4.4), and baking a temperature in would freeze at export something the user is meant to move.
 
+## 23. The model ships through CI, not through a file transfer
+
+A 433 MB APK cannot be handed over this session's bridge — 20 MB per file, 30 MB per upload —
+and a 335 MB `.onnx` should not be committed either. Both problems have the same answer: **the
+repo carries the 4 MB head and the taxonomy, and CI rebuilds the model.**
+
+| committed | size |
+|---|---|
+| `shared/model/head.npz` | 4.1 MB |
+| `shared/model/taxonomy.json` | 743 KB |
+| `shared/model/model_meta.json` | 684 B |
+| `app/src/main/assets/lifelist.onnx` | **gitignored — built by CI** |
+
+`lifelist-export` rebuilds the 335 MB graph from those plus a pinned public checkpoint, so a
+release APK is reproducible from source rather than a binary someone once made and nobody can
+regenerate. The BioCLIP download is cached between runs.
+
+**The app degrades rather than crashes without a model.** `android.yml` runs on every push and
+does not spend five minutes exporting; that APK has no model asset, so `Identifier.openOrNull`
+returns null, the demo cases are shown, and the screen says *"No model in this build"*. A missing
+asset should not make every push look broken.
+
+**Built and verified here:** debug APK **433 MB**, assembles cleanly with the 335 MB asset,
+`noCompress "onnx"` so ONNX Runtime can map it out of the APK instead of inflating it to disk on
+first run.
+
+**Still unverified, and it is the important part.** No line of `Identifier.kt` has run. The
+session opens, the tensor is built, the rollup is called — on a device none of which has happened.
+Compilation is not correctness, and this is the last link in the chain that only Stefan's Pixel
+can close.
+
 ---
 
 ## Open questions

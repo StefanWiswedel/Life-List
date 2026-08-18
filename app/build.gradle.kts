@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -33,6 +34,18 @@ android {
     }
     kotlin { jvmToolchain(17) }
     buildFeatures { compose = true }
+
+    androidResources {
+        // The model must stay uncompressed so ONNX Runtime can memory-map it straight out
+        // of the APK. Compressed, a 350 MB asset would be inflated to disk on first run —
+        // slow, and it would double the storage the app occupies.
+        noCompress += "onnx"
+    }
+
+    packaging {
+        // A 350 MB asset pushes past the legacy zip layout.
+        jniLibs { useLegacyPackaging = false }
+    }
 }
 
 dependencies {
@@ -52,4 +65,6 @@ dependencies {
     implementation(libs.camerax.lifecycle)
     implementation(libs.camerax.view)
     implementation(libs.accompanist.permissions)
+    implementation(libs.onnxruntime.android)
+    implementation(libs.kotlinx.serialization.json)
 }
