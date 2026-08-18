@@ -63,3 +63,11 @@ object Demo {
         Case("Nothing defensible", floatArrayOf(0.16f, 0.12f, 0.10f, 0.09f, 0.08f, 0.18f, 0.12f, 0.09f, 0.06f)),
     )
 }
+
+
+/** The demo answer, kept out of ResultScreen so the screen has no idea it exists. */
+fun answerFor(probabilities: FloatArray, threshold: Float) =
+    dk.lifelist.core.Presentation.present(
+        Demo.taxonomy,
+        dk.lifelist.core.Rollup.rollup(Demo.taxonomy, probabilities, threshold),
+    )

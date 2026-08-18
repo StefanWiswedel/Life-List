@@ -804,6 +804,45 @@ repository, and the bucket stays the canonical copy.
 BUILD.md §8 called attribution a real obligation. This is where it stopped being a note: the
 credits ride into the app beside the images, so nothing has to ask the network who took a photo.
 
+## 26. The warm rewrite, and the life list
+
+`ResultScreen.kt` rewritten to the direction in `design/result-screen-warm.html`, and
+`LifeListScreen.kt` added.
+
+**The result screen leads with the photograph and the common name.** Your photo beside the
+reference, one sentence, confidence as a ring whose colour says whether the app stopped short on
+purpose — green for a species, amber for a rank above it. The taxonomic key and the full
+candidate list are behind a tap: nothing honest was removed, it stopped leading with apparatus.
+
+The keep button **says what it will keep and at what rank**: "Add to my list" for a species,
+"Keep as *Carabus*" for a genus. Nobody should have to guess which of those they are about to
+save, and this is the screen where §19's whole argument either shows up or does not.
+
+Reference photo credit sits under the sentence, on every screen that shows one. CC-BY is not
+satisfied by a credits page nobody opens.
+
+**The life list is grouped, and counts three numbers.** Grouped the way Seek groups, because
+that part of Seek is right — seeing forty insects and no amphibians is what sends someone
+looking for amphibians, so empty groups are kept and say so rather than being hidden.
+
+What is not like Seek: a record kept at genus is *in* the list, in its group, counted. The header
+carries **records / to species / to genus or above**, never a single score, because collapsing
+them is precisely how a life list becomes a leaderboard — which §7 rules out and §19 finally
+gives a reason for.
+
+`LifeList.kt` in `core` holds all of it: grouping, the three totals, browsing everything under a
+node, and refinement. 15 tests, and the ones that matter are the counting rules — that an
+indeterminate leaf is not a species tick, that ten photographs of one mallard is one taxon, that
+browsing a family shows both the species record and the genus one, and that refining upward or
+sideways is refused.
+
+**Storage is a JSON file and a photo directory, not a database.** Hundreds of rows on a personal
+device; Room would be a schema, a migration story and a DAO in exchange for nothing. Writes are
+atomic, because a life list that loses records to a mid-write kill is worse than one that never
+existed.
+
+Still unrun on a device, as ever.
+
 ---
 
 ## Open questions

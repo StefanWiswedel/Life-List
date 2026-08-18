@@ -1,13 +1,10 @@
 package dk.lifelist.app
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,43 +12,55 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import android.graphics.Bitmap
 import dk.lifelist.core.Answer
 import dk.lifelist.core.AnswerKind
 import dk.lifelist.core.NameRun
-import dk.lifelist.core.Presentation
 
 /**
- * The result screen — the one screen this app exists for.
+ * The result screen, warm direction.
  *
- * Everything shown is computed by `:core`. This file decides nothing about *what* to say;
- * it only lays out an [Answer]. That separation is the point: the wording and the
- * italicisation are tested in `core`, where a test can reach them.
+ * Your photo beside a reference, the common name as the headline, one sentence. Nothing
+ * honest was removed — the taxonomic key and the full candidate list are a tap away — it
+ * simply stopped leading with apparatus. `design/result-screen-warm.html` is the reference.
+ *
+ * Decides nothing. Everything here comes from `dk.lifelist.core.Presentation`, so there is
+ * one implementation of what the app says and it is the tested one.
  */
 
 /** §1.2 typography: italic runs stay italic, `sp.` stays roman. */
 fun List<NameRun>.annotated(): AnnotatedString = buildAnnotatedString {
     this@annotated.forEachIndexed { index, run ->
         if (index > 0) append(" ")
-        if (run.italic) {
-            withStyle(SpanStyle(fontStyle = FontStyle.Italic)) { append(run.text) }
-        } else {
-            append(run.text)
-        }
+        if (run.italic) withStyle(SpanStyle(fontStyle = FontStyle.Italic)) { append(run.text) }
+        else append(run.text)
     }
 }
 
@@ -61,172 +70,191 @@ fun ResultScreen(
     threshold: Float,
     onThresholdChange: (Float) -> Unit,
     onRetake: () -> Unit,
+    onKeep: () -> Unit,
+    onOpenList: () -> Unit,
+    photo: Bitmap?,
+    reference: Bitmap?,
+    referenceCredit: ReferencePhotos.Credit?,
+    modelNote: String?,
+    kept: Boolean,
     modifier: Modifier = Modifier,
-    modelNote: String? = null,
 ) {
+    var showCandidates by remember { mutableStateOf(answer.kind != AnswerKind.LEAF) }
+    var showKey by remember { mutableStateOf(false) }
+
     Column(
         modifier
             .fillMaxSize()
-            .background(Ink.Bone)
+            .background(Warm.Paper)
             .safeDrawingPadding()
             .verticalScroll(rememberScrollState())
-            .padding(horizontal = 20.dp, vertical = 24.dp)
+            .padding(16.dp)
     ) {
-        SpecimenLabel(answer)
-        Spacer(Modifier.height(22.dp))
-        ThresholdControl(threshold, onThresholdChange)
-        Spacer(Modifier.height(18.dp))
-        Box(
+        Column(
             Modifier
                 .fillMaxWidth()
-                .border(1.dp, Ink.RuleStrong)
-                .clickable(onClick = onRetake)
-                .padding(horizontal = 18.dp, vertical = 14.dp),
-            contentAlignment = Alignment.Center,
+                .clip(RoundedCornerShape(24.dp))
+                .background(Warm.Card)
         ) {
-            Text("TAKE ANOTHER PHOTO", style = Type.field.copy(color = Ink.Rust))
-        }
-        if (modelNote != null) {
-            Spacer(Modifier.height(14.dp))
-            Text(modelNote.uppercase(), style = Type.field)
-        }
-        Spacer(Modifier.height(28.dp))
-    }
-}
+            PhotoPair(photo, reference)
 
-@Composable
-private fun SpecimenLabel(answer: Answer) {
-    Column(
-        Modifier
-            .fillMaxWidth()
-            .background(Ink.Surface)
-            .border(1.dp, Ink.RuleStrong)
-            .padding(20.dp)
-    ) {
-        Text("DET.", style = Type.field)
-        Spacer(Modifier.height(6.dp))
+            Column(Modifier.padding(18.dp)) {
+                Row(verticalAlignment = Alignment.Top) {
+                    ConfidenceRing(
+                        fraction = if (answer.kind == AnswerKind.UNIDENTIFIED) null
+                        else answer.confidence.barFraction,
+                        colour = Warm.ringColour(answer.kind),
+                    )
+                    Spacer(Modifier.width(14.dp))
+                    Column {
+                        Text(headline(answer), style = Warm.display)
+                        if (answer.scientificName.isNotEmpty()) {
+                            Text(answer.scientificName.annotated(), style = Warm.latin)
+                        }
+                    }
+                }
 
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                if (answer.kind == AnswerKind.UNIDENTIFIED) AnnotatedString("No determination")
-                else answer.scientificName.annotated(),
-                style = Type.displayName.copy(
-                    color = if (answer.kind == AnswerKind.UNIDENTIFIED) Ink.InkSoft else Ink.Ink
-                ),
-                modifier = Modifier.weight(1f, fill = false),
-            )
-            Spacer(Modifier.width(8.dp))
-            RankMark(answer)
-        }
+                Spacer(Modifier.height(14.dp))
+                Text(answer.explanation, style = Warm.body)
 
-        answer.vernacular?.let {
-            Spacer(Modifier.height(2.dp))
-            Text(it, style = Type.vernacular)
-        }
+                referenceCredit?.let {
+                    CreditLine(it.credit, it.licence)
+                }
 
-        Spacer(Modifier.height(16.dp))
-        Confidence(answer)
+                Spacer(Modifier.height(16.dp))
 
-        Spacer(Modifier.height(16.dp))
-        Row(Modifier.height(IntrinsicSize.Min)) {
-            Box(Modifier.width(2.dp).fillMaxHeight().background(Ink.Sage))
-            Spacer(Modifier.width(12.dp))
-            Text(answer.explanation, style = Type.body)
-        }
+                Disclosure(
+                    title = if (answer.kind == AnswerKind.LEAF) "Other possibilities"
+                    else "Which one might it be?",
+                    open = showCandidates,
+                    onToggle = { showCandidates = !showCandidates },
+                ) {
+                    answer.candidates.forEach { candidate ->
+                        Row(
+                            Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                            verticalAlignment = Alignment.Top,
+                        ) {
+                            Column(Modifier.weight(1f)) {
+                                Text(
+                                    candidate.name.annotated(),
+                                    style = Warm.latin.copy(
+                                        color = if (candidate.withinAnswer) Warm.Ink else Warm.Soft,
+                                        fontSize = 15.sp,
+                                    ),
+                                )
+                                candidate.vernacular?.let {
+                                    Text(it, style = Warm.body.copy(fontSize = 13.sp, color = Warm.Soft))
+                                }
+                                if (!candidate.withinAnswer) {
+                                    Text(
+                                        "OTHER BRANCH",
+                                        style = Warm.label.copy(color = Warm.Ochre, fontSize = 10.sp),
+                                    )
+                                }
+                            }
+                            Text(
+                                candidate.confidence.percent,
+                                style = Warm.figure.copy(color = Warm.Soft, fontSize = 14.sp),
+                            )
+                        }
+                        Hairline()
+                    }
+                }
 
-        Spacer(Modifier.height(20.dp))
-        Hairline()
-        Spacer(Modifier.height(16.dp))
-        Text("TAXONOMIC KEY", style = Type.field)
-        Spacer(Modifier.height(8.dp))
-        answer.lineage.forEachIndexed { depth, step ->
-            Row(Modifier.padding(vertical = 2.dp)) {
-                Text(
-                    rankAbbreviation(step.rank),
-                    style = Type.small.copy(color = if (step.isAnswer) Ink.Rust else Ink.RuleStrong),
-                    modifier = Modifier.width(56.dp),
-                )
-                Spacer(Modifier.width((depth * 8).dp))
-                Text(
-                    step.name.annotated(),
-                    style = Type.body.copy(color = if (step.isAnswer) Ink.Ink else Ink.InkSoft),
-                )
+                Disclosure("Where this sits", showKey, { showKey = !showKey }) {
+                    answer.lineage.forEachIndexed { depth, step ->
+                        Row(Modifier.padding(vertical = 3.dp)) {
+                            Spacer(Modifier.width((depth * 10).dp))
+                            Text(
+                                step.name.annotated(),
+                                style = Warm.body.copy(
+                                    fontSize = 15.sp,
+                                    color = if (step.isAnswer) Warm.Ink else Warm.Soft,
+                                    fontWeight = if (step.isAnswer) FontWeight.SemiBold
+                                    else FontWeight.Normal,
+                                ),
+                            )
+                        }
+                    }
+                }
             }
         }
+
+        Spacer(Modifier.height(14.dp))
+
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            WarmButton(
+                // The button says what will be kept, at the rank it will be kept at. Nobody
+                // should have to guess whether "add" means the species or the genus.
+                text = if (kept) "Kept" else keepLabel(answer),
+                primary = !kept,
+                onClick = onKeep,
+                modifier = Modifier.weight(1f),
+            )
+            WarmButton("Retake", primary = false, onClick = onRetake, modifier = Modifier.weight(1f))
+        }
+
+        Spacer(Modifier.height(10.dp))
+        WarmButton("My list", primary = false, onClick = onOpenList, modifier = Modifier.fillMaxWidth())
 
         Spacer(Modifier.height(18.dp))
-        Hairline()
-        Spacer(Modifier.height(16.dp))
-        Text("LEAF CANDIDATES", style = Type.field)
-        Spacer(Modifier.height(8.dp))
-        answer.candidates.forEach { candidate ->
-            Row(
-                Modifier.fillMaxWidth().padding(vertical = 6.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Top,
-            ) {
-                Column(Modifier.weight(1f)) {
-                    Text(
-                        candidate.name.annotated(),
-                        style = Type.body.copy(
-                            color = if (candidate.withinAnswer) Ink.Ink else Ink.InkSoft
-                        ),
-                    )
-                    // Spec §4.3 — a runner-up outside the returned node is marked, never hidden.
-                    if (!candidate.withinAnswer && answer.kind != AnswerKind.UNIDENTIFIED) {
-                        Text("OTHER BRANCH", style = Type.field.copy(color = Ink.Ochre))
-                    }
-                    candidate.vernacular?.let { Text(it, style = Type.small) }
-                }
-                Text(candidate.confidence.percent, style = Type.small.copy(color = Ink.Ink))
-            }
-            Hairline()
+        ThresholdControl(threshold, onThresholdChange)
+
+        modelNote?.let {
+            Spacer(Modifier.height(14.dp))
+            Text(it, style = Warm.label)
+        }
+        Spacer(Modifier.height(24.dp))
+    }
+}
+
+private fun headline(answer: Answer): String = when {
+    answer.kind == AnswerKind.UNIDENTIFIED -> "Not sure enough to say"
+    answer.vernacular != null -> answer.vernacular!!
+    // No common name — the Latin becomes the headline rather than leaving a blank, but the
+    // rank still reads in plain words where there is one.
+    answer.rankLabel != null -> "A ${answer.rankLabel}"
+    else -> answer.scientificName.joinToString(" ") { it.text }
+}
+
+private fun keepLabel(answer: Answer): String = when (answer.kind) {
+    AnswerKind.UNIDENTIFIED -> "Keep without a name"
+    AnswerKind.LEAF -> "Add to my list"
+    else -> "Keep as ${answer.scientificName.joinToString(" ") { it.text }}"
+}
+
+@Composable
+private fun PhotoPair(photo: Bitmap?, reference: Bitmap?) {
+    Row(Modifier.fillMaxWidth().height(170.dp)) {
+        PhotoTile(photo, "YOURS", Modifier.weight(1f))
+        if (reference != null) {
+            Spacer(Modifier.width(2.dp))
+            PhotoTile(reference, "REFERENCE", Modifier.weight(1f))
         }
     }
 }
 
 @Composable
-private fun RankMark(answer: Answer) {
-    val (label, colour) = when (answer.kind) {
-        AnswerKind.LEAF -> "SPECIES" to Ink.Sage
-        AnswerKind.INDETERMINATE -> "${answer.rankLabel?.uppercase()} · INDET." to Ink.Ochre
-        AnswerKind.HIGHER_RANK -> (answer.rankLabel ?: answer.rank).uppercase() to Ink.Ochre
-        AnswerKind.UNIDENTIFIED -> "UNRESOLVED" to Ink.InkSoft
-    }
-    Text(
-        label,
-        style = Type.field.copy(color = colour),
-        modifier = Modifier.border(1.dp, colour).padding(horizontal = 6.dp, vertical = 3.dp),
-    )
-}
-
-@Composable
-private fun Confidence(answer: Answer) {
-    // A refusal returns root, whose probability is always 1.0. "No determination — 100%" is
-    // the most misleading thing this screen could say, so it shows nothing.
-    val unresolved = answer.kind == AnswerKind.UNIDENTIFIED
-    Row(verticalAlignment = Alignment.CenterVertically) {
+private fun PhotoTile(bitmap: Bitmap?, label: String, modifier: Modifier = Modifier) {
+    Box(modifier.fillMaxSize().background(Color(0xFFE8E0D2))) {
+        bitmap?.let {
+            Image(
+                bitmap = it.asImageBitmap(),
+                contentDescription = label,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop,
+            )
+        }
         Text(
-            if (unresolved) "—" else answer.confidence.percent,
-            style = Type.figure.copy(color = if (unresolved) Ink.InkSoft else Ink.Ink),
+            label,
+            style = Warm.label.copy(color = Warm.Ink),
+            modifier = Modifier
+                .padding(8.dp)
+                .clip(RoundedCornerShape(999.dp))
+                .background(Color(0xE6FFFFFF))
+                .padding(horizontal = 9.dp, vertical = 4.dp),
         )
-        Spacer(Modifier.width(14.dp))
-        Box(Modifier.weight(1f).height(3.dp).background(Ink.Rule)) {
-            if (!unresolved) {
-                Box(
-                    Modifier
-                        .fillMaxWidth(answer.confidence.barFraction)
-                        .height(3.dp)
-                        .background(Ink.Rust)
-                )
-            }
-        }
     }
-    Spacer(Modifier.height(6.dp))
-    Text(
-        if (unresolved) "NO NODE CLEARED THE THRESHOLD" else "CONFIDENCE IN THE RETURNED NODE",
-        style = Type.field,
-    )
 }
 
 @Composable
@@ -234,52 +262,26 @@ private fun ThresholdControl(threshold: Float, onChange: (Float) -> Unit) {
     Column(
         Modifier
             .fillMaxWidth()
-            .background(Ink.Surface)
-            .border(1.dp, Ink.RuleStrong)
+            .clip(RoundedCornerShape(20.dp))
+            .background(Warm.Card)
             .padding(16.dp)
     ) {
-        Row(
-            Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text("CONFIDENCE THRESHOLD", style = Type.field)
-            Text("${Math.round(threshold * 100)}%", style = Type.small.copy(color = Ink.Rust))
+        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+            Text("HOW SURE BEFORE IT COMMITS", style = Warm.label)
+            Spacer(Modifier.weight(1f))
+            Text("${Math.round(threshold * 100)}%", style = Warm.figure.copy(color = Warm.Rust))
         }
-        // Spec §4.4 — 0.50 to 0.95, applied at display time so old records re-render honestly.
+        // Spec §4.4 — 0.50 to 0.95, applied at display time, so old records re-render
+        // honestly instead of being rewritten.
         Slider(
             value = threshold,
             onValueChange = onChange,
             valueRange = 0.50f..0.95f,
             colors = SliderDefaults.colors(
-                thumbColor = Ink.Rust,
-                activeTrackColor = Ink.Rust,
-                inactiveTrackColor = Ink.Rule,
+                thumbColor = Warm.Rust,
+                activeTrackColor = Warm.Rust,
+                inactiveTrackColor = Warm.Line,
             ),
         )
     }
 }
-
-@Composable
-private fun Hairline() {
-    Box(Modifier.fillMaxWidth().height(1.dp).background(Ink.Rule))
-}
-
-private fun rankAbbreviation(rank: String) = when (rank) {
-    "root" -> "—"
-    "kingdom" -> "KGD."
-    "phylum" -> "PHY."
-    "class" -> "CL."
-    "order" -> "ORD."
-    "family" -> "FAM."
-    "genus" -> "GEN."
-    "species" -> "SP."
-    "subspecies" -> "SSP."
-    else -> rank.uppercase()
-}
-
-fun answerFor(probabilities: FloatArray, threshold: Float): Answer =
-    Presentation.present(
-        Demo.taxonomy,
-        dk.lifelist.core.Rollup.rollup(Demo.taxonomy, probabilities, threshold),
-    )
