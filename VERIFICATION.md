@@ -670,6 +670,45 @@ It ran at batch 1 and threw at batch 5 — exactly the size the app uses for mul
 the failure would have appeared only on the feature the export exists to serve. Traced at batch 2
 now, and the parity harness runs batches 1, 5 and 24 before it reports anything.
 
+## 22. Preprocessing drift costs as much as quantisation — so it went into the graph
+
+Having just refused int8 because it changed ~6% of identifications, the obvious next question was
+whether anything *else* changes that many. It does, and it is the thing that would have been
+reimplemented by hand on Android.
+
+**Bicubic versus bilinear resize, same photos, same model: 91.7% top-1 agreement, min cosine
+0.915.** That is a bigger effect than int8 quantisation. Android's `Bitmap.createScaledBitmap`
+is bilinear. PIL — which every training embedding went through — is bicubic *with antialiasing
+on downscale*. Two reasonable engineers would have shipped that gap without noticing, and it
+would have presented as "the app is a bit worse than the notebook".
+
+**So preprocessing is not reimplemented; it is exported.** The shipped graph takes raw `uint8`
+NHWC pixels and returns logits:
+
+```
+image_uint8 [batch,h,w,3]
+  -> Cast -> Transpose(NCHW)
+  -> Resize(cubic, antialias, half_pixel, cubic_coeff_a=-0.5) -> 224x224
+  -> /255 -> -mean -> /std
+  -> ViT-B/16 -> LpNormalization -> MatMul(head) + bias
+  -> logits [batch, n_taxa]
+```
+
+Verified against PIL + torch on 20 real photos: **100% argmax agreement, logit correlation
+0.99978.** One file, 350.8 MB, **165 ms per image pixels-to-logits on two throttled cores**.
+
+The app's remaining obligation is a centre crop to a square, which is integer arithmetic and
+cannot drift. That is exact rather than approximate for a nice reason: cropping to a square of
+side `min(w,h)` and then scaling to 224 gives the same pixels as scaling the short side to 224
+and then cropping 224.
+
+`antialias` on Resize requires **opset 18**, so the opset is load-bearing rather than incidental
+— the torch exporter's automatic downgrade to 17 silently removed the attribute, and the first
+attempt failed the ONNX checker. Better than passing.
+
+**Softmax and temperature stay outside the graph.** The threshold is adjustable at display time
+(§4.4), and baking a temperature in would freeze at export something the user is meant to move.
+
 ---
 
 ## Open questions

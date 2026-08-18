@@ -78,8 +78,13 @@ def compare_embeddings(
     )
 
 
-def export_backbone(model_name: str, out_path: Path, opset: int = 17) -> Path:
-    """Trace BioCLIP's image tower to ONNX at the spec's 224×224 input."""
+def export_backbone(model_name: str, out_path: Path, opset: int = 18) -> Path:
+    """Trace BioCLIP's image tower to ONNX at the spec's 224x224 input.
+
+    Opset 18, not 17, because Resize gained `antialias` in 18 and the preprocessing graph
+    needs it: PIL antialiases when downscaling, and a resize that does not changes 8% of
+    predictions (VERIFICATION.md 22). The opset is therefore load-bearing, not incidental.
+    """
     import open_clip
     import torch
 
@@ -113,6 +118,52 @@ def export_backbone(model_name: str, out_path: Path, opset: int = 17) -> Path:
         do_constant_folding=True,
     )
     return out_path
+
+
+def attach_head(
+    backbone: Path, weight: np.ndarray, bias: np.ndarray, dst: Path
+) -> Path:
+    """Append L2-normalisation and the linear head to the backbone graph.
+
+    One session on device instead of two, and — more importantly — one place where the
+    normalisation happens. The head was trained on unit vectors (`embed.l2_normalise`);
+    a Kotlin caller that forgot to normalise would get plausible, wrong logits with
+    nothing to indicate it. Folding it into the graph makes that unforgettable.
+
+    The exported model takes pixels and returns logits. Temperature and softmax stay
+    outside, in Kotlin, because the threshold is adjustable at display time (§4.4) and
+    baking a temperature into the graph would freeze it at export.
+    """
+    import onnx
+    from onnx import TensorProto, helper, numpy_helper
+
+    model = onnx.load(str(backbone))
+    graph = model.graph
+    embedding = graph.output[0].name
+
+    initialisers = [
+        numpy_helper.from_array(np.asarray(weight, dtype=np.float32).T, "head_weight"),
+        numpy_helper.from_array(np.asarray(bias, dtype=np.float32), "head_bias"),
+    ]
+    nodes = [
+        helper.make_node("LpNormalization", [embedding], ["embedding_unit"], axis=1, p=2),
+        helper.make_node("MatMul", ["embedding_unit", "head_weight"], ["head_matmul"]),
+        helper.make_node("Add", ["head_matmul", "head_bias"], ["logits"]),
+    ]
+    graph.initializer.extend(initialisers)
+    graph.node.extend(nodes)
+
+    del graph.output[:]
+    graph.output.extend(
+        [helper.make_tensor_value_info("logits", TensorProto.FLOAT, ["batch", len(bias)])]
+    )
+
+    onnx.checker.check_model(model, full_check=False)
+    dst.parent.mkdir(parents=True, exist_ok=True)
+    # Single file: Android asset loading with a sidecar .data file is an avoidable class
+    # of bug, and 329 MB is well inside protobuf's 2 GB ceiling.
+    onnx.save(model, str(dst))
+    return dst
 
 
 def quantise(src: Path, dst: Path) -> Path:
