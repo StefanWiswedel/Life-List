@@ -79,6 +79,15 @@ jobs:
           cp shared/model/taxonomy.json shared/model/model_meta.json app/src/main/assets/
           ls -lh app/src/main/assets/
 
+      # 2,294 CC-licensed photographs by named people. The index is committed; the bytes
+      # belong to the bucket, and every one carries its photographer into the app.
+      - name: Fetch reference photos
+        run: |
+          lifelist-reference-photos \
+            --index shared/model/reference_photos.json \
+            --out app/src/main/assets/reference -v
+          du -sh app/src/main/assets/reference
+
       - name: Build release APK
         run: |
           ./gradlew :app:assembleRelease --no-daemon \

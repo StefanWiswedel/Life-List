@@ -767,6 +767,43 @@ plainly — "no line of Identifier.kt has run" — and the first thing it did on
 fail. Compiling is not running, and the repo's own rule about not writing code you cannot test
 had been quietly suspended for the Android layer because testing it needs hardware.
 
+## 25. It identified a bush-cricket — and reference photos are ready to ship
+
+v0.4.0 on the Pixel, first real end-to-end identification: **Leptophyes punctatissima at 97%**,
+from a photograph, on the device. The runner-ups were *Tettigonia viridissima*, *Phaneroptera
+falcata*, *Conocephalus dorsalis* and *Decticus verrucivorus* — every one a bush-cricket. The
+embedding space is coherent, not lucky.
+
+The same screenshot showed a defect. All four runner-ups carried an amber **OTHER BRANCH** label,
+because the answer was a leaf and every other candidate is therefore outside it. True, and
+useless: it puts a warning colour on four rows of a confident, correct identification. The flag
+now only appears when the rollup stopped somewhere with room underneath it, which is the only
+case where it means anything.
+
+### Reference photos
+
+Every one of the **2,294 leaves has a reference photograph with a named photographer and a
+licence**. Nothing is uncredited, and a taxon whose credit went missing would be skipped rather
+than shipped uncredited.
+
+| licence | photos |
+|---|---|
+| CC-BY-NC | 1,257 |
+| CC-BY | 853 |
+| CC0 | 142 |
+| CC-BY-NC-SA | 23 |
+| CC-BY-SA | 19 |
+
+Measured: 120 photos at `small` (240 px) is 3.2 MB, so all 2,294 is **~61 MB** and about 40
+seconds of CI at 24 workers.
+
+Same split as the model: the **index is committed** (294 KB — which photo, whose, under what
+licence) and CI fetches the bytes. Other people's photographs are not checked into this
+repository, and the bucket stays the canonical copy.
+
+BUILD.md §8 called attribution a real obligation. This is where it stopped being a note: the
+credits ride into the app beside the images, so nothing has to ask the network who took a photo.
+
 ---
 
 ## Open questions

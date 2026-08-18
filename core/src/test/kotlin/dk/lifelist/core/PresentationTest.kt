@@ -160,6 +160,23 @@ class PresentationTest {
     }
 
     @Test
+    fun `a species answer does not flag every other candidate`() {
+        // Seen on a real identification: Leptophyes punctatissima at 97%, and all four
+        // runner-ups — every one a bush-cricket — carried an amber OTHER BRANCH label.
+        // True, and useless: when the answer is a leaf they always will.
+        val answer = Presentation.present(taxonomy, result(10, "species", 0.97f))
+
+        assertTrue(answer.candidates.all { it.withinAnswer })
+    }
+
+    @Test
+    fun `a genus answer still flags the ones outside it`() {
+        val answer = Presentation.present(taxonomy, result(2, "genus", 0.78f))
+
+        assertFalse(answer.candidates.single { it.taxonId == 12 }.withinAnswer)
+    }
+
+    @Test
     fun `candidate names carry their own vernacular and styling`() {
         val answer = Presentation.present(taxonomy, result(2, "genus", 0.78f))
         val teal = answer.candidates.single { it.taxonId == 11 }

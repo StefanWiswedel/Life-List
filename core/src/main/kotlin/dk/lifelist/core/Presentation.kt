@@ -206,7 +206,14 @@ object Presentation {
                 name = styleName(leaf.scientificName, leaf.rank),
                 vernacular = leaf.vernacularEn,
                 confidence = confidence(candidate.probability),
-                withinAnswer = taxonomy.isAncestorOrSelf(result.taxonId, candidate.taxonId),
+                // When the answer is itself a leaf, every *other* candidate is outside it by
+                // definition, so marking them all says nothing — it just adds a warning
+                // colour to four rows of a confident, correct identification. The flag is
+                // only informative when the rollup stopped somewhere with room underneath.
+                withinAnswer = when (kind) {
+                    AnswerKind.LEAF, AnswerKind.INDETERMINATE -> true
+                    else -> taxonomy.isAncestorOrSelf(result.taxonId, candidate.taxonId)
+                },
             )
         }
 

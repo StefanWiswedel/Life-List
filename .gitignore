@@ -26,3 +26,6 @@ app/build/
 
 # Built by `lifelist-export` from shared/model/head.npz. 335 MB, reproducible, not committed.
 app/src/main/assets/lifelist.onnx
+
+# Fetched by `lifelist-reference-photos` from the committed index.
+app/src/main/assets/reference/
