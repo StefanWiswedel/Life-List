@@ -31,11 +31,12 @@ When trading off, trade in favour of a record being keepable at the rank the evi
 | | |
 |---|---|
 | contracts + spec | done |
-| `training/` — rollup, fusion, audio, splits, names, GBIF, iNat, stages 1–2 | done, 222 tests |
+| `training/` — rollup, fusion, audio, splits, names, GBIF, iNat, stages 1–2 | done, 239 tests |
 | `core/` — Kotlin rollup + golden parity test | **compiles; 5 parity tests pass** (17 Aug 2026) |
 | Gradle wrapper | added 17 Aug 2026 — it had never been committed, so CI had never run |
 | stage 3 (`lifelist-embed`) | written, resumable, run against real BioCLIP + S3 |
-| stages 4–6 (train head, eval, export) | not written — need real embeddings first |
+| stage 4 (`head.py`) | written, trained, first numbers in RESULTS.md |
+| stages 5–6 (eval, export) | not written |
 | `app/` — Android | **shell + camera, builds a real APK** (18 Aug 2026) — no model yet |
 | release workflow | tag `v*` → GitHub Release with an APK attached |
 
