@@ -2,7 +2,10 @@ package dk.lifelist.app
 
 import android.Manifest
 import androidx.camera.core.CameraSelector
+import android.graphics.Bitmap
 import androidx.camera.core.ImageCapture
+import androidx.camera.core.ImageCaptureException
+import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
@@ -23,6 +26,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,12 +53,14 @@ import com.google.accompanist.permissions.rememberPermissionState
  */
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun CameraScreen(onCapture: () -> Unit, modifier: Modifier = Modifier) {
+fun CameraScreen(onCapture: (Bitmap?) -> Unit, modifier: Modifier = Modifier) {
     val permission = rememberPermissionState(Manifest.permission.CAMERA)
+    val capture = remember { mutableStateOf<ImageCapture?>(null) }
+    val context = LocalContext.current
 
     Box(modifier.fillMaxSize().background(Ink.Bone)) {
         if (permission.status.isGranted) {
-            CameraPreview(Modifier.fillMaxSize())
+            CameraPreview(Modifier.fillMaxSize(), onBound = { capture.value = it })
         } else {
             Column(
                 Modifier.fillMaxSize().safeDrawingPadding().padding(28.dp),
@@ -89,7 +95,29 @@ fun CameraScreen(onCapture: () -> Unit, modifier: Modifier = Modifier) {
                 .clip(CircleShape)
                 .background(Ink.Surface)
                 .border(2.dp, Ink.Rust, CircleShape)
-                .clickable(onClick = onCapture)
+                .clickable {
+                    val imageCapture = capture.value
+                    if (imageCapture == null) {
+                        // No camera bound — the demo path, so the shutter still does
+                        // something rather than appearing broken.
+                        onCapture(null)
+                    } else {
+                        imageCapture.takePicture(
+                            ContextCompat.getMainExecutor(context),
+                            object : ImageCapture.OnImageCapturedCallback() {
+                                override fun onCaptureSuccess(image: ImageProxy) {
+                                    val bitmap = runCatching { image.toBitmap() }.getOrNull()
+                                    image.close()
+                                    onCapture(bitmap)
+                                }
+
+                                override fun onError(exception: ImageCaptureException) {
+                                    onCapture(null)
+                                }
+                            },
+                        )
+                    }
+                }
         )
 
         Text(
@@ -101,7 +129,10 @@ fun CameraScreen(onCapture: () -> Unit, modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun CameraPreview(modifier: Modifier = Modifier) {
+private fun CameraPreview(
+    modifier: Modifier = Modifier,
+    onBound: (ImageCapture) -> Unit = {},
+) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val previewView = remember { PreviewView(context) }
@@ -124,6 +155,7 @@ private fun CameraPreview(modifier: Modifier = Modifier) {
                 provider.bindToLifecycle(
                     lifecycleOwner, CameraSelector.DEFAULT_BACK_CAMERA, preview, capture
                 )
+                onBound(capture)
             }
         }
         future.addListener(listener, ContextCompat.getMainExecutor(context))

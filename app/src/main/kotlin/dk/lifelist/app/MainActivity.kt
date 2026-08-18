@@ -13,6 +13,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import android.graphics.Bitmap
+import dk.lifelist.core.Presentation
+import dk.lifelist.core.RollupResult
+import dk.lifelist.core.Rollup
+import kotlin.concurrent.thread
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,14 +49,39 @@ fun App() {
         }
     }
 
+    // The photograph the model actually looked at, and the answer it gave. Null means no
+    // model or no camera, in which case the demo cases stand in.
+    var photo by remember { mutableStateOf<Bitmap?>(null) }
+    var leafProbabilities by remember { mutableStateOf<FloatArray?>(null) }
+    var failure by remember { mutableStateOf<String?>(null) }
+
+    val identifier = (loaded?.outcome as? Identifier.Companion.Outcome.Ready)?.identifier
+
     if (showingCamera) {
-        CameraScreen(onCapture = { showingCamera = false })
+        CameraScreen(onCapture = { captured ->
+            photo = captured
+            failure = null
+            if (captured != null && identifier != null) {
+                // Inference is hundreds of milliseconds; off the main thread.
+                thread {
+                    val outcome = runCatching {
+                        identifier.probabilities(identifier.logits(captured))
+                    }
+                    outcome.fold(
+                        onSuccess = { probabilities -> leafProbabilities = probabilities },
+                        onFailure = { failure = "${it::class.simpleName}: ${it.message}" },
+                    )
+                }
+            }
+            showingCamera = false
+        })
     } else {
         ResultScreen(
-            answer = answerFor(Demo.cases[caseIndex].probabilities, threshold),
+            answer = currentAnswer(identifier, leafProbabilities, caseIndex, threshold),
             threshold = threshold,
             onThresholdChange = { threshold = it },
             onRetake = {
+                leafProbabilities = null
                 caseIndex = (caseIndex + 1) % Demo.cases.size
                 showingCamera = true
             },
@@ -65,9 +95,36 @@ fun App() {
                 // report, and the reason belongs where the person holding the phone is.
                 is Identifier.Companion.Outcome.Failed ->
                     "Model failed to load — ${outcome.reason}"
+            }.let { note ->
+                when {
+                    failure != null -> "Identification failed — $failure"
+                    identifier != null && leafProbabilities == null && photo != null ->
+                        "Identifying…"
+                    identifier != null && leafProbabilities != null -> note
+                    else -> "$note (example)"
+                }
             },
         )
     }
+}
+
+/**
+ * The answer to show: the model's if there is one, otherwise the demo case.
+ *
+ * Threshold is applied here rather than at capture, so moving the slider re-rolls up the
+ * probabilities that were already computed instead of re-running the model (spec §4.4 —
+ * the threshold is a display-time decision).
+ */
+@Composable
+fun currentAnswer(
+    identifier: Identifier?,
+    probabilities: FloatArray?,
+    caseIndex: Int,
+    threshold: Float,
+) = if (identifier != null && probabilities != null) {
+    Presentation.present(identifier.taxonomy, Rollup.rollup(identifier.taxonomy, probabilities, threshold))
+} else {
+    answerFor(Demo.cases[caseIndex].probabilities, threshold)
 }
 
 data class Loaded(val outcome: Identifier.Companion.Outcome, val meta: TaxonomyAssets.Meta?)
