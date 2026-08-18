@@ -32,15 +32,34 @@ object Demo {
             Taxon(2498036, 2498118, "species", "Anas platyrhynchos", vernacularEn = "Mallard", leafIndex = 5),
             Taxon(8214667, 2498118, "species", "Anas crecca", vernacularEn = "Eurasian Teal", leafIndex = 6),
             Taxon(2498101, 2498118, "species", "Anas acuta", vernacularEn = "Northern Pintail", leafIndex = 7),
+            // A second genus under Anatidae, so a duck can retreat to *family* rather than
+            // straight to nothing. With Anas the only genus, Anatidae and Anas hold identical
+            // mass and the family step is unreachable.
+            Taxon(8996942, 2986, "genus", "Cygnus"),
+            Taxon(2498343, 8996942, "species", "Cygnus olor", vernacularEn = "Mute Swan", leafIndex = 8),
         )
     )
 
     data class Case(val label: String, val probabilities: FloatArray)
 
+    /**
+     * Chosen so the threshold slider visibly *does something* on every case.
+     *
+     * The first attempt put 93% of the mass inside Anas, which meant the answer stayed Anas
+     * across the whole 0.50–0.95 range and the slider looked broken. It was not broken; it had
+     * nothing to say. A demo that cannot demonstrate the one behaviour worth demonstrating is
+     * a bug in the demo.
+     *
+     * Retreat points, so this stays checkable: case 2 leaves Anas above 0.88, case 3 leaves
+     * Carabus sp. above 0.72 and Carabus above 0.95, case 1 holds species to 0.94.
+     */
     val cases = listOf(
-        Case("Confident species", floatArrayOf(0.94f, 0.03f, 0.005f, 0.005f, 0.005f, 0.01f, 0.003f, 0.002f)),
-        Case("Genus-level answer", floatArrayOf(0.04f, 0.02f, 0.005f, 0.003f, 0.002f, 0.41f, 0.33f, 0.19f)),
-        Case("Undetermined Carabus", floatArrayOf(0.03f, 0.02f, 0.72f, 0.13f, 0.10f, 0.0f, 0.0f, 0.0f)),
-        Case("Nothing defensible", floatArrayOf(0.18f, 0.13f, 0.09f, 0.16f, 0.08f, 0.20f, 0.09f, 0.07f)),
+        // leaf order: urticae, io, Carabus sp., granulatus, nemoralis, platyrhynchos,
+        // crecca, acuta, olor. Each vector sums to exactly 1.0 — Rollup rejects anything
+        // else, and a demo vector that does not is a crash on the shutter button.
+        Case("Confident species", floatArrayOf(0.94f, 0.03f, 0.005f, 0.005f, 0.005f, 0.01f, 0.003f, 0.001f, 0.001f)),
+        Case("Genus-level answer", floatArrayOf(0.04f, 0.02f, 0.01f, 0.005f, 0.005f, 0.40f, 0.32f, 0.14f, 0.06f)),
+        Case("Undetermined Carabus", floatArrayOf(0.03f, 0.02f, 0.72f, 0.13f, 0.10f, 0.0f, 0.0f, 0.0f, 0.0f)),
+        Case("Nothing defensible", floatArrayOf(0.16f, 0.12f, 0.10f, 0.09f, 0.08f, 0.18f, 0.12f, 0.09f, 0.06f)),
     )
 }

@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
@@ -56,7 +57,7 @@ fun CameraScreen(onCapture: () -> Unit, modifier: Modifier = Modifier) {
             CameraPreview(Modifier.fillMaxSize())
         } else {
             Column(
-                Modifier.fillMaxSize().padding(28.dp),
+                Modifier.fillMaxSize().safeDrawingPadding().padding(28.dp),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
@@ -82,7 +83,8 @@ fun CameraScreen(onCapture: () -> Unit, modifier: Modifier = Modifier) {
         Box(
             Modifier
                 .align(Alignment.BottomCenter)
-                .padding(bottom = 44.dp)
+                .safeDrawingPadding()
+                .padding(bottom = 28.dp)
                 .size(72.dp)
                 .clip(CircleShape)
                 .background(Ink.Surface)
@@ -93,7 +95,7 @@ fun CameraScreen(onCapture: () -> Unit, modifier: Modifier = Modifier) {
         Text(
             "LIFE LIST",
             style = Type.field.copy(color = Ink.Ink),
-            modifier = Modifier.align(Alignment.TopStart).padding(20.dp),
+            modifier = Modifier.align(Alignment.TopStart).safeDrawingPadding().padding(20.dp),
         )
     }
 }

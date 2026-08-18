@@ -2,6 +2,7 @@ package dk.lifelist.app
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -13,6 +14,9 @@ import androidx.compose.runtime.setValue
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Edge-to-edge is the default from targetSdk 35 whether asked for or not, so the
+        // choice is only whether the app respects the insets or draws under the buttons.
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         setContent { LifeListTheme { App() } }
     }
