@@ -516,6 +516,39 @@ Releases are cut by tag (`v*`), which builds `:app:assembleRelease` and attaches
 GitHub Release. The rollup parity test gates it: a build that disagrees with the spec must not
 ship even if it compiles.
 
+## 18. Seek already does the fallback — §4 overstated the differentiator
+
+§4 says Seek and Arter "both return species-level binomials at 80% confidence with no honest
+fallback", and `CLAUDE.md` repeats it as *"nothing else here is unavailable elsewhere"*. New
+screenshots, 18 Aug 2026, show that is wrong about Seek:
+
+> **WE BELIEVE THIS IS A MEMBER OF THE FAMILY — Katydids.** But Seek couldn't identify the exact
+> species. You can try a different angle, zoom in, or try to get a clearer shot of the organism.
+
+That is a rollup, shipped, in the competitor the plan was written against. Arter's screenshot is
+as described — species at 80% with no fallback — so the claim holds for Arter and fails for Seek.
+
+**What is actually left**, having looked at all three side by side:
+
+| | Seek | Arter | ObsIdentify |
+|---|---|---|---|
+| falls back above species | **yes**, to family | no | no |
+| says how confident in what it returned | no | yes, one figure | yes, 97% ring |
+| shows what it was choosing between | no | no | "show all results" |
+| lets the user move the threshold | no | no | no |
+| answers at *any* depth, not just species or family | no | no | no |
+
+So the honest claim is narrower and more specific than "nobody else does this": *Seek stops at
+family and will not tell you how sure it is; nothing here lets you decide how much certainty you
+want before it commits.* That is still a real difference, and it is still the reason the rollup
+and the calibration matter more than leaf top-1 — but it is a thinner wedge than §4 assumed, and
+the README should not claim more than that.
+
+**This changes priorities, not plans.** If a competitor already does coarse fallback, then
+*calibration* — the returned node's probability actually meaning what it says — is what carries
+the product, not the fallback itself. Temperature fitting in §2 moves from hygiene to headline,
+and `RESULTS.md` should lead with calibration error rather than accuracy.
+
 ---
 
 ## Open questions

@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Life List — identification result, four states</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bone:#F7F4ED; --surface:#FDFCF9; --ink:#22201C; --ink-soft:#5F5B54;
+  --rust:#A85331; --sage:#7C8471; --ochre:#B8892B;
+  --rule:#D8D2C4; --rule-strong:#B9B2A1;
+  --serif:"EB Garamond","Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+  --mono:"IBM Plex Mono","SFMono-Regular",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bone); color:var(--ink); font-family:var(--serif);
+  font-size:17px; line-height:1.5; -webkit-font-smoothing:antialiased;
+}
+/* paper grain — atmosphere without imagery */
+body::before{
+  content:""; position:fixed; inset:0; pointer-events:none; z-index:100; opacity:.35;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='180' height='180' filter='url(%23n)' opacity='.42'/></svg>");
+  mix-blend-mode:multiply;
+}
+.sheet{max-width:1180px;margin:0 auto;padding:56px 40px 96px}
+
+/* ── masthead ───────────────────────────────────────────── */
+.masthead{display:flex;justify-content:space-between;align-items:flex-end;
+  border-bottom:1.5px solid var(--ink);padding-bottom:14px;margin-bottom:8px}
+.wordmark{font-size:15px;letter-spacing:.34em;text-transform:uppercase;font-family:var(--mono);font-weight:500}
+.wordmark em{font-style:normal;color:var(--rust)}
+.masthead .meta{font-family:var(--mono);font-size:11px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--ink-soft);text-align:right;line-height:1.7}
+.subrule{border-bottom:.5px solid var(--rule-strong);margin-bottom:44px}
+
+.lede{max-width:60ch;margin:0 0 46px;font-size:19px;color:var(--ink-soft)}
+.lede strong{color:var(--ink);font-weight:500}
+
+/* ── threshold control ──────────────────────────────────── */
+.control{
+  display:flex;align-items:center;gap:22px;flex-wrap:wrap;
+  border:1px solid var(--rule-strong);background:var(--surface);
+  padding:18px 24px;margin-bottom:52px;position:relative;
+}
+.control::after{content:"";position:absolute;inset:5px;border:.5px solid var(--rule);pointer-events:none}
+.control .label{font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--ink-soft);white-space:nowrap}
+.control input[type=range]{-webkit-appearance:none;appearance:none;flex:1;min-width:220px;height:1px;
+  background:var(--rule-strong);outline:none}
+.control input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;
+  border-radius:50%;background:var(--rust);cursor:grab;border:2px solid var(--surface);
+  box-shadow:0 0 0 1px var(--rust)}
+.control input[type=range]::-moz-range-thumb{width:13px;height:13px;border-radius:50%;
+  background:var(--rust);cursor:grab;border:2px solid var(--surface);box-shadow:0 0 0 1px var(--rust)}
+.control .value{font-family:var(--mono);font-size:20px;font-variant-numeric:tabular-nums;
+  min-width:4.2ch;text-align:right;color:var(--rust)}
+.control .hint{font-size:15px;color:var(--ink-soft);flex-basis:100%;margin-top:2px}
+
+/* ── specimen labels ────────────────────────────────────── */
+.plates{display:grid;gap:40px;grid-template-columns:repeat(auto-fit,minmax(430px,1fr))}
+.plate{opacity:0;transform:translateY(9px);animation:rise .62s cubic-bezier(.22,.61,.36,1) forwards}
+.plate:nth-child(1){animation-delay:.05s}
+.plate:nth-child(2){animation-delay:.14s}
+.plate:nth-child(3){animation-delay:.23s}
+.plate:nth-child(4){animation-delay:.32s}
+@keyframes rise{to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.plate{animation:none;opacity:1;transform:none}}
+
+.plate .caption{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-soft);margin-bottom:10px;display:flex;gap:10px;align-items:baseline}
+.plate .caption b{color:var(--rust);font-weight:500}
+
+.label{background:var(--surface);border:1px solid var(--rule-strong);padding:0;position:relative}
+.label::after{content:"";position:absolute;inset:6px;border:.5px solid var(--rule);pointer-events:none}
+/* corner registration marks */
+.label .corner{position:absolute;width:9px;height:9px;border:0;z-index:2}
+.label .corner.tl{top:-1px;left:-1px;border-top:1.5px solid var(--ink);border-left:1.5px solid var(--ink)}
+.label .corner.br{bottom:-1px;right:-1px;border-bottom:1.5px solid var(--ink);border-right:1.5px solid var(--ink)}
+
+.label .body{padding:28px 30px 26px;position:relative;z-index:1}
+
+.field{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-soft);margin-bottom:7px}
+
+.name{font-size:34px;line-height:1.12;margin:0 0 3px;font-weight:500;letter-spacing:-.005em}
+.name .it{font-style:italic}
+.name.none{color:var(--ink-soft);font-style:normal;font-size:27px}
+.vern{font-size:18px;color:var(--ink-soft);margin:0 0 20px}
+.vern:empty{margin-bottom:14px}
+
+.rankmark{display:inline-block;font-family:var(--mono);font-size:10px;letter-spacing:.16em;
+  text-transform:uppercase;padding:3px 8px;border:.5px solid currentColor;vertical-align:6px;margin-left:9px}
+.r-genus{color:var(--ochre)} .r-none{color:var(--ink-soft)}
+.r-species{color:var(--sage)} .r-indet{color:var(--ochre)}
+
+/* confidence: a thin rule, not a gauge */
+.conf{display:flex;align-items:baseline;gap:14px;margin:0 0 6px}
+.conf .pct{font-family:var(--mono);font-size:26px;font-variant-numeric:tabular-nums;line-height:1}
+.conf.none .pct{color:var(--ink-soft)}
+.conf.none .bar i{background:var(--rule-strong)}
+.conf .bar{flex:1;height:3px;background:var(--rule);position:relative;top:-2px}
+.conf .bar i{display:block;height:3px;background:var(--rust);transition:width .32s cubic-bezier(.22,.61,.36,1)}
+.conf .mark{position:absolute;top:-4px;width:1px;height:11px;background:var(--ink);opacity:.55;
+  transition:left .32s cubic-bezier(.22,.61,.36,1)}
+.conf-note{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-soft);margin-bottom:22px}
+
+.explain{font-size:17px;color:var(--ink);margin:0 0 26px;padding-left:15px;
+  border-left:2px solid var(--sage);max-width:46ch}
+
+hr.hair{border:0;border-top:.5px solid var(--rule);margin:0 0 20px}
+
+/* printed key */
+.key{margin:0 0 24px}
+.key ol{list-style:none;margin:0;padding:0}
+.key li{position:relative;padding:2.5px 0 2.5px 0;font-size:16px;color:var(--ink-soft);
+  display:flex;align-items:baseline;gap:10px}
+.key li .rank{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;
+  width:8.5ch;flex:none;color:var(--rule-strong)}
+.key li .nm{position:relative}
+.key li.here{color:var(--ink)}
+.key li.here .nm::after{content:"";position:absolute;left:0;right:0;bottom:-3px;height:1.5px;background:var(--rust)}
+.key li.here .rank{color:var(--rust)}
+.key li .indent{display:inline-block}
+
+/* candidates */
+.cands{width:100%;border-collapse:collapse;font-size:15.5px}
+.cands th{font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-soft);text-align:left;font-weight:400;padding:0 0 7px;border-bottom:.5px solid var(--rule)}
+.cands th.n{text-align:right}
+.cands td{padding:7px 0;border-bottom:.5px solid var(--rule);vertical-align:baseline}
+.cands tr:last-child td{border-bottom:0}
+.cands td.n{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:14.5px}
+.cands .out{color:var(--ink-soft)}
+.cands .out .flag{font-family:var(--mono);font-size:9px;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--ochre);margin-left:8px;white-space:nowrap}
+.cands .vsm{color:var(--ink-soft);font-size:14px}
+
+footer{margin-top:72px;padding-top:18px;border-top:.5px solid var(--rule-strong);
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);
+  display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.notes{margin-top:56px;max-width:66ch;font-size:16px;color:var(--ink-soft)}
+.notes h3{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink);margin:0 0 12px}
+.notes p{margin:0 0 12px}
+.notes code{font-family:var(--mono);font-size:13.5px;background:var(--surface);
+  border:.5px solid var(--rule);padding:1px 5px}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="masthead">
+    <div class="wordmark">Life <em>List</em></div>
+    <div class="meta">
+      Identification result — four states<br>
+      Herbarium direction · BUILD.md §7
+    </div>
+  </div>
+  <div class="subrule"></div>
+
+  <p class="lede">Every label below is produced by the <strong>real rollup</strong>, running in this page over
+  a fixed leaf distribution. Move the threshold and watch each answer retreat up its own tree at its own
+  pace — that behaviour <em>is</em> the product.</p>
+
+  <div class="control">
+    <span class="label">Confidence threshold</span>
+    <input id="thr" type="range" min="50" max="95" value="70" step="1" aria-label="Confidence threshold">
+    <span class="value" id="thrv">70%</span>
+    <span class="hint">Spec §4.4 — user-adjustable 0.50–0.95, applied at display time, so old identifications
+    re-render honestly rather than being rewritten.</span>
+  </div>
+
+  <div class="plates" id="plates"></div>
+
+  <div class="notes">
+    <h3>What to react to</h3>
+    <p>Confidence is a hairline rule with a tick at your threshold, not a gauge — the question is only
+    whether the bar has reached the tick.</p>
+    <p>The key is set as a printed dichotomous key, rank abbreviations in the left column, a rust underline
+    on the node actually returned.</p>
+    <p>A refusal shows no percentage. The returned node is root, whose probability is always
+    1.0, and "No determination — 100%" is the most misleading thing this screen could say.</p>
+    <p>Runner-up leaves outside the returned node are kept and flagged <code>other branch</code> rather than
+    hidden. Spec §4.3.</p>
+    <p>Typography follows §1.2 rather than taste: binomials italic, <code>sp.</code> roman, ranks above genus
+    roman. Figures are tabular so columns align.</p>
+  </div>
+
+  <footer>
+    <span>Palette — bone F7F4ED · ink 22201C · rust A85331 · sage 7C8471 · ochre B8892B</span>
+    <span>EB Garamond · IBM Plex Mono</span>
+  </footer>
+</div>
+
+<script>
+/* ── the taxonomy, and the rollup, per shared/taxonomy-spec.md §4 ───────── */
+const NODES = [
+  {id:0,   parent:null, rank:"root",    name:"Life"},
+  {id:212, parent:0,    rank:"class",   name:"Aves"},
+  {id:2986,parent:212,  rank:"family",  name:"Anatidae"},
+  {id:8996942,parent:2986,rank:"genus", name:"Cygnus"},
+  {id:2498343,parent:8996942,rank:"species",name:"Cygnus olor",vern:"Mute Swan",leaf:0},
+  {id:2498118,parent:2986,rank:"genus", name:"Anas"},
+  {id:2498036,parent:2498118,rank:"species",name:"Anas platyrhynchos",vern:"Mallard",leaf:1},
+  {id:8214667,parent:2498118,rank:"species",name:"Anas crecca",vern:"Eurasian Teal",leaf:2},
+  {id:2498101,parent:2498118,rank:"species",name:"Anas acuta",vern:"Northern Pintail",leaf:3},
+
+  {id:216,  parent:0,   rank:"class",   name:"Insecta"},
+  {id:7017, parent:216, rank:"family",  name:"Nymphalidae"},
+  {id:1898286,parent:7017,rank:"genus", name:"Aglais"},
+  {id:1898287,parent:1898286,rank:"species",name:"Aglais urticae",vern:"Small Tortoiseshell",leaf:4},
+  {id:1898288,parent:1898286,rank:"species",name:"Aglais io",vern:"European Peacock",leaf:5},
+
+  {id:5602, parent:216, rank:"family",  name:"Carabidae"},
+  {id:1036775,parent:5602,rank:"genus", name:"Carabus"},
+  {id:-1036775,parent:1036775,rank:"species",name:"Carabus sp.",leaf:6},
+  {id:1036776,parent:1036775,rank:"species",name:"Carabus granulatus",leaf:7},
+  {id:1036777,parent:1036775,rank:"species",name:"Carabus nemoralis",leaf:8},
+];
+const BY_ID = new Map(NODES.map(n=>[n.id,n]));
+const CHILDREN = new Map();
+NODES.forEach(n=>{ if(n.parent!==null){ if(!CHILDREN.has(n.parent)) CHILDREN.set(n.parent,[]); CHILDREN.get(n.parent).push(n.id);} });
+const LEAF_ID = {}; NODES.forEach(n=>{ if(n.leaf!==undefined) LEAF_ID[n.leaf]=n.id; });
+
+function nodeProbabilities(p){
+  const out = new Map();
+  NODES.forEach(n=>out.set(n.id,0));
+  Object.entries(LEAF_ID).forEach(([idx,id])=>{
+    let cur = id, mass = p[idx];
+    while(cur!==null && cur!==undefined){ out.set(cur,out.get(cur)+mass); cur = BY_ID.get(cur).parent; }
+  });
+  return out;
+}
+/* §4.2 descent — inclusive threshold, ties to the lower taxon_id */
+function rollup(p, threshold){
+  const prob = nodeProbabilities(p);
+  let cur = 0;
+  for(;;){
+    const kids = (CHILDREN.get(cur)||[]).slice().sort((a,b)=>(prob.get(b)-prob.get(a))||(a-b));
+    const best = kids[0];
+    if(best===undefined || prob.get(best) < threshold - 1e-9) break;
+    cur = best;
+  }
+  const cands = Object.entries(LEAF_ID)
+    .map(([idx,id])=>({id, p:p[idx]}))
+    .sort((a,b)=>(b.p-a.p)||(a.id-b.id)).slice(0,5);
+  return {id:cur, prob:prob.get(cur), cands, threshold};
+}
+function lineage(id){ const out=[]; let cur=id; while(cur!==null&&cur!==undefined){ out.unshift(cur); cur=BY_ID.get(cur).parent; } return out; }
+function isAncestorOrSelf(a,b){ return lineage(b).includes(a); }
+
+/* ── styling a name, per §1.2 ───────────────────────────── */
+const ROMAN = new Set(["sp.","agg.","spp.","cf.","aff.","×"]);
+const RANK_DEPTH = {root:0,kingdom:1,phylum:2,class:3,order:4,family:5,genus:6,species:7,subspecies:8};
+function styleName(name, rank){
+  if(RANK_DEPTH[rank] < RANK_DEPTH.genus) return `<span>${name}</span>`;
+  return name.split(" ").map(w=>ROMAN.has(w)?`<span>${w}</span>`:`<span class="it">${w}</span>`).join(" ");
+}
+const RANK_ABBR = {root:"—",class:"cl.",family:"fam.",genus:"gen.",species:"sp.",subspecies:"ssp."};
+
+/* ── the four specimens ─────────────────────────────────── */
+const SPECIMENS = [
+  {plate:"I", shows:"Confident to species",
+   p:{4:0.94, 5:0.03, 1:0.01, 7:0.01, 0:0.005, 2:0.005}},
+  {plate:"II", shows:"Honest genus-level answer",
+   p:{1:0.41, 2:0.33, 3:0.14, 0:0.06, 4:0.04, 5:0.02}},
+  {plate:"III", shows:"Indeterminate leaf — new, §1.1a",
+   p:{6:0.72, 7:0.13, 8:0.10, 4:0.03, 5:0.02}},
+  {plate:"IV", shows:"Refusal",
+   p:{1:0.20, 4:0.18, 7:0.16, 2:0.15, 5:0.13, 0:0.10, 8:0.08}},
+];
+function vector(sparse){ const v=new Array(9).fill(0); Object.entries(sparse).forEach(([k,x])=>v[k]=x);
+  const s=v.reduce((a,b)=>a+b,0); return v.map(x=>x/s); }
+
+function explain(kind, rank, thr, parentName){
+  if(kind==="LEAF")   return "Confident at species level.";
+  if(kind==="INDET")  return `Confident to genus — this is a ${parentName}, and the species is not determined. That is the answer the evidence supports, not a shortfall.`;
+  if(kind==="NONE")   return "Not enough evidence to place this anywhere with confidence. A clearer photo, or a second one from another angle, is the usual fix.";
+  return `This is a ${rank}-level answer. The species below it are too close to separate at the ${Math.round(thr*100)}% confidence you asked for.`;
+}
+
+function render(){
+  const thr = +document.getElementById("thr").value / 100;
+  document.getElementById("thrv").textContent = Math.round(thr*100)+"%";
+  document.getElementById("plates").innerHTML = SPECIMENS.map((sp,i)=>{
+    const p = vector(sp.p);
+    const r = rollup(p, thr);
+    const node = BY_ID.get(r.id);
+    const isLeaf = !(CHILDREN.get(r.id)||[]).length;
+    const kind = r.id===0 ? "NONE" : (r.id<0 ? "INDET" : (isLeaf ? "LEAF" : "HIGHER"));
+    const parentNode = node.parent!==null && node.parent!==undefined ? BY_ID.get(node.parent) : null;
+    const pct = Math.round(r.prob*100);
+
+    const nameHtml = kind==="NONE"
+      ? `<span>No determination</span>`
+      : styleName(node.name, node.rank);
+    // A synthetic indeterminate leaf (negative id, §1.1a) is rank `species`, but saying
+    // "species" about `Carabus sp.` claims a determination it does not have.
+    const rankTag = kind==="HIGHER"
+      ? `<span class="rankmark r-genus">${node.rank}</span>`
+      : (kind==="NONE" ? `<span class="rankmark r-none">unresolved</span>`
+      : (kind==="INDET" ? `<span class="rankmark r-indet">genus · indet.</span>`
+                  : `<span class="rankmark r-species">species</span>`));
+
+    const keyRows = lineage(r.id).map((id,depth)=>{
+      const n = BY_ID.get(id);
+      return `<li class="${id===r.id?"here":""}">
+        <span class="rank">${RANK_ABBR[n.rank]||n.rank}</span>
+        <span class="nm"><span class="indent" style="width:${depth*11}px"></span>${styleName(n.name,n.rank)}</span></li>`;
+    }).join("");
+
+    const candRows = r.cands.map(c=>{
+      const n = BY_ID.get(c.id);
+      // Root is an ancestor of everything, so on a refusal every leaf is "within" and
+      // the flag would be noise on all five rows.
+      const within = kind==="NONE" ? true : isAncestorOrSelf(r.id, c.id);
+      return `<tr class="${within?"":"out"}">
+        <td>${styleName(n.name,n.rank)}${within?"":'<span class="flag">other branch</span>'}
+            ${n.vern?`<div class="vsm">${n.vern}</div>`:""}</td>
+        <td class="n">${(c.p*100).toFixed(1)}%</td></tr>`;
+    }).join("");
+
+    return `<div class="plate">
+      <div class="caption"><b>Plate ${sp.plate}</b><span>${sp.shows}</span></div>
+      <div class="label">
+        <span class="corner tl"></span><span class="corner br"></span>
+        <div class="body">
+          <div class="field">Det.</div>
+          <h2 class="name ${kind==="NONE"?"none":""}">${nameHtml}${rankTag}</h2>
+          <p class="vern">${kind!=="NONE" && node.vern ? node.vern : ""}</p>
+
+          ${kind==="NONE" ? `
+          <div class="conf none">
+            <span class="pct">—</span>
+            <span class="bar"><i style="width:${Math.round(r.cands[0].p*100)}%"></i>
+              <span class="mark" style="left:${Math.round(thr*100)}%"></span></span>
+          </div>
+          <div class="conf-note">No node cleared the threshold · bar shows the best single leaf</div>
+          ` : `
+          <div class="conf">
+            <span class="pct">${pct}%</span>
+            <span class="bar"><i style="width:${Math.min(100,pct)}%"></i>
+              <span class="mark" style="left:${Math.round(thr*100)}%"></span></span>
+          </div>
+          <div class="conf-note">Confidence in the returned node · tick marks your threshold</div>
+          `}
+
+          <p class="explain">${explain(kind,node.rank,thr,parentNode&&parentNode.name)}</p>
+          <hr class="hair">
+
+          <div class="field">Taxonomic key</div>
+          <div class="key"><ol>${keyRows}</ol></div>
+          <hr class="hair">
+
+          <div class="field">Leaf candidates</div>
+          <table class="cands">
+            <thead><tr><th>Taxon</th><th class="n">p</th></tr></thead>
+            <tbody>${candRows}</tbody>
+          </table>
+        </div>
+      </div>
+    </div>`;
+  }).join("");
+}
+document.getElementById("thr").addEventListener("input", render);
+render();
+</script>
+</body>
+</html>

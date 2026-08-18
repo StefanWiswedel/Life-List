@@ -7,9 +7,13 @@ Orientation for a Claude session picking this repo up cold.
 Offline-first Android app that identifies organisms from photos and sound, and answers **at the
 deepest rank it can defend** rather than always at species. Denmark-scoped, on-device inference.
 
-The taxonomic rollup is the product. Arter and Seek both return species-level binomials at 80%
-confidence with no honest fallback; nothing else here is unavailable elsewhere. When trading off,
-trade in favour of the rollup.
+The taxonomic rollup is the product — but **[corrected 18 Aug 2026]** the wedge is narrower than
+this file used to claim. Seek *does* fall back ("a member of the family Katydids"). What no
+competitor does is tell you how sure it is about the rank it returned, show what it was choosing
+between, or let you set how much certainty you want first. See VERIFICATION.md §18.
+
+So: calibration carries the product, not fallback alone. When trading off, trade in favour of the
+returned node's probability meaning what it says.
 
 ## Read in this order
 
