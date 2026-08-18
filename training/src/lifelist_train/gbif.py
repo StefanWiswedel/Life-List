@@ -96,13 +96,46 @@ def parse_backbone_record(record: dict[str, Any]) -> GbifTaxon | None:
     )
 
 
-def build_taxonomy_nodes(taxa: Iterable[GbifTaxon]) -> list[Taxon]:
+INDETERMINATE_SUFFIX = "sp."
+
+
+def indeterminate_id(parent_key: int) -> int:
+    """Synthetic leaf id for "this taxon, one rank deeper, undetermined".
+
+    Negative because GBIF keys are positive, so the two id spaces cannot collide and a
+    synthetic node is obvious on sight. See `shared/taxonomy-spec.md` §1.1a.
+    """
+    if parent_key <= 0:
+        raise ValueError(f"parent key must be a positive GBIF key, got {parent_key}")
+    return -parent_key
+
+
+def _next_rank(rank: str) -> str | None:
+    """The rank one step deeper, for an indeterminate child."""
+    depth = RANK_ORDER.get(rank)
+    if depth is None:
+        return None
+    deeper = [name for name, order in RANK_ORDER.items() if order == depth + 1]
+    return deeper[0] if deeper else None
+
+
+def build_taxonomy_nodes(
+    taxa: Iterable[GbifTaxon],
+    indeterminate_parents: Iterable[int] = (),
+) -> list[Taxon]:
     """Assemble a `Taxonomy`-ready node list from accepted leaf taxa and their lineages.
 
     Internal nodes are materialised from the lineage keys that GBIF attaches to every
     record, so no extra requests are needed. Ranks absent from a lineage are simply
     skipped — real taxonomies have gaps and inventing nodes to fill them would be a
     fabrication (spec §1.1, invariant 5).
+
+    ``indeterminate_parents`` are keys — genera, in practice — that carry observations
+    identified no deeper than themselves. Each gets a synthetic leaf child (§1.1a), so
+    "a *Carabus*, species undetermined" is a class the head can be trained on rather
+    than data thrown away. A key that ends up with no children of its own is skipped:
+    it is already a leaf, and adding `Carabus sp.` under a childless *Carabus* would
+    duplicate the same meaning in two nodes.
     """
     leaves = [t for t in taxa if t.is_accepted]
 
@@ -142,7 +175,34 @@ def build_taxonomy_nodes(taxa: Iterable[GbifTaxon]) -> list[Taxon]:
             vernacular_da=taxon.vernacular_da,
         )
 
+    _add_indeterminate_leaves(nodes, indeterminate_parents)
+
     return assign_leaf_indices(list(nodes.values()))
+
+
+def _add_indeterminate_leaves(nodes: dict[int, Taxon], parents: Iterable[int]) -> None:
+    """Attach a `<Name> sp.` leaf under each parent that has real children."""
+    has_children = {node.parent_id for node in nodes.values() if node.parent_id is not None}
+
+    for parent_key in sorted(set(parents)):
+        parent = nodes.get(parent_key)
+        if parent is None:
+            continue
+        if parent_key not in has_children:
+            # Already a leaf. A synthetic child here would mean the same thing twice.
+            continue
+        child_rank = _next_rank(parent.rank)
+        if child_rank is None:
+            continue
+        child_id = indeterminate_id(parent_key)
+        if child_id in nodes:
+            continue
+        nodes[child_id] = Taxon(
+            taxon_id=child_id,
+            parent_id=parent_key,
+            rank=child_rank,
+            scientific_name=f"{parent.scientific_name} {INDETERMINATE_SUFFIX}",
+        )
 
 
 def assign_leaf_indices(nodes: list[Taxon]) -> list[Taxon]:

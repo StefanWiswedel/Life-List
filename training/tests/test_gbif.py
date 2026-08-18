@@ -7,10 +7,14 @@ the mock. The parsing carries the logic, so the parsing is what gets tested.
 
 from __future__ import annotations
 
+import pytest
+
 from lifelist_train.gbif import (
+    GbifTaxon,
     assign_leaf_indices,
     build_taxonomy_nodes,
     collect_synonyms,
+    indeterminate_id,
     parse_backbone_record,
     parse_rank,
     pick_vernacular,
@@ -290,3 +294,99 @@ def test_other_languages_are_ignored():
 
 def test_missing_language_returns_none():
     assert pick_vernacular([{"language": "eng", "vernacularName": "X"}], "dan") is None
+
+
+# -- indeterminate leaves (spec §1.1a) ------------------------------------------
+#
+# iNaturalist observers frequently stop at genus, and those observations are evidence.
+# Invariant 4 forbids a genus being both an internal node and a leaf, so the genus gets
+# a synthetic `<Name> sp.` child instead.
+
+
+def _species(key, name, genus_key, genus_name, family_key=99, family_name="Fam"):
+    return GbifTaxon(
+        key=key,
+        scientific_name=name,
+        rank="species",
+        status="ACCEPTED",
+        lineage={"family": family_key, "genus": genus_key},
+        lineage_names={"family": family_name, "genus": genus_name},
+    )
+
+
+def test_a_genus_with_species_gets_an_indeterminate_child():
+    nodes = build_taxonomy_nodes(
+        [_species(1, "Carabus granulatus", 10, "Carabus"),
+         _species(2, "Carabus nemoralis", 10, "Carabus")],
+        indeterminate_parents=[10],
+    )
+    by_id = {n.taxon_id: n for n in nodes}
+
+    child = by_id[-10]
+    assert child.parent_id == 10
+    assert child.scientific_name == "Carabus sp."
+    assert child.rank == "species"
+    assert child.leaf_index is not None
+
+
+def test_the_genus_itself_stays_an_internal_node():
+    nodes = build_taxonomy_nodes(
+        [_species(1, "Carabus granulatus", 10, "Carabus")], indeterminate_parents=[10]
+    )
+    by_id = {n.taxon_id: n for n in nodes}
+
+    assert by_id[10].leaf_index is None, "invariant 4: a node with children is not a leaf"
+    assert by_id[1].leaf_index is not None
+    assert by_id[-10].leaf_index is not None
+
+
+def test_a_childless_genus_gets_no_synthetic_child():
+    """It is already a leaf. `Carabus sp.` under a childless Carabus says it twice."""
+    genus_only = GbifTaxon(
+        key=10, scientific_name="Carabus", rank="genus", status="ACCEPTED",
+        lineage={"family": 99}, lineage_names={"family": "Fam"},
+    )
+    nodes = build_taxonomy_nodes([genus_only], indeterminate_parents=[10])
+    by_id = {n.taxon_id: n for n in nodes}
+
+    assert -10 not in by_id
+    assert by_id[10].leaf_index is not None
+
+
+def test_an_unknown_parent_key_is_ignored_rather_than_invented():
+    nodes = build_taxonomy_nodes(
+        [_species(1, "Carabus granulatus", 10, "Carabus")], indeterminate_parents=[12345]
+    )
+
+    assert all(n.taxon_id >= 0 for n in nodes)
+
+
+def test_indeterminate_ids_cannot_collide_with_gbif_keys():
+    assert indeterminate_id(1036775) == -1036775
+    with pytest.raises(ValueError):
+        indeterminate_id(0)
+
+
+def test_the_tree_still_validates_with_indeterminate_leaves():
+    """The real check: Taxonomy asserts all five invariants at construction."""
+    nodes = build_taxonomy_nodes(
+        [_species(1, "Carabus granulatus", 10, "Carabus"),
+         _species(2, "Cepaea nemoralis", 20, "Cepaea", 98, "Helicidae")],
+        indeterminate_parents=[10, 20],
+    )
+    tree = Taxonomy(nodes)
+
+    assert tree.n_taxa == 4  # two species, two indeterminate leaves
+    assert tree.node(-10).scientific_name == "Carabus sp."
+
+
+def test_leaf_indices_stay_contiguous_and_ordered_by_id():
+    nodes = build_taxonomy_nodes(
+        [_species(1, "Carabus granulatus", 10, "Carabus"),
+         _species(2, "Carabus nemoralis", 10, "Carabus")],
+        indeterminate_parents=[10],
+    )
+    leaves = sorted((n for n in nodes if n.leaf_index is not None), key=lambda n: n.leaf_index)
+
+    assert [n.leaf_index for n in leaves] == [0, 1, 2]
+    assert [n.taxon_id for n in leaves] == [-10, 1, 2], "negative ids sort first, deterministically"

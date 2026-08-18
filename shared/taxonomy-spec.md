@@ -39,6 +39,33 @@ Root is synthetic: `taxon_id = 0`, `rank = "root"`, `scientific_name = "Life"`.
 Invariant 5 permits rank skipping. Real taxonomies have gaps — a genus whose family is
 unplaced attaches directly to order. Do not fabricate intermediate nodes to fill them.
 
+### 1.1a Indeterminate leaves **[added 18 Aug 2026]**
+
+A great many iNaturalist observations are identified only to genus, and they are evidence: a
+photograph a competent naturalist could place in *Carabus* but not to species is exactly the
+case this app exists to handle honestly.
+
+Invariant 4 forbids a genus from being both an internal node and a leaf, and relaxing it would
+break every implementation. So a genus that carries observations of its own gets a synthetic
+child:
+
+| field | value |
+|---|---|
+| `taxon_id` | **negative of the parent's key** — `-1036775` for *Carabus* `1036775` |
+| `parent_id` | the genus key |
+| `rank` | one rank deeper than the parent, so `species` under a genus |
+| `scientific_name` | `Carabus sp.` — the `sp.` is roman, as §1.2 requires |
+| `leaf_index` | assigned like any other leaf |
+
+Negative ids because GBIF keys are positive, so the two spaces cannot collide, and the sign
+makes a synthetic node obvious in a debugger and in a diff. Implementations must therefore not
+assume `taxon_id > 0`; only the root is pinned, at `0`.
+
+An indeterminate leaf is a **prediction target like any other**. Probability mass landing on
+`Carabus sp.` is evidence for *Carabus*, and rolls up to it exactly as a congener would — no
+special case in §4. What it must never do is render as a species: `Carabus sp.` is the display
+form, never `Carabus` alone, or the app would claim a determination it does not have.
+
 ### 1.2 Ranks
 
 Ordered, coarsest first:

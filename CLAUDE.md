@@ -23,7 +23,7 @@ trade in favour of the rollup.
 | | |
 |---|---|
 | contracts + spec | done |
-| `training/` — rollup, fusion, audio, splits, names, GBIF, iNat, stages 1–2 | done, 182 tests |
+| `training/` — rollup, fusion, audio, splits, names, GBIF, iNat, stages 1–2 | done, 222 tests |
 | `core/` — Kotlin rollup + golden parity test | **compiles; 5 parity tests pass** (17 Aug 2026) |
 | Gradle wrapper | added 17 Aug 2026 — it had never been committed, so CI had never run |
 | stage 3 (`lifelist-embed`) | written, resumable, run against real BioCLIP + S3 |
@@ -92,6 +92,8 @@ better there, since free Colab disconnects near 90 minutes and it takes 30–90.
 - Inference: **CPU execution provider**, tuned threads. NNAPI is deprecated as of Android 15.
 - UI: **English only**. Danish vernaculars stored but not surfaced.
 - Target: Pixel 9a (Tensor G4), minSdk 29, targetSdk 35.
+- **Genus is a trainable leaf** where genus-only observations support it, via a synthetic
+  `Carabus sp.` child with a negative taxon id (spec §1.1a, VERIFICATION.md §16).
 
 ## Next action
 

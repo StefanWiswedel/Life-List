@@ -450,6 +450,37 @@ BUILD.md §8 says to raise those rather than invent them.
 
 *Needs your call — added to the open questions below.*
 
+## 16. Genus is now a trainable leaf — decided 18 Aug 2026
+
+**Decision:** a genus that carries genus-only observations becomes a class the head can predict,
+rather than data thrown away. Danish naturalists stop at *Carabus* often enough that those
+photographs are evidence, and an app whose whole argument is "answer at the deepest rank you can
+defend" should be able to learn that answer directly rather than only reach it by rollup.
+
+Invariant 4 forbids a genus being both an internal node and a leaf, and relaxing it would break
+both implementations and the golden fixture. So the genus gets a synthetic child instead —
+spec §1.1a:
+
+| | |
+|---|---|
+| id | `-1036775` for *Carabus* `1036775` — negative, so it cannot collide with a GBIF key |
+| name | `Carabus sp.`, the `sp.` roman per §1.2 |
+| rank | one deeper than the parent |
+
+A genus that has no species of its own is skipped: it is already a leaf, and a synthetic child
+there would state the same thing twice.
+
+**No refetch needed.** Every species record already carries `genusKey` and the genus name in its
+lineage, so all 14 genus-rank manifest taxa resolve from data stage 1 already fetched. That
+recovers **1,995 photos**, taking the bridge to 97.8%.
+
+**Both implementations, because negative ids are exactly the kind of assumption that fails
+quietly.** Nothing in the Kotlin side assumed `taxonId > 0`, but nothing proved it either, and
+the failure mode is a silently dropped class rather than a crash. `IndeterminateLeafTest` now
+covers loading, subtree membership, rollup in both directions, and — the one that matters for
+honesty — that `Carabus sp.` never renders as a bare *Carabus*, which would claim a
+determination the model does not have.
+
 ---
 
 ## Open questions
@@ -458,10 +489,6 @@ BUILD.md §8 says to raise those rather than invent them.
    default until benchmarked on your actual Pixel 6a?
 2. **Backbone checkpoint.** Spend one Colab session comparing `bioclip` against
    `bioclip-vit-b-16-inat-only` before committing?
-3. **Genus-level leaves.** 14 manifest taxa are genus-rank observations with no species
-   attached, and stage 1 fetched species only. Should a genus be a trainable leaf where the
-   data supports it — making "a *Carabus*" an answer the model can give directly rather than
-   only by rollup — or should genus-only observations be discarded? The rollup already returns
-   genus-level answers, so this is about training signal, not about display.
+3. ~~**Genus-level leaves.**~~ **Decided 18 Aug 2026: yes.** See §16.
 4. **The 1.5 s budget.** If an INT8 ViT-B/16 on CPU misses it on a Tensor G1, which gives —
    the budget, the resolution, or the backbone?
