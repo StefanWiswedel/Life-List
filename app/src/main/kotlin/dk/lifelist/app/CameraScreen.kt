@@ -1,6 +1,12 @@
 package dk.lifelist.app
 
 import android.Manifest
+import android.content.Context
+import android.graphics.ImageDecoder
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.CameraSelector
 import android.graphics.Bitmap
 import androidx.camera.core.ImageCapture
@@ -51,12 +57,34 @@ import com.google.accompanist.permissions.rememberPermissionState
  * Not verified on hardware: this container has no camera. Treat every line below as unproven
  * until it has run on the Pixel.
  */
+/**
+ * Decode a gallery image to a *software* bitmap.
+ *
+ * `ImageDecoder` hands back a hardware bitmap by default, and `getPixels` throws on those —
+ * the pixels live on the GPU. The identifier reads pixels, so it must be told otherwise.
+ */
+fun decodeSoftware(context: Context, uri: Uri): Bitmap {
+    val source = ImageDecoder.createSource(context.contentResolver, uri)
+    return ImageDecoder.decodeBitmap(source) { decoder, _, _ ->
+        decoder.allocator = ImageDecoder.ALLOCATOR_SOFTWARE
+        decoder.isMutableRequired = false
+    }
+}
+
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun CameraScreen(onCapture: (Bitmap?) -> Unit, modifier: Modifier = Modifier) {
     val permission = rememberPermissionState(Manifest.permission.CAMERA)
     val capture = remember { mutableStateOf<ImageCapture?>(null) }
     val context = LocalContext.current
+
+    // The system photo picker: no permission, no gallery access, the user hands over one
+    // image and nothing else. Also the only way to test the model on a winter evening.
+    val pick = rememberLauncherForActivityResult(
+        ActivityResultContracts.PickVisualMedia()
+    ) { uri: Uri? ->
+        onCapture(uri?.let { runCatching { decodeSoftware(context, it) }.getOrNull() })
+    }
 
     Box(modifier.fillMaxSize().background(Ink.Bone)) {
         if (permission.status.isGranted) {
@@ -125,6 +153,23 @@ fun CameraScreen(onCapture: (Bitmap?) -> Unit, modifier: Modifier = Modifier) {
             style = Type.field.copy(color = Ink.Ink),
             modifier = Modifier.align(Alignment.TopStart).safeDrawingPadding().padding(20.dp),
         )
+
+        Box(
+            Modifier
+                .align(Alignment.BottomEnd)
+                .safeDrawingPadding()
+                .padding(end = 26.dp, bottom = 48.dp)
+                .background(Ink.Surface)
+                .border(1.dp, Ink.RuleStrong)
+                .clickable {
+                    pick.launch(
+                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                    )
+                }
+                .padding(horizontal = 14.dp, vertical = 11.dp)
+        ) {
+            Text("FROM GALLERY", style = Type.field.copy(color = Ink.Rust))
+        }
     }
 }
 
