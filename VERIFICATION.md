@@ -740,6 +740,33 @@ session opens, the tensor is built, the rollup is called — on a device none of
 Compilation is not correctness, and this is the last link in the chain that only Stefan's Pixel
 can close.
 
+## 24. The first APK with a model said it had none — two bugs, one screen
+
+Installed on the Pixel, the v0.2.0 build reported *"No model in this build — showing example
+results"* while being several hundred megabytes larger than the previous one. The model was in
+the APK. It failed to load, and the message pointed everyone at CI.
+
+**Bug one: the error was swallowed.** `openOrNull` returned a bare null for both "no asset was
+bundled" and "the asset is there and broke", so a real failure and an intentional debug build
+read identically. Now `openOrReport` distinguishes them by checking the asset descriptor first,
+and a failure shows its exception on screen. A model that is present and broken is a bug report,
+and the reason belongs where the person holding the phone is.
+
+**Bug two, and the actual cause: `assets.open().readBytes()` on a 335 MB file.** That pulls the
+whole model into the Java heap, and Android's default heap is around 256 MB. It works on any
+machine with real memory, which is exactly why it survived being written and reviewed here — the
+container has 7 GB and never ran it anyway.
+
+Fixed by materialising the model as a file in internal storage once and letting ONNX Runtime map
+it, rather than holding it twice. Size is the version check: a new APK ships a different model,
+and a copy interrupted mid-write matches neither.
+
+**The general lesson, which is the one worth keeping:** `Identifier.kt` was written, compiled,
+packaged into a 433 MB APK and shipped without a single line of it ever executing. §23 said so
+plainly — "no line of Identifier.kt has run" — and the first thing it did on a real device was
+fail. Compiling is not running, and the repo's own rule about not writing code you cannot test
+had been quietly suspended for the Android layer because testing it needs hardware.
+
 ---
 
 ## Open questions

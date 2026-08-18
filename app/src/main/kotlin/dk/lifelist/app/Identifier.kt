@@ -6,6 +6,7 @@ import ai.onnxruntime.OrtEnvironment
 import ai.onnxruntime.OrtSession
 import android.content.Context
 import android.graphics.Bitmap
+import java.io.File
 import dk.lifelist.core.Rollup
 import dk.lifelist.core.RollupResult
 import dk.lifelist.core.Taxonomy
@@ -35,15 +36,53 @@ class Identifier(
         const val MODEL_ASSET = "lifelist.onnx"
 
         /**
-         * Null when the model asset is absent.
+         * The outcome of trying to open the model, including *why* it failed.
          *
-         * CI builds the app on every push but only exports the 335 MB model for a release,
-         * so a debug APK legitimately ships without one. Returning null lets the app say so
-         * and fall back to the demo cases, rather than crashing on launch and making every
-         * push look broken.
+         * The first version returned a bare null and the screen said "no model in this
+         * build". The model was in the build; it failed to load, and the message sent
+         * everyone looking at CI. A missing asset and a broken one must not read the same.
          */
-        fun openOrNull(context: Context, taxonomy: Taxonomy, temperature: Float): Identifier? =
-            runCatching { open(context, taxonomy, temperature) }.getOrNull()
+        sealed interface Outcome {
+            data class Ready(val identifier: Identifier) : Outcome
+            data object NotBundled : Outcome
+            data class Failed(val reason: String) : Outcome
+        }
+
+        fun openOrReport(context: Context, taxonomy: Taxonomy, temperature: Float): Outcome {
+            val bundled = runCatching {
+                context.assets.openFd(MODEL_ASSET).use { it.length }
+            }.getOrNull()
+            if (bundled == null || bundled <= 0L) return Outcome.NotBundled
+
+            return runCatching { Outcome.Ready(open(context, taxonomy, temperature)) }
+                .getOrElse { error ->
+                    Outcome.Failed("${error::class.simpleName}: ${error.message ?: "no detail"}")
+                }
+        }
+
+        /**
+         * Materialise the model as a file, then let ONNX Runtime map it.
+         *
+         * Not `assets.open().readBytes()`. That pulls 335 MB into the Java heap, and
+         * Android's default heap is around 256 MB — it dies with OutOfMemoryError on a
+         * device while working fine anywhere with real RAM. Copying once to internal
+         * storage costs disk we have already spent, and lets ORT map the file instead of
+         * holding it twice.
+         */
+        fun modelFile(context: Context): File {
+            val destination = File(context.filesDir, MODEL_ASSET)
+            val expected = context.assets.openFd(MODEL_ASSET).use { it.length }
+            // Size is the version check: a new APK ships a different model, and a partial
+            // copy from a kill mid-write does not match either.
+            if (destination.exists() && destination.length() == expected) return destination
+
+            val temporary = File(context.filesDir, "$MODEL_ASSET.tmp")
+            context.assets.open(MODEL_ASSET).use { input ->
+                temporary.outputStream().use { output -> input.copyTo(output, DEFAULT_BUFFER_SIZE) }
+            }
+            check(temporary.renameTo(destination)) { "could not move the model into place" }
+            return destination
+        }
 
         fun open(context: Context, taxonomy: Taxonomy, temperature: Float): Identifier {
             val environment = OrtEnvironment.getEnvironment()
@@ -53,11 +92,10 @@ class Identifier(
                 setIntraOpNumThreads(Runtime.getRuntime().availableProcessors().coerceAtMost(4))
                 setOptimizationLevel(OrtSession.SessionOptions.OptLevel.ALL_OPT)
             }
-            // Read into memory rather than streaming: the asset is uncompressed in the APK
-            // and ORT wants a contiguous buffer.
-            val bytes = context.assets.open(MODEL_ASSET).use { it.readBytes() }
-            return Identifier(environment.createSession(bytes, options), environment,
-                taxonomy, temperature)
+            return Identifier(
+                environment.createSession(modelFile(context).absolutePath, options),
+                environment, taxonomy, temperature,
+            )
         }
     }
 

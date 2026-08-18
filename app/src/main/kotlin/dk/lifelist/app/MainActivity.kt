@@ -38,8 +38,10 @@ fun App() {
         value = runCatching {
             val taxonomy = TaxonomyAssets.loadTaxonomy(context)
             val meta = TaxonomyAssets.loadMeta(context)
-            Loaded(Identifier.openOrNull(context, taxonomy, meta.temperature), meta)
-        }.getOrElse { Loaded(null, null) }
+            Loaded(Identifier.openOrReport(context, taxonomy, meta.temperature), meta)
+        }.getOrElse {
+            Loaded(Identifier.Companion.Outcome.Failed("assets: ${it.message}"), null)
+        }
     }
 
     if (showingCamera) {
@@ -53,14 +55,19 @@ fun App() {
                 caseIndex = (caseIndex + 1) % Demo.cases.size
                 showingCamera = true
             },
-            modelNote = when {
-                loaded == null -> "Loading model…"
-                loaded?.identifier != null ->
+            modelNote = when (val outcome = loaded?.outcome) {
+                null -> "Loading model…"
+                is Identifier.Companion.Outcome.Ready ->
                     "Model ${loaded?.meta?.version ?: "?"} · ${loaded?.meta?.nTaxa ?: 0} taxa"
-                else -> "No model in this build — showing example results"
+                is Identifier.Companion.Outcome.NotBundled ->
+                    "No model in this build — showing example results"
+                // Shown in full on purpose. A model that is present and broken is a bug
+                // report, and the reason belongs where the person holding the phone is.
+                is Identifier.Companion.Outcome.Failed ->
+                    "Model failed to load — ${outcome.reason}"
             },
         )
     }
 }
 
-data class Loaded(val identifier: Identifier?, val meta: TaxonomyAssets.Meta?)
+data class Loaded(val outcome: Identifier.Companion.Outcome, val meta: TaxonomyAssets.Meta?)
