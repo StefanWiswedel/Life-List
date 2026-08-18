@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Light only. §7 is a herbarium sheet; there is no dark variant of paper. -->
+    <style name="Theme.LifeList" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:statusBarColor">#F7F4ED</item>
+        <item name="android:navigationBarColor">#F7F4ED</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+</resources>

@@ -481,6 +481,41 @@ covers loading, subtree membership, rollup in both directions, and — the one t
 honesty — that `Carabus sp.` never renders as a bare *Carabus*, which would claim a
 determination the model does not have.
 
+## 17. The app builds — an actual APK, verified here
+
+`:app` existed only as a comment in `settings.gradle.kts` saying it would be added later. It is
+added now, and the reason it could be added is that this container reaches Google's Maven and
+the Android SDK repository, so the module was **built rather than merely written** — the rule
+that kept stages 4–6 unwritten applies to Android code too.
+
+| | |
+|---|---|
+| debug APK | 28.7 MB |
+| release APK | 21 MB |
+| package | `dk.lifelist.app`, minSdk 29, targetSdk 35 |
+| permissions | `CAMERA` only |
+| signing | Android debug key |
+| version | injected from Gradle properties, so CI can stamp it from the tag |
+
+What is in it: the result screen from the design mock, rendered by Compose over the **real**
+`dk.lifelist.core.Rollup` and `Presentation`. The threshold slider re-runs the rollup on device.
+Camera capture is wired — permission flow, lifecycle binding, preview surface — and the shutter
+advances through four stand-in probability vectors, because stage 6 has exported no model.
+
+**Two things that are not verified, and should not be presented as if they were.** There is no
+camera and no display in this container, so every line of `CameraScreen.kt` is unproven until it
+runs on the Pixel, and the layout has been reasoned about rather than seen. Compilation is not
+correctness.
+
+**One change with a consequence worth stating.** Adding `:app` means the root build configures an
+Android module, which could have broken `core.yml` — that workflow has no Android SDK. Checked by
+running `:core:test` with `ANDROID_HOME` unset *and* `local.properties` removed: it passes, because
+AGP defers the SDK requirement to task execution. `core.yml` stays as it is.
+
+Releases are cut by tag (`v*`), which builds `:app:assembleRelease` and attaches the APK to a
+GitHub Release. The rollup parity test gates it: a build that disagrees with the spec must not
+ship even if it compiles.
+
 ---
 
 ## Open questions

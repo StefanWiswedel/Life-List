@@ -1,0 +1,92 @@
+name: release
+
+# A tag is the only thing that produces a downloadable build. Deliberate and versioned:
+# the Releases page is a stable link you can open on the phone, where a CI artifact is not.
+#
+#   git tag v0.1.0 && git push --tags
+#
+# The APK is signed with the debug key. That is honest for a sideloaded app with no Play
+# listing — a real signing key does not belong in a public repository, and pretending
+# otherwise by committing a keystore would be worse than saying so here. Swap in secrets
+# when there is something worth signing properly.
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version name for a manual build, e.g. 0.1.0-test'
+        required: true
+        default: '0.0.0-manual'
+
+permissions:
+  contents: write
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: android-actions/setup-android@v3
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Derive version
+        id: version
+        run: |
+          if [ "${GITHUB_REF_TYPE}" = "tag" ]; then
+            NAME="${GITHUB_REF_NAME#v}"
+          else
+            NAME="${{ github.event.inputs.version }}"
+          fi
+          echo "name=${NAME}" >> "$GITHUB_OUTPUT"
+          # Monotonic and never reused, which is what Android requires of versionCode.
+          echo "code=${GITHUB_RUN_NUMBER}" >> "$GITHUB_OUTPUT"
+
+      # The rollup is the product, so a build that disagrees with the spec must not ship
+      # even if it compiles. Same gate as the `core` workflow, repeated here on purpose.
+      - name: Rollup parity must hold before anything ships
+        run: ./gradlew :core:test --no-daemon
+
+      - name: Build release APK
+        run: |
+          ./gradlew :app:assembleRelease --no-daemon \
+            -PversionName=${{ steps.version.outputs.name }} \
+            -PversionCode=${{ steps.version.outputs.code }}
+
+      - name: Name the artefact after its version
+        run: |
+          mkdir -p dist
+          cp app/build/outputs/apk/release/app-release.apk \
+             "dist/life-list-${{ steps.version.outputs.name }}.apk"
+          ls -l dist
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: life-list-apk
+          path: dist/*.apk
+
+      - name: Publish release
+        if: github.ref_type == 'tag'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*.apk
+          generate_release_notes: true
+          body: |
+            Sideload build of Life List ${{ steps.version.outputs.name }}.
+
+            Signed with the Android debug key, so Android will warn on install and this
+            cannot upgrade a differently-signed build. Enable installation from unknown
+            sources, then open the APK on the device.
+
+            The identification model is not in this build yet — stage 6 has exported
+            nothing. The result screen runs the real rollup over stand-in probabilities,
+            so what is testable here is the wording, the typography and the threshold
+            behaviour, not accuracy.

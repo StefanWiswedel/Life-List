@@ -28,7 +28,8 @@ trade in favour of the rollup.
 | Gradle wrapper | added 17 Aug 2026 — it had never been committed, so CI had never run |
 | stage 3 (`lifelist-embed`) | written, resumable, run against real BioCLIP + S3 |
 | stages 4–6 (train head, eval, export) | not written — need real embeddings first |
-| `app/` — Android | not started |
+| `app/` — Android | **shell + camera, builds a real APK** (18 Aug 2026) — no model yet |
+| release workflow | tag `v*` → GitHub Release with an APK attached |
 
 ## Rules that have already earned their place
 
@@ -73,7 +74,9 @@ pytest tests -q
 ruff check src tests tools
 python tools/gen_golden.py --check
 
-./gradlew :core:test
+./gradlew :core:test          # rollup parity, no Android SDK needed
+./gradlew :app:assembleDebug  # needs the Android SDK; ANDROID_HOME or local.properties
+git tag v0.1.0 && git push --tags   # builds an APK and attaches it to a GitHub Release
 ```
 
 ## Where each stage runs

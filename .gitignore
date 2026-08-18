@@ -19,3 +19,7 @@ local.properties
 
 # Exported by a Cowork session; not part of the repo.
 *.bundle
+
+# Android SDK path, machine-specific. Never committed.
+local.properties
+app/build/

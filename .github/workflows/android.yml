@@ -1,0 +1,36 @@
+name: android
+
+# Catches the app breaking on a normal push, so a tag is never the first time anyone finds
+# out. Debug build only — assembleRelease is the release workflow's job, and doing it twice
+# would double the slowest step in the repo for no extra signal.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: android-actions/setup-android@v3
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Assemble debug APK
+        run: ./gradlew :app:assembleDebug --no-daemon
+
+      - name: Report APK size
+        run: |
+          APK=app/build/outputs/apk/debug/app-debug.apk
+          echo "### APK $(du -h "$APK" | cut -f1)" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "Worth watching: §4.1 budgets a quantised ViT-B/16 on top of this." >> "$GITHUB_STEP_SUMMARY"
