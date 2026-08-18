@@ -1,16 +1,16 @@
 {
   "spec_version": 1,
-  "model_version": "2026-08-18-partial",
+  "model_version": "2026-08-18-full",
   "embedding_dim": 512,
   "n_taxa": 2294,
-  "temperature": 0.6164668317349773,
+  "temperature": 0.7314806548776696,
   "fusion_mode": "embedding",
   "default_threshold": 0.7,
   "backbone": {
     "source": "imageomics/bioclip",
     "arch": "ViT-B/16",
     "input_size": 224,
-    "quantisation": "int8-dynamic",
+    "quantisation": "none-fp32",
     "mean": [
       0.48145466,
       0.4578275,
@@ -25,9 +25,8 @@
   "trained_at": "2026-08-18",
   "max_images": 5,
   "trained_on": {
-    "shards": 41,
+    "shards": 84,
     "of": 84,
-    "photos": 160102,
-    "caveat": "partial data, chronological not random - see RESULTS.md"
+    "photos": 325773
   }
 }

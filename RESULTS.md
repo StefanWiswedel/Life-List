@@ -5,65 +5,86 @@ this file is not for claims.
 
 ---
 
-## Run 1 — 18 Aug 2026, partial data, pipeline smoke test
+## Run 2 — 18 Aug 2026, all 84 shards
 
-**This is not an accuracy figure for the app.** It is a test that stages 1→4 connect, run, and
-produce something sane. Read the caveats before quoting anything.
-
-### What it ran on
-
-| | |
-|---|---|
-| embeddings | 163,998 — **41 of 84 shards**, stage 3 still running |
-| after bridging to GBIF | 160,102 rows over **2,294 leaves** (of 2,376 planned) |
-| split | 128,042 train / 15,865 val / 16,195 test, by observation |
-| taxa missing from train | 0 |
-| head | linear probe on frozen BioCLIP, 25 epochs, 101 s on 2 CPU cores |
-
-### Numbers
+**This is the model that ships.** 333,700 embeddings, 260,487 train / 32,347 val / 32,939 test,
+split by observation. 2,294 leaves. Linear probe on frozen BioCLIP, 205 s.
 
 | split | T | rollup acc. | leaf top-1 | refused | mean depth | ECE |
 |---|---|---|---|---|---|---|
-| val | 1.00 | 96.1% | 84.4% | 2.5% | 5.51 | 0.123 |
-| val | **0.62** | 94.6% | 84.4% | 0.6% | 6.33 | **0.018** |
-| test | 1.00 | 96.2% | 84.2% | 2.5% | 5.51 | 0.124 |
-| test | **0.62** | 94.3% | 84.2% | 0.8% | 6.32 | **0.019** |
+| test | 1.000 | 96.3% | 85.6% | 1.5% | 6.00 | 0.065 |
+| test | **0.731** | 94.7% | 85.6% | 0.8% | 6.38 | **0.017** |
 
-Val and test agree to within 0.3 points on every metric, which is what a clean
-observation-level split should look like.
+### Two predictions in Run 1 were wrong
 
-### What is actually interesting here
+**"Expect the full-data numbers to be worse, not better."** They are better: rollup 94.3% → 94.7%,
+leaf top-1 84.2% → 85.6%, ECE 0.019 → 0.017. The reasoning — that shards ordered by `photo_id`
+under-represent rarer taxa, which are the hard ones — was sound, and the effect of doubling the
+data per class simply outweighed it.
 
-**Calibration improved 6.5×.** ECE 0.124 → 0.019 on test. Given §18 — coarse fallback is not
-unique to us, but *stated confidence* is — this is the metric the product rests on, and
-temperature fitting is doing real work rather than hygiene.
+**"Insects and fungi are where this will hurt."** Insects are the *best* group in the set at 95.7%
+rollup and 87.5% leaf top-1. A botanist's intuition about which groups are hard to identify turns
+out not to predict which groups a model finds hard, because the model is limited by photographs
+per taxon rather than by morphology.
 
-**The fitted temperature is below 1.** T = 0.616 means the head was *under*-confident, which is
-the opposite of the usual failure and the opposite of Arter's 80%-on-everything. Sharpening it
-pushes answers **deeper** — mean depth 5.51 → 6.32, refusals 2.5% → 0.8% — for 1.9 points of
-rollup accuracy.
+Both were reasonable and both were guesses, which is what the per-group table is for.
 
-That trade is the product's central dial, and it is worth naming rather than optimising away:
-the uncalibrated model was buying accuracy by hedging. Answering "Anatidae" when you could
-defend "*Anas crecca*" scores well and helps nobody.
+### By group — test split, calibrated
 
-**Leaf top-1 84.2% against rollup 94.3%** is the gap the rollup exists to fill: roughly one
-identification in ten is one the model cannot pin to species but can place correctly higher up.
+| group | n | rollup | leaf top-1 | refused | depth | ECE |
+|---|---|---|---|---|---|---|
+| Insects | 14,304 | 95.7% | 87.5% | 0.5% | 6.51 | 0.019 |
+| Plants | 10,557 | 95.3% | 87.5% | 0.7% | 6.44 | 0.018 |
+| Molluscs | 803 | 93.9% | 81.6% | 0.2% | 6.06 | 0.009 |
+| Fungi | 1,804 | 92.8% | 88.4% | 2.8% | 6.38 | 0.031 |
+| Birds | 2,932 | 92.5% | **74.2%** | 0.5% | 6.02 | 0.007 |
+| Arachnids | 1,054 | 92.5% | 79.5% | 0.5% | 6.13 | 0.014 |
+| Mammals | 429 | 90.9% | 78.3% | 0.9% | 5.87 | 0.025 |
+| Other | 901 | 89.8% | 81.1% | 2.8% | 5.70 | 0.045 |
+| Amphibians | 155 | 89.0% | 78.7% | 1.9% | 6.15 | 0.050 |
 
-### Caveats, in order of how much they matter
+**Birds are where the rollup earns its keep.** An 18-point gap between rollup accuracy and leaf
+top-1 — the widest of any group. One bird in four cannot be pinned to species from a photograph,
+and the app places it correctly at genus or family instead of guessing. Arter would have offered
+a species name at 80%.
 
-1. **The 41 shards are not a random 41.** Shards are ordered by `photo_id`, which is roughly
-   chronological iNaturalist upload order. Rarer taxa are systematically underrepresented, and
-   they are the hard ones. **Expect the full-data numbers to be worse, not better.**
-2. **2,294 leaves, not 2,376.** 52 taxa have no photo in this subset.
-3. **No per-group breakdown yet.** Insects and fungi are where this will hurt, and a single
-   aggregate hides that. Stage 5 owes a table by group.
-4. **`max_photos_per_taxon` 150 caps the common species**, so the class balance here is not the
-   balance of Danish nature. That is deliberate (§12) but it means accuracy is not weighted the
-   way a user's experience will be.
-5. Nothing has been quantised or run on a device. The 1.5 s budget in §4.1 is untested.
+**Amphibians are the weakest group and the worst calibrated** — 89.0% rollup, ECE 0.050, on 155
+test photos. §12 already noted Denmark has barely a dozen amphibian species; the constraint is
+that there are few of them, photographed rarely, so there is little to learn from. Worth watching
+rather than fixing: more epochs on 155 examples buys nothing.
 
-### Next
+**Fungi have the highest leaf top-1 (88.4%) and the second-highest refusal rate (2.8%).** When
+the model can see a fungus it is confident, and when it cannot it says so. That is the intended
+behaviour, visible in the numbers.
 
-Re-run on all 84 shards when stage 3 finishes, add the per-group table, then hold out a
-confusion matrix so the reference-photo set (§20) can be chosen from what actually gets confused.
+### Calibration
+
+ECE 0.065 → **0.017** after temperature. Fitted T = 0.731, still below 1, so the head remains
+under-confident and sharpening it pushes answers deeper: mean depth 6.00 → 6.38, refusals 1.5% →
+0.8%, for 1.6 points of rollup accuracy.
+
+T moved from 0.616 on partial data to 0.731 on full — more data, less under-confidence to correct,
+which is the direction it should move.
+
+Per-group ECE runs from 0.007 (birds) to 0.050 (amphibians). Since §18 established that stated
+confidence is what competitors do not have, a group whose confidence means less than the others
+is a real defect, not a rounding difference — and it is the small groups.
+
+### Caveats
+
+1. **No device measurement.** Everything here is fp32 on a server. §21 measured 165 ms/image
+   pixels-to-logits on two throttled cores, but nothing has run on a Pixel.
+2. **`max_photos_per_taxon` is 150**, so the class balance is not the balance of Danish nature.
+   Deliberate (§12), but it means accuracy is not weighted the way a user's experience will be.
+3. **2,294 leaves, not 2,376.** 53 taxa did not bridge to GBIF — §15 and §16 cover why, and 13 of
+   them are genuine GBIF homonyms that refuse on purpose.
+4. **No confusion matrix yet.** That is what picks the reference-photo set (§20), and it is the
+   obvious next measurement.
+
+---
+
+## Run 1 — 18 Aug 2026, 41 of 84 shards
+
+Superseded by Run 2. Kept because its two wrong predictions are more useful than its numbers:
+rollup 94.3%, leaf top-1 84.2%, ECE 0.019 on 16,195 test photos, with "expect the full run to be
+worse" and "insects and fungi are where this will hurt" attached to it. Neither held.
