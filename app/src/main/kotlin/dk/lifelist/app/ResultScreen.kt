@@ -80,12 +80,15 @@ fun ResultScreen(
     reference: Bitmap?,
     referenceCredit: ReferencePhotos.Credit?,
     onOpenPhoto: (Bitmap, String) -> Unit,
+    onOpenTaxon: (Int) -> Unit,
+    article: Wikipedia.Article?,
     modelNote: String?,
     kept: Boolean,
     modifier: Modifier = Modifier,
 ) {
     var showCandidates by remember { mutableStateOf(answer.kind != AnswerKind.LEAF) }
     var showKey by remember { mutableStateOf(false) }
+    var showAbout by remember { mutableStateOf(false) }
     val context = LocalContext.current
 
     val pick = rememberLauncherForActivityResult(
@@ -152,6 +155,22 @@ fun ResultScreen(
 
                 Spacer(Modifier.height(8.dp))
 
+                if (article != null) {
+                    Expander(
+                        title = "About ${headline(answer).lowercase().replaceFirstChar { it.uppercase() }}",
+                        open = showAbout,
+                        onToggle = { showAbout = !showAbout },
+                    ) {
+                        Text(article.extract, style = MaterialTheme.typography.bodyLarge)
+                        Spacer(Modifier.height(6.dp))
+                        Text(
+                            "From Wikipedia, CC BY-SA 4.0. Tap any name below to read about it.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                }
+
                 Expander(
                     title = if (answer.kind == AnswerKind.LEAF) "Other possibilities"
                     else "Which one might it be?",
@@ -165,13 +184,19 @@ fun ResultScreen(
                             percent = candidate.confidence.percent,
                             fraction = candidate.confidence.barFraction,
                             otherBranch = !candidate.withinAnswer,
+                            onClick = { onOpenTaxon(candidate.taxonId) },
                         )
                     }
                 }
 
                 Expander("Where this sits", showKey, { showKey = !showKey }) {
                     answer.lineage.forEachIndexed { depth, step ->
-                        Row(Modifier.padding(vertical = 4.dp)) {
+                        Row(
+                            Modifier
+                                .fillMaxWidth()
+                                .clickable { onOpenTaxon(step.taxonId) }
+                                .padding(vertical = 4.dp)
+                        ) {
                             Spacer(Modifier.width((depth * 12).dp))
                             Text(
                                 step.name.annotated(),
@@ -392,8 +417,11 @@ private fun CandidateRow(
     percent: String,
     fraction: Float,
     otherBranch: Boolean,
+    onClick: () -> Unit,
 ) {
-    Column(Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
+    // Tappable, because showing that it was choosing between a speckled bush-cricket and a
+    // great green bush-cricket is only useful if you can then find out how to tell them apart.
+    Column(Modifier.fillMaxWidth().clickable(onClick = onClick).padding(vertical = 8.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
                 Text(

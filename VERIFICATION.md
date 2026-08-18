@@ -970,6 +970,78 @@ identity, and every competitor is already green.
 
 ---
 
+## 31. Wikipedia, bundled — and a resume cache that recorded a throttle as a fact
+
+"I would like information on each species (Wikipedia is totally fine), so that I can read a bit
+about each species to help with ID."
+
+**Bundled, not fetched.** The text ships in the APK. This is an offline-first app used in a
+field with no signal, and an "about this" panel that is blank exactly when you are standing in
+front of the animal is worse than no panel. The whole taxonomy costs about 1.6 MB of text next
+to a 350 MB model.
+
+**The Action API, not the REST summary endpoint.** `/api/rest_v1/page/summary/{title}` is one
+page per request, and an anonymous caller from this sandbox is throttled to a 25-second
+`Retry-After` — 4,645 titles would take a day. `action=query&prop=extracts&exlimit=max` takes
+**50 titles per request**: the same job in 94 calls.
+
+**A common name recovers what a binomial misses.** *Aglais urticae* is a redlink where "Small
+tortoiseshell" is not, so a second pass asks for English vernaculars wherever the scientific
+name found nothing.
+
+That pass needed a guard. "Small tortoiseshell" is also a cat coat and a hair comb, and an
+identification that opens an article about combs is worse than one that opens nothing. Every
+candidate must name the taxon in its own text — the binomial, or at least the genus — before it
+is accepted. Wikipedia's own convention puts the binomial in the first sentence, so the check
+costs a handful of real articles and rejects every absurd one.
+
+| rank | with an article | of | |
+|---|---|---|---|
+| species | 2,220 | 2,294 | 97% |
+| genus | 1,497 | 1,596 | 94% |
+| family | 527 | 532 | 99% |
+| order | 166 | 168 | 99% |
+| class | 44 | 45 | 98% |
+
+2.6 MB of text, keyed by taxon id, parsed lazily on first use rather than at startup — decoding
+it on the main thread before the viewfinder appears is a stutter a user would feel and never
+understand.
+
+### Two bugs, both of which reported themselves as coverage
+
+This job produced three plausible-looking coverage figures before it produced a correct one:
+38%, then 61%, then 81%, then 96%. Every wrong number looked like a fact about Wikipedia.
+
+**First: the resume cache recorded a throttle as a fact.** The initial attempt ran ten threads
+flat out, was rate-limited on nearly every request, and wrote its failures into
+`wikipedia_missing.json` — the same file it consulted next run to skip titles already known to
+have no article. It recorded **3,930 titles as having no Wikipedia article**, including *Anas
+platyrhynchos*. Every later run skipped the mallard because a throttle three hours earlier had
+been filed as a fact about the bird.
+
+`fetch_all` now returns three things rather than two: articles, **absent** (Wikipedia answered
+and has no article — permanent, cache it forever) and **unreachable** (we could not ask — a
+fact about the afternoon, never written to disk). The poisoned file was discarded wholesale
+rather than repaired, because there is no way to tell which entries were real.
+
+**Second: `prop=extracts` is capped at 20 pages per request, and does not say no.** Asking for
+50 titles returns all 50 pages; the last 30 simply have no `extract` field, which is
+indistinguishable from "there is no article" unless you look at `limits.extracts` in the
+response. Batches were 50. So roughly three in five titles were being marked absent on the
+strength of a request-size mistake — and the resulting 81% read as a believable coverage
+ceiling for English Wikipedia on Danish taxa.
+
+The cap is *reported*, so it is checkable rather than guessable. `is_truncated()` compares the
+batch against `limits.extracts` and hands the whole batch to `unreachable`, and `BATCH` is now
+20 with a test asserting it never exceeds the cap. Real coverage was never 81%; it was 96%.
+
+The shape is worth naming, because this project has now hit it twice: **a cache must record
+what was observed, never what was attempted.** Stage 3's shard files get this right — a shard
+exists only once it has been written atomically — and this did not. The tell in both cases was
+the same: a number that got worse quietly, and looked like the world rather than like a bug.
+
+---
+
 ## Open questions
 
 1. **Inference backend.** Accept the CPU-EP-first proposal in §1 above, or hold NNAPI as the

@@ -34,6 +34,7 @@ lifelist-images = "lifelist_train.cli.images:main"
 lifelist-embed = "lifelist_train.cli.embed:main"
 lifelist-export = "lifelist_train.cli.export:main"
 lifelist-reference-photos = "lifelist_train.cli.reference:main"
+lifelist-wikipedia = "lifelist_train.cli.wikipedia:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

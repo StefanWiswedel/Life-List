@@ -77,6 +77,8 @@ jobs:
             --meta shared/model/model_meta.json \
             --out app/src/main/assets/lifelist.onnx -v
           cp shared/model/taxonomy.json shared/model/model_meta.json app/src/main/assets/
+          # Committed, not fetched: it is a megabyte of text, and the app is offline-first.
+          cp shared/model/wikipedia.json app/src/main/assets/
           ls -lh app/src/main/assets/
 
       # 2,294 CC-licensed photographs by named people. The index is committed; the bytes

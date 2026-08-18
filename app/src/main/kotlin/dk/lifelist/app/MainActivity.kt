@@ -93,6 +93,7 @@ fun App() {
     val context = LocalContext.current
     val store = remember { RecordStore(context) }
     val references = remember { ReferencePhotos(context) }
+    val wikipedia = remember { Wikipedia(context) }
     val snackbar = remember { SnackbarHostState() }
     // Coarse location, asked for once, at the moment it would first be used.
     val askWhere = rememberLauncherForActivityResult(
@@ -104,6 +105,7 @@ fun App() {
     var showingResult by remember { mutableStateOf(false) }
     var thresholdSheet by remember { mutableStateOf(false) }
     var viewing by remember { mutableStateOf<Viewing?>(null) }
+    var readingAbout by remember { mutableStateOf<Int?>(null) }
 
     var threshold by remember { mutableFloatStateOf(0.70f) }
     var caseIndex by remember { mutableIntStateOf(0) }
@@ -273,6 +275,8 @@ fun App() {
                         reference = identifier?.let { references.photo(answer.taxonId) },
                         referenceCredit = identifier?.let { references.credit(answer.taxonId) },
                         onOpenPhoto = { bitmap, label -> viewing = Viewing.Live(bitmap, label) },
+                        onOpenTaxon = { taxonId -> readingAbout = taxonId },
+                        article = wikipedia.article(answer.taxonId),
                         kept = kept,
                         modelNote = note(loaded, identifier, leafProbabilities, photos, failure),
                     )
@@ -292,6 +296,24 @@ fun App() {
             threshold = threshold,
             onChange = { threshold = it },
             onDismiss = { thresholdSheet = false },
+        )
+    }
+
+    readingAbout?.let { taxonId ->
+        val taxonomy = identifier?.taxonomy ?: Demo.taxonomy
+        val node = taxonomy.node(taxonId)
+        TaxonSheet(
+            brief = TaxonBrief(
+                taxonId = taxonId,
+                name = Presentation.styleName(node.scientificName, node.rank).annotated(),
+                vernacular = node.vernacularEn,
+                rank = node.rank,
+                photo = references.photo(taxonId),
+                credit = references.credit(taxonId),
+                article = wikipedia.article(taxonId),
+            ),
+            onOpenPhoto = { bitmap, label -> viewing = Viewing.Live(bitmap, label) },
+            onDismiss = { readingAbout = null },
         )
     }
 

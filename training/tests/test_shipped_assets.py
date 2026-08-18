@@ -70,3 +70,41 @@ def test_indeterminate_leaves_inherit_their_genus_name(nodes):
             parent = by_id.get(node["parent_id"])
             if parent and parent.get("vernacular_en"):
                 assert node.get("vernacular_en") == parent["vernacular_en"]
+
+
+WIKIPEDIA = ROOT / "shared" / "model" / "wikipedia.json"
+
+
+@pytest.fixture(scope="module")
+def articles() -> dict:
+    if not WIKIPEDIA.exists():
+        pytest.skip("no bundled Wikipedia index in this checkout")
+    return json.loads(WIKIPEDIA.read_text(encoding="utf-8"))
+
+
+def test_most_taxa_have_a_bundled_article(nodes, articles):
+    """96% when built correctly. Anything near 80% means the extracts cap bit again (§31)."""
+    covered = sum(1 for n in nodes if str(n["taxon_id"]) in articles)
+    assert covered / len(nodes) > 0.90, (
+        f"only {covered}/{len(nodes)} taxa have an article — "
+        "check limits.extracts and the absent cache before believing it"
+    )
+
+
+def test_the_obvious_ones_are_there(nodes, articles):
+    """A regression test named after the bird it was written for."""
+    by_name = {n["scientific_name"]: n for n in nodes}
+    for name in ("Anas platyrhynchos", "Vulpes vulpes", "Carabidae"):
+        node = by_name.get(name)
+        if node is None:
+            continue
+        article = articles.get(str(node["taxon_id"]))
+        assert article, f"{name} has no bundled article"
+        assert name.split(" ")[0].lower() in article["extract"].lower()
+
+
+def test_every_article_has_the_three_fields_the_app_reads(articles):
+    for key, article in list(articles.items())[:200]:
+        assert set(article) >= {"title", "extract", "url"}, key
+        assert article["extract"].strip()
+        assert article["url"].startswith("https://en.wikipedia.org/wiki/")

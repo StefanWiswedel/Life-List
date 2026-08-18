@@ -41,6 +41,7 @@ When trading off, trade in favour of a record being keepable at the rank the evi
 | `app/` — Android | identifies on device; **Material 3 shell**, life list, reference photos |
 | common names | **fixed 18 Aug** — the taxonomy asset shipped with every vernacular null (§28) |
 | multi-photo | fused on device via §3.2; §3.1 needs a re-export (§29) |
+| species info | 4,475 of 4,657 taxa carry a bundled Wikipedia intro, 2.6 MB (§31) |
 | release workflow | tag `v*` → GitHub Release with an APK attached |
 
 ## Rules that have already earned their place

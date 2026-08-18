@@ -29,3 +29,10 @@ app/src/main/assets/lifelist.onnx
 
 # Fetched by `lifelist-reference-photos` from the committed index.
 app/src/main/assets/reference/
+
+# Copied from shared/model/ by the release workflow. 2.6 MB, and committing it twice makes
+# every patch that touches it twice the size for no benefit.
+app/src/main/assets/wikipedia.json
+
+# Fetch caches for `lifelist-wikipedia`. Resumable state, not source.
+/cache/
