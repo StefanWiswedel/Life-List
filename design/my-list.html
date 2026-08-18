@@ -1,0 +1,104 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>Life List — my list</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#FBF7F0;--card:#fff;--ink:#2A2621;--soft:#7A736A;--rust:#C2603A;--ochre:#D9A339;
+--sage:#7C8471;--moss:#4E6151;--line:#EDE6DA;--display:"Fraunces",Georgia,serif;--ui:"Nunito Sans",sans-serif}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:var(--paper);font-family:var(--ui);color:var(--ink);-webkit-font-smoothing:antialiased}
+.wrap{max-width:880px;margin:0 auto;padding:40px 24px 80px}
+h1{font-family:var(--display);font-size:26px;font-weight:600;margin:0 0 4px}
+.sub{color:var(--soft);font-size:15px;margin:0 0 30px;max-width:62ch}
+.cols{display:grid;gap:26px;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));align-items:start}
+.phone{background:var(--card);border-radius:28px;overflow:hidden;
+  box-shadow:0 1px 2px rgba(42,38,33,.05),0 12px 32px -12px rgba(42,38,33,.18)}
+.top{padding:22px 20px 18px;background:linear-gradient(150deg,#F3EADC,#EFE4D2)}
+.top h2{font-family:var(--display);font-size:22px;margin:0 0 12px;font-weight:600}
+.tally{display:flex;gap:10px}
+.t{flex:1;background:rgba(255,255,255,.72);border-radius:16px;padding:11px 12px}
+.t b{display:block;font-family:var(--display);font-size:24px;font-weight:600;line-height:1.1}
+.t span{font-size:11.5px;color:var(--soft);font-weight:600;letter-spacing:.02em}
+.note{font-size:13px;color:var(--soft);margin:12px 2px 0;line-height:1.45}
+.grp{padding:16px 20px 4px}
+.grp h3{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--soft);margin:0 0 2px;
+  display:flex;justify-content:space-between;align-items:baseline}
+.grp h3 em{font-style:normal;font-weight:700;color:var(--ink);font-size:13px;letter-spacing:0}
+.item{display:flex;gap:12px;align-items:center;padding:11px 0;border-bottom:1px solid var(--line)}
+.item:last-child{border-bottom:0}
+.th{width:46px;height:46px;border-radius:14px;flex:none;background:linear-gradient(150deg,#E6DCCB,#D5C7AF)}
+.th.b{background:linear-gradient(150deg,#DCE3DA,#BDC9B7)}.th.c{background:linear-gradient(150deg,#E7DECD,#CBBB9C)}
+.nm{font-family:var(--display);font-size:17px;font-weight:600;line-height:1.2;margin:0}
+.sc{font-family:var(--display);font-style:italic;font-size:13.5px;color:var(--soft);margin:1px 0 0}
+.sc .rom{font-style:normal}
+.rk{margin-left:auto;font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  padding:4px 9px;border-radius:999px;white-space:nowrap}
+.rk.sp{background:#EDF0EA;color:var(--moss)}
+.rk.gen{background:#FBF0DA;color:#8A6410}
+.rk.fam{background:#F6E9E3;color:#8E4527}
+.foot{padding:14px 20px 22px}
+.cta{display:block;text-align:center;background:var(--rust);color:#fff;border-radius:999px;padding:14px;font-weight:700;font-size:14.5px}
+.notes{margin-top:44px;max-width:70ch}
+.notes h3{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--soft);margin:0 0 10px}
+.notes p{font-size:15.5px;line-height:1.55;margin:0 0 12px}
+.notes .k{border-left:3px solid var(--rust);padding-left:14px}
+</style></head><body><div class="wrap">
+<h1>My list</h1>
+<p class="sub">The differentiator, made concrete: an entry can sit at whatever rank the evidence
+supported. Seek shows you “a member of the family Katydids” and then refuses to save it.</p>
+
+<div class="cols">
+  <div class="phone">
+    <div class="top">
+      <h2>Stefan’s list</h2>
+      <div class="tally">
+        <div class="t"><b>34</b><span>records</span></div>
+        <div class="t"><b>26</b><span>to species</span></div>
+        <div class="t"><b>8</b><span>to genus or above</span></div>
+      </div>
+      <p class="note">Counted honestly. A record kept at genus is a record, not a failure —
+      but it is not a species tick either, so it is counted separately.</p>
+    </div>
+
+    <div class="grp">
+      <h3>Insects <em>14</em></h3>
+      <div class="item"><span class="th"></span><div><p class="nm">Small Tortoiseshell</p>
+        <p class="sc">Aglais urticae</p></div><span class="rk sp">species</span></div>
+      <div class="item"><span class="th c"></span><div><p class="nm">A ground beetle</p>
+        <p class="sc">Carabus <span class="rom">sp.</span></p></div><span class="rk gen">genus</span></div>
+      <div class="item"><span class="th"></span><div><p class="nm">A hoverfly</p>
+        <p class="sc">Syrphidae</p></div><span class="rk fam">family</span></div>
+      <div class="item"><span class="th c"></span><div><p class="nm">Dark Spinach</p>
+        <p class="sc">Pelurga comitata</p></div><span class="rk sp">species</span></div>
+    </div>
+
+    <div class="grp">
+      <h3>Birds <em>9</em></h3>
+      <div class="item"><span class="th b"></span><div><p class="nm">A dabbling duck</p>
+        <p class="sc">Anas <span class="rom">sp.</span></p></div><span class="rk gen">genus</span></div>
+      <div class="item"><span class="th b"></span><div><p class="nm">Mute Swan</p>
+        <p class="sc">Cygnus olor</p></div><span class="rk sp">species</span></div>
+    </div>
+
+    <div class="foot"><span class="cta">Identify something</span></div>
+  </div>
+
+  <div class="notes">
+    <h3>Why this is the wedge</h3>
+    <p class="k">Seek will tell you it is a katydid and then not let you keep it. Arter and
+    ObsIdentify only save species. For insects and fungi — where a photograph often cannot support
+    a species — that means the app discards most of what you actually saw.</p>
+    <p><b>So the record stores the returned node, at whatever rank it was.</b> Not a species field
+    with a blank in it.</p>
+    <p><b>Counting stays honest.</b> Three numbers, not one: records, of which to species, of which
+    to genus or coarser. Collapsing them into a single score would be the quiet dishonesty this
+    whole app is arguing against — and it is how a life list turns into a leaderboard.</p>
+    <p><b>A record can be refined later.</b> “A ground beetle” becomes <i>Carabus granulatus</i>
+    when you get a better photo or someone who knows tells you, and the original determination
+    stays in its history rather than being overwritten.</p>
+    <p>Open question for you: should refining a genus record to species count as a new species tick
+    on the date of the original sighting, or the date it was refined? Birders care about this more
+    than it sounds.</p>
+  </div>
+</div>
+</div></body></html>

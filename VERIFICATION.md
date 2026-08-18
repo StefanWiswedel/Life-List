@@ -549,6 +549,43 @@ the README should not claim more than that.
 the product, not the fallback itself. Temperature fitting in §2 moves from hygiene to headline,
 and `RESULTS.md` should lead with calibration error rather than accuracy.
 
+## 19. The real differentiator: Seek falls back but will not *save* the fallback
+
+§18 narrowed the claim to calibration. That was still not the sharpest reading. From Stefan,
+18 Aug 2026, having used it:
+
+> My issue with Seek is that I couldn't save the sighting as "Katydid" — it only allows
+> species-level observations. And with insects that will often not be possible.
+
+So Seek's fallback is **presentational**. It tells you it is a katydid and then declines to keep
+the record, because its data model has a species field and a katydid is not a species. Arter and
+ObsIdentify are the same: an observation is a species or it is nothing.
+
+That is a much better wedge than calibration, and it is a *data model* difference rather than a
+screen difference — which is why no amount of UI work by a competitor closes it cheaply.
+
+**Consequences, and they reach further than the result screen:**
+
+1. **An `Identification` record stores the returned node at whatever rank it was.** Not a species
+   field left blank, not a "pending identification" state. `Carabus sp.` and *Aglais urticae* are
+   both complete records.
+2. **The life list counts three numbers, never one.** Records, of which to species, of which to
+   genus or coarser. Collapsing them into a single score is the quiet dishonesty this app argues
+   against, and it is the mechanism by which a life list becomes a leaderboard — which §7 rules
+   out for reasons that now have teeth.
+3. **A record can be refined without losing its history.** "A ground beetle" becomes *Carabus
+   granulatus* later; the original determination, its threshold and its model version stay
+   attached. §4.4 already stores the threshold in force for exactly this reason.
+4. **This is what the genus-as-leaf decision (§16) was for.** It stopped being a training detail
+   the moment the record model had to hold it.
+
+*Needs your call:* when a genus record is refined to species, does the species tick belong to the
+date of the original sighting or the date of the refinement? Birders have strong views; the honest
+answer is probably the sighting date with the refinement date recorded alongside, but it is a
+product decision and this document does not get to make it.
+
+`design/my-list.html` shows the screen this implies.
+
 ---
 
 ## Open questions

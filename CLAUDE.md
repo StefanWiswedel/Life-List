@@ -12,8 +12,12 @@ this file used to claim. Seek *does* fall back ("a member of the family Katydids
 competitor does is tell you how sure it is about the rank it returned, show what it was choosing
 between, or let you set how much certainty you want first. See VERIFICATION.md §18.
 
-So: calibration carries the product, not fallback alone. When trading off, trade in favour of the
-returned node's probability meaning what it says.
+**[sharpened 18 Aug 2026]** Sharper still, and this is the one to hold on to: Seek's fallback is
+presentational — it will tell you it is a katydid and then refuse to *save* the record, because
+its model has a species field. Ours stores the returned node at whatever rank it was. That is a
+data-model difference, not a screen difference, and it is why the genus-as-leaf work matters.
+
+When trading off, trade in favour of a record being keepable at the rank the evidence supported.
 
 ## Read in this order
 
