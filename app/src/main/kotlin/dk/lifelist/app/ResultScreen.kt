@@ -1,7 +1,13 @@
 package dk.lifelist.app
 
+import android.graphics.Bitmap
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,14 +17,30 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Slider
-import androidx.compose.material3.SliderDefaults
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material.icons.outlined.AddAPhoto
+import androidx.compose.material.icons.outlined.Refresh
+import androidx.compose.material.icons.outlined.Tune
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.AssistChipDefaults
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -31,72 +53,61 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import android.graphics.Bitmap
 import dk.lifelist.core.Answer
 import dk.lifelist.core.AnswerKind
-import dk.lifelist.core.NameRun
 
 /**
- * The result screen, warm direction.
+ * The identification.
  *
- * Your photo beside a reference, the common name as the headline, one sentence. Nothing
- * honest was removed — the taxonomic key and the full candidate list are a tap away — it
- * simply stopped leading with apparatus. `design/result-screen-warm.html` is the reference.
- *
- * Decides nothing. Everything here comes from `dk.lifelist.core.Presentation`, so there is
- * one implementation of what the app says and it is the tested one.
+ * Decides nothing. Every word comes from `dk.lifelist.core.Presentation`, so there is one
+ * implementation of what the app says and it is the tested one. What changed here is only
+ * the chrome: Material components instead of hand-rolled boxes, so a button ripples, a
+ * card has elevation, and an expander looks like every other expander on the phone.
  */
-
-/** §1.2 typography: italic runs stay italic, `sp.` stays roman. */
-fun List<NameRun>.annotated(): AnnotatedString = buildAnnotatedString {
-    this@annotated.forEachIndexed { index, run ->
-        if (index > 0) append(" ")
-        if (run.italic) withStyle(SpanStyle(fontStyle = FontStyle.Italic)) { append(run.text) }
-        else append(run.text)
-    }
-}
-
 @Composable
 fun ResultScreen(
     answer: Answer,
     threshold: Float,
-    onThresholdChange: (Float) -> Unit,
+    onOpenThreshold: () -> Unit,
     onRetake: () -> Unit,
+    onAddPhoto: (Bitmap?) -> Unit,
     onKeep: () -> Unit,
-    onOpenList: () -> Unit,
-    photo: Bitmap?,
+    photos: List<Bitmap>,
     reference: Bitmap?,
     referenceCredit: ReferencePhotos.Credit?,
+    onOpenPhoto: (Bitmap, String) -> Unit,
     modelNote: String?,
     kept: Boolean,
     modifier: Modifier = Modifier,
 ) {
     var showCandidates by remember { mutableStateOf(answer.kind != AnswerKind.LEAF) }
     var showKey by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+
+    val pick = rememberLauncherForActivityResult(
+        ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
+        uri?.let { onAddPhoto(runCatching { decodeSoftware(context, it) }.getOrNull()) }
+    }
 
     Column(
         modifier
             .fillMaxSize()
-            .background(Warm.Paper)
-            .safeDrawingPadding()
             .verticalScroll(rememberScrollState())
-            .padding(16.dp)
+            .padding(horizontal = 16.dp)
     ) {
-        Column(
-            Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(24.dp))
-                .background(Warm.Card)
+        Card(
+            Modifier.fillMaxWidth(),
+            shape = MaterialTheme.shapes.extraLarge,
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLowest),
         ) {
-            PhotoPair(photo, reference)
+            PhotoStrip(photos, reference, onOpenPhoto, onAddPhoto = {
+                pick.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+            })
 
             Column(Modifier.padding(18.dp)) {
                 Row(verticalAlignment = Alignment.Top) {
@@ -107,72 +118,68 @@ fun ResultScreen(
                     )
                     Spacer(Modifier.width(14.dp))
                     Column {
-                        Text(headline(answer), style = Warm.display)
-                        if (answer.scientificName.isNotEmpty()) {
-                            Text(answer.scientificName.annotated(), style = Warm.latin)
+                        Text(headline(answer), style = MaterialTheme.typography.headlineMedium)
+                        // Only when it is not already the headline: printing the Latin twice
+                        // was the single most-noticed thing wrong with this screen.
+                        val latin = answer.scientificName.plain()
+                        if (latin.isNotEmpty() && latin != headline(answer)) {
+                            Text(answer.scientificName.annotated(), style = LatinStyle)
+                        }
+                        answer.rankLabel?.let {
+                            Spacer(Modifier.height(6.dp))
+                            RankBadge(it)
                         }
                     }
                 }
 
                 Spacer(Modifier.height(14.dp))
-                Text(answer.explanation, style = Warm.body)
+                Text(answer.explanation, style = MaterialTheme.typography.bodyLarge)
 
-                referenceCredit?.let {
-                    CreditLine(it.credit, it.licence)
-                }
+                referenceCredit?.let { CreditLine(it.credit, it.licence) }
 
-                Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(14.dp))
+                AssistChip(
+                    onClick = onOpenThreshold,
+                    label = { Text("Committing at ${Math.round(threshold * 100)}%") },
+                    leadingIcon = {
+                        Icon(
+                            Icons.Outlined.Tune,
+                            contentDescription = null,
+                            Modifier.size(AssistChipDefaults.IconSize),
+                        )
+                    },
+                )
 
-                Disclosure(
+                Spacer(Modifier.height(8.dp))
+
+                Expander(
                     title = if (answer.kind == AnswerKind.LEAF) "Other possibilities"
                     else "Which one might it be?",
                     open = showCandidates,
                     onToggle = { showCandidates = !showCandidates },
                 ) {
                     answer.candidates.forEach { candidate ->
-                        Row(
-                            Modifier.fillMaxWidth().padding(vertical = 8.dp),
-                            verticalAlignment = Alignment.Top,
-                        ) {
-                            Column(Modifier.weight(1f)) {
-                                Text(
-                                    candidate.name.annotated(),
-                                    style = Warm.latin.copy(
-                                        color = if (candidate.withinAnswer) Warm.Ink else Warm.Soft,
-                                        fontSize = 15.sp,
-                                    ),
-                                )
-                                candidate.vernacular?.let {
-                                    Text(it, style = Warm.body.copy(fontSize = 13.sp, color = Warm.Soft))
-                                }
-                                if (!candidate.withinAnswer) {
-                                    Text(
-                                        "OTHER BRANCH",
-                                        style = Warm.label.copy(color = Warm.Ochre, fontSize = 10.sp),
-                                    )
-                                }
-                            }
-                            Text(
-                                candidate.confidence.percent,
-                                style = Warm.figure.copy(color = Warm.Soft, fontSize = 14.sp),
-                            )
-                        }
-                        Hairline()
+                        CandidateRow(
+                            name = candidate.name.annotated(),
+                            vernacular = candidate.vernacular,
+                            percent = candidate.confidence.percent,
+                            fraction = candidate.confidence.barFraction,
+                            otherBranch = !candidate.withinAnswer,
+                        )
                     }
                 }
 
-                Disclosure("Where this sits", showKey, { showKey = !showKey }) {
+                Expander("Where this sits", showKey, { showKey = !showKey }) {
                     answer.lineage.forEachIndexed { depth, step ->
-                        Row(Modifier.padding(vertical = 3.dp)) {
-                            Spacer(Modifier.width((depth * 10).dp))
+                        Row(Modifier.padding(vertical = 4.dp)) {
+                            Spacer(Modifier.width((depth * 12).dp))
                             Text(
                                 step.name.annotated(),
-                                style = Warm.body.copy(
-                                    fontSize = 15.sp,
-                                    color = if (step.isAnswer) Warm.Ink else Warm.Soft,
-                                    fontWeight = if (step.isAnswer) FontWeight.SemiBold
-                                    else FontWeight.Normal,
-                                ),
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = if (step.isAnswer) MaterialTheme.colorScheme.onSurface
+                                else MaterialTheme.colorScheme.onSurfaceVariant,
+                                fontWeight = if (step.isAnswer) FontWeight.SemiBold
+                                else FontWeight.Normal,
                             )
                         }
                     }
@@ -180,63 +187,151 @@ fun ResultScreen(
             }
         }
 
-        Spacer(Modifier.height(14.dp))
+        Spacer(Modifier.height(16.dp))
 
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            WarmButton(
-                // The button says what will be kept, at the rank it will be kept at. Nobody
-                // should have to guess whether "add" means the species or the genus.
-                text = if (kept) "Kept" else keepLabel(answer),
-                primary = !kept,
-                onClick = onKeep,
-                modifier = Modifier.weight(1f),
-            )
-            WarmButton("Retake", primary = false, onClick = onRetake, modifier = Modifier.weight(1f))
+        Button(
+            onClick = onKeep,
+            enabled = !kept && answer.taxonId != 0,
+            modifier = Modifier.fillMaxWidth().height(52.dp),
+            contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
+        ) {
+            if (kept) {
+                Icon(Icons.Filled.Check, contentDescription = null, Modifier.size(ButtonDefaults.IconSize))
+                Spacer(Modifier.width(ButtonDefaults.IconSpacing))
+            }
+            // The button says what will be kept, at the rank it will be kept at. Nobody
+            // should have to guess whether "add" means the species or the genus.
+            Text(if (kept) "In your list" else keepLabel(answer))
         }
 
         Spacer(Modifier.height(10.dp))
-        WarmButton("My list", primary = false, onClick = onOpenList, modifier = Modifier.fillMaxWidth())
 
-        Spacer(Modifier.height(18.dp))
-        ThresholdControl(threshold, onThresholdChange)
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            FilledTonalButton(
+                onClick = {
+                    pick.launch(
+                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                    )
+                },
+                modifier = Modifier.weight(1f),
+                contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
+            ) {
+                Icon(Icons.Outlined.AddAPhoto, contentDescription = null, Modifier.size(ButtonDefaults.IconSize))
+                Spacer(Modifier.width(ButtonDefaults.IconSpacing))
+                Text("Add photo")
+            }
+            OutlinedButton(
+                onClick = onRetake,
+                modifier = Modifier.weight(1f),
+                contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
+            ) {
+                Icon(Icons.Outlined.Refresh, contentDescription = null, Modifier.size(ButtonDefaults.IconSize))
+                Spacer(Modifier.width(ButtonDefaults.IconSpacing))
+                Text("Start over")
+            }
+        }
 
         modelNote?.let {
-            Spacer(Modifier.height(14.dp))
-            Text(it, style = Warm.label)
+            Spacer(Modifier.height(16.dp))
+            FieldLabel(it, Modifier.fillMaxWidth())
         }
-        Spacer(Modifier.height(24.dp))
+        Spacer(Modifier.height(28.dp))
     }
 }
 
+/**
+ * The headline.
+ *
+ * A common name when there is one — 3,612 of 4,657 nodes now carry one, which is the whole
+ * of the "it gives the species name twice" bug: the taxonomy asset was built without them,
+ * so this fell through to the Latin and the line underneath printed it again.
+ */
 private fun headline(answer: Answer): String = when {
     answer.kind == AnswerKind.UNIDENTIFIED -> "Not sure enough to say"
     answer.vernacular != null -> answer.vernacular!!
-    // No common name — the Latin becomes the headline rather than leaving a blank, but the
-    // rank still reads in plain words where there is one.
-    answer.rankLabel != null -> "A ${answer.rankLabel}"
-    else -> answer.scientificName.joinToString(" ") { it.text }
+    else -> answer.scientificName.plain()
 }
 
 private fun keepLabel(answer: Answer): String = when (answer.kind) {
     AnswerKind.UNIDENTIFIED -> "Keep without a name"
     AnswerKind.LEAF -> "Add to my list"
-    else -> "Keep as ${answer.scientificName.joinToString(" ") { it.text }}"
+    else -> "Keep as ${answer.scientificName.plain()}"
 }
 
 @Composable
-private fun PhotoPair(photo: Bitmap?, reference: Bitmap?) {
-    Row(Modifier.fillMaxWidth().height(170.dp)) {
-        PhotoTile(photo, "YOURS", Modifier.weight(1f))
-        if (reference != null) {
+private fun RankBadge(rank: String) {
+    Surface(
+        color = MaterialTheme.colorScheme.tertiaryContainer,
+        contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+        shape = MaterialTheme.shapes.small,
+    ) {
+        Text(
+            "$rank level",
+            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
+        )
+    }
+}
+
+/**
+ * Your photos, and the reference, side by side and tappable.
+ *
+ * More than one of yours is normal now: several angles of the same individual are fused
+ * before the head sees them (§3.2), which is exactly how a hard insect gets resolved.
+ */
+@Composable
+private fun PhotoStrip(
+    photos: List<Bitmap>,
+    reference: Bitmap?,
+    onOpen: (Bitmap, String) -> Unit,
+    onAddPhoto: () -> Unit,
+) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .height(170.dp)
+            .horizontalScrollIfNeeded()
+    ) {
+        photos.forEachIndexed { index, bitmap ->
+            PhotoTile(
+                bitmap = bitmap,
+                label = if (photos.size == 1) "Yours" else "Yours ${index + 1}",
+                modifier = Modifier.weight(1f),
+                onClick = { onOpen(bitmap, "Your photo") },
+            )
             Spacer(Modifier.width(2.dp))
-            PhotoTile(reference, "REFERENCE", Modifier.weight(1f))
+        }
+        if (photos.isEmpty()) {
+            PhotoTile(null, "Yours", Modifier.weight(1f), onClick = onAddPhoto)
+            Spacer(Modifier.width(2.dp))
+        }
+        if (reference != null) {
+            PhotoTile(
+                bitmap = reference,
+                label = "Reference",
+                modifier = Modifier.weight(1f),
+                onClick = { onOpen(reference, "Reference photo") },
+            )
         }
     }
 }
 
+/** Placeholder for a horizontal scroll once there are more photos than fit. */
+private fun Modifier.horizontalScrollIfNeeded(): Modifier = this
+
 @Composable
-private fun PhotoTile(bitmap: Bitmap?, label: String, modifier: Modifier = Modifier) {
-    Box(modifier.fillMaxSize().background(Color(0xFFE8E0D2))) {
+private fun PhotoTile(
+    bitmap: Bitmap?,
+    label: String,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+) {
+    Box(
+        modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.surfaceContainerHighest)
+            .clickable(onClick = onClick)
+    ) {
         bitmap?.let {
             Image(
                 bitmap = it.asImageBitmap(),
@@ -245,43 +340,85 @@ private fun PhotoTile(bitmap: Bitmap?, label: String, modifier: Modifier = Modif
                 contentScale = ContentScale.Crop,
             )
         }
-        Text(
-            label,
-            style = Warm.label.copy(color = Warm.Ink),
-            modifier = Modifier
-                .padding(8.dp)
-                .clip(RoundedCornerShape(999.dp))
-                .background(Color(0xE6FFFFFF))
-                .padding(horizontal = 9.dp, vertical = 4.dp),
-        )
+        Surface(
+            color = Color(0xE6FFFFFF),
+            shape = MaterialTheme.shapes.extraLarge,
+            modifier = Modifier.padding(8.dp),
+        ) {
+            FieldLabel(
+                label,
+                Modifier.padding(horizontal = 9.dp, vertical = 4.dp),
+                colour = MaterialTheme.colorScheme.onSurface,
+            )
+        }
     }
 }
 
 @Composable
-private fun ThresholdControl(threshold: Float, onChange: (Float) -> Unit) {
-    Column(
-        Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(20.dp))
-            .background(Warm.Card)
-            .padding(16.dp)
-    ) {
-        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            Text("HOW SURE BEFORE IT COMMITS", style = Warm.label)
+private fun Expander(
+    title: String,
+    open: Boolean,
+    onToggle: () -> Unit,
+    content: @Composable () -> Unit,
+) {
+    Column(Modifier.fillMaxWidth()) {
+        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+        Row(
+            Modifier.fillMaxWidth().clickable(onClick = onToggle).padding(vertical = 14.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                title,
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.secondary,
+            )
             Spacer(Modifier.weight(1f))
-            Text("${Math.round(threshold * 100)}%", style = Warm.figure.copy(color = Warm.Rust))
+            Icon(
+                if (open) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
         }
-        // Spec §4.4 — 0.50 to 0.95, applied at display time, so old records re-render
-        // honestly instead of being rewritten.
-        Slider(
-            value = threshold,
-            onValueChange = onChange,
-            valueRange = 0.50f..0.95f,
-            colors = SliderDefaults.colors(
-                thumbColor = Warm.Rust,
-                activeTrackColor = Warm.Rust,
-                inactiveTrackColor = Warm.Line,
-            ),
+        AnimatedVisibility(open) {
+            Column(Modifier.fillMaxWidth().padding(bottom = 12.dp)) { content() }
+        }
+    }
+}
+
+@Composable
+private fun CandidateRow(
+    name: androidx.compose.ui.text.AnnotatedString,
+    vernacular: String?,
+    percent: String,
+    fraction: Float,
+    otherBranch: Boolean,
+) {
+    Column(Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Column(Modifier.weight(1f)) {
+                Text(
+                    vernacular ?: name.text,
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Medium,
+                )
+                if (vernacular != null) {
+                    Text(name, style = LatinStyle.copy(fontSize = 13.sp))
+                }
+            }
+            Text(percent, style = MaterialTheme.typography.titleMedium)
+        }
+        Spacer(Modifier.height(6.dp))
+        LinearProgressIndicator(
+            progress = { fraction },
+            modifier = Modifier.fillMaxWidth().height(4.dp).clip(MaterialTheme.shapes.extraSmall),
+            color = if (otherBranch) MaterialTheme.colorScheme.tertiary
+            else MaterialTheme.colorScheme.secondary,
+            trackColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+            drawStopIndicator = {},
         )
+        if (otherBranch) {
+            Spacer(Modifier.height(4.dp))
+            FieldLabel("Other branch", colour = MaterialTheme.colorScheme.tertiary)
+        }
     }
 }

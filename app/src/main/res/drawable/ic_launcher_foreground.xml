@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    A leaf with a tick cut through it: the two halves of what this app is, nature and a list.
+
+    Drawn inside the 66dp safe circle of the 108dp adaptive canvas, so nothing important is
+    lost when a launcher masks it to a circle, a squircle or a rounded square.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#FBF7F0"
+        android:pathData="M30,78 C30,52 52,30 78,30 C78,56 56,78 30,78 Z" />
+    <path
+        android:strokeColor="#C2603A"
+        android:strokeWidth="5.6"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M43,57 L52,66 L70,42" />
+</vector>

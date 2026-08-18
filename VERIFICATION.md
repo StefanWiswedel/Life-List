@@ -871,6 +871,105 @@ so v0.5.1 needs a clean install. Everything after that updates in place.
 
 ---
 
+## 28. The taxonomy shipped with no common names at all — 18 Aug 2026
+
+Reported from the phone as "the common name isn't given, it just gives the species name twice".
+It was not a display bug.
+
+`shared/model/taxonomy.json` had `vernacular_en: null` on **all 4,657 nodes**. The two scripts
+that built it (`train_smoke.py`, `full_run.py`) constructed `GbifTaxon(...)` with `key`,
+`scientific_name`, `rank`, `status`, `lineage` and `lineage_names` — and quietly omitted
+`vernacular_en` and `vernacular_da`, both of which default to `None`. `build_taxonomy_nodes`
+faithfully copied the nulls through.
+
+`headline(answer)` then fell through its `answer.vernacular != null` branch to the scientific
+name, and the line directly beneath printed `answer.scientificName` again. Two correct lines of
+code, one missing field, and the screen said *Leptophyes punctatissima* twice.
+
+**The fix needed no refetch of anything expensive.** `cache/taxa_raw.json` already held 10,528
+English and 11,138 Danish names from stage 1 — they were fetched, then dropped on the floor. The
+ancestors are a different matter: family, order and class nodes are *derived* from
+`lineage_names` and were never GBIF records in their own right, so they had no vernaculars to
+drop. Those were fetched, 2,677 of them, from `/species/{key}/vernacularNames`.
+
+| rank | with an English name | of |
+|---|---|---|
+| species | 2,115 | 2,294 |
+| genus | 877 | 1,596 |
+| family | 442 | 532 |
+| order | 121 | 168 |
+| class | 36 | 45 |
+
+Family coverage matters more than it looks. A family-level answer is the answer this whole app
+exists to give, and "Carabidae" is not an answer a person can use — "Ground beetles" is.
+
+Two smaller decisions fell out of it:
+
+- **Case is normalised on the first letter only.** GBIF returns whatever the contributing
+  checklist used: `ground beetles` sits next to `Common Speckled Bush-cricket`. Lower-casing the
+  rest would wreck `Eurasian Teal`, so only the first character is touched.
+- **Indeterminate leaves inherit their genus's name.** `Arctium sp.` is a burdock, and GBIF has
+  never heard of the synthetic node, so it takes the parent's vernacular. Saying "Burdock, and
+  the species is not determined" is exactly what §1.1a is for.
+
+`training/tests/test_shipped_assets.py` now asserts all of this against the real file — the
+generated asset had no test of any kind, which is why a field being null on every row shipped.
+
+---
+
+## 29. Multi-photo fusion on device is §3.2, not §3.1 — and that is the export's fault
+
+Several photos of one individual now fuse before the head sees them. The spec's default is
+**§3.1, embedding-space**: normalise, average, renormalise, then run the head. The app does
+**§3.2, probability-space** instead, and the reason is not a preference.
+
+The exported graph folds preprocessing, the backbone, the L2 and the linear head into one
+pixels-to-logits function (§21–22). That was the right call for a single photo — it is what
+makes preprocessing drift impossible — but it means the 512-d embedding §3.1 wants to average
+is not an output of the model. There is nothing on device to average.
+
+§3.2 is available, and cheaper than it looks. Writing the geometric mean in log space:
+
+```
+log p_i     = z_i / T - logsumexp(z_i / T)
+mean_i      = mean(z_i) / T - mean(logsumexp(z_i / T))
+softmax(mean_i) = softmax(mean(z_i) / T)
+```
+
+The per-photo log-normalisers are constants across taxa, so the final softmax divides them out.
+**Averaging logits is exactly the geometric mean of the probabilities** — one softmax instead of
+k, and no underflow to guard against with 2,294 classes.
+
+**Still to do:** re-export with the embedding as a second output, and switch to §3.1. Worth
+measuring rather than assuming — the two agree on easy cases and diverge exactly where the
+photos disagree, which is the case fusion exists for.
+
+---
+
+## 30. Why it "felt like a web app"
+
+Reported as a feeling, and it had a specific cause. The app had:
+
+- no `Scaffold`, no `TopAppBar`, no navigation bar — three screens, each drawing its own
+  header and its own way back
+- hand-rolled `Box` + `clickable` in place of every button, so no ripple, no elevation, no
+  state layer, and touch targets set by whatever padding happened to be there
+- a `MaterialTheme` given five colours and no typography or shapes, so the two M3 components
+  that *were* used drew from defaults unrelated to everything around them
+- a cold launch straight into a full-bleed viewfinder with two floating boxes on it
+- no launcher icon, so the phone showed the green Android default
+
+None of that is a taste question. Compose does not make an app feel like Android; using
+Material 3 does. The rebuild keeps the palette exactly — same rust, same paper — and expresses
+it as a real `ColorScheme`, `Typography` and `Shapes`, so a `Button` is a Material button that
+happens to be rust.
+
+Dynamic colour was refused deliberately. `ColorScheme.fromSeed` off the wallpaper is the modern
+default and it would make this look like every other Android 12+ app; the warm palette is the
+identity, and every competitor is already green.
+
+---
+
 ## Open questions
 
 1. **Inference backend.** Accept the CPU-EP-first proposal in §1 above, or hold NNAPI as the

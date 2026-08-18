@@ -38,7 +38,9 @@ When trading off, trade in favour of a record being keepable at the rank the evi
 | stage 4 (`head.py`) | written, trained, first numbers in RESULTS.md |
 | stage 6 (`export.py`) | written; **one 350 MB fp32 file, pixels → logits**, §21–22 |
 | stage 5 (eval) | partial — metrics live in `head.py`, no per-group table yet |
-| `app/` — Android | identifies on device; warm UI, life list, reference photos |
+| `app/` — Android | identifies on device; **Material 3 shell**, life list, reference photos |
+| common names | **fixed 18 Aug** — the taxonomy asset shipped with every vernacular null (§28) |
+| multi-photo | fused on device via §3.2; §3.1 needs a re-export (§29) |
 | release workflow | tag `v*` → GitHub Release with an APK attached |
 
 ## Rules that have already earned their place

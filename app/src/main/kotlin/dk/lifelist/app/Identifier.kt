@@ -165,6 +165,36 @@ class Identifier(
     fun identify(bitmap: Bitmap, threshold: Float): RollupResult =
         Rollup.rollup(taxonomy, probabilities(logits(bitmap)), threshold)
 
+    /**
+     * Several photos of one individual, fused into one set of probabilities.
+     *
+     * This is spec §3.2 (probability-space, geometric mean), not §3.1 (embedding-space),
+     * and the reason is the export rather than a preference: the shipped graph folds the
+     * backbone, the L2 and the head into one pixels-to-logits function, so the embedding
+     * §3.1 wants to average is not an output. Re-exporting with a second head is the way
+     * to get §3.1 on device, and it is worth doing — noted in VERIFICATION.md.
+     *
+     * The implementation is the identity that falls out of writing §3.2 in log space:
+     * the geometric mean of `softmax(z_i / T)` renormalised is exactly `softmax(mean(z_i) / T)`,
+     * because the per-photo log-normalisers are constants that the final softmax divides
+     * out. So averaging logits *is* the geometric mean of the probabilities — no underflow
+     * to worry about, and one softmax rather than k.
+     *
+     * Photos go through the model one at a time. A batched tensor would be faster, and
+     * would also mean holding five 4000x3000 crops as bytes at once on a phone.
+     */
+    fun identify(bitmaps: List<Bitmap>): FloatArray {
+        require(bitmaps.isNotEmpty()) { "nothing to identify" }
+        val summed = logits(bitmaps.first()).copyOf()
+        for (bitmap in bitmaps.drop(1)) {
+            val next = logits(bitmap)
+            require(next.size == summed.size) { "the model changed shape mid-identification" }
+            for (i in summed.indices) summed[i] += next[i]
+        }
+        for (i in summed.indices) summed[i] /= bitmaps.size
+        return probabilities(summed)
+    }
+
     override fun close() {
         session.close()
     }

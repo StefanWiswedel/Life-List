@@ -36,16 +36,20 @@ class RecordStore(private val context: Context) {
         val modelVersion: String = "unknown",
         val determinedBy: String = "MODEL",
         val refinedFrom: Int? = null,
+        val confidence: Float? = null,
+        val latitude: Double? = null,
+        val longitude: Double? = null,
     )
 
     private fun Stored.toRecord() = Record(
         id, taxonId, observedAt, photoPath, threshold, modelVersion,
         runCatching { Determiner.valueOf(determinedBy) }.getOrDefault(Determiner.MODEL),
-        refinedFrom,
+        refinedFrom, confidence, latitude, longitude,
     )
 
     private fun Record.toStored() = Stored(
-        id, taxonId, observedAt, photoPath, threshold, modelVersion, determinedBy.name, refinedFrom
+        id, taxonId, observedAt, photoPath, threshold, modelVersion, determinedBy.name,
+        refinedFrom, confidence, latitude, longitude,
     )
 
     fun load(): List<Record> = runCatching {

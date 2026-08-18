@@ -29,6 +29,18 @@ data class Record(
     val determinedBy: Determiner,
     /** Set when a record was later refined; the original determination is never overwritten. */
     val refinedFrom: Int? = null,
+    /**
+     * What the model said at the moment it was kept.
+     *
+     * Stored rather than recomputed: the model will be replaced, and a record that silently
+     * re-scores itself under a newer model is a record that lies about what you saw and what
+     * you were told at the time. Null for a record the user determined themselves — a tap is
+     * not a probability (§20).
+     */
+    val confidence: Float? = null,
+    /** Where, if the device knew and the user allowed it. Coarse, and never required. */
+    val latitude: Double? = null,
+    val longitude: Double? = null,
 )
 
 /** The groups the list is broken into — BUILD.md §4.2, and what Seek gets right. */
