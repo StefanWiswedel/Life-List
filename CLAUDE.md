@@ -114,6 +114,9 @@ better there, since free Colab disconnects near 90 minutes and it takes 30–90.
   is not binding, and int8 changes ~6% of identifications (§21).
 - UI: **English only**. Danish vernaculars stored but not surfaced.
 - Target: Pixel 9a (Tensor G4), minSdk 29, targetSdk 35.
+- **No map inside the app.** Tapping a location opens the phone's map app. MapLibre plus a
+  self-cut OpenStreetMap extract is the way in if that changes; costs and caveats are measured
+  in §35 and do not need re-measuring.
 - **Genus is a trainable leaf** where genus-only observations support it, via a synthetic
   `Carabus sp.` child with a negative taxon id (spec §1.1a, VERIFICATION.md §16).
 

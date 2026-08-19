@@ -1203,6 +1203,65 @@ true at the time is stored. Settling later is a *choice*, and it is recorded as 
 
 ---
 
+## 35. What a real map would cost — measured, then deferred — 19 Aug 2026
+
+`Where.openInMaps` hands the sighting to the phone's map app, which is one line of code and no
+dependency. The question was what it would take to draw the map *inside* the app. Measured
+rather than estimated, because the answer turns on numbers nobody remembers correctly.
+
+### MapLibre Native + our own OpenStreetMap extract
+
+No API key, no account, and it is the only option that works where this app is used.
+
+| | measured 19 Aug 2026 |
+|---|---|
+| `org.maplibre.gl:android-sdk:13.5.0`, arm64-v8a only | **12.2 MB** |
+| …all four ABIs | 47 MB |
+| Glyphs (Latin ranges) + sprite, bundled | 0.45 MB |
+| Denmark extract, z0–10 — towns and coastline | 29.3 MB |
+| Denmark extract, z0–12 — neighbourhood | **124.3 MB** |
+| Denmark extract, z0–14 — street level | 462.5 MB |
+
+The extracts are real: `pmtiles extract` was run against the Protomaps daily planet
+(`20260817.pmtiles`, 120 GB, z0–15) over HTTP range requests with
+`--bbox=7.9,54.4,15.3,57.9`. Denmark z0–14 took 51 s and 100 requests. Each zoom level costs
+roughly 4× the one below it, which is the number to remember.
+
+Three findings that make the shape of the work clear:
+
+- **PMTiles has been a first-class MapLibre Android source since 11.7.0**, including
+  `pmtiles://file://` for a local archive. So an offline pack is a file in `filesDir` and a URL,
+  not a tile database and a sync layer.
+- **It cannot be read from `asset://`** — `AssetManagerFileSource` does not implement the byte
+  ranges PMTiles needs. The archive has to be copied out of the APK first, which is exactly the
+  dance `Identifier.modelFile` already does for the 350 MB model.
+- **GitHub release assets serve byte ranges.** Verified against our own v0.6.1 APK:
+  `Accept-Ranges: bytes`, `206 Partial Content`. So the extract can ride on a release beside the
+  APK and be *streamed* when there is signal, with the download optional.
+
+Licence is ODbL — an "© OpenStreetMap" line on the map, which the style already carries.
+
+### Google Maps
+
+Cheaper to build (~2 hours) and better looking. Google's own page says **"All mobile usage of
+the Maps SDK for Android is unlimited"**, so displaying a map is not billed. But it needs a
+Cloud project with **billing enabled and a card on file**, and an API key in the repository. The
+key can be restricted to package name plus release SHA-1, which makes a leaked one close to
+useless; Google's own advice is still not to commit it.
+
+The disqualifying part is not the key. **There is no offline mode.** Grey squares in a field
+with no signal is the exact situation this app exists for, and this app has otherwise spent 350
+MB to avoid needing a network.
+
+### Decided: neither, for now
+
+**[decided 19 Aug 2026]** Leave `openInMaps`. The map app on the phone is already good, already
+offline, and already installed. If this comes back, it is MapLibre, streamed from a GitHub
+release, with the offline pack a toggle rather than a default — the numbers above are the ones
+to build against and they do not need measuring again.
+
+---
+
 ## Open questions
 
 1. **Inference backend.** Accept the CPU-EP-first proposal in §1 above, or hold NNAPI as the
