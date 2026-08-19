@@ -55,6 +55,7 @@ fun TaxonSearchContent(
     source: (String) -> List<Taxon>,
     emptyQueryHint: String,
     onBack: (() -> Unit)? = null,
+    searchable: Boolean = true,
     onPick: (Taxon) -> Unit,
 ) {
     var query by remember { mutableStateOf("") }
@@ -85,14 +86,17 @@ fun TaxonSearchContent(
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
 
-        Spacer(Modifier.height(14.dp))
-        OutlinedTextField(
-            value = query,
-            onValueChange = { query = it },
-            label = { Text("Common or scientific name") },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth(),
-        )
+        // A list of four ancestors does not need a search box over it.
+        if (searchable) {
+            Spacer(Modifier.height(14.dp))
+            OutlinedTextField(
+                value = query,
+                onValueChange = { query = it },
+                label = { Text("Common or scientific name") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
         Spacer(Modifier.height(8.dp))
 
         LazyColumn(Modifier.heightIn(max = 430.dp)) {
@@ -142,6 +146,45 @@ fun TaxonSearchContent(
                 }
             }
         }
+    }
+}
+
+/**
+ * The honest retreat, as its own sheet.
+ *
+ * For the case with no name to give: "I don't believe it is correct. I have no idea what it is,
+ * but I don't think the app is right." Correcting needs a name and there is none — but there is
+ * always a rank you *do* believe. You may reject "Double-striped Pug" and be perfectly sure it
+ * is a geometer moth, or at least a moth.
+ *
+ * Keeping a sighting at the deepest rank you actually trust is the claim this whole app is
+ * built on, finally pointed in the direction the user needs rather than only the one the model
+ * does.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun BroaderSheet(
+    taxonomy: Taxonomy,
+    taxonId: Int,
+    onPick: (Taxon) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    val ancestors = remember(taxonId) { LifeList.broader(taxonomy, taxonId) }
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+        containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+    ) {
+        TaxonSearchContent(
+            heading = "Keep it broader",
+            note = "If you do not believe the species but you are sure of the group, keep it " +
+                "there. That is a real record, not a failure — and it can still be settled " +
+                "later. What the model said stays on it either way.",
+            source = { ancestors },
+            emptyQueryHint = "",
+            searchable = false,
+            onPick = onPick,
+        )
     }
 }
 

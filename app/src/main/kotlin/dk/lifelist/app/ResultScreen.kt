@@ -33,6 +33,7 @@ import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.outlined.AddAPhoto
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material.icons.outlined.UnfoldLess
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -119,6 +120,7 @@ fun ResultScreen(
     onOpenPhoto: (Bitmap, String) -> Unit,
     onOpenTaxon: (Int) -> Unit,
     onSearchAll: () -> Unit,
+    onKeepBroader: () -> Unit,
     kept: Boolean,
     modelNote: String?,
     keepable: Boolean = true,
@@ -284,7 +286,7 @@ fun ResultScreen(
                 )
             }
 
-            Why(answer, article, why, { why = !why }, onOpenTaxon, onSearchAll)
+            Why(answer, article, why, { why = !why }, onOpenTaxon, onSearchAll, onKeepBroader)
 
             modelNote?.let {
                 Text(
@@ -562,6 +564,7 @@ private fun Why(
     onToggle: () -> Unit,
     onOpenTaxon: (Int) -> Unit,
     onSearchAll: () -> Unit,
+    onKeepBroader: () -> Unit,
 ) {
     Column(Modifier.padding(horizontal = 16.dp).padding(top = 20.dp)) {
         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
@@ -662,6 +665,28 @@ private fun Why(
                     Spacer(Modifier.width(9.dp))
                     Text(
                         "None of these — name it yourself",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.primary,
+                    )
+                }
+
+                // And the case where you cannot name it either: you do not believe the
+                // species, you have no idea what it is, and you are still perfectly sure it
+                // is a moth. That is a record worth keeping.
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                Row(
+                    Modifier.fillMaxWidth().clickable(onClick = onKeepBroader).padding(vertical = 14.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Icon(
+                        Icons.Outlined.UnfoldLess,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(18.dp),
+                    )
+                    Spacer(Modifier.width(9.dp))
+                    Text(
+                        "Not sure — keep it broader",
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.primary,
                     )

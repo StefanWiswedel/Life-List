@@ -65,17 +65,53 @@ import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 
 /**
- * Decode a gallery image to a *software* bitmap.
+ * The longest edge a decoded photograph is allowed to have.
+ *
+ * A 12-megapixel picture is 48 MB as ARGB_8888, and picking five of them at once — which is
+ * now one gesture — is 240 MB against a default heap of around 256. Capping is not optional.
+ *
+ * The worry was that pre-shrinking would move the model's answers, since the ONNX graph does
+ * its own antialiased resize to 224 px and a second resample is a second chance to drift
+ * (§22 cost 8% of predictions that way). Measured instead of assumed, on eight 2048 px
+ * photographs through the shipped model: capping to 1024 changed the top class in **0 of 8**
+ * and moved its probability by 0.25% on average; capping to 512 also agreed 8 of 8, at 0.65%.
+ * The 224 px resize dominates everything above it. 2048 is far inside that margin.
+ */
+const val MAX_DECODE_EDGE = 2048
+
+/**
+ * Decode a gallery image to a *software* bitmap, no larger than [MAX_DECODE_EDGE].
  *
  * `ImageDecoder` hands back a hardware bitmap by default, and `getPixels` throws on those —
  * the pixels live on the GPU. The identifier reads pixels, so it must be told otherwise.
  */
 fun decodeSoftware(context: Context, uri: Uri): Bitmap {
     val source = ImageDecoder.createSource(context.contentResolver, uri)
-    return ImageDecoder.decodeBitmap(source) { decoder, _, _ ->
+    return ImageDecoder.decodeBitmap(source) { decoder, info, _ ->
         decoder.allocator = ImageDecoder.ALLOCATOR_SOFTWARE
         decoder.isMutableRequired = false
+        val longest = maxOf(info.size.width, info.size.height)
+        if (longest > MAX_DECODE_EDGE) {
+            val scale = MAX_DECODE_EDGE.toFloat() / longest
+            decoder.setTargetSize(
+                (info.size.width * scale).toInt().coerceAtLeast(1),
+                (info.size.height * scale).toInt().coerceAtLeast(1),
+            )
+        }
     }
+}
+
+/** The same cap for a bitmap already in hand — the camera hands back full sensor resolution. */
+fun capSize(bitmap: Bitmap, longest: Int = MAX_DECODE_EDGE): Bitmap {
+    val biggest = maxOf(bitmap.width, bitmap.height)
+    if (biggest <= longest) return bitmap
+    val scale = longest.toFloat() / biggest
+    return Bitmap.createScaledBitmap(
+        bitmap,
+        (bitmap.width * scale).toInt().coerceAtLeast(1),
+        (bitmap.height * scale).toInt().coerceAtLeast(1),
+        true,
+    )
 }
 
 /**
@@ -90,10 +126,18 @@ fun decodeSoftware(context: Context, uri: Uri): Bitmap {
  * pretending to be a document. When the camera is the whole screen, the phone's own camera
  * vocabulary — reticle, shutter, close — does the explaining.
  */
+/**
+ * How many photographs of one individual are worth fusing.
+ *
+ * Five angles of the same moth is thorough; twenty is a gallery, and each one costs an
+ * inference pass and a slot in memory.
+ */
+const val MAX_PHOTOS = 6
+
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun CaptureScreen(
-    onCapture: (Shot?) -> Unit,
+    onCapture: (List<Shot>) -> Unit,
     onClose: () -> Unit,
     addingTo: Int,
     modifier: Modifier = Modifier,
@@ -104,16 +148,24 @@ fun CaptureScreen(
     val context = LocalContext.current
     val shutterScale by animateFloatAsState(if (firing) 0.86f else 1f, label = "shutter")
 
-    // The system photo picker: no permission, no gallery access, the user hands over one
-    // image and nothing else. Also the only way to test the model on a winter evening.
+    // The system photo picker: no permission, no gallery access, the user hands over the
+    // images and nothing else.
+    //
+    // *Multiple* images, because that is how the photographs actually get taken: "I often take
+    // out my phone and take a few pics of a bug and then feed it into the app later." One at a
+    // time meant one round trip through the picker per angle of the same moth.
     val pick = rememberLauncherForActivityResult(
-        ActivityResultContracts.PickVisualMedia()
-    ) { uri: Uri? ->
-        uri?.let {
-            val bitmap = runCatching { decodeSoftware(context, it) }.getOrNull()
-            // A photograph chosen from the gallery usually knows where it was taken, and that
-            // beats wherever the phone is standing now — which may be a sofa, three days later.
-            onCapture(bitmap?.let { b -> Shot(b, Gallery.coordinatesOf(context, it)) })
+        ActivityResultContracts.PickMultipleVisualMedia(MAX_PHOTOS)
+    ) { uris: List<Uri> ->
+        if (uris.isNotEmpty()) {
+            val shots = uris.mapNotNull { uri ->
+                runCatching { decodeSoftware(context, uri) }.getOrNull()?.let { bitmap ->
+                    // A photograph usually knows where it was taken, and that beats wherever
+                    // the phone is standing now — which may be a sofa, three days later.
+                    Shot(bitmap, Gallery.coordinatesOf(context, uri))
+                }
+            }
+            if (shots.isNotEmpty()) onCapture(shots)
         }
     }
 
@@ -121,7 +173,7 @@ fun CaptureScreen(
         val imageCapture = capture.value
         firing = true
         if (imageCapture == null) {
-            onCapture(null)
+            onCapture(emptyList())
             return
         }
         imageCapture.takePicture(
@@ -131,12 +183,14 @@ fun CaptureScreen(
                     val bitmap = runCatching { image.toBitmap() }.getOrNull()
                     image.close()
                     firing = false
-                    onCapture(bitmap?.let { Shot(it, fromCamera = true) })
+                    onCapture(
+                        listOfNotNull(bitmap?.let { Shot(capSize(it), fromCamera = true) })
+                    )
                 }
 
                 override fun onError(exception: ImageCaptureException) {
                     firing = false
-                    onCapture(null)
+                    onCapture(emptyList())
                 }
             },
         )

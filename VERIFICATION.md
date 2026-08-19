@@ -1446,6 +1446,83 @@ trip is to look at pictures of the right organism.
 
 ---
 
+## 40. Adding photographs, and what to do when the answer is simply wrong — 19 Aug 2026
+
+### Several photographs at once
+
+"I often take out my phone and take a few pics of a bug and then feed it into the app later."
+The picker took one image per trip, so three angles of the same moth meant three round trips.
+`PickMultipleVisualMedia`, capped at six — five angles is thorough, twenty is a gallery and each
+one costs an inference pass.
+
+That cap exposed something already latent. A 12-megapixel photograph is **48 MB** as
+ARGB_8888, and the app was holding every photo of a sighting in memory at full sensor
+resolution. Five at once is 240 MB against a default heap around 256 — multi-select just made
+it one gesture instead of five.
+
+So decoding now caps the long edge at 2,048 px. The worry was that pre-shrinking would move the
+model's answers, because the ONNX graph does its own antialiased resize to 224 and a second
+resample is a second chance to drift — §22 cost 8% of predictions exactly that way.
+
+**Measured, on eight 2,048 px photographs through the shipped model:**
+
+| pre-shrink to | top-1 unchanged | mean shift in the top class's probability |
+|---|---|---|
+| 1,024 px | 8 / 8 | 0.0025 |
+| 512 px | 8 / 8 | 0.0065 |
+
+The 224 px resize dominates everything above it. 2,048 is far inside that margin. Eight images
+is a small sample and the effect is small enough that it would take a much larger one to say
+anything more precise — but the decision only needed "is this anywhere near the 8% that
+preprocessing drift cost", and it is not.
+
+### Adding a photograph now re-runs the model
+
+Reported: added a second photo to a saved record, and the determination did not change. The home
+screen literally promises otherwise — *"photograph one again and it may settle."*
+
+It re-runs now, over every photograph the record holds, and **offers** the result: "With 3
+photos the model now says X — 84%." Never applied silently, and never at all on a record the
+*user* determined; the model does not get to reopen a question a person has already answered.
+Accepting keeps `determinedBy = MODEL`, because it is still the model's call — it simply had
+more to look at. Recording it as the user's would be a lie about who decided.
+
+### "I don't think the app is right, and I have no idea what it is"
+
+The hard case, and the app had no answer at all. Correcting requires a name, and there was none
+to give.
+
+There is always a rank you *do* believe, though. You can reject "Double-striped Pug" and remain
+perfectly sure it is a geometer moth, or at least a moth. **Keep it broader** offers the
+lineage above the answer — genus, family, order — and stores the sighting at the deepest rank
+you actually trust. That is a real record, still settleable later, with the model's original
+claim kept on it. It is the same argument this whole app is built on, finally pointed in the
+direction the user needs rather than only the one the model does.
+
+### Why this happens, which is worth being blunt about
+
+The model can only ever answer with one of the **2,285 species it knows**, and of those only
+**468 are Lepidoptera** — 104 Geometridae. Denmark has thousands of moth species. For a random
+moth on a wall, the odds that its actual species is in the model are not good, and when it is
+not, the model has no way to say so. It returns the nearest thing it knows, with a confidence
+that reflects how sure it is *among its own classes* and says nothing about whether the right
+answer was ever on the list.
+
+No amount of calibration fixes that. Three things do, in increasing order of work:
+
+1. **The threshold, which already exists.** At 95% many of these become family-level answers,
+   which are correct. It is the one lever a user has today and nothing in the app connects it to
+   this problem.
+2. **More taxa.** The training threshold is ≥50 Danish observations, giving 2,395 taxa.
+   Measured from the same data: **≥20 observations would give 3,667 — 1,272 more.** That is a
+   pipeline re-run, not a redesign.
+3. **An explicit "not in my list" answer.** Open-set recognition, genuinely hard, and not
+   something to promise.
+
+**[open]** Which of those, and in what order.
+
+---
+
 ## Open questions
 
 1. **Inference backend.** Accept the CPU-EP-first proposal in §1 above, or hold NNAPI as the

@@ -124,6 +124,47 @@ class CorrectionTest {
         assertFalse(LifeList.wasNarrowed(taxonomy, record(111)))
     }
 
+    // -- retreating to a rank you actually believe ------------------------------
+
+    @Test
+    fun `the ranks above a species are offered deepest first`() {
+        // The case with no name to give: an 87% species you do not believe, and no idea what
+        // it actually is. You still know it is a moth.
+        val up = LifeList.broader(taxonomy, 111).map { it.taxonId }
+
+        assertEquals(listOf(110, 100, 216), up)
+    }
+
+    @Test
+    fun `root is never offered, because Life is not a determination`() {
+        assertTrue(LifeList.broader(taxonomy, 111).none { it.taxonId == ROOT_ID })
+    }
+
+    @Test
+    fun `a taxon just under root has nowhere left to retreat to`() {
+        assertEquals(emptyList(), LifeList.broader(taxonomy, 216))
+    }
+
+    @Test
+    fun `retreating is a correction, and is recorded as the user's`() {
+        val kept = LifeList.correct(taxonomy, record(111), 100, Determiner.USER)
+
+        assertEquals(100, kept.taxonId)
+        assertEquals(Determiner.USER, kept.determinedBy)
+        assertEquals(111, kept.refinedFrom)
+        assertFalse(LifeList.wasNarrowed(taxonomy, kept), "going up is not a narrowing")
+    }
+
+    @Test
+    fun `what the model claimed survives being disbelieved`() {
+        // The point of the whole exercise: a record that quietly dropped the 87% would erase
+        // the evidence that the model was overconfident here.
+        val kept = LifeList.correct(taxonomy, record(111, confidence = 0.87f), 100, Determiner.USER)
+
+        assertEquals(0.87f, kept.confidence)
+        assertEquals(111, kept.refinedFrom)
+    }
+
     // -- finding the taxon you meant --------------------------------------------
 
     @Test

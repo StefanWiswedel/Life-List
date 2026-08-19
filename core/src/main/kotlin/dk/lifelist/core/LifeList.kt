@@ -278,6 +278,27 @@ object LifeList {
     }
 
     /**
+     * The ranks above a determination, deepest first — the honest retreat.
+     *
+     * For the case the app had no answer to at all: the model returns a species at 87%, you do
+     * not believe it, and you have no idea what it actually is. Correcting requires a name, and
+     * there is no name to give.
+     *
+     * But there is nearly always *something* you believe. You may not accept "Double-striped
+     * Pug" and still be perfectly sure it is a geometer moth, or at least a moth. Keeping the
+     * sighting at the deepest rank you actually trust is a real record, not a failure — which
+     * is the same claim this whole app is built on, finally offered in the direction the user
+     * needs rather than only the direction the model does.
+     *
+     * Root is excluded. "Life" is not a determination.
+     */
+    fun broader(taxonomy: Taxonomy, taxonId: Int): List<Taxon> =
+        taxonomy.lineage(taxonId)
+            .filter { it != ROOT_ID && it != taxonId }
+            .reversed()
+            .map { taxonomy.node(it) }
+
+    /**
      * Find a taxon by name, for someone who has worked out what it actually was.
      *
      * Ranked rather than merely filtered, because "blue" matches ninety things and the one you

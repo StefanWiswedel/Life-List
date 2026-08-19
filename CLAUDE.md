@@ -45,7 +45,8 @@ When trading off, trade in favour of a record being keepable at the rank the evi
 | multi-photo | fused on device via §3.2; §3.1 needs a re-export (§29) |
 | species info | 4,475 of 4,657 taxa carry a bundled Wikipedia intro, 2.6 MB (§31) |
 | reference photos | iNaturalist's curated pick, 2,289 of 2,294, at 500 px (§37) |
-| corrections | any record can be renamed to any taxon; the model's answer is kept (§38) |
+| corrections | rename to any taxon, or retreat to a rank you trust; the model's answer is kept (§38, §40) |
+| coverage | 2,285 species, of which **468 Lepidoptera** — a random moth is often not in the model (§40) |
 | release workflow | tag `v*` → GitHub Release with an APK attached |
 
 ## Rules that have already earned their place

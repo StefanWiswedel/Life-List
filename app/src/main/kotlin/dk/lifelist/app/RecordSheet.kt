@@ -27,6 +27,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.AddAPhoto
 import androidx.compose.material.icons.outlined.Place
 import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material.icons.outlined.UnfoldLess
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
@@ -87,6 +88,9 @@ fun RecordSheet(
     onAddPhoto: () -> Unit,
     onRefine: (Int) -> Unit,
     onCorrect: (Int) -> Unit,
+    suggestion: Suggestion? = null,
+    onUseSuggestion: () -> Unit = {},
+    onDismissSuggestion: () -> Unit = {},
     onDismiss: () -> Unit,
 ) {
     var mode by remember(record.id) { mutableStateOf(Mode.DETAILS) }
@@ -125,30 +129,49 @@ fun RecordSheet(
                 onPick = { mode = Mode.DETAILS; onCorrect(it.taxonId) },
             )
 
+            Mode.BROADER -> TaxonSearchContent(
+                heading = "Keep it broader",
+                note = "If you do not believe the species but you are sure of the group, keep " +
+                    "it there. That is a real record, and it can still be settled later.",
+                source = { LifeList.broader(taxonomy, record.taxonId) },
+                emptyQueryHint = "",
+                searchable = false,
+                onBack = { mode = Mode.DETAILS },
+                onPick = { mode = Mode.DETAILS; onCorrect(it.taxonId) },
+            )
+
             Mode.DETAILS -> Details(
                 taxonomy = taxonomy,
                 record = record,
                 article = article,
+                suggestion = suggestion,
+                onUseSuggestion = onUseSuggestion,
+                onDismissSuggestion = onDismissSuggestion,
                 onOpenPhoto = onOpenPhoto,
                 onAddPhoto = onAddPhoto,
                 onSettle = { mode = Mode.SETTLE },
                 onCorrect = { mode = Mode.CORRECT },
+                onBroaden = { mode = Mode.BROADER },
             )
         }
     }
 }
 
-private enum class Mode { DETAILS, SETTLE, CORRECT }
+private enum class Mode { DETAILS, SETTLE, CORRECT, BROADER }
 
 @Composable
 private fun Details(
     taxonomy: Taxonomy,
     record: Record,
     article: Wikipedia.Article?,
+    suggestion: Suggestion?,
+    onUseSuggestion: () -> Unit,
+    onDismissSuggestion: () -> Unit,
     onOpenPhoto: (String) -> Unit,
     onAddPhoto: () -> Unit,
     onSettle: () -> Unit,
     onCorrect: () -> Unit,
+    onBroaden: () -> Unit,
 ) {
     val context = LocalContext.current
     val node = taxonomy.nodeOrNull(record.taxonId)
@@ -181,6 +204,28 @@ private fun Details(
 
         Spacer(Modifier.height(12.dp))
         RankChip(isSpecies, node?.rank ?: "unknown")
+
+        suggestion?.let { offer ->
+            Spacer(Modifier.height(14.dp))
+            Surface(
+                color = MaterialTheme.colorScheme.secondaryContainer,
+                shape = MaterialTheme.shapes.large,
+            ) {
+                Column(Modifier.padding(14.dp)) {
+                    Text(
+                        "With ${record.photoPaths.size} photos the model now says " +
+                            "${offer.name} — ${offer.percent}.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer,
+                    )
+                    Spacer(Modifier.height(10.dp))
+                    Row(horizontalArrangement = Arrangement.spacedBy(9.dp)) {
+                        FilledTonalButton(onClick = onUseSuggestion) { Text("Use it") }
+                        TextButton(onClick = onDismissSuggestion) { Text("Keep what I have") }
+                    }
+                }
+            }
+        }
 
         Spacer(Modifier.height(18.dp))
         Detail("When", stamp(record.observedAt))
@@ -233,10 +278,19 @@ private fun Details(
             }
         }
         Spacer(Modifier.height(9.dp))
-        TextButton(onClick = onCorrect, modifier = Modifier.fillMaxWidth()) {
-            Icon(Icons.Outlined.Search, contentDescription = null, Modifier.size(17.dp))
-            Spacer(Modifier.width(7.dp))
-            Text(if (isSpecies) "Not this species? Change it" else "Not this? Change it")
+        Row(horizontalArrangement = Arrangement.spacedBy(9.dp)) {
+            TextButton(onClick = onCorrect, modifier = Modifier.weight(1f)) {
+                Icon(Icons.Outlined.Search, contentDescription = null, Modifier.size(17.dp))
+                Spacer(Modifier.width(7.dp))
+                Text("Not this? Change it")
+            }
+            if (LifeList.broader(taxonomy, record.taxonId).isNotEmpty()) {
+                TextButton(onClick = onBroaden, modifier = Modifier.weight(1f)) {
+                    Icon(Icons.Outlined.UnfoldLess, contentDescription = null, Modifier.size(17.dp))
+                    Spacer(Modifier.width(7.dp))
+                    Text("Keep it broader")
+                }
+            }
         }
 
         article?.let {

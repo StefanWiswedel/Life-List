@@ -113,6 +113,7 @@ fun App() {
     var crash by remember { mutableStateOf(CrashLog.last(context)) }
     // Naming an identification yourself, straight off the result screen.
     var searchingAll by remember { mutableStateOf(false) }
+    var keepingBroader by remember { mutableStateOf(false) }
 
     var threshold by remember { mutableFloatStateOf(0.70f) }
     var caseIndex by remember { mutableIntStateOf(0) }
@@ -127,23 +128,10 @@ fun App() {
 
     // Adding a photograph to a record that already exists, rather than to the one being made.
     var addingPhotoTo by remember { mutableStateOf<String?>(null) }
-    val addPhotoToRecord = rememberLauncherForActivityResult(
-        ActivityResultContracts.PickVisualMedia()
-    ) { uri ->
-        val id = addingPhotoTo
-        addingPhotoTo = null
-        if (uri != null && id != null) {
-            val bitmap = runCatching { decodeSoftware(context, uri) }.getOrNull()
-            if (bitmap != null) {
-                val record = records.firstOrNull { it.id == id }
-                if (record != null) {
-                    records = store.update(
-                        record.copy(photoPaths = record.photoPaths + store.savePhoto(bitmap))
-                    )
-                }
-            }
-        }
-    }
+    // What the model says now that there are more photographs of the same individual. Offered,
+    // never applied: the home screen promises "photograph one again and it may settle", and a
+    // determination that silently rewrote itself would be a different and worse promise.
+    var suggestion by remember { mutableStateOf<Suggestion?>(null) }
 
     // Loading a 335 MB session takes a moment, so it happens off the main thread and the
     // absence of a model is a state rather than a crash.
@@ -170,6 +158,26 @@ fun App() {
      * screen.
      */
     val listTaxonomy = loaded?.taxonomy
+
+    val addPhotoToRecord = rememberLauncherForActivityResult(
+        ActivityResultContracts.PickMultipleVisualMedia(MAX_PHOTOS)
+    ) { uris ->
+        val id = addingPhotoTo
+        addingPhotoTo = null
+        if (uris.isNotEmpty() && id != null) {
+            val added = uris.mapNotNull { runCatching { decodeSoftware(context, it) }.getOrNull() }
+            val record = records.firstOrNull { it.id == id }
+            if (added.isNotEmpty() && record != null) {
+                val updated = record.copy(
+                    photoPaths = (record.photoPaths + store.savePhotos(added)).take(MAX_PHOTOS)
+                )
+                records = store.update(updated)
+                suggestion = null
+                reIdentify(context, identifier, store, updated) { suggestion = it }
+            }
+        }
+    }
+
 
     val live = identifier != null && leafProbabilities != null
     val answerTaxonomy = if (live) identifier!!.taxonomy else Demo.taxonomy
@@ -219,17 +227,20 @@ fun App() {
         }
     }
 
-    fun took(shot: Shot?) {
-        if (shot == null) {
+    fun took(shots: List<Shot>) {
+        if (shots.isEmpty()) {
             identify(photos)
             return
         }
         // Straight to the camera roll, before anything else can go wrong. Losing a photograph
         // by backing out of the wrong screen is not a trade-off anyone agreed to.
-        if (shot.fromCamera) thread { Gallery.save(context, shot.bitmap) }
+        val fromCamera = shots.filter { it.fromCamera }
+        if (fromCamera.isNotEmpty()) {
+            thread { fromCamera.forEach { Gallery.save(context, it.bitmap) } }
+        }
         // A picture knows where it was taken; the phone only knows where it is now.
-        shot.coordinates?.let { shotCoordinates = it }
-        identify(photos + shot.bitmap)
+        shots.firstNotNullOfOrNull { it.coordinates }?.let { shotCoordinates = it }
+        identify((photos + shots.map { it.bitmap }).take(MAX_PHOTOS))
     }
 
     fun startOver() {
@@ -360,7 +371,7 @@ fun App() {
                 }
 
                 Screen.CAPTURE -> CaptureScreen(
-                    onCapture = ::took,
+                    onCapture = { took(it) },
                     onClose = { if (photos.isEmpty()) startOver() else screen = Screen.RESULT },
                     addingTo = photos.size,
                 )
@@ -449,6 +460,7 @@ fun App() {
                     onOpenPhoto = { bitmap, label -> viewing = Viewing.Live(bitmap, label) },
                     onOpenTaxon = { readingAbout = it },
                     onSearchAll = { searchingAll = true },
+                    onKeepBroader = { keepingBroader = true },
                     kept = kept,
                     modelNote = note(loaded, identifier, leafProbabilities, photos, failure),
                 )
@@ -491,8 +503,26 @@ fun App() {
                 records = store.update(
                     LifeList.correct(listTaxonomy, openRecord, taxonId, Determiner.USER)
                 )
+                suggestion = null
                 scope.launch { snackbar.showSnackbar("Corrected — saved as your determination") }
             },
+            suggestion = suggestion?.takeIf { it.recordId == openRecord.id },
+            onUseSuggestion = {
+                suggestion?.let { offer ->
+                    records = store.update(
+                        openRecord.copy(
+                            taxonId = offer.taxonId,
+                            confidence = offer.probability,
+                            // Still the model's call, not the user's — it simply had more to
+                            // look at. Recording it as a user determination would be a lie.
+                            determinedBy = Determiner.MODEL,
+                            refinedFrom = openRecord.refinedFrom ?: openRecord.taxonId,
+                        )
+                    )
+                    suggestion = null
+                }
+            },
+            onDismissSuggestion = { suggestion = null },
             onDismiss = { openRecordId = null },
         )
     }
@@ -533,6 +563,25 @@ fun App() {
                 )
             },
             onDismiss = { searchingAll = false },
+        )
+    }
+
+    if (keepingBroader) {
+        BroaderSheet(
+            taxonomy = answerTaxonomy,
+            taxonId = picked?.taxonId ?: answer.taxonId,
+            onPick = { taxon ->
+                keepingBroader = false
+                picked = Choice(
+                    taxonId = taxon.taxonId,
+                    name = Presentation.styleName(taxon.scientificName, taxon.rank).annotated(),
+                    vernacular = taxon.vernacularEn,
+                    percent = null,
+                    fraction = null,
+                    photo = references.photo(taxon.taxonId),
+                )
+            },
+            onDismiss = { keepingBroader = false },
         )
     }
 
@@ -607,5 +656,62 @@ private fun Opening() {
         androidx.compose.material3.CircularProgressIndicator(
             color = MaterialTheme.colorScheme.primary,
         )
+    }
+}
+
+
+/**
+ * What the model says once a sighting has more photographs than it did.
+ *
+ * A record is a claim made at a moment, and adding evidence is allowed to change the claim —
+ * the home screen says so in as many words: "photograph one again and it may settle." What is
+ * not allowed is changing it quietly, so this is an offer with a name and a number on it.
+ */
+data class Suggestion(
+    val recordId: String,
+    val taxonId: Int,
+    val name: String,
+    val percent: String,
+    val probability: Float,
+)
+
+/**
+ * Re-run the model over every photograph a record now holds.
+ *
+ * Off the main thread: this is several inference passes and a set of JPEG decodes. Silent about
+ * everything except a genuinely different answer — telling someone "it still thinks the same
+ * thing" every time they add a picture is noise, and a record the *user* determined is not the
+ * model's to reopen at all.
+ */
+private fun reIdentify(
+    context: android.content.Context,
+    identifier: Identifier?,
+    store: RecordStore,
+    record: Record,
+    onSuggestion: (Suggestion?) -> Unit,
+) {
+    if (identifier == null || record.determinedBy == Determiner.USER) return
+    if (record.photoPaths.size < 2) return
+
+    thread {
+        runCatching {
+            val bitmaps = record.photoPaths.mapNotNull { path ->
+                android.graphics.BitmapFactory.decodeFile(path)
+            }
+            if (bitmaps.size < 2) return@runCatching null
+
+            val probabilities = identifier.identify(bitmaps)
+            val rollup = Rollup.rollup(identifier.taxonomy, probabilities, record.threshold)
+            if (rollup.taxonId == record.taxonId || rollup.taxonId == 0) return@runCatching null
+
+            val node = identifier.taxonomy.node(rollup.taxonId)
+            Suggestion(
+                recordId = record.id,
+                taxonId = rollup.taxonId,
+                name = node.vernacularEn ?: node.scientificName,
+                percent = Presentation.confidence(rollup.probability).percent,
+                probability = rollup.probability,
+            )
+        }.onSuccess { onSuggestion(it) }
     }
 }
