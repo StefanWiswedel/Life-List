@@ -52,6 +52,12 @@ When trading off, trade in favour of a record being keepable at the rank the evi
   `shared/golden/golden_rollup.json` is the check; `training/tools/gen_golden.py --check` runs in
   CI so Python cannot drift out from under Kotlin unnoticed. Regenerating the fixture is a
   deliberate act that shows up in a diff.
+- **A stand-in for missing data must never be reachable from code that reads real data.** The
+  demo taxonomy exists so the *result* screen works before a model is bundled. It became a
+  fallback on the list path and crashed the app on launch for anyone with a saved record
+  (§36). The list surfaces now have no reference to `Demo` at all.
+- **`node` throws, `nodeOrNull` does not.** Rollup output is looked up strictly; a *stored*
+  taxon id is looked up tolerantly, because a life list outlives the model that made it.
 - **Never guess a taxon.** Refusing to resolve an ambiguous name is correct; picking one silently
   is how a beetle gets filed as a plant. Homonyms and unmatched BirdNET classes get reported.
 - **Priors are never masks.** The audio geo prior reweights inside a confusion set built from raw

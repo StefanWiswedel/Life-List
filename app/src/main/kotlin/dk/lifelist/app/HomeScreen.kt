@@ -211,12 +211,14 @@ private fun SectionLabel(text: String) {
 
 @Composable
 private fun RecentCard(taxonomy: Taxonomy, record: Record, onClick: () -> Unit) {
-    val node = taxonomy.node(record.taxonId)
+    // `nodeOrNull`, not `node`. A record outlives the model that made it, and a retrained
+    // taxonomy that has dropped a taxon must not take the whole screen down with it.
+    val node = taxonomy.nodeOrNull(record.taxonId)
     val styled = remember(record.taxonId) {
-        Presentation.styleName(node.scientificName, node.rank)
+        node?.let { Presentation.styleName(it.scientificName, it.rank) }.orEmpty()
     }
     val thumbnail = rememberThumbnail(record.photoPath)
-    val isSpecies = node.isLeaf && record.taxonId > 0
+    val isSpecies = node?.isLeaf == true && record.taxonId > 0
 
     Column(Modifier.width(116.dp).clickable(onClick = onClick)) {
         Surface(
@@ -240,7 +242,7 @@ private fun RecentCard(taxonomy: Taxonomy, record: Record, onClick: () -> Unit) 
                     modifier = Modifier.align(Alignment.BottomStart).padding(7.dp),
                 ) {
                     Text(
-                        if (isSpecies) "SPECIES" else node.rank.uppercase(),
+                        if (isSpecies) "SPECIES" else (node?.rank ?: "unknown").uppercase(),
                         style = MaterialTheme.typography.labelSmall,
                         fontSize = 9.5.sp,
                         fontWeight = FontWeight.Bold,
@@ -252,14 +254,14 @@ private fun RecentCard(taxonomy: Taxonomy, record: Record, onClick: () -> Unit) 
         }
         Spacer(Modifier.height(8.dp))
         Text(
-            node.vernacularEn ?: styled.plain(),
+            node?.vernacularEn ?: styled.plain().ifBlank { "Not in this model" },
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.SemiBold,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
             lineHeight = 16.sp,
         )
-        if (node.vernacularEn != null) {
+        if (node?.vernacularEn != null) {
             Text(
                 styled.annotated(),
                 style = LatinStyle.copy(fontSize = 11.5.sp),

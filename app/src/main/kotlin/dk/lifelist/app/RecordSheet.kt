@@ -124,11 +124,11 @@ private fun Details(
     onSettle: () -> Unit,
 ) {
     val context = LocalContext.current
-    val node = taxonomy.node(record.taxonId)
+    val node = taxonomy.nodeOrNull(record.taxonId)
     val styled = remember(record.taxonId) {
-        Presentation.styleName(node.scientificName, node.rank)
+        node?.let { Presentation.styleName(it.scientificName, it.rank) }.orEmpty()
     }
-    val isSpecies = node.isLeaf && record.taxonId > 0
+    val isSpecies = node?.isLeaf == true && record.taxonId > 0
     val settleable = remember(record.taxonId) {
         !isSpecies && LifeList.speciesUnder(taxonomy, record.taxonId).isNotEmpty()
     }
@@ -145,15 +145,15 @@ private fun Details(
         }
 
         Text(
-            node.vernacularEn ?: styled.plain(),
+            node?.vernacularEn ?: styled.plain().ifBlank { "Not in this model" },
             style = MaterialTheme.typography.headlineSmall,
         )
-        if (node.vernacularEn != null) {
+        if (node?.vernacularEn != null) {
             Text(styled.annotated(), style = LatinStyle)
         }
 
         Spacer(Modifier.height(12.dp))
-        RankChip(isSpecies, node.rank)
+        RankChip(isSpecies, node?.rank ?: "unknown")
 
         Spacer(Modifier.height(18.dp))
         Detail("When", stamp(record.observedAt))
@@ -170,7 +170,8 @@ private fun Details(
             "Model said",
             record.confidence?.let {
                 "${Math.round(it * 100)}% at ${
-                    record.refinedFrom?.let { from -> taxonomy.node(from).rank } ?: node.rank
+                    record.refinedFrom?.let { from -> taxonomy.nodeOrNull(from)?.rank }
+                        ?: node?.rank ?: "this rank"
                 }"
             } ?: "not recorded",
         )
@@ -180,7 +181,7 @@ private fun Details(
         record.refinedFrom?.let { from ->
             Spacer(Modifier.height(14.dp))
             Text(
-                "Settled from ${taxonomy.node(from).scientificName}. The original " +
+                "Settled from ${taxonomy.nodeOrNull(from)?.scientificName ?: "a coarser rank"}. The original " +
                     "determination is kept, not overwritten.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -251,7 +252,7 @@ private fun SpeciesPicker(
         Text("Which species?", style = MaterialTheme.typography.headlineSmall)
         Spacer(Modifier.height(6.dp))
         Text(
-            "Under ${taxonomy.node(under).scientificName}. This is saved as your " +
+            "Under ${taxonomy.nodeOrNull(under)?.scientificName ?: "this record"}. This is saved as your " +
                 "determination — what the model said stays on the record.",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,

@@ -153,6 +153,37 @@ class ScreenshotTest {
         }
     }
 
+    @Test
+    fun `home survives a record this taxonomy has never heard of`() {
+        // The v0.7.1 crash, rendered. The home screen was handed the demo taxonomy and asked
+        // to look up real saved taxa in it; `Taxonomy.node` throws, so the first frame died and
+        // every launch after it died the same way. This test fails by throwing, which is the
+        // whole point — a screen that cannot compose is a screen nobody can get past.
+        val records = listOf(
+            record("known", 1688020, 1_755_000_000_000),
+            record("orphan", 999_999_999, 1_754_000_000_000),
+        )
+        paparazzi.snapshot {
+            LifeListTheme {
+                HomeScreen(taxonomy, records, onOpenRecord = {}, onOpenGroup = {})
+            }
+        }
+    }
+
+    @Test
+    fun `a group survives one too`() {
+        paparazzi.snapshot {
+            LifeListTheme {
+                GroupScreen(
+                    taxonomy,
+                    "Other",
+                    listOf(record("orphan", 999_999_999, 1_754_000_000_000)),
+                    onOpenRecord = {},
+                )
+            }
+        }
+    }
+
     // -- result -----------------------------------------------------------------
 
     @Test

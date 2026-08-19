@@ -142,7 +142,30 @@ class Taxonomy(taxa: List<Taxon>) {
 
     val nTaxa: Int get() = leafIdByIndex.size
 
+    /**
+     * The node, or an exception.
+     *
+     * Correct for the rollup, which operates on ids it produced itself from this very tree —
+     * a miss there is a broken invariant and should be loud. Wrong for anything reading a
+     * *stored* id, because a record outlives the model that made it. Use [nodeOrNull] there.
+     */
     fun node(taxonId: Int): Taxon = nodes.getValue(taxonId)
+
+    /**
+     * The node, or null if this tree has never heard of it.
+     *
+     * Added after v0.7.1 crashed on launch for everyone with a saved record. The immediate
+     * cause was the home screen being handed the *demo* taxonomy, but the deeper one outlives
+     * that bug: a life list is permanent and a taxonomy is a build artefact. Retrain with a
+     * different occurrence threshold and some taxa leave; every record of one then referred to
+     * a node that no longer existed, and `getValue` turned that into a crash on every launch
+     * with no way back except deleting the app's data.
+     *
+     * A collection must never be destroyed by the model changing under it.
+     */
+    fun nodeOrNull(taxonId: Int): Taxon? = nodes[taxonId]
+
+    operator fun contains(taxonId: Int): Boolean = taxonId in nodes
 
     fun children(taxonId: Int): List<Int> = childrenById[taxonId].orEmpty()
 
@@ -150,13 +173,14 @@ class Taxonomy(taxa: List<Taxon>) {
 
     fun subtreeLeafIndices(taxonId: Int): IntArray = subtreeLeaves.getValue(taxonId)
 
-    /** Root-first path from root to [taxonId] inclusive. */
+    /** Root-first path from root to [taxonId] inclusive. Empty if the node is unknown. */
     fun lineage(taxonId: Int): List<Int> {
         val out = ArrayList<Int>()
         var cur: Int? = taxonId
         while (cur != null) {
+            val node = nodes[cur] ?: return emptyList()
             out.add(cur)
-            cur = nodes.getValue(cur).parentId
+            cur = node.parentId
         }
         return out.asReversed()
     }
@@ -171,7 +195,7 @@ class Taxonomy(taxa: List<Taxon>) {
         var cur: Int? = target
         while (cur != null) {
             if (cur == candidate) return true
-            cur = nodes.getValue(cur).parentId
+            cur = nodes[cur]?.parentId ?: return false
         }
         return false
     }

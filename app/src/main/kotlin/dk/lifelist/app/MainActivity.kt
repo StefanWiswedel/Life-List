@@ -61,6 +61,8 @@ import kotlin.concurrent.thread
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        // First, so a crash during startup is still recorded.
+        CrashLog.install(this)
         // Edge-to-edge is the default from targetSdk 35 whether asked for or not, so the
         // choice is only whether the app respects the insets or draws under the buttons.
         enableEdgeToEdge()
@@ -108,6 +110,7 @@ fun App() {
     var viewing by remember { mutableStateOf<Viewing?>(null) }
     var readingAbout by remember { mutableStateOf<Int?>(null) }
     var openRecordId by remember { mutableStateOf<String?>(null) }
+    var crash by remember { mutableStateOf(CrashLog.last(context)) }
 
     var threshold by remember { mutableFloatStateOf(0.70f) }
     var caseIndex by remember { mutableIntStateOf(0) }
@@ -146,24 +149,38 @@ fun App() {
         value = runCatching {
             val taxonomy = TaxonomyAssets.loadTaxonomy(context)
             val meta = TaxonomyAssets.loadMeta(context)
-            Loaded(Identifier.openOrReport(context, taxonomy, meta.temperature), meta)
+            Loaded(Identifier.openOrReport(context, taxonomy, meta.temperature), meta, taxonomy)
         }.getOrElse {
-            Loaded(Identifier.Companion.Outcome.Failed("assets: ${it.message}"), null)
+            Loaded(Identifier.Companion.Outcome.Failed("assets: ${it.message}"), null, null)
         }
     }
     val identifier = (loaded?.outcome as? Identifier.Companion.Outcome.Ready)?.identifier
+
+    /**
+     * The tree the saved list is read against. Null only while the asset is still loading.
+     *
+     * v0.7.1 crashed on launch for anyone holding a single record because this was
+     * `if (live) identifier.taxonomy else Demo.taxonomy` — and `live` requires an
+     * identification to have already happened, so on every cold start the home screen was
+     * handed a nineteen-node stand-in and asked to look up real taxa in it. `Taxonomy.node`
+     * throws. There is no demo fallback here now, and there must never be one again: the demo
+     * exists to give the *result* screen something to show, and the list is not the result
+     * screen.
+     */
+    val listTaxonomy = loaded?.taxonomy
+
     val live = identifier != null && leafProbabilities != null
-    val taxonomy = if (live) identifier!!.taxonomy else Demo.taxonomy
+    val answerTaxonomy = if (live) identifier!!.taxonomy else Demo.taxonomy
     val probabilities = if (live) leafProbabilities!! else Demo.cases[caseIndex].probabilities
 
-    val rollup = Rollup.rollup(taxonomy, probabilities, threshold)
-    val answer = Presentation.present(taxonomy, rollup)
+    val rollup = Rollup.rollup(answerTaxonomy, probabilities, threshold)
+    val answer = Presentation.present(answerTaxonomy, rollup)
 
     // The contenders a hedge can hand back. Built from the full probability vector rather than
     // the top-five candidate list, so a genus holding one of the top five still gets to ask.
-    val choices = remember(rollup, taxonomy) {
-        LifeList.choices(taxonomy, probabilities, rollup.taxonId).map { candidate ->
-            val node = taxonomy.node(candidate.taxonId)
+    val choices = remember(rollup, answerTaxonomy) {
+        LifeList.choices(answerTaxonomy, probabilities, rollup.taxonId).map { candidate ->
+            val node = answerTaxonomy.node(candidate.taxonId)
             val confidence = Presentation.confidence(candidate.probability)
             Choice(
                 taxonId = candidate.taxonId,
@@ -297,12 +314,16 @@ fun App() {
         ) { current ->
             when (current) {
                 Screen.HOME -> Box(Modifier.fillMaxSize().padding(insets)) {
-                    HomeScreen(
-                        taxonomy = taxonomy,
-                        records = records,
-                        onOpenRecord = { openRecordId = it.id },
-                        onOpenGroup = { group = it; screen = Screen.GROUP },
-                    )
+                    if (listTaxonomy == null) {
+                        Opening()
+                    } else {
+                        HomeScreen(
+                            taxonomy = listTaxonomy,
+                            records = records,
+                            onOpenRecord = { openRecordId = it.id },
+                            onOpenGroup = { group = it; screen = Screen.GROUP },
+                        )
+                    }
                     FloatingActionButton(
                         onClick = { photos = emptyList(); screen = Screen.CAPTURE },
                         containerColor = MaterialTheme.colorScheme.primary,
@@ -322,14 +343,18 @@ fun App() {
                 }
 
                 Screen.GROUP -> Box(Modifier.fillMaxSize().padding(insets)) {
-                    GroupScreen(
-                        taxonomy = taxonomy,
-                        label = group.orEmpty(),
-                        records = records.filter {
-                            LifeList.groupOf(taxonomy, it.taxonId) == group
-                        },
-                        onOpenRecord = { openRecordId = it.id },
-                    )
+                    if (listTaxonomy == null) {
+                        Opening()
+                    } else {
+                        GroupScreen(
+                            taxonomy = listTaxonomy,
+                            label = group.orEmpty(),
+                            records = records.filter {
+                                LifeList.groupOf(listTaxonomy, it.taxonId) == group
+                            },
+                            onOpenRecord = { openRecordId = it.id },
+                        )
+                    }
                 }
 
                 Screen.CAPTURE -> CaptureScreen(
@@ -353,9 +378,13 @@ fun App() {
                     choices = choices,
                     picked = picked,
                     onPick = { picked = it },
+                    keepable = live,
                     onKeep = {
                         val node = picked?.taxonId ?: answer.taxonId
-                        if (!kept && node != 0) {
+                        // `live` guards the store: the demo taxonomy's ids mean nothing to the
+                        // real one, and saving one would put a record in the list that no
+                        // taxonomy can resolve.
+                        if (live && !kept && node != 0) {
                             kept = true
                             val first = LifeList.isFirst(records, node)
                             val paths = store.savePhotos(photos)
@@ -376,7 +405,7 @@ fun App() {
                                     confidence = answer.confidence.probability,
                                 )
                             )
-                            val total = LifeList.totals(taxonomy, records).taxa
+                            val total = LifeList.totals(listTaxonomy ?: answerTaxonomy, records).taxa
                             scope.launch {
                                 snackbar.showSnackbar(
                                     if (first) "Added — that is $total on your list"
@@ -432,52 +461,54 @@ fun App() {
         )
     }
 
+    // Resolved rather than asserted, and with no state written during composition —
+    // assigning to `openRecordId` from here would schedule a recomposition from inside one.
     // Looked up by id rather than held as an object, so an edit made inside the sheet is
     // visible in the sheet that made it.
-    openRecordId?.let { id ->
-        val record = records.firstOrNull { it.id == id }
-        if (record == null) {
-            openRecordId = null
-        } else {
-            RecordSheet(
-                taxonomy = taxonomy,
-                record = record,
-                article = wikipedia.article(record.taxonId),
-                onOpenPhoto = { path -> viewing = Viewing.Stored(path) },
-                onAddPhoto = {
-                    addingPhotoTo = id
-                    addPhotoToRecord.launch(
-                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                    )
-                },
-                onRefine = { taxonId ->
-                    records = store.update(
-                        LifeList.refine(taxonomy, record, taxonId, Determiner.USER)
-                    )
-                    scope.launch {
-                        snackbar.showSnackbar("Settled — saved as your determination")
-                    }
-                },
-                onDismiss = { openRecordId = null },
-            )
-        }
+    val openRecord = openRecordId?.let { id -> records.firstOrNull { it.id == id } }
+    if (openRecord != null && listTaxonomy != null) {
+        RecordSheet(
+            taxonomy = listTaxonomy,
+            record = openRecord,
+            article = wikipedia.article(openRecord.taxonId),
+            onOpenPhoto = { path -> viewing = Viewing.Stored(path) },
+            onAddPhoto = {
+                addingPhotoTo = openRecord.id
+                addPhotoToRecord.launch(
+                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                )
+            },
+            onRefine = { taxonId ->
+                records = store.update(
+                    LifeList.refine(listTaxonomy, openRecord, taxonId, Determiner.USER)
+                )
+                scope.launch { snackbar.showSnackbar("Settled — saved as your determination") }
+            },
+            onDismiss = { openRecordId = null },
+        )
     }
 
-    readingAbout?.let { taxonId ->
-        val node = taxonomy.node(taxonId)
+    // Same shape: a taxon the current tree does not contain simply opens nothing.
+    val aboutId = readingAbout
+    val aboutNode = aboutId?.let { (listTaxonomy ?: answerTaxonomy).nodeOrNull(it) }
+    if (aboutId != null && aboutNode != null) {
         TaxonSheet(
             brief = TaxonBrief(
-                taxonId = taxonId,
-                name = Presentation.styleName(node.scientificName, node.rank).annotated(),
-                vernacular = node.vernacularEn,
-                rank = node.rank,
-                photo = references.photo(taxonId),
-                credit = references.credit(taxonId),
-                article = wikipedia.article(taxonId),
+                taxonId = aboutId,
+                name = Presentation.styleName(aboutNode.scientificName, aboutNode.rank).annotated(),
+                vernacular = aboutNode.vernacularEn,
+                rank = aboutNode.rank,
+                photo = references.photo(aboutId),
+                credit = references.credit(aboutId),
+                article = wikipedia.article(aboutId),
             ),
             onOpenPhoto = { bitmap, label -> viewing = Viewing.Live(bitmap, label) },
             onDismiss = { readingAbout = null },
         )
+    }
+
+    crash?.let { report ->
+        CrashSheet(report, onDismiss = { CrashLog.clear(context); crash = null })
     }
 
     viewing?.let { PhotoViewer(it, onDismiss = { viewing = null }) }
@@ -516,4 +547,36 @@ private fun note(
     else -> "Example result — take a photo to use the model"
 }
 
-data class Loaded(val outcome: Identifier.Companion.Outcome, val meta: TaxonomyAssets.Meta?)
+/**
+ * What came back from the asset load.
+ *
+ * The taxonomy is held here rather than only on the [Identifier], because the two fail
+ * independently: a 350 MB ONNX session can refuse to open on a device where an 850 kB JSON
+ * file parses perfectly. The life list needs only the taxonomy, so it should not be taken
+ * hostage by the model.
+ */
+data class Loaded(
+    val outcome: Identifier.Companion.Outcome,
+    val meta: TaxonomyAssets.Meta?,
+    val taxonomy: dk.lifelist.core.Taxonomy? = null,
+)
+
+
+/**
+ * The second before the taxonomy is parsed.
+ *
+ * Not a spinner over an empty list: an empty life list and a life list that has not loaded yet
+ * look identical, and telling the user they have collected nothing when they have collected
+ * forty things is its own small betrayal.
+ */
+@Composable
+private fun Opening() {
+    androidx.compose.foundation.layout.Box(
+        Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center,
+    ) {
+        androidx.compose.material3.CircularProgressIndicator(
+            color = MaterialTheme.colorScheme.primary,
+        )
+    }
+}

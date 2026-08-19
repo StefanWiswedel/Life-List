@@ -118,6 +118,7 @@ fun ResultScreen(
     onOpenTaxon: (Int) -> Unit,
     kept: Boolean,
     modelNote: String?,
+    keepable: Boolean = true,
     modifier: Modifier = Modifier,
 ) {
     var showingReference by remember(answer.taxonId) { mutableStateOf(false) }
@@ -283,11 +284,12 @@ fun ResultScreen(
 
         Actions(
             keepLabel = when {
+                !keepable -> "No model in this build"
                 kept -> "In your list"
                 picked != null -> "Add ${picked.vernacular ?: picked.name.text}"
                 else -> keepLabel(answer)
             },
-            keepEnabled = !kept && answer.taxonId != 0,
+            keepEnabled = keepable && !kept && answer.taxonId != 0,
             kept = kept,
             onKeep = onKeep,
             onAddPhoto = onAddPhoto,

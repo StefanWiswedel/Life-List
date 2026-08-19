@@ -80,7 +80,7 @@ data class GroupTally(
 ) {
     /** Records determined all the way to a leaf of the taxonomy. */
     fun toSpecies(taxonomy: Taxonomy): Int =
-        records.count { taxonomy.node(it.taxonId).isLeaf && it.taxonId > 0 }
+        records.count { taxonomy.nodeOrNull(it.taxonId)?.isLeaf == true && it.taxonId > 0 }
 
     /** Kept at genus or coarser, or at an indeterminate leaf — real records, not failures. */
     fun coarser(taxonomy: Taxonomy): Int = records.size - toSpecies(taxonomy)
@@ -97,6 +97,8 @@ object LifeList {
         taxonId: Int,
         groups: List<Group> = DEFAULT_GROUPS,
     ): String {
+        // `lineage` returns empty for a taxon this tree does not contain, so an orphaned
+        // record lands in UNGROUPED rather than taking the app down with it.
         val lineage = taxonomy.lineage(taxonId).toSet()
         return groups.firstOrNull { it.taxonId in lineage }?.label ?: UNGROUPED
     }
@@ -140,7 +142,9 @@ object LifeList {
     data class Totals(val records: Int, val toSpecies: Int, val coarser: Int, val taxa: Int)
 
     fun totals(taxonomy: Taxonomy, records: List<Record>): Totals {
-        val species = records.count { taxonomy.node(it.taxonId).isLeaf && it.taxonId > 0 }
+        val species = records.count {
+            taxonomy.nodeOrNull(it.taxonId)?.isLeaf == true && it.taxonId > 0
+        }
         return Totals(
             records = records.size,
             toSpecies = species,
@@ -196,7 +200,7 @@ object LifeList {
         floor: Float = 0.01f,
     ): List<Candidate> {
         if (taxonId == ROOT_ID) return emptyList()
-        val node = taxonomy.node(taxonId)
+        val node = taxonomy.nodeOrNull(taxonId) ?: return emptyList()
         if (node.isLeaf) return emptyList()
 
         return taxonomy.subtreeLeafIndices(taxonId)
@@ -216,7 +220,8 @@ object LifeList {
      * how someone scans for a name they have since looked up in a book.
      */
     fun speciesUnder(taxonomy: Taxonomy, taxonId: Int): List<Taxon> =
-        taxonomy.subtreeLeafIndices(taxonId)
+        if (taxonId !in taxonomy) emptyList()
+        else taxonomy.subtreeLeafIndices(taxonId)
             .map { taxonomy.node(taxonomy.leafId(it)) }
             .filter { it.taxonId != taxonId }
             .sortedBy { it.vernacularEn ?: it.scientificName }
@@ -229,6 +234,7 @@ object LifeList {
      * beetle" is losing some.
      */
     fun refine(taxonomy: Taxonomy, record: Record, toTaxonId: Int, by: Determiner): Record {
+        require(toTaxonId in taxonomy) { "$toTaxonId is not in this taxonomy" }
         require(taxonomy.isAncestorOrSelf(record.taxonId, toTaxonId)) {
             "cannot refine ${record.taxonId} to $toTaxonId — it is not below the original"
         }

@@ -87,14 +87,23 @@ class RecordStore(private val context: Context) {
         emptyList()
     }
 
-    fun save(records: List<Record>) {
+    /**
+     * Returns false if the list could not be written.
+     *
+     * Never throws. A full disk on the walk home is a reason to tell someone their sighting
+     * did not save; it is not a reason to take the app down mid-gesture, which is how the
+     * write path turns into a crash the user reads as "the app is broken".
+     */
+    fun save(records: List<Record>): Boolean = runCatching {
         val temporary = File(context.filesDir, "life-list.json.tmp")
         val payload: List<Stored> = records.map { it.toStored() }
         temporary.writeText(json.encodeToString(ListSerializer(Stored.serializer()), payload))
         temporary.renameTo(file)
-    }
+    }.isSuccess
 
-    fun savePhotos(bitmaps: List<Bitmap>): List<String> = bitmaps.map { savePhoto(it) }
+    /** Photographs that failed to write are dropped, not raised — the record still lands. */
+    fun savePhotos(bitmaps: List<Bitmap>): List<String> =
+        bitmaps.mapNotNull { runCatching { savePhoto(it) }.getOrNull() }
 
     /** Store the photograph beside the record; a life list without its photos is a spreadsheet. */
     fun savePhoto(bitmap: Bitmap): String {

@@ -56,7 +56,9 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
     kotlin { jvmToolchain(17) }
-    buildFeatures { compose = true }
+    // BuildConfig for the version name in a crash report — a stack trace without a
+    // version is a stack trace against unknown code.
+    buildFeatures { compose = true; buildConfig = true }
 
     androidResources {
         // The model must stay uncompressed so ONNX Runtime can memory-map it straight out

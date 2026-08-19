@@ -60,7 +60,7 @@ fun GroupScreen(
 ) {
     val sorted = remember(records) { records.sortedByDescending { it.observedAt } }
     val species = remember(records) {
-        records.count { taxonomy.node(it.taxonId).isLeaf && it.taxonId > 0 }
+        records.count { taxonomy.nodeOrNull(it.taxonId)?.isLeaf == true && it.taxonId > 0 }
     }
 
     LazyColumn(modifier.fillMaxSize(), contentPadding = PaddingValues(bottom = 120.dp)) {
@@ -101,12 +101,12 @@ fun GroupScreen(
 
 @Composable
 private fun GroupRow(taxonomy: Taxonomy, record: Record, onClick: () -> Unit) {
-    val node = taxonomy.node(record.taxonId)
+    val node = taxonomy.nodeOrNull(record.taxonId)
     val styled = remember(record.taxonId) {
-        Presentation.styleName(node.scientificName, node.rank)
+        node?.let { Presentation.styleName(it.scientificName, it.rank) }.orEmpty()
     }
     val thumbnail = rememberThumbnail(record.photoPath)
-    val isSpecies = node.isLeaf && record.taxonId > 0
+    val isSpecies = node?.isLeaf == true && record.taxonId > 0
 
     Column {
         Row(
@@ -134,11 +134,11 @@ private fun GroupRow(taxonomy: Taxonomy, record: Record, onClick: () -> Unit) {
             Spacer(Modifier.width(13.dp))
             Column(Modifier.weight(1f)) {
                 Text(
-                    node.vernacularEn ?: styled.plain(),
+                    node?.vernacularEn ?: styled.plain().ifBlank { "Not in this model" },
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.SemiBold,
                 )
-                if (node.vernacularEn != null) {
+                if (node?.vernacularEn != null) {
                     Text(styled.annotated(), style = LatinStyle.copy(fontSize = 13.sp))
                 }
                 Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -162,7 +162,7 @@ private fun GroupRow(taxonomy: Taxonomy, record: Record, onClick: () -> Unit) {
                 shape = MaterialTheme.shapes.small,
             ) {
                 Text(
-                    if (isSpecies) "SPECIES" else node.rank.uppercase(),
+                    if (isSpecies) "SPECIES" else (node?.rank ?: "unknown").uppercase(),
                     style = MaterialTheme.typography.labelSmall,
                     fontSize = 9.5.sp,
                     fontWeight = FontWeight.Bold,

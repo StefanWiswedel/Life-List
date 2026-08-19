@@ -1262,6 +1262,85 @@ to build against and they do not need measuring again.
 
 ---
 
+## 36. v0.7.1 crashed on launch for anyone with a saved record — 19 Aug 2026
+
+Reported as: could not open after updating, worked after a clean install, crashed again right
+after the first identification, and then crashed on every launch. No error shown.
+
+That pattern names the bug exactly. **Empty list works, one record kills it.** It is a lookup
+against the wrong tree.
+
+```kotlin
+val live = identifier != null && leafProbabilities != null
+val taxonomy = if (live) identifier!!.taxonomy else Demo.taxonomy   // <- the bug
+```
+
+`live` requires an identification to have *already happened this session*. On every cold start
+it is false, so the home screen was handed `Demo.taxonomy` — a hand-built stand-in with
+nineteen nodes — and asked to look up real saved taxa in it. `Taxonomy.node` is
+`nodes.getValue`, which throws `NoSuchElementException`. The first frame died, and so did every
+frame after it, with no way back except clearing the app's data.
+
+It also explains the crash straight after the first identification: `startOver()` sets
+`leafProbabilities = null`, which flips `live` back to false, which swaps the taxonomy under the
+home screen that is about to draw the record just saved.
+
+v0.7.0 had the same substitution written as `identifier?.taxonomy ?: Demo.taxonomy`. That is
+only wrong during the window while a 350 MB session opens — which is why v0.7.0 was flaky where
+v0.7.1 was reliably dead.
+
+### Why the fix is three things and not one
+
+**1. The list reads the real taxonomy, and there is no fallback.** `Loaded` now carries the
+parsed taxonomy independently of the model session, because the two fail independently: a 350 MB
+ONNX session can refuse to open on a device where an 850 kB JSON file parses perfectly, and the
+life list needs only the second. While it parses, the screen shows a spinner rather than an
+empty list — "you have collected nothing" is a lie worth avoiding.
+
+**2. A missing taxon stops being fatal.** This one outlives the wiring bug and would have bitten
+eventually anyway: **a life list is permanent and a taxonomy is a build artefact.** Retrain at a
+different occurrence threshold and taxa leave the tree; every record of a departed taxon then
+points at nothing. `Taxonomy.nodeOrNull` and `contains` now exist beside `node`, `lineage` and
+`isAncestorOrSelf` return empty and false rather than throwing, and everything in `LifeList`
+that reads a *stored* id degrades. `node` still throws, because the rollup operates on ids it
+produced from that same tree and a miss there is a broken invariant.
+
+An orphaned record stays visible, reads "Not in this model", is filed under Other, and counts as
+a record but not as a species. Hiding it would look like the app had eaten a sighting.
+
+**3. The demo answer can no longer be saved.** With no model bundled, the result screen shows a
+demo identification whose taxon ids mean nothing to the real taxonomy. Keeping one would put an
+unresolvable record in a real list. The button now reads "No model in this build" and is
+disabled.
+
+`RecordStore.save` also stopped throwing — a failed write returns false instead of taking the
+app down mid-gesture.
+
+### The app now keeps its own crash log
+
+"Is there an error log somewhere?" There was not. The only routes to an Android stack trace are
+`adb logcat` from a computer or Developer options → Take bug report, neither of which is a
+reasonable thing to ask of someone in a garden holding a moth.
+
+`CrashLog` installs an uncaught-exception handler in `onCreate` before anything else can throw,
+writes the trace plus version and device to `filesDir`, and the next launch offers it in a sheet
+with a share button. The previous handler is still called afterwards, so the system dialog and
+any platform reporting behave exactly as before — this only adds a copy the user can reach.
+
+### What would have caught it
+
+`OrphanedRecordTest` (core) and two Paparazzi renders. The render test is the honest one: it
+fails by *throwing during composition*, which is precisely how the bug presented. Both were
+written before the fix and both failed against the old code.
+
+The deeper lesson is narrower than "test more". The demo taxonomy was a convenience that made a
+screen work before there was a model, and it quietly became a fallback on a code path that
+handles permanent user data. **A stand-in for missing data must never be reachable from the code
+that reads real data.** It is now structurally impossible: the list surfaces do not have a
+reference to `Demo` at all.
+
+---
+
 ## Open questions
 
 1. **Inference backend.** Accept the CPU-EP-first proposal in §1 above, or hold NNAPI as the
