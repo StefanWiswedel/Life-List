@@ -1042,6 +1042,79 @@ the same: a number that got worse quietly, and looked like the world rather than
 
 ---
 
+## 32. "Doesn't feel coherent" had a structure, not a style — 19 Aug 2026
+
+Reported as a feeling, twice, and the second time after the Material 3 rebuild had already
+fixed the obvious things. Worth taking seriously rather than restyling again.
+
+**The diagnosis: the app was a classifier with a list bolted on.** It opened on a viewfinder;
+the collection lived behind a tab. That is a tool you use, and it is why nothing felt like it
+belonged to anything — there was no *place*, only three screens taking turns. A life list is a
+collection you add to, and a collection opens on what you have.
+
+So home is now the list, capture is a full-screen moment entered from one button and left with
+an X, and there is no tab bar because there is nowhere else to be.
+
+Four things followed from that, and each was a separate defect:
+
+1. **Nothing was ever a reward.** The app stored forty sightings without once saying "you have
+   not seen this before". Firsts are the whole of why a collection is worth keeping, and
+   `LifeList.isFirst` is four lines. Deliberately per *taxon*, not per genus — a mallard after
+   a teal is a first, and making the badge rarer to feel special would be flattering the list
+   rather than describing it.
+2. **The result screen read as a document.** Three collapsed grey expanders stacked in a row
+   was the most web-page-like thing in the app. Everything honest survives, behind one "Why
+   this answer?"; the photograph, the name and one sentence are the screen.
+3. **The hedge was passive.** It stopped at genus, explained itself, and left you there. It now
+   offers the contenders as photographs to choose between. `LifeList.choices` returns only
+   candidates *under* the returned node — a runner-up in another family belongs in the full
+   list (§4.3) but picking it would contradict the answer rather than refine it. A choice is
+   stored as `Determiner.USER` with `refinedFrom` set, so what the model said is kept beside
+   it and never overwritten (§20).
+4. **Too many voices.** Serif, sans and letterspaced caps, with rust, ochre, sage and moss all
+   carrying signal. Now: serif for organism names only, rust for action, moss for "settled",
+   amber for "stopped short deliberately", and nothing else means anything.
+
+### The prototype was the cheapest part
+
+Rather than guess in Kotlin at 15 minutes per APK, the redesign went out first as a single
+self-contained HTML file with real iNaturalist photographs in it, tappable on a phone. Wrong
+direction costs one file instead of one release. That is worth repeating for anything where the
+question is "how does this feel" rather than "does this work".
+
+---
+
+## 33. The screens can now be looked at without a phone
+
+Every screen in `app/` has shipped at least one bug that a single glance would have caught: the
+camera drawn under the system buttons, a slider that did nothing, a species name printed twice,
+a status line truncated to 28 characters inside a box 96dp wide. The cause was always the same.
+Nothing in `app/` had ever been *run* before it reached the phone, because running it meant a
+device, and this container has no `/dev/kvm` so it cannot run an emulator.
+
+**Paparazzi renders composables through layoutlib on the JVM in about a second**, which closes
+that loop without a device. `./gradlew :app:recordPaparazziDebug` writes eight PNGs, and CI
+uploads them on every push.
+
+It found three layout faults in the first run of the new screens:
+
+| what the render showed | why it happened |
+|---|---|
+| "Why this answer?" nowhere on the confident screen | hero photo at 1.12 × screen width pushed it two scrolls down — the one thing this app exists to show, hidden |
+| the Wikipedia paragraph ending mid-sentence under the action bar | 140dp of bottom padding against a ~160dp bar; it read as a rendering fault rather than as more text |
+| "Nothing yet in … **other**" on the home screen | `UNGROUPED` listed as a gap to go and fill, which is not a thing anyone can find |
+
+None of those would have failed a unit test. All three would have been reported from a field in
+Denmark a day later.
+
+Two notes for anyone extending the file. Bitmaps must be `by lazy`, not eager fields —
+layoutlib's graphics stack is stood up by the Paparazzi rule and a field initialiser runs
+before any rule, so `Bitmap.createBitmap` returns null and every test dies on the same NPE. And
+these are deliberately *not* pixel-comparison tests in CI: golden images across layoutlib
+versions are a maintenance tax, and the value here is being able to look at the thing.
+
+---
+
 ## Open questions
 
 1. **Inference backend.** Accept the CPU-EP-first proposal in §1 above, or hold NNAPI as the

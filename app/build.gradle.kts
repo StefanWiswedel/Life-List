@@ -3,6 +3,10 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
+    // Renders composables on the JVM through layoutlib, so a screen can be *looked at* in CI.
+    // Every screen in this app has shipped at least one bug that a single glance would have
+    // caught, because nothing here has ever been run before it reached the phone.
+    alias(libs.plugins.paparazzi)
 }
 
 android {
@@ -87,4 +91,6 @@ dependencies {
     implementation(libs.accompanist.permissions)
     implementation(libs.onnxruntime.android)
     implementation(libs.kotlinx.serialization.json)
+
+    testImplementation(libs.junit)
 }

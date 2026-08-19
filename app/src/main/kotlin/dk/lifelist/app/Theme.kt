@@ -39,6 +39,15 @@ object Warm {
     val RustDeep = Color(0xFF8F3F22)
     val RustPale = Color(0xFFF6E2D9)
     val Ochre = Color(0xFFD9A339)
+
+    /**
+     * The hedge colour, and the only thing it is ever used for.
+     *
+     * Ochre reads well as a bar or a ring and badly as 12sp text on paper, so the darker
+     * Amber carries any word that has to be read. One meaning, two weights — not two colours
+     * competing for the same job, which is part of why the old screen felt busy.
+     */
+    val Amber = Color(0xFFC98A1E)
     val OchrePale = Color(0xFFF8EBCF)
     val Sage = Color(0xFF7C8471)
     val Moss = Color(0xFF4E6151)

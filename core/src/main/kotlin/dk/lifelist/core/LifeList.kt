@@ -138,6 +138,52 @@ object LifeList {
     }
 
     /**
+     * Is this taxon new to the list?
+     *
+     * The one number a collection app owes its user. A life list is a record of firsts, and an
+     * app that stores forty sightings without ever saying "you have not seen this before" has
+     * thrown away the only thing that makes the fortieth as good as the first.
+     *
+     * Deliberately *not* "have you seen anything in this genus" — a mallard after a teal is a
+     * first, and pretending otherwise to make the badge rarer would be a lie about the list.
+     */
+    fun isFirst(records: List<Record>, taxonId: Int): Boolean =
+        records.none { it.taxonId == taxonId }
+
+    /**
+     * The last few sightings, newest first, one per taxon.
+     *
+     * One per taxon because a rail of six photographs of the same blackbird is a rail that
+     * says nothing. `distinctBy` runs after the sort, so the newest photograph of a taxon is
+     * the one that survives.
+     */
+    fun recent(records: List<Record>, limit: Int = 8): List<Record> =
+        records.sortedByDescending { it.observedAt }.distinctBy { it.taxonId }.take(limit)
+
+    /**
+     * The leaves a hedged answer was choosing between — the ones the user can settle.
+     *
+     * Only candidates *under* the returned node qualify. A runner-up in another family is
+     * worth showing in the full list (§4.3) but it is not a thing to offer as "which one is
+     * it", because picking it would not be a refinement, it would be a contradiction.
+     *
+     * Returns empty when there is nothing to choose: a leaf answer, or a hedge with only one
+     * leaf beneath it, in which case the app has no question to ask.
+     */
+    fun choices(
+        taxonomy: Taxonomy,
+        result: RollupResult,
+        limit: Int = 3,
+    ): List<Candidate> {
+        if (result.isUnidentified || result.taxonId < 0) return emptyList()
+        if (taxonomy.node(result.taxonId).isLeaf) return emptyList()
+        val under = result.candidates
+            .filter { taxonomy.isAncestorOrSelf(result.taxonId, it.taxonId) }
+            .sortedByDescending { it.probability }
+        return if (under.size < 2) emptyList() else under.take(limit)
+    }
+
+    /**
      * Refine a record to a deeper node, keeping the original determination in its history.
      *
      * Refusing to refine upward or sideways is the point: "a ground beetle" becoming

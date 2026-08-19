@@ -36,3 +36,7 @@ app/src/main/assets/wikipedia.json
 
 # Fetch caches for `lifelist-wikipedia`. Resumable state, not source.
 /cache/
+
+# Paparazzi writes its renders here on every run; the committed ones live in
+# app/src/test/snapshots/images/ and are the ones worth diffing.
+app/build/reports/paparazzi/

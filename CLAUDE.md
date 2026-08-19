@@ -38,7 +38,8 @@ When trading off, trade in favour of a record being keepable at the rank the evi
 | stage 4 (`head.py`) | written, trained, first numbers in RESULTS.md |
 | stage 6 (`export.py`) | written; **one 350 MB fp32 file, pixels → logits**, §21–22 |
 | stage 5 (eval) | partial — metrics live in `head.py`, no per-group table yet |
-| `app/` — Android | identifies on device; **Material 3 shell**, life list, reference photos |
+| `app/` — Android | **one surface**: home is the list, camera is one button (§32) |
+| screens | rendered on the JVM by Paparazzi — `./gradlew :app:recordPaparazziDebug` (§33) |
 | common names | **fixed 18 Aug** — the taxonomy asset shipped with every vernacular null (§28) |
 | multi-photo | fused on device via §3.2; §3.1 needs a re-export (§29) |
 | species info | 4,475 of 4,657 taxa carry a bundled Wikipedia intro, 2.6 MB (§31) |

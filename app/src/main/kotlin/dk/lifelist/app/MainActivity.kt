@@ -5,31 +5,30 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Checklist
 import androidx.compose.material.icons.filled.PhotoCamera
-import androidx.compose.material.icons.outlined.Checklist
-import androidx.compose.material.icons.outlined.PhotoCamera
 import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -46,13 +45,16 @@ import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import dk.lifelist.core.Determiner
+import dk.lifelist.core.LifeList
 import dk.lifelist.core.Presentation
 import dk.lifelist.core.Record
 import dk.lifelist.core.Rollup
+import dk.lifelist.core.RollupResult
 import kotlinx.coroutines.launch
 import kotlin.concurrent.thread
 
@@ -67,25 +69,18 @@ class MainActivity : ComponentActivity() {
 }
 
 /**
- * The two places this app can be.
+ * One surface.
  *
- * There used to be three *screens* and no app around them — capture, then result, then list,
- * each drawing its own header and its own way back. That is the whole of "it doesn't feel
- * like a coherent app": with no persistent chrome there is nothing to be coherent. A
- * `NavigationBar` that never goes away, and a `TopAppBar` that names where you are, is the
- * cheapest possible fix and it is also the correct one.
+ * The app used to have two tabs and a camera you launched into, and it did not feel like one
+ * thing. The diagnosis was structural rather than visual: a classifier with a list filed behind
+ * a tab is a tool you use, and a list you add to with a camera is a collection you keep. Only
+ * the second one is worth opening twice.
  *
- * Result is not a destination. It is what the Identify tab shows once there is something to
- * say, which is why it keeps the tab bar and takes a back arrow rather than a "Close" link.
+ * So: home is your life list. Capture is a full-screen moment you enter on purpose and leave
+ * with an X. The result slides in over it, and dismissing it puts you back on a list that just
+ * grew. There is no tab bar, because there is nowhere else to be.
  */
-private enum class Tab(
-    val label: String,
-    val selectedIcon: ImageVector,
-    val icon: ImageVector,
-) {
-    IDENTIFY("Identify", Icons.Filled.PhotoCamera, Icons.Outlined.PhotoCamera),
-    LIST("My list", Icons.Filled.Checklist, Icons.Outlined.Checklist),
-}
+private enum class Screen { HOME, CAPTURE, THINKING, RESULT }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -95,17 +90,18 @@ fun App() {
     val references = remember { ReferencePhotos(context) }
     val wikipedia = remember { Wikipedia(context) }
     val snackbar = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+
     // Coarse location, asked for once, at the moment it would first be used.
     val askWhere = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { }
-    val scope = rememberCoroutineScope()
 
-    var tab by remember { mutableStateOf(Tab.IDENTIFY) }
-    var showingResult by remember { mutableStateOf(false) }
+    var screen by remember { mutableStateOf(Screen.HOME) }
     var thresholdSheet by remember { mutableStateOf(false) }
     var viewing by remember { mutableStateOf<Viewing?>(null) }
     var readingAbout by remember { mutableStateOf<Int?>(null) }
+    var openRecord by remember { mutableStateOf<Record?>(null) }
 
     var threshold by remember { mutableFloatStateOf(0.70f) }
     var caseIndex by remember { mutableIntStateOf(0) }
@@ -114,6 +110,7 @@ fun App() {
     var leafProbabilities by remember { mutableStateOf<FloatArray?>(null) }
     var failure by remember { mutableStateOf<String?>(null) }
     var kept by remember { mutableStateOf(false) }
+    var picked by remember { mutableStateOf<Choice?>(null) }
     var records by remember { mutableStateOf(store.load()) }
 
     // Loading a 335 MB session takes a moment, so it happens off the main thread and the
@@ -128,165 +125,218 @@ fun App() {
         }
     }
     val identifier = (loaded?.outcome as? Identifier.Companion.Outcome.Ready)?.identifier
-    val answer = currentAnswer(identifier, leafProbabilities, caseIndex, threshold)
+    val taxonomy = identifier?.taxonomy ?: Demo.taxonomy
+
+    val rollup: RollupResult = if (identifier != null && leafProbabilities != null) {
+        Rollup.rollup(taxonomy, leafProbabilities!!, threshold)
+    } else {
+        Rollup.rollup(Demo.taxonomy, Demo.cases[caseIndex].probabilities, threshold)
+    }
+    val answer = Presentation.present(
+        if (identifier != null && leafProbabilities != null) taxonomy else Demo.taxonomy,
+        rollup,
+    )
+
+    // The contenders a hedge can hand back to the user. Built here because it needs the
+    // taxonomy and the reference photos, neither of which the result screen may know about.
+    val choices = remember(rollup, records) {
+        LifeList.choices(
+            if (identifier != null && leafProbabilities != null) taxonomy else Demo.taxonomy,
+            rollup,
+        ).map { candidate ->
+            val node = (if (identifier != null && leafProbabilities != null) taxonomy else Demo.taxonomy)
+                .node(candidate.taxonId)
+            Choice(
+                taxonId = candidate.taxonId,
+                name = Presentation.styleName(node.scientificName, node.rank).annotated(),
+                vernacular = node.vernacularEn,
+                percent = Presentation.confidence(candidate.probability).percent,
+                fraction = Presentation.confidence(candidate.probability).barFraction,
+                photo = references.photo(candidate.taxonId),
+            )
+        }
+    }
 
     fun identify(bitmaps: List<Bitmap>) {
         photos = bitmaps
         leafProbabilities = null
         failure = null
         kept = false
-        showingResult = true
+        picked = null
+        screen = Screen.THINKING
         if (bitmaps.isNotEmpty() && identifier != null) {
             thread {
                 runCatching { identifier.identify(bitmaps) }.fold(
-                    onSuccess = { leafProbabilities = it },
-                    onFailure = { failure = "${it::class.simpleName}: ${it.message}" },
+                    onSuccess = { leafProbabilities = it; screen = Screen.RESULT },
+                    onFailure = {
+                        failure = "${it::class.simpleName}: ${it.message}"
+                        screen = Screen.RESULT
+                    },
                 )
             }
+        } else {
+            // No model in this build: still show the demo answer, but not instantly, or the
+            // shutter appears not to have done anything at all.
+            thread { Thread.sleep(700); screen = Screen.RESULT }
         }
     }
 
     fun startOver() {
-        showingResult = false
+        screen = Screen.HOME
         photos = emptyList()
         leafProbabilities = null
         kept = false
+        picked = null
         caseIndex = (caseIndex + 1) % Demo.cases.size
     }
 
-    BackHandler(enabled = showingResult && tab == Tab.IDENTIFY) { startOver() }
-    BackHandler(enabled = tab != Tab.IDENTIFY) { tab = Tab.IDENTIFY }
+    BackHandler(enabled = screen != Screen.HOME) {
+        if (screen == Screen.RESULT) startOver() else screen = Screen.HOME
+    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         containerColor = MaterialTheme.colorScheme.background,
         snackbarHost = { SnackbarHost(snackbar) },
         topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        when {
-                            tab == Tab.LIST -> "My list"
-                            showingResult -> "Identification"
-                            else -> "Life List"
-                        },
-                        style = MaterialTheme.typography.titleLarge,
-                    )
-                },
-                navigationIcon = {
-                    if (tab == Tab.IDENTIFY && showingResult) {
-                        IconButton(onClick = { startOver() }) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-                        }
-                    }
-                },
-                actions = {
-                    if (tab == Tab.IDENTIFY) {
+            // Only home has chrome. Capture and result are full-bleed photographs and draw
+            // their own controls over the image, which is what makes them feel like moments.
+            if (screen == Screen.HOME) {
+                TopAppBar(
+                    title = { Text("Life List", style = MaterialTheme.typography.titleLarge) },
+                    actions = {
                         IconButton(onClick = { thresholdSheet = true }) {
-                            Icon(Icons.Outlined.Tune, contentDescription = "How sure before it commits")
-                        }
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background,
-                    titleContentColor = MaterialTheme.colorScheme.onBackground,
-                ),
-            )
-        },
-        bottomBar = {
-            NavigationBar(containerColor = MaterialTheme.colorScheme.surfaceContainer) {
-                Tab.entries.forEach { entry ->
-                    val selected = tab == entry
-                    NavigationBarItem(
-                        selected = selected,
-                        onClick = {
-                            if (entry == Tab.LIST) records = store.load()
-                            tab = entry
-                        },
-                        icon = {
                             Icon(
-                                if (selected) entry.selectedIcon else entry.icon,
-                                contentDescription = entry.label,
+                                Icons.Outlined.Tune,
+                                contentDescription = "How sure before it commits",
                             )
-                        },
-                        label = { Text(entry.label) },
-                    )
-                }
+                        }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.background,
+                        titleContentColor = MaterialTheme.colorScheme.onBackground,
+                    ),
+                )
             }
         },
     ) { insets ->
         AnimatedContent(
-            targetState = tab to showingResult,
+            targetState = screen,
             transitionSpec = {
-                val forward = targetState.second || targetState.first.ordinal > initialState.first.ordinal
-                val shift = if (forward) 1 else -1
-                (slideInHorizontally { it / 6 * shift } + fadeIn()) togetherWith
-                    (slideOutHorizontally { -it / 6 * shift } + fadeOut())
+                when {
+                    targetState == Screen.CAPTURE ->
+                        (slideInVertically { it } + fadeIn()) togetherWith fadeOut()
+                    initialState == Screen.CAPTURE && targetState == Screen.HOME ->
+                        fadeIn() togetherWith (slideOutVertically { it } + fadeOut())
+                    targetState == Screen.HOME ->
+                        (slideInHorizontally { -it / 6 } + fadeIn()) togetherWith
+                            (slideOutHorizontally { it / 4 } + fadeOut())
+                    else ->
+                        (slideInHorizontally { it / 5 } + fadeIn()) togetherWith
+                            (slideOutHorizontally { -it / 8 } + fadeOut())
+                }
             },
             label = "screen",
-            modifier = Modifier.padding(insets),
-        ) { (current, result) ->
-            Box(Modifier.fillMaxSize()) {
-                when {
-                    current == Tab.LIST -> LifeListScreen(
-                        taxonomy = identifier?.taxonomy ?: Demo.taxonomy,
+        ) { current ->
+            when (current) {
+                Screen.HOME -> Box(Modifier.fillMaxSize().padding(insets)) {
+                    HomeScreen(
+                        taxonomy = taxonomy,
                         records = records,
-                        onOpenPhoto = { path -> viewing = Viewing.Stored(path) },
+                        onOpenRecord = { openRecord = it },
+                        onOpenGroup = { },
                     )
-
-                    result -> ResultScreen(
-                        answer = answer,
-                        threshold = threshold,
-                        onOpenThreshold = { thresholdSheet = true },
-                        onRetake = { startOver() },
-                        onAddPhoto = { extra ->
-                            if (extra != null) identify(photos + extra)
-                        },
-                        onKeep = {
-                            if (!kept && answer.taxonId != 0) {
-                                // Asked for the first time only when there is something to
-                                // attach it to. A sighting is never blocked on the answer.
-                                val here = Where.lastKnown(context)
-                                if (here == null && !Where.granted(context)) askWhere.launch(Where.PERMISSION)
-                                // Stored at the rank the rollup returned, whatever that is —
-                                // the whole point (§19). Root is the one thing not worth keeping.
-                                records = store.add(
-                                    Record(
-                                        id = store.newId(),
-                                        taxonId = answer.taxonId,
-                                        observedAt = System.currentTimeMillis(),
-                                        photoPath = photos.firstOrNull()?.let { store.savePhoto(it) },
-                                        threshold = threshold,
-                                        modelVersion = loaded?.meta?.version ?: "unknown",
-                                        determinedBy = Determiner.MODEL,
-                                        // Stored, not recomputed: the model will change, and
-                                        // a record that re-scores itself later misreports what
-                                        // you were actually told at the time.
-                                        confidence = answer.confidence.probability,
-                                        latitude = here?.latitude,
-                                        longitude = here?.longitude,
-                                    )
-                                )
-                                kept = true
-                                scope.launch { snackbar.showSnackbar("Added to your list") }
-                            }
-                        },
-                        photos = photos,
-                        reference = identifier?.let { references.photo(answer.taxonId) },
-                        referenceCredit = identifier?.let { references.credit(answer.taxonId) },
-                        onOpenPhoto = { bitmap, label -> viewing = Viewing.Live(bitmap, label) },
-                        onOpenTaxon = { taxonId -> readingAbout = taxonId },
-                        article = wikipedia.article(answer.taxonId),
-                        kept = kept,
-                        modelNote = note(loaded, identifier, leafProbabilities, photos, failure),
-                    )
-
-                    else -> CaptureScreen(
-                        onCapture = { bitmap -> if (bitmap != null) identify(listOf(bitmap)) },
-                        note = note(loaded, identifier, leafProbabilities, photos, failure),
-                        ready = identifier != null,
-                    )
+                    FloatingActionButton(
+                        onClick = { screen = Screen.CAPTURE },
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary,
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .safeDrawingPadding()
+                            .padding(18.dp)
+                            .size(68.dp),
+                    ) {
+                        Icon(
+                            Icons.Filled.PhotoCamera,
+                            contentDescription = "Identify something",
+                            modifier = Modifier.size(29.dp),
+                        )
+                    }
                 }
+
+                Screen.CAPTURE -> CaptureScreen(
+                    onCapture = { bitmap ->
+                        if (bitmap != null) {
+                            identify(if (photos.isEmpty()) listOf(bitmap) else photos + bitmap)
+                        } else {
+                            identify(photos)
+                        }
+                    },
+                    onClose = { screen = if (photos.isEmpty()) Screen.HOME else Screen.RESULT },
+                    addingTo = photos.size,
+                )
+
+                Screen.THINKING -> ThinkingScreen(
+                    photo = photos.firstOrNull(),
+                    note = thinkingNote(loaded, identifier),
+                )
+
+                Screen.RESULT -> ResultScreen(
+                    answer = answer,
+                    isFirst = LifeList.isFirst(records, picked?.taxonId ?: answer.taxonId),
+                    photos = photos,
+                    reference = references.photo(picked?.taxonId ?: answer.taxonId),
+                    referenceCredit = references.credit(picked?.taxonId ?: answer.taxonId),
+                    article = wikipedia.article(picked?.taxonId ?: answer.taxonId),
+                    choices = choices,
+                    picked = picked,
+                    onPick = { picked = it },
+                    onKeep = {
+                        val node = picked?.taxonId ?: answer.taxonId
+                        if (!kept && node != 0) {
+                            // Asked for the first time only when there is something to attach
+                            // it to. A sighting is never blocked on the answer.
+                            val here = Where.lastKnown(context)
+                            if (here == null && !Where.granted(context)) {
+                                askWhere.launch(Where.PERMISSION)
+                            }
+                            val first = LifeList.isFirst(records, node)
+                            records = store.add(
+                                Record(
+                                    id = store.newId(),
+                                    taxonId = node,
+                                    observedAt = System.currentTimeMillis(),
+                                    photoPath = photos.firstOrNull()?.let { store.savePhoto(it) },
+                                    threshold = threshold,
+                                    modelVersion = loaded?.meta?.version ?: "unknown",
+                                    // A tap is not a model prediction and must not be reported
+                                    // as one (§20). What the model said is kept alongside.
+                                    determinedBy = if (picked != null) Determiner.USER
+                                    else Determiner.MODEL,
+                                    refinedFrom = if (picked != null) answer.taxonId else null,
+                                    confidence = answer.confidence.probability,
+                                    latitude = here?.latitude,
+                                    longitude = here?.longitude,
+                                )
+                            )
+                            kept = true
+                            val total = LifeList.totals(taxonomy, records).taxa
+                            scope.launch {
+                                snackbar.showSnackbar(
+                                    if (first) "Added — that is $total on your list"
+                                    else "Added to your list"
+                                )
+                            }
+                        }
+                    },
+                    onAddPhoto = { screen = Screen.CAPTURE },
+                    onRetake = { photos = emptyList(); screen = Screen.CAPTURE },
+                    onBack = { startOver() },
+                    onOpenPhoto = { bitmap, label -> viewing = Viewing.Live(bitmap, label) },
+                    onOpenTaxon = { readingAbout = it },
+                    kept = kept,
+                    modelNote = note(loaded, identifier, leafProbabilities, photos, failure),
+                )
             }
         }
     }
@@ -299,8 +349,17 @@ fun App() {
         )
     }
 
+    openRecord?.let { record ->
+        RecordSheet(
+            taxonomy = taxonomy,
+            record = record,
+            article = wikipedia.article(record.taxonId),
+            onOpenPhoto = { path -> viewing = Viewing.Stored(path) },
+            onDismiss = { openRecord = null },
+        )
+    }
+
     readingAbout?.let { taxonId ->
-        val taxonomy = identifier?.taxonomy ?: Demo.taxonomy
         val node = taxonomy.node(taxonId)
         TaxonSheet(
             brief = TaxonBrief(
@@ -319,14 +378,18 @@ fun App() {
 
     viewing?.let { PhotoViewer(it, onDismiss = { viewing = null }) }
 
-    // The first launch after an install spends ten seconds copying 350 MB out of the APK,
-    // and a shutter that silently does nothing in that window reads as a broken app.
     LaunchedEffect(loaded) {
         val outcome = loaded?.outcome
         if (outcome is Identifier.Companion.Outcome.Failed) {
             snackbar.showSnackbar("Model failed to load — ${outcome.reason}")
         }
     }
+}
+
+private fun thinkingNote(loaded: Loaded?, identifier: Identifier?): String = when {
+    loaded == null -> "Getting the model ready — this takes a moment the first time."
+    identifier == null -> "No model in this build — showing an example."
+    else -> "On this phone. Nothing leaves it."
 }
 
 private fun note(
@@ -344,30 +407,9 @@ private fun note(
         "Model failed to load — ${(loaded.outcome as Identifier.Companion.Outcome.Failed).reason}"
     identifier != null && probabilities == null && photos.isNotEmpty() -> "Identifying…"
     identifier != null && probabilities != null ->
-        "Model ${loaded.meta?.version ?: "?"} · ${loaded.meta?.nTaxa ?: 0} taxa"
+        "Model ${loaded.meta?.version ?: "?"} · ${loaded.meta?.nTaxa ?: 0} taxa" +
+            if (photos.size > 1) " · ${photos.size} photos fused" else ""
     else -> "Example result — take a photo to use the model"
-}
-
-/**
- * The answer to show: the model's if there is one, otherwise the demo case.
- *
- * Threshold is applied here rather than at capture, so moving the slider re-rolls up
- * probabilities that already exist instead of re-running the model (spec §4.4 — the
- * threshold is a display-time decision).
- */
-@Composable
-fun currentAnswer(
-    identifier: Identifier?,
-    probabilities: FloatArray?,
-    caseIndex: Int,
-    threshold: Float,
-) = if (identifier != null && probabilities != null) {
-    Presentation.present(
-        identifier.taxonomy,
-        Rollup.rollup(identifier.taxonomy, probabilities, threshold),
-    )
-} else {
-    answerFor(Demo.cases[caseIndex].probabilities, threshold)
 }
 
 data class Loaded(val outcome: Identifier.Companion.Outcome, val meta: TaxonomyAssets.Meta?)

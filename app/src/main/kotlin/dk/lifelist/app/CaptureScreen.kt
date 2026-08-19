@@ -15,37 +15,44 @@ import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.outlined.PhotoLibrary
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -72,24 +79,30 @@ fun decodeSoftware(context: Context, uri: Uri): Bitmap {
 }
 
 /**
- * The Identify tab, before there is anything to identify.
+ * Capture, as a moment rather than a home screen.
  *
- * The old version launched into a raw full-bleed viewfinder with two hand-drawn boxes floating
- * on it, which is what "opens with just a camera" meant. The viewfinder is now framed — it sits
- * in a card, inside the app's own chrome, with a line of text saying what to do and a shutter
- * that looks like a shutter. Same camera, but the app is visibly around it.
+ * The viewfinder used to *be* the app: cold launch straight into a live camera, which is why
+ * nothing felt like it belonged to anything. Now you arrive here on purpose, from your list,
+ * by pressing one button — and there is an X in the corner that takes you back, which is what
+ * makes it read as a thing you opened rather than the place you live.
+ *
+ * Full-bleed and dark, because a viewfinder framed inside a paper-coloured card is a viewfinder
+ * pretending to be a document. When the camera is the whole screen, the phone's own camera
+ * vocabulary — reticle, shutter, close — does the explaining.
  */
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun CaptureScreen(
     onCapture: (Bitmap?) -> Unit,
-    note: String,
-    ready: Boolean,
+    onClose: () -> Unit,
+    addingTo: Int,
     modifier: Modifier = Modifier,
 ) {
     val permission = rememberPermissionState(Manifest.permission.CAMERA)
     val capture = remember { mutableStateOf<ImageCapture?>(null) }
+    var firing by remember { mutableStateOf(false) }
     val context = LocalContext.current
+    val shutterScale by animateFloatAsState(if (firing) 0.86f else 1f, label = "shutter")
 
     // The system photo picker: no permission, no gallery access, the user hands over one
     // image and nothing else. Also the only way to test the model on a winter evening.
@@ -99,117 +112,136 @@ fun CaptureScreen(
         uri?.let { onCapture(runCatching { decodeSoftware(context, it) }.getOrNull()) }
     }
 
-    Column(
-        modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Card(
-            Modifier.fillMaxWidth().weight(1f),
-            shape = MaterialTheme.shapes.extraLarge,
-            colors = CardDefaults.cardColors(containerColor = Color(0xFF1B1916)),
-        ) {
-            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                if (permission.status.isGranted) {
-                    CameraPreview(
-                        Modifier.fillMaxSize().clip(MaterialTheme.shapes.extraLarge),
-                        onBound = { capture.value = it },
-                    )
-                } else {
-                    PermissionPanel(onAllow = { permission.launchPermissionRequest() })
+    fun fire() {
+        val imageCapture = capture.value
+        firing = true
+        if (imageCapture == null) {
+            onCapture(null)
+            return
+        }
+        imageCapture.takePicture(
+            ContextCompat.getMainExecutor(context),
+            object : ImageCapture.OnImageCapturedCallback() {
+                override fun onCaptureSuccess(image: ImageProxy) {
+                    val bitmap = runCatching { image.toBitmap() }.getOrNull()
+                    image.close()
+                    firing = false
+                    onCapture(bitmap)
                 }
+
+                override fun onError(exception: ImageCaptureException) {
+                    firing = false
+                    onCapture(null)
+                }
+            },
+        )
+    }
+
+    Column(modifier.fillMaxSize().background(Color(0xFF100E0C))) {
+        Box(Modifier.weight(1f).fillMaxWidth()) {
+            if (permission.status.isGranted) {
+                CameraPreview(Modifier.fillMaxSize(), onBound = { capture.value = it })
+            } else {
+                PermissionPanel(onAllow = { permission.launchPermissionRequest() })
             }
+
+            // A frame to aim inside. Not a crop — the model centre-crops to a square, and this
+            // is that square, so what you line up is what it actually sees.
+            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Box(
+                    Modifier
+                        .fillMaxWidth(0.66f)
+                        .aspectRatio(1f)
+                        .border(1.5.dp, Color.White.copy(alpha = 0.5f), RoundedCornerShape(26.dp))
+                )
+            }
+
+            Row(
+                Modifier.fillMaxWidth().safeDrawingPadding().padding(8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                IconButton(
+                    onClick = onClose,
+                    colors = IconButtonDefaults.filledIconButtonColors(
+                        containerColor = Color.Black.copy(alpha = 0.36f),
+                        contentColor = Color.White,
+                    ),
+                ) { Icon(Icons.Filled.Close, contentDescription = "Close") }
+                Spacer(Modifier.weight(1f))
+                Text(
+                    if (addingTo > 0) "Photo ${addingTo + 1}" else "Identify",
+                    color = Color.White.copy(alpha = 0.92f),
+                    style = androidx.compose.material3.MaterialTheme.typography.titleSmall,
+                )
+                Spacer(Modifier.weight(1f))
+                Spacer(Modifier.width(48.dp))
+            }
+
+            Text(
+                if (addingTo > 0) "Another angle of the same individual"
+                else "Fill the frame with one organism",
+                color = Color.White.copy(alpha = 0.86f),
+                style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .padding(bottom = 18.dp, start = 24.dp, end = 24.dp),
+            )
         }
 
-        Spacer(Modifier.height(16.dp))
-
-        Text(
-            if (ready) "Fill the frame with one organism, and hold still."
-            else "Getting the model ready — this takes a moment the first time.",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center,
-        )
-
-        Spacer(Modifier.height(12.dp))
-
         Row(
-            Modifier.fillMaxWidth().padding(bottom = 16.dp),
+            Modifier
+                .fillMaxWidth()
+                .background(Color(0xFF100E0C))
+                .safeDrawingPadding()
+                .padding(horizontal = 22.dp, vertical = 18.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            FilledTonalButton(
+            Surface(
                 onClick = {
                     pick.launch(
                         PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
                     )
                 },
-                contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
+                shape = RoundedCornerShape(16.dp),
+                color = Color.White.copy(alpha = 0.12f),
+                modifier = Modifier.size(52.dp),
             ) {
-                Icon(
-                    Icons.Outlined.PhotoLibrary,
-                    contentDescription = null,
-                    modifier = Modifier.size(ButtonDefaults.IconSize),
-                )
-                Spacer(Modifier.width(ButtonDefaults.IconSpacing))
-                Text("Gallery")
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(
+                        Icons.Outlined.PhotoLibrary,
+                        contentDescription = "Choose a photo",
+                        tint = Color.White,
+                    )
+                }
             }
 
-            Shutter(
-                onClick = {
-                    val imageCapture = capture.value
-                    if (imageCapture == null) {
-                        onCapture(null)
-                    } else {
-                        imageCapture.takePicture(
-                            ContextCompat.getMainExecutor(context),
-                            object : ImageCapture.OnImageCapturedCallback() {
-                                override fun onCaptureSuccess(image: ImageProxy) {
-                                    val bitmap = runCatching { image.toBitmap() }.getOrNull()
-                                    image.close()
-                                    onCapture(bitmap)
-                                }
+            Shutter(scale = shutterScale, onClick = ::fire)
 
-                                override fun onError(exception: ImageCaptureException) {
-                                    onCapture(null)
-                                }
-                            },
-                        )
-                    }
-                },
-            )
-
-            // Balances the shutter so it sits centred, and carries the one line of
-            // provenance that used to be buried at the bottom of the result screen.
-            Box(Modifier.width(96.dp)) {
-                FieldLabel(note.take(28), Modifier.fillMaxWidth())
-            }
+            Spacer(Modifier.width(52.dp))
         }
     }
 }
 
 /** A shutter that looks like every other shutter: a ring with a disc inside it. */
 @Composable
-private fun Shutter(onClick: () -> Unit) {
+private fun Shutter(scale: Float, onClick: () -> Unit) {
     Surface(
         onClick = onClick,
         shape = CircleShape,
         color = Color.Transparent,
+        border = androidx.compose.foundation.BorderStroke(4.dp, Color.White),
         modifier = Modifier.size(76.dp),
     ) {
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Box(
                 Modifier
-                    .size(72.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.surfaceContainerHighest)
-            )
-            Box(
-                Modifier
                     .size(58.dp)
+                    .scale(scale)
                     .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.primary)
+                    .background(Color.White)
             )
         }
     }
@@ -218,18 +250,22 @@ private fun Shutter(onClick: () -> Unit) {
 @Composable
 private fun PermissionPanel(onAllow: () -> Unit) {
     Column(
-        Modifier.padding(28.dp),
+        Modifier.fillMaxSize().padding(28.dp),
+        verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
             "Life List identifies from a photograph, so it needs the camera. " +
                 "Nothing leaves the device.",
-            style = MaterialTheme.typography.bodyLarge,
             color = Color(0xFFEDE6DA),
+            style = androidx.compose.material3.MaterialTheme.typography.bodyLarge,
             textAlign = TextAlign.Center,
         )
         Spacer(Modifier.height(20.dp))
-        Button(onClick = onAllow) { Text("Allow camera") }
+        Button(
+            onClick = onAllow,
+            colors = ButtonDefaults.buttonColors(containerColor = Warm.Rust, contentColor = Color.White),
+        ) { Text("Allow camera") }
     }
 }
 

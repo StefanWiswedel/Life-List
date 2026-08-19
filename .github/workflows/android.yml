@@ -25,6 +25,19 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v4
 
+      # Renders every screen through layoutlib on the JVM. Not a pixel comparison — golden
+      # images across layoutlib versions are a maintenance tax — but a screen that throws,
+      # overflows its constraints or fails to compose fails here instead of in a field.
+      - name: Render the screens
+        run: ./gradlew :app:recordPaparazziDebug --no-daemon
+
+      - name: Keep the renders
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screens
+          path: app/build/reports/paparazzi/
+
       - name: Assemble debug APK
         run: ./gradlew :app:assembleDebug --no-daemon
 
