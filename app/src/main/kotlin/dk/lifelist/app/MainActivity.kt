@@ -111,6 +111,8 @@ fun App() {
     var readingAbout by remember { mutableStateOf<Int?>(null) }
     var openRecordId by remember { mutableStateOf<String?>(null) }
     var crash by remember { mutableStateOf(CrashLog.last(context)) }
+    // Naming an identification yourself, straight off the result screen.
+    var searchingAll by remember { mutableStateOf(false) }
 
     var threshold by remember { mutableFloatStateOf(0.70f) }
     var caseIndex by remember { mutableIntStateOf(0) }
@@ -446,6 +448,7 @@ fun App() {
                     onBack = { if (picked != null) picked = null else startOver() },
                     onOpenPhoto = { bitmap, label -> viewing = Viewing.Live(bitmap, label) },
                     onOpenTaxon = { readingAbout = it },
+                    onSearchAll = { searchingAll = true },
                     kept = kept,
                     modelNote = note(loaded, identifier, leafProbabilities, photos, failure),
                 )
@@ -484,6 +487,12 @@ fun App() {
                 )
                 scope.launch { snackbar.showSnackbar("Settled — saved as your determination") }
             },
+            onCorrect = { taxonId ->
+                records = store.update(
+                    LifeList.correct(listTaxonomy, openRecord, taxonId, Determiner.USER)
+                )
+                scope.launch { snackbar.showSnackbar("Corrected — saved as your determination") }
+            },
             onDismiss = { openRecordId = null },
         )
     }
@@ -504,6 +513,26 @@ fun App() {
             ),
             onOpenPhoto = { bitmap, label -> viewing = Viewing.Live(bitmap, label) },
             onDismiss = { readingAbout = null },
+        )
+    }
+
+    if (searchingAll) {
+        TaxonSearchSheet(
+            taxonomy = answerTaxonomy,
+            onPick = { taxon ->
+                searchingAll = false
+                // Becomes the answer on screen, with no percentage attached — there is no
+                // model number behind a name the user found themselves.
+                picked = Choice(
+                    taxonId = taxon.taxonId,
+                    name = Presentation.styleName(taxon.scientificName, taxon.rank).annotated(),
+                    vernacular = taxon.vernacularEn,
+                    percent = null,
+                    fraction = null,
+                    photo = references.photo(taxon.taxonId),
+                )
+            },
+            onDismiss = { searchingAll = false },
         )
     }
 

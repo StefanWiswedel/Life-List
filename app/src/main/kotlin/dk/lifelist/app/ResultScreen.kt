@@ -32,6 +32,7 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.outlined.AddAPhoto
 import androidx.compose.material.icons.outlined.Refresh
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -77,8 +78,9 @@ data class Choice(
     val taxonId: Int,
     val name: AnnotatedString,
     val vernacular: String?,
-    val percent: String,
-    val fraction: Float,
+    /** Null when the user searched this out themselves — there is no model number for it. */
+    val percent: String?,
+    val fraction: Float?,
     val photo: Bitmap?,
 )
 
@@ -116,6 +118,7 @@ fun ResultScreen(
     onBack: () -> Unit,
     onOpenPhoto: (Bitmap, String) -> Unit,
     onOpenTaxon: (Int) -> Unit,
+    onSearchAll: () -> Unit,
     kept: Boolean,
     modelNote: String?,
     keepable: Boolean = true,
@@ -256,6 +259,12 @@ fun ResultScreen(
 
             if (choices.isNotEmpty() && picked == null) {
                 Chooser(choices, onPick)
+            } else if (article == null && answer.kind != AnswerKind.UNIDENTIFIED) {
+                SourceLinks(
+                    scientificName = (picked?.name?.text ?: answer.scientificName.plain()),
+                    articleUrl = null,
+                    modifier = Modifier.padding(horizontal = 18.dp),
+                )
             } else if (article != null) {
                 Text(
                     article.extract,
@@ -268,9 +277,14 @@ fun ResultScreen(
                     color = MaterialTheme.colorScheme.outline,
                     modifier = Modifier.padding(horizontal = 18.dp).padding(top = 7.dp),
                 )
+                SourceLinks(
+                    scientificName = (picked?.name?.text ?: answer.scientificName.plain()),
+                    articleUrl = article.url,
+                    modifier = Modifier.padding(horizontal = 18.dp).padding(top = 12.dp),
+                )
             }
 
-            Why(answer, article, why, { why = !why }, onOpenTaxon)
+            Why(answer, article, why, { why = !why }, onOpenTaxon, onSearchAll)
 
             modelNote?.let {
                 Text(
@@ -431,9 +445,12 @@ private fun Verdict(answer: Answer, picked: Choice?) {
             Spacer(Modifier.width(13.dp))
             Text(
                 when {
-                    picked != null ->
+                    picked?.percent != null ->
                         "You called it. Saved as your determination — the model's " +
                             "${picked.percent} is kept beside it, not replaced."
+                    picked != null ->
+                        "Your determination. The model did not offer this one; what it did " +
+                            "say is kept on the record rather than replaced."
                     else -> answer.explanation
                 },
                 style = MaterialTheme.typography.bodyMedium,
@@ -509,7 +526,7 @@ private fun Chooser(choices: List<Choice>, onPick: (Choice) -> Unit) {
                             Spacer(Modifier.height(9.dp))
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 LinearProgressIndicator(
-                                    progress = { choice.fraction },
+                                    progress = { choice.fraction ?: 0f },
                                     modifier = Modifier
                                         .weight(1f)
                                         .height(4.dp)
@@ -520,7 +537,7 @@ private fun Chooser(choices: List<Choice>, onPick: (Choice) -> Unit) {
                                 )
                                 Spacer(Modifier.width(7.dp))
                                 Text(
-                                    choice.percent,
+                                    choice.percent ?: "—",
                                     style = MaterialTheme.typography.labelMedium,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 )
@@ -544,6 +561,7 @@ private fun Why(
     open: Boolean,
     onToggle: () -> Unit,
     onOpenTaxon: (Int) -> Unit,
+    onSearchAll: () -> Unit,
 ) {
     Column(Modifier.padding(horizontal = 16.dp).padding(top = 20.dp)) {
         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
@@ -618,11 +636,34 @@ private fun Why(
                 )
 
                 if (article != null) {
-                    Spacer(Modifier.height(14.dp))
+                    Spacer(Modifier.height(12.dp))
                     Text(
                         "Tap any name above to read about it.",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.outline,
+                    )
+                }
+
+                // The escape hatch. A confident answer that is simply the wrong moth had
+                // nowhere to go before this — every route out of the screen agreed with the
+                // model or threw the identification away.
+                Spacer(Modifier.height(14.dp))
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                Row(
+                    Modifier.fillMaxWidth().clickable(onClick = onSearchAll).padding(vertical = 14.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Icon(
+                        Icons.Outlined.Search,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(18.dp),
+                    )
+                    Spacer(Modifier.width(9.dp))
+                    Text(
+                        "None of these — name it yourself",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.primary,
                     )
                 }
             }

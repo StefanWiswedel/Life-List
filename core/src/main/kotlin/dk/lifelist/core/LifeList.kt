@@ -241,4 +241,86 @@ object LifeList {
         require(toTaxonId != record.taxonId) { "already determined at $toTaxonId" }
         return record.copy(taxonId = toTaxonId, determinedBy = by, refinedFrom = record.taxonId)
     }
+
+    /**
+     * Replace a determination with a different one anywhere in the tree.
+     *
+     * [refine] narrows: a ground beetle becomes *Carabus granulatus*, which is new information
+     * about the same answer. This is the other case, and the app had no answer for it — the
+     * model returns a moth species at high confidence and it is simply the wrong moth, in
+     * another genus or another family. Reported twice from real use, with no way to say so.
+     *
+     * The distinction is kept in the data rather than in a flag: `refinedFrom` holds whatever
+     * the record said before, and [wasNarrowed] asks the tree afterwards which kind of change
+     * it was. One field, no way for the two to disagree.
+     *
+     * What the model said is never overwritten. `confidence` and `modelVersion` stay exactly as
+     * they were, which is the point — a record that quietly rewrote its own history to agree
+     * with the correction would make the app's calibration unfalsifiable.
+     */
+    fun correct(taxonomy: Taxonomy, record: Record, toTaxonId: Int, by: Determiner): Record {
+        require(toTaxonId in taxonomy) { "$toTaxonId is not in this taxonomy" }
+        require(toTaxonId != ROOT_ID) { "root is not a determination" }
+        require(toTaxonId != record.taxonId) { "already determined at $toTaxonId" }
+        return record.copy(
+            taxonId = toTaxonId,
+            determinedBy = by,
+            // The *first* determination, not the previous one. Correcting twice should not
+            // erase what the model originally said.
+            refinedFrom = record.refinedFrom ?: record.taxonId,
+        )
+    }
+
+    /** True when the change was a narrowing rather than a replacement. */
+    fun wasNarrowed(taxonomy: Taxonomy, record: Record): Boolean {
+        val from = record.refinedFrom ?: return false
+        return taxonomy.isAncestorOrSelf(from, record.taxonId)
+    }
+
+    /**
+     * Find a taxon by name, for someone who has worked out what it actually was.
+     *
+     * Ranked rather than merely filtered, because "blue" matches ninety things and the one you
+     * want is the one whose name *starts* that way. Species first at equal rank of match: a
+     * person searching by name is nearly always after a species, and offering the genus above
+     * it first is an extra tap every time.
+     *
+     * Matches both the common and the scientific name because people hold one or the other,
+     * rarely both, and which one they have is not something to make them think about.
+     */
+    fun search(taxonomy: Taxonomy, query: String, limit: Int = 40): List<Taxon> {
+        val needle = query.trim().lowercase()
+        if (needle.length < 2) return emptyList()
+
+        fun score(taxon: Taxon): Int {
+            val common = taxon.vernacularEn?.lowercase()
+            val latin = taxon.scientificName.lowercase()
+            return when {
+                common == needle || latin == needle -> 0
+                common?.startsWith(needle) == true -> 1
+                latin.startsWith(needle) -> 2
+                // A word inside the name still counts: "bush-cricket" should find "Speckled
+                // bush-cricket" without the user guessing the first word.
+                common?.contains(needle) == true -> 3
+                latin.contains(needle) -> 4
+                else -> Int.MAX_VALUE
+            }
+        }
+
+        return taxonomy.nodes.values
+            .asSequence()
+            .filter { it.taxonId != ROOT_ID }
+            .map { it to score(it) }
+            .filter { it.second != Int.MAX_VALUE }
+            .sortedWith(
+                compareBy(
+                    { it.second },
+                    { if (it.first.isLeaf) 0 else 1 },
+                    { it.first.vernacularEn ?: it.first.scientificName },
+                )
+            )
+            .map { it.first }
+            .take(limit)
+            .toList()
+    }
 }

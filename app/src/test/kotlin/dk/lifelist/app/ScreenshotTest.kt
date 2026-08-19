@@ -116,7 +116,7 @@ class ScreenshotTest {
         url = "https://en.wikipedia.org/wiki/Speckled_bush-cricket",
     )
 
-    private fun choice(taxonId: Int, percent: String, fraction: Float): Choice {
+    private fun choice(taxonId: Int, percent: String?, fraction: Float?): Choice {
         val node = taxonomy.node(taxonId)
         return Choice(
             taxonId = taxonId,
@@ -200,7 +200,7 @@ class ScreenshotTest {
                     choices = emptyList(),
                     picked = null,
                     onPick = {}, onKeep = {}, onAddPhoto = {}, onRetake = {}, onBack = {},
-                    onOpenPhoto = { _, _ -> }, onOpenTaxon = {},
+                    onOpenPhoto = { _, _ -> }, onOpenTaxon = {}, onSearchAll = {},
                     kept = false,
                     modelNote = "Model 2026-08-18-full · 2294 taxa",
                 )
@@ -226,7 +226,7 @@ class ScreenshotTest {
                     ),
                     picked = null,
                     onPick = {}, onKeep = {}, onAddPhoto = {}, onRetake = {}, onBack = {},
-                    onOpenPhoto = { _, _ -> }, onOpenTaxon = {},
+                    onOpenPhoto = { _, _ -> }, onOpenTaxon = {}, onSearchAll = {},
                     kept = false,
                     modelNote = "Model 2026-08-18-full · 2294 taxa",
                 )
@@ -251,7 +251,7 @@ class ScreenshotTest {
                     ),
                     picked = choice(1688020, "41%", 0.41f),
                     onPick = {}, onKeep = {}, onAddPhoto = {}, onRetake = {}, onBack = {},
-                    onOpenPhoto = { _, _ -> }, onOpenTaxon = {},
+                    onOpenPhoto = { _, _ -> }, onOpenTaxon = {}, onSearchAll = {},
                     kept = false,
                     modelNote = null,
                 )
@@ -273,7 +273,7 @@ class ScreenshotTest {
                     choices = emptyList(),
                     picked = null,
                     onPick = {}, onKeep = {}, onAddPhoto = {}, onRetake = {}, onBack = {},
-                    onOpenPhoto = { _, _ -> }, onOpenTaxon = {},
+                    onOpenPhoto = { _, _ -> }, onOpenTaxon = {}, onSearchAll = {},
                     kept = false,
                     modelNote = "Model 2026-08-18-full · 2294 taxa",
                 )
@@ -307,7 +307,7 @@ class ScreenshotTest {
                     choices = emptyList(),
                     picked = null,
                     onPick = {}, onKeep = {}, onAddPhoto = {}, onRetake = {}, onBack = {},
-                    onOpenPhoto = { _, _ -> }, onOpenTaxon = {},
+                    onOpenPhoto = { _, _ -> }, onOpenTaxon = {}, onSearchAll = {},
                     kept = true,
                     modelNote = null,
                 )
@@ -332,7 +332,7 @@ class ScreenshotTest {
                     choices = listOf(choice(1688020, "69%", 0.69f)),
                     picked = null,
                     onPick = {}, onKeep = {}, onAddPhoto = {}, onRetake = {}, onBack = {},
-                    onOpenPhoto = { _, _ -> }, onOpenTaxon = {},
+                    onOpenPhoto = { _, _ -> }, onOpenTaxon = {}, onSearchAll = {},
                     kept = false,
                     modelNote = null,
                 )
@@ -355,7 +355,7 @@ class ScreenshotTest {
                     choices = emptyList(),
                     picked = null,
                     onPick = {}, onKeep = {}, onAddPhoto = {}, onRetake = {}, onBack = {},
-                    onOpenPhoto = { _, _ -> }, onOpenTaxon = {},
+                    onOpenPhoto = { _, _ -> }, onOpenTaxon = {}, onSearchAll = {},
                     kept = false,
                     modelNote = "Model 2026-08-18-full · 3 photos fused",
                 )
@@ -374,6 +374,31 @@ class ScreenshotTest {
         )
         paparazzi.snapshot {
             LifeListTheme { GroupScreen(taxonomy, "Insects", records, onOpenRecord = {}) }
+        }
+    }
+
+    @Test
+    fun `a name the user found themselves has no percentage to show`() {
+        // The model returned a confident species and it was the wrong moth — reported twice
+        // from real use. There is no model number behind a name someone searched out, and
+        // inventing one would be the exact overclaim this app exists to avoid.
+        paparazzi.snapshot {
+            LifeListTheme {
+                ResultScreen(
+                    answer = answer(1688020, "species", 0.94f),
+                    isFirst = true,
+                    photos = listOf(yours),
+                    reference = reference,
+                    referenceCredit = null,
+                    article = article,
+                    choices = emptyList(),
+                    picked = choice(1692898, null, null),
+                    onPick = {}, onKeep = {}, onAddPhoto = {}, onRetake = {}, onBack = {},
+                    onOpenPhoto = { _, _ -> }, onOpenTaxon = {}, onSearchAll = {},
+                    kept = false,
+                    modelNote = null,
+                )
+            }
         }
     }
 

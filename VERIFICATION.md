@@ -1341,6 +1341,111 @@ reference to `Demo` at all.
 
 ---
 
+## 37. The reference photographs were bad in two different ways — 19 Aug 2026
+
+"The reference images still always look a bit crap — doesn't really have a good picture of the
+specimen, or it's very blurry, or both." Two independent faults, both ours.
+
+### It asked for a thumbnail
+
+`DEFAULT_SIZE = "small"`, which is **240 px**. The result screen draws the reference across the
+full width of a phone — about 1,230 physical pixels on a 3× panel — and the viewer draws it
+larger. Upscaled fivefold, a small photograph reads as a blurry one. That was most of "blurry"
+and it was a one-word constant.
+
+Measured on a sample of twelve, then twenty-five:
+
+| | per photo | 2,294 taxa |
+|---|---|---|
+| `small`, as shipped | 23 KB | 53 MB |
+| `medium`, as S3 serves it | 89–110 KB | 200–250 MB |
+| `medium`, re-encoded at q78 | **42 KB** | **~93 MB** |
+
+Four times the pixels for under twice the bytes.
+
+### It picked the photograph nobody chose
+
+The reference was whichever training photograph the manifest happened to list first — a picture
+taken to teach a classifier, not to show a person what a species looks like. A specimen in a
+hand at an angle, half out of frame, twenty metres away in a field.
+
+The fix is not cleverness. **iNaturalist keeps a curated, community-ordered photo list per
+taxon**, and the first entry is what the site itself shows as that taxon's face. That is exactly
+the "tag that makes it work as a hero image" the request asked for, and it exists for nearly
+everything we ship.
+
+The catch is licensing: the curated favourite is very often *all rights reserved*, because
+iNaturalist may display what we may not redistribute. So the rule walks the curated order and
+takes the first photograph we are licensed to ship — the community's best answer, constrained by
+what is ours to give away. `nd` licences are excluded because the pipeline re-encodes, and a
+re-encode is a derivative work however small.
+
+**2,289 of 2,294 taxa now take a curated photograph.** Five keep the training-set picture,
+because nothing curated for them is shippable. Licences: 1,587 CC BY-NC, 329 CC BY, 168 CC
+BY-NC-SA, 166 CC BY-SA, 39 CC0.
+
+### The index had no builder
+
+`shared/model/reference_photos.json` was a committed artefact that no committed code produced —
+written once by a throwaway script and then trusted for weeks. Exactly the shape of §28, where
+the taxonomy shipped with every vernacular null for the same reason. `lifelist-reference-index`
+is now that script, written down and tested.
+
+The GBIF↔iNaturalist id spaces are unrelated (GBIF 1688020 and iNat 1688020 are different
+organisms), and the first build had to recover the mapping by joining the old index against the
+334k-row photo manifest on `photo_id` — 2,294 of 2,294 recovered. The mapping is now stored in
+the index, so no rebuild has to do that again.
+
+---
+
+## 38. Saying "no, it is not that"
+
+Reported twice from real use: a clean photograph of a moth on a plain background, a confident
+species answer, and it is the wrong moth. The app had no way to hear it. Every route off the
+result screen either agreed with the model or threw the identification away, and `refine` only
+narrows — there was nothing that could move a record sideways.
+
+`LifeList.correct` does. Any taxon in the tree, at any rank, with three rules:
+
+- **What the model said is never overwritten.** `confidence`, `modelVersion` and `threshold`
+  stay exactly as they were. A record that rewrote its own history to agree with the correction
+  would make the calibration claim unfalsifiable, and calibration is what this app is selling.
+- **Correcting twice still remembers the first determination.** `refinedFrom` holds the
+  *original*, not the previous, so a second thought cannot erase the evidence that the model was
+  wrong.
+- **Narrowing and replacing are told apart by asking the tree**, not by a flag —
+  `wasNarrowed` checks ancestry against `refinedFrom`. One field, no way for the two to
+  disagree.
+
+`LifeList.search` finds the taxon: common or scientific name, ranked so that a prefix beats a
+match buried in the middle, and species before the group above them at equal quality — someone
+searching a name almost always wants the species, and offering the genus first is an extra tap
+every time.
+
+Reachable from two places, deliberately worded differently. On a record: *"Not this? Change it."*
+On a fresh identification, at the bottom of the results: *"None of these — name it yourself."*
+
+**Could corrections train the model?** Not on the device, and not soon — but the data is already
+the right shape. A corrected record holds the photographs, the user's determination, the model's
+original answer and its confidence, which is precisely a labelled example plus the error it
+would fix. An exporter feeding a retrain is a real option and a small one; on-device learning is
+not, and pretending otherwise would be the kind of promise this project has avoided making.
+
+---
+
+## 39. Two links out, because verification happens elsewhere
+
+"I look through the Google images, and that kinda helps me verify the identification." An app
+that answers with a probability and then makes you retype the name somewhere else to check it is
+not taking verification seriously.
+
+Every screen describing a taxon now ends with **Wikipedia** and **Image search** chips. The
+image search uses the *scientific* name: a common name drags in everything that shares it —
+"small tortoiseshell" is a butterfly, a cat coat and a hair comb — and the whole point of the
+trip is to look at pictures of the right organism.
+
+---
+
 ## Open questions
 
 1. **Inference backend.** Accept the CPU-EP-first proposal in §1 above, or hold NNAPI as the

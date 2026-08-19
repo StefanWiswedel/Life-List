@@ -26,6 +26,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.AddAPhoto
 import androidx.compose.material.icons.outlined.Place
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
@@ -85,34 +86,59 @@ fun RecordSheet(
     onOpenPhoto: (String) -> Unit,
     onAddPhoto: () -> Unit,
     onRefine: (Int) -> Unit,
+    onCorrect: (Int) -> Unit,
     onDismiss: () -> Unit,
 ) {
-    var settling by remember(record.id) { mutableStateOf(false) }
+    var mode by remember(record.id) { mutableStateOf(Mode.DETAILS) }
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
         containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
     ) {
-        if (settling) {
-            SpeciesPicker(
-                taxonomy = taxonomy,
-                under = record.taxonId,
-                onBack = { settling = false },
-                onPick = { settling = false; onRefine(it) },
+        when (mode) {
+            // Narrowing: a short, fixed list of the species under what the app already said.
+            Mode.SETTLE -> TaxonSearchContent(
+                heading = "Which species?",
+                note = "Under ${taxonomy.nodeOrNull(record.taxonId)?.scientificName ?: "this record"}. " +
+                    "Saved as your determination — what the model said stays on the record.",
+                source = { query ->
+                    val all = LifeList.speciesUnder(taxonomy, record.taxonId)
+                    if (query.isBlank()) all else all.filter {
+                        it.scientificName.contains(query, ignoreCase = true) ||
+                            it.vernacularEn?.contains(query, ignoreCase = true) == true
+                    }
+                },
+                emptyQueryHint = "",
+                onBack = { mode = Mode.DETAILS },
+                onPick = { mode = Mode.DETAILS; onRefine(it.taxonId) },
             )
-        } else {
-            Details(
+
+            // Replacing: the whole taxonomy, because the model can be confidently wrong.
+            Mode.CORRECT -> TaxonSearchContent(
+                heading = "What is it, then?",
+                note = "Search anything the model knows — species, genus or family. Saved as " +
+                    "your determination; what the model said stays on the record.",
+                source = { LifeList.search(taxonomy, it) },
+                emptyQueryHint = "Type at least two letters.",
+                onBack = { mode = Mode.DETAILS },
+                onPick = { mode = Mode.DETAILS; onCorrect(it.taxonId) },
+            )
+
+            Mode.DETAILS -> Details(
                 taxonomy = taxonomy,
                 record = record,
                 article = article,
                 onOpenPhoto = onOpenPhoto,
                 onAddPhoto = onAddPhoto,
-                onSettle = { settling = true },
+                onSettle = { mode = Mode.SETTLE },
+                onCorrect = { mode = Mode.CORRECT },
             )
         }
     }
 }
+
+private enum class Mode { DETAILS, SETTLE, CORRECT }
 
 @Composable
 private fun Details(
@@ -122,6 +148,7 @@ private fun Details(
     onOpenPhoto: (String) -> Unit,
     onAddPhoto: () -> Unit,
     onSettle: () -> Unit,
+    onCorrect: () -> Unit,
 ) {
     val context = LocalContext.current
     val node = taxonomy.nodeOrNull(record.taxonId)
@@ -179,10 +206,14 @@ private fun Details(
         Detail("Model", record.modelVersion, last = true)
 
         record.refinedFrom?.let { from ->
+            val narrowed = LifeList.wasNarrowed(taxonomy, record)
+            val original = taxonomy.nodeOrNull(from)?.scientificName ?: "a coarser rank"
             Spacer(Modifier.height(14.dp))
             Text(
-                "Settled from ${taxonomy.nodeOrNull(from)?.scientificName ?: "a coarser rank"}. The original " +
-                    "determination is kept, not overwritten.",
+                if (narrowed) "Settled from $original. The original determination is kept, " +
+                    "not overwritten."
+                else "You corrected this from $original. What the model said is kept on the " +
+                    "record rather than replaced.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -201,6 +232,12 @@ private fun Details(
                 Text("Add a photo")
             }
         }
+        Spacer(Modifier.height(9.dp))
+        TextButton(onClick = onCorrect, modifier = Modifier.fillMaxWidth()) {
+            Icon(Icons.Outlined.Search, contentDescription = null, Modifier.size(17.dp))
+            Spacer(Modifier.width(7.dp))
+            Text(if (isSpecies) "Not this species? Change it" else "Not this? Change it")
+        }
 
         article?.let {
             Spacer(Modifier.height(20.dp))
@@ -212,89 +249,9 @@ private fun Details(
                 color = MaterialTheme.colorScheme.outline,
             )
         }
-    }
-}
-
-/**
- * Choose the species by hand.
- *
- * Not a re-run of the model: the probabilities are long gone by the time someone comes back to
- * a record — only the one number that was true at the time is stored — so this is a choice, and
- * it is recorded as the user's. Alphabetical by common name, because that is how someone scans
- * for a name they have since looked up in a book, and searchable because a genus of Danish
- * micro-moths can run to thirty.
- */
-@Composable
-private fun SpeciesPicker(
-    taxonomy: Taxonomy,
-    under: Int,
-    onBack: () -> Unit,
-    onPick: (Int) -> Unit,
-) {
-    var query by remember { mutableStateOf("") }
-    val all = remember(under) { LifeList.speciesUnder(taxonomy, under) }
-    val shown = remember(query, all) {
-        if (query.isBlank()) all else all.filter {
-            it.scientificName.contains(query, ignoreCase = true) ||
-                it.vernacularEn?.contains(query, ignoreCase = true) == true
-        }
-    }
-
-    Column(Modifier.padding(horizontal = 22.dp).padding(bottom = 24.dp)) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            TextButton(onClick = onBack, contentPadding = androidx.compose.foundation.layout.PaddingValues(4.dp)) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", Modifier.size(18.dp))
-                Spacer(Modifier.width(4.dp))
-                Text("Back")
-            }
-        }
-        Spacer(Modifier.height(4.dp))
-        Text("Which species?", style = MaterialTheme.typography.headlineSmall)
-        Spacer(Modifier.height(6.dp))
-        Text(
-            "Under ${taxonomy.nodeOrNull(under)?.scientificName ?: "this record"}. This is saved as your " +
-                "determination — what the model said stays on the record.",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        Spacer(Modifier.height(14.dp))
-        OutlinedTextField(
-            value = query,
-            onValueChange = { query = it },
-            label = { Text("Search ${all.size} species") },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth(),
-        )
-        Spacer(Modifier.height(8.dp))
-        LazyColumn(Modifier.heightIn(max = 420.dp)) {
-            items(shown, key = { it.taxonId }) { taxon ->
-                Column(Modifier.fillMaxWidth().clickable { onPick(taxon.taxonId) }) {
-                    Column(Modifier.padding(vertical = 12.dp)) {
-                        Text(
-                            taxon.vernacularEn ?: taxon.scientificName,
-                            style = MaterialTheme.typography.bodyLarge,
-                            fontWeight = FontWeight.Medium,
-                        )
-                        if (taxon.vernacularEn != null) {
-                            Text(
-                                Presentation.styleName(taxon.scientificName, taxon.rank).annotated(),
-                                style = LatinStyle.copy(fontSize = 13.sp),
-                            )
-                        }
-                    }
-                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-                }
-            }
-            if (shown.isEmpty()) {
-                item {
-                    Text(
-                        "No species here match that.",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(vertical = 16.dp),
-                    )
-                }
-            }
+        node?.let {
+            Spacer(Modifier.height(14.dp))
+            SourceLinks(scientificName = it.scientificName, articleUrl = article?.url)
         }
     }
 }

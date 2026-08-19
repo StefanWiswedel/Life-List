@@ -13,6 +13,9 @@ dependencies = [
     "pyarrow>=15.0",
     "requests>=2.31",
     "tqdm>=4.66",
+    # `lifelist-reference-photos` re-encodes what it downloads, which halves 200 MB of
+    # reference plates. Not a torch-side concern: it runs in the release workflow.
+    "pillow>=10.2",
 ]
 
 [project.optional-dependencies]
@@ -34,6 +37,7 @@ lifelist-images = "lifelist_train.cli.images:main"
 lifelist-embed = "lifelist_train.cli.embed:main"
 lifelist-export = "lifelist_train.cli.export:main"
 lifelist-reference-photos = "lifelist_train.cli.reference:main"
+lifelist-reference-index = "lifelist_train.cli.reference_index:main"
 lifelist-wikipedia = "lifelist_train.cli.wikipedia:main"
 
 [tool.setuptools.packages.find]
