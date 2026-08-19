@@ -25,7 +25,7 @@ class LifeListTest {
     )
 
     private fun record(id: String, taxonId: Int, by: Determiner = Determiner.MODEL) =
-        Record(id, taxonId, 1_787_000_000_000L, null, 0.70f, "test", by)
+        Record(id, taxonId, 1_787_000_000_000L, emptyList(), 0.70f, "test", by)
 
     // -- grouping ---------------------------------------------------------------
 

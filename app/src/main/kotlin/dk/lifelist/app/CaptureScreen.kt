@@ -93,7 +93,7 @@ fun decodeSoftware(context: Context, uri: Uri): Bitmap {
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun CaptureScreen(
-    onCapture: (Bitmap?) -> Unit,
+    onCapture: (Shot?) -> Unit,
     onClose: () -> Unit,
     addingTo: Int,
     modifier: Modifier = Modifier,
@@ -109,7 +109,12 @@ fun CaptureScreen(
     val pick = rememberLauncherForActivityResult(
         ActivityResultContracts.PickVisualMedia()
     ) { uri: Uri? ->
-        uri?.let { onCapture(runCatching { decodeSoftware(context, it) }.getOrNull()) }
+        uri?.let {
+            val bitmap = runCatching { decodeSoftware(context, it) }.getOrNull()
+            // A photograph chosen from the gallery usually knows where it was taken, and that
+            // beats wherever the phone is standing now — which may be a sofa, three days later.
+            onCapture(bitmap?.let { b -> Shot(b, Gallery.coordinatesOf(context, it)) })
+        }
     }
 
     fun fire() {
@@ -126,7 +131,7 @@ fun CaptureScreen(
                     val bitmap = runCatching { image.toBitmap() }.getOrNull()
                     image.close()
                     firing = false
-                    onCapture(bitmap)
+                    onCapture(bitmap?.let { Shot(it, fromCamera = true) })
                 }
 
                 override fun onError(exception: ImageCaptureException) {

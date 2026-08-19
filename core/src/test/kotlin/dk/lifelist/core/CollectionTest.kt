@@ -8,12 +8,14 @@ import kotlin.test.assertTrue
 /**
  * The parts of a life list that make it a collection rather than a log.
  *
- * Firsts, the recent rail, and the choice a hedged answer offers. All three are what turn
- * "the app told me something" into "I added something", and all three are decided here in
- * pure Kotlin rather than in a composable, for the same reason the wording is.
+ * Firsts, the recent rail, the choice a hedged answer offers, and the species list a record can
+ * be settled against later. All four are what turn "the app told me something" into "I added
+ * something", and all four are decided here in pure Kotlin rather than in a composable, for the
+ * same reason the wording is.
  */
 class CollectionTest {
 
+    /** Two ducks, a swan, and the synthetic `Anas sp.` that §1.1a puts under the genus. */
     private val taxonomy = Taxonomy(
         listOf(
             Taxon(0, null, "root", "Life"),
@@ -23,24 +25,16 @@ class CollectionTest {
             Taxon(10, 2, "species", "Anas platyrhynchos", vernacularEn = "Mallard", leafIndex = 0),
             Taxon(11, 2, "species", "Anas crecca", vernacularEn = "Teal", leafIndex = 1),
             Taxon(12, 3, "species", "Cygnus olor", vernacularEn = "Mute Swan", leafIndex = 2),
+            Taxon(-2, 2, "species", "Anas sp.", leafIndex = 3),
         )
     )
 
-    private fun record(id: String, taxonId: Int, at: Long) = Record(
-        id = id, taxonId = taxonId, observedAt = at, photoPath = null,
-        threshold = 0.70f, modelVersion = "test", determinedBy = Determiner.MODEL,
-    )
+    /** Mallard .41, teal .38, swan .18, `Anas sp.` .03. */
+    private val probabilities = floatArrayOf(0.41f, 0.38f, 0.18f, 0.03f)
 
-    private fun result(taxonId: Int, rank: String) = RollupResult(
-        taxonId = taxonId,
-        rank = rank,
-        probability = 0.88f,
-        candidates = listOf(
-            Candidate(10, 0, 0.41f),
-            Candidate(11, 1, 0.38f),
-            Candidate(12, 2, 0.21f),
-        ),
-        threshold = 0.70f,
+    private fun record(id: String, taxonId: Int, at: Long) = Record(
+        id = id, taxonId = taxonId, observedAt = at, photoPaths = emptyList(),
+        threshold = 0.70f, modelVersion = "test", determinedBy = Determiner.MODEL,
     )
 
     // -- firsts -----------------------------------------------------------------
@@ -96,48 +90,82 @@ class CollectionTest {
     // -- the choice a hedge offers ---------------------------------------------
 
     @Test
-    fun `a genus answer offers the species under it`() {
-        val choices = LifeList.choices(taxonomy, result(2, "genus"))
-
-        assertEquals(listOf(10, 11), choices.map { it.taxonId })
-    }
-
-    @Test
-    fun `a candidate in another branch is never offered as a choice`() {
-        // Cygnus olor is worth showing in the full candidate list (§4.3), but picking it
-        // would not refine the answer — it would contradict it.
-        val choices = LifeList.choices(taxonomy, result(2, "genus"))
-
-        assertFalse(choices.any { it.taxonId == 12 })
-    }
-
-    @Test
-    fun `a species answer asks no question`() {
-        assertTrue(LifeList.choices(taxonomy, result(10, "species")).isEmpty())
-    }
-
-    @Test
-    fun `an unidentified result asks no question`() {
-        assertTrue(LifeList.choices(taxonomy, result(0, "root")).isEmpty())
-    }
-
-    @Test
-    fun `a node with only one leaf under it asks no question`() {
-        // "Which one is it?" with one answer is not a question, it is a nag.
-        val single = result(3, "genus")
-
-        assertTrue(LifeList.choices(taxonomy, single).isEmpty())
-    }
-
-    @Test
-    fun `choices come back strongest first and respect the limit`() {
-        val choices = LifeList.choices(taxonomy, result(1, "family"), limit = 2)
+    fun `a genus answer offers the species under it, strongest first`() {
+        val choices = LifeList.choices(taxonomy, probabilities, 2)
 
         assertEquals(listOf(10, 11), choices.map { it.taxonId })
         assertEquals(0.41f, choices.first().probability)
     }
 
-    // -- picking one is a refinement, and is recorded as the user's ------------
+    @Test
+    fun `the synthetic sp leaf is never offered as one of the answers`() {
+        // `Anas sp.` *is* the genus-level answer. Listing it among the species to choose
+        // between offers the question as one of its own answers.
+        assertFalse(LifeList.choices(taxonomy, probabilities, 2).any { it.taxonId < 0 })
+    }
+
+    @Test
+    fun `a candidate in another branch is never offered`() {
+        // Cygnus olor belongs in the full result list (§4.3), but picking it would contradict
+        // the answer rather than refine it.
+        assertFalse(LifeList.choices(taxonomy, probabilities, 2).any { it.taxonId == 12 })
+    }
+
+    @Test
+    fun `a lone contender is still worth asking about`() {
+        // The bug this replaced: a real identification of Yponomeuta at 71% held exactly one
+        // of the global top five and so was offered no question at all, while a family-level
+        // answer two taps earlier offered three. Same code, different truncation.
+        val choices = LifeList.choices(taxonomy, probabilities, 3)
+
+        assertEquals(listOf(12), choices.map { it.taxonId })
+    }
+
+    @Test
+    fun `choices come from the whole probability vector, not the top five`() {
+        // Every leaf under the node is considered, however far down the global ranking it is.
+        val longTail = floatArrayOf(0.02f, 0.60f, 0.36f, 0.02f)
+
+        assertEquals(listOf(11, 10), LifeList.choices(taxonomy, longTail, 2).map { it.taxonId })
+    }
+
+    @Test
+    fun `a leaf below the floor is not offered`() {
+        val lopsided = floatArrayOf(0.97f, 0.001f, 0.02f, 0.009f)
+
+        assertEquals(listOf(10), LifeList.choices(taxonomy, lopsided, 2).map { it.taxonId })
+    }
+
+    @Test
+    fun `a species answer asks no question`() {
+        assertTrue(LifeList.choices(taxonomy, probabilities, 10).isEmpty())
+    }
+
+    @Test
+    fun `root asks no question`() {
+        assertTrue(LifeList.choices(taxonomy, probabilities, ROOT_ID).isEmpty())
+    }
+
+    @Test
+    fun `choices respect their limit`() {
+        assertEquals(1, LifeList.choices(taxonomy, probabilities, 1, limit = 1).size)
+        assertEquals(3, LifeList.choices(taxonomy, probabilities, 1, limit = 5).size)
+    }
+
+    // -- settling a record by hand, later --------------------------------------
+
+    @Test
+    fun `every species under a node can be listed for settling`() {
+        assertEquals(
+            listOf("Anas sp.", "Mallard", "Teal"),
+            LifeList.speciesUnder(taxonomy, 2).map { it.vernacularEn ?: it.scientificName },
+        )
+    }
+
+    @Test
+    fun `a species has nothing under it to settle to`() {
+        assertTrue(LifeList.speciesUnder(taxonomy, 10).isEmpty())
+    }
 
     @Test
     fun `picking a choice refines the record and credits the user`() {
@@ -147,5 +175,16 @@ class CollectionTest {
         assertEquals(10, refined.taxonId)
         assertEquals(Determiner.USER, refined.determinedBy)
         assertEquals(2, refined.refinedFrom, "what the model said is not overwritten")
+    }
+
+    @Test
+    fun `a record keeps its photographs and its date when it is settled`() {
+        // The same sighting, better named. Not a new one.
+        val kept = record("a", 2, 1_700_000_000_000).copy(photoPaths = listOf("/a.jpg", "/b.jpg"))
+        val refined = LifeList.refine(taxonomy, kept, 11, Determiner.USER)
+
+        assertEquals("a", refined.id)
+        assertEquals(1_700_000_000_000, refined.observedAt)
+        assertEquals(listOf("/a.jpg", "/b.jpg"), refined.photoPaths)
     }
 }

@@ -31,7 +31,12 @@ class RecordStore(private val context: Context) {
         val id: String,
         val taxonId: Int,
         val observedAt: Long,
+        // `photoPath` is the pre-0.8 field. Read, never written: a list on disk that
+        // silently loses the reader's old single photograph is the one bug a store must not
+        // have. `photoPaths` is what everything writes now.
         val photoPath: String? = null,
+        val photoPaths: List<String> = emptyList(),
+        val place: String? = null,
         val threshold: Float = 0.70f,
         val modelVersion: String = "unknown",
         val determinedBy: String = "MODEL",
@@ -42,14 +47,35 @@ class RecordStore(private val context: Context) {
     )
 
     private fun Stored.toRecord() = Record(
-        id, taxonId, observedAt, photoPath, threshold, modelVersion,
-        runCatching { Determiner.valueOf(determinedBy) }.getOrDefault(Determiner.MODEL),
-        refinedFrom, confidence, latitude, longitude,
+        id = id,
+        taxonId = taxonId,
+        observedAt = observedAt,
+        photoPaths = if (photoPaths.isNotEmpty()) photoPaths else listOfNotNull(photoPath),
+        threshold = threshold,
+        modelVersion = modelVersion,
+        determinedBy = runCatching { Determiner.valueOf(determinedBy) }
+            .getOrDefault(Determiner.MODEL),
+        refinedFrom = refinedFrom,
+        confidence = confidence,
+        latitude = latitude,
+        longitude = longitude,
+        place = place,
     )
 
     private fun Record.toStored() = Stored(
-        id, taxonId, observedAt, photoPath, threshold, modelVersion, determinedBy.name,
-        refinedFrom, confidence, latitude, longitude,
+        id = id,
+        taxonId = taxonId,
+        observedAt = observedAt,
+        photoPath = null,
+        photoPaths = photoPaths,
+        place = place,
+        threshold = threshold,
+        modelVersion = modelVersion,
+        determinedBy = determinedBy.name,
+        refinedFrom = refinedFrom,
+        confidence = confidence,
+        latitude = latitude,
+        longitude = longitude,
     )
 
     fun load(): List<Record> = runCatching {
@@ -68,6 +94,8 @@ class RecordStore(private val context: Context) {
         temporary.renameTo(file)
     }
 
+    fun savePhotos(bitmaps: List<Bitmap>): List<String> = bitmaps.map { savePhoto(it) }
+
     /** Store the photograph beside the record; a life list without its photos is a spreadsheet. */
     fun savePhoto(bitmap: Bitmap): String {
         val destination = File(photos, "${UUID.randomUUID()}.jpg")
@@ -76,6 +104,19 @@ class RecordStore(private val context: Context) {
     }
 
     fun add(record: Record): List<Record> = (load() + record).also { save(it) }
+
+    /**
+     * Replace one record in place, keeping its position in the file.
+     *
+     * How an identification gets corrected. A record settled to species later is the *same*
+     * sighting — same id, same date, same photographs — so it is updated rather than deleted
+     * and re-added, which would silently move it to the end of the list and change the day
+     * you saw it.
+     */
+    fun update(record: Record): List<Record> =
+        load().map { if (it.id == record.id) record else it }.also { save(it) }
+
+    fun delete(id: String): List<Record> = load().filterNot { it.id == id }.also { save(it) }
 
     fun newId(): String = UUID.randomUUID().toString()
 }

@@ -7,6 +7,7 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
@@ -22,6 +23,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -54,7 +56,6 @@ import dk.lifelist.core.LifeList
 import dk.lifelist.core.Presentation
 import dk.lifelist.core.Record
 import dk.lifelist.core.Rollup
-import dk.lifelist.core.RollupResult
 import kotlinx.coroutines.launch
 import kotlin.concurrent.thread
 
@@ -71,16 +72,21 @@ class MainActivity : ComponentActivity() {
 /**
  * One surface.
  *
- * The app used to have two tabs and a camera you launched into, and it did not feel like one
- * thing. The diagnosis was structural rather than visual: a classifier with a list filed behind
- * a tab is a tool you use, and a list you add to with a camera is a collection you keep. Only
- * the second one is worth opening twice.
+ * Home is your life list. Capture is a full-screen moment you enter on purpose and leave with
+ * an X. The result slides in over it, and dismissing it puts you back on a list that just grew.
+ * There is no tab bar, because there is nowhere else to be.
  *
- * So: home is your life list. Capture is a full-screen moment you enter on purpose and leave
- * with an X. The result slides in over it, and dismissing it puts you back on a list that just
- * grew. There is no tab bar, because there is nowhere else to be.
+ * A group opens on top of home rather than replacing it — the counts on the home screen were
+ * going nowhere, which made them a scoreboard rather than a way in.
  */
-private enum class Screen { HOME, CAPTURE, THINKING, RESULT }
+private enum class Screen { HOME, GROUP, CAPTURE, THINKING, RESULT }
+
+/** What came back from the camera or the picker, with whatever it knows about itself. */
+data class Shot(
+    val bitmap: Bitmap,
+    val coordinates: Pair<Double, Double>? = null,
+    val fromCamera: Boolean = false,
+)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -92,26 +98,47 @@ fun App() {
     val snackbar = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
-    // Coarse location, asked for once, at the moment it would first be used.
     val askWhere = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { }
 
     var screen by remember { mutableStateOf(Screen.HOME) }
+    var group by remember { mutableStateOf<String?>(null) }
     var thresholdSheet by remember { mutableStateOf(false) }
     var viewing by remember { mutableStateOf<Viewing?>(null) }
     var readingAbout by remember { mutableStateOf<Int?>(null) }
-    var openRecord by remember { mutableStateOf<Record?>(null) }
+    var openRecordId by remember { mutableStateOf<String?>(null) }
 
     var threshold by remember { mutableFloatStateOf(0.70f) }
     var caseIndex by remember { mutableIntStateOf(0) }
 
     var photos by remember { mutableStateOf<List<Bitmap>>(emptyList()) }
+    var shotCoordinates by remember { mutableStateOf<Pair<Double, Double>?>(null) }
     var leafProbabilities by remember { mutableStateOf<FloatArray?>(null) }
     var failure by remember { mutableStateOf<String?>(null) }
     var kept by remember { mutableStateOf(false) }
     var picked by remember { mutableStateOf<Choice?>(null) }
     var records by remember { mutableStateOf(store.load()) }
+
+    // Adding a photograph to a record that already exists, rather than to the one being made.
+    var addingPhotoTo by remember { mutableStateOf<String?>(null) }
+    val addPhotoToRecord = rememberLauncherForActivityResult(
+        ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
+        val id = addingPhotoTo
+        addingPhotoTo = null
+        if (uri != null && id != null) {
+            val bitmap = runCatching { decodeSoftware(context, uri) }.getOrNull()
+            if (bitmap != null) {
+                val record = records.firstOrNull { it.id == id }
+                if (record != null) {
+                    records = store.update(
+                        record.copy(photoPaths = record.photoPaths + store.savePhoto(bitmap))
+                    )
+                }
+            }
+        }
+    }
 
     // Loading a 335 MB session takes a moment, so it happens off the main thread and the
     // absence of a model is a state rather than a crash.
@@ -125,33 +152,25 @@ fun App() {
         }
     }
     val identifier = (loaded?.outcome as? Identifier.Companion.Outcome.Ready)?.identifier
-    val taxonomy = identifier?.taxonomy ?: Demo.taxonomy
+    val live = identifier != null && leafProbabilities != null
+    val taxonomy = if (live) identifier!!.taxonomy else Demo.taxonomy
+    val probabilities = if (live) leafProbabilities!! else Demo.cases[caseIndex].probabilities
 
-    val rollup: RollupResult = if (identifier != null && leafProbabilities != null) {
-        Rollup.rollup(taxonomy, leafProbabilities!!, threshold)
-    } else {
-        Rollup.rollup(Demo.taxonomy, Demo.cases[caseIndex].probabilities, threshold)
-    }
-    val answer = Presentation.present(
-        if (identifier != null && leafProbabilities != null) taxonomy else Demo.taxonomy,
-        rollup,
-    )
+    val rollup = Rollup.rollup(taxonomy, probabilities, threshold)
+    val answer = Presentation.present(taxonomy, rollup)
 
-    // The contenders a hedge can hand back to the user. Built here because it needs the
-    // taxonomy and the reference photos, neither of which the result screen may know about.
-    val choices = remember(rollup, records) {
-        LifeList.choices(
-            if (identifier != null && leafProbabilities != null) taxonomy else Demo.taxonomy,
-            rollup,
-        ).map { candidate ->
-            val node = (if (identifier != null && leafProbabilities != null) taxonomy else Demo.taxonomy)
-                .node(candidate.taxonId)
+    // The contenders a hedge can hand back. Built from the full probability vector rather than
+    // the top-five candidate list, so a genus holding one of the top five still gets to ask.
+    val choices = remember(rollup, taxonomy) {
+        LifeList.choices(taxonomy, probabilities, rollup.taxonId).map { candidate ->
+            val node = taxonomy.node(candidate.taxonId)
+            val confidence = Presentation.confidence(candidate.probability)
             Choice(
                 taxonId = candidate.taxonId,
                 name = Presentation.styleName(node.scientificName, node.rank).annotated(),
                 vernacular = node.vernacularEn,
-                percent = Presentation.confidence(candidate.probability).percent,
-                fraction = Presentation.confidence(candidate.probability).barFraction,
+                percent = confidence.percent,
+                fraction = confidence.barFraction,
                 photo = references.photo(candidate.taxonId),
             )
         }
@@ -181,17 +200,44 @@ fun App() {
         }
     }
 
+    fun took(shot: Shot?) {
+        if (shot == null) {
+            identify(photos)
+            return
+        }
+        // Straight to the camera roll, before anything else can go wrong. Losing a photograph
+        // by backing out of the wrong screen is not a trade-off anyone agreed to.
+        if (shot.fromCamera) thread { Gallery.save(context, shot.bitmap) }
+        // A picture knows where it was taken; the phone only knows where it is now.
+        shot.coordinates?.let { shotCoordinates = it }
+        identify(photos + shot.bitmap)
+    }
+
     fun startOver() {
         screen = Screen.HOME
         photos = emptyList()
+        shotCoordinates = null
         leafProbabilities = null
         kept = false
         picked = null
         caseIndex = (caseIndex + 1) % Demo.cases.size
     }
 
+    // Back, in the order a person means it. Un-picking a species used to throw the whole
+    // identification away and land on the home screen, so the photograph had to be taken again.
     BackHandler(enabled = screen != Screen.HOME) {
-        if (screen == Screen.RESULT) startOver() else screen = Screen.HOME
+        when {
+            screen == Screen.RESULT && picked != null -> picked = null
+            screen == Screen.RESULT -> startOver()
+            screen == Screen.CAPTURE && photos.isNotEmpty() -> screen = Screen.RESULT
+            else -> { screen = Screen.HOME; group = null }
+        }
+    }
+
+    // Asked while the user is already granting the camera, not after the first sighting is
+    // ready to be saved — which was too late for the record that prompted it.
+    LaunchedEffect(screen) {
+        if (screen == Screen.CAPTURE && !Where.granted(context)) askWhere.launch(Where.PERMISSION)
     }
 
     Scaffold(
@@ -199,17 +245,12 @@ fun App() {
         containerColor = MaterialTheme.colorScheme.background,
         snackbarHost = { SnackbarHost(snackbar) },
         topBar = {
-            // Only home has chrome. Capture and result are full-bleed photographs and draw
-            // their own controls over the image, which is what makes them feel like moments.
-            if (screen == Screen.HOME) {
-                TopAppBar(
+            when (screen) {
+                Screen.HOME -> TopAppBar(
                     title = { Text("Life List", style = MaterialTheme.typography.titleLarge) },
                     actions = {
                         IconButton(onClick = { thresholdSheet = true }) {
-                            Icon(
-                                Icons.Outlined.Tune,
-                                contentDescription = "How sure before it commits",
-                            )
+                            Icon(Icons.Outlined.Tune, contentDescription = "How sure before it commits")
                         }
                     },
                     colors = TopAppBarDefaults.topAppBarColors(
@@ -217,6 +258,22 @@ fun App() {
                         titleContentColor = MaterialTheme.colorScheme.onBackground,
                     ),
                 )
+
+                Screen.GROUP -> TopAppBar(
+                    title = { },
+                    navigationIcon = {
+                        IconButton(onClick = { screen = Screen.HOME; group = null }) {
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.background,
+                    ),
+                )
+
+                // Capture and result are full-bleed photographs and draw their own controls
+                // over the image, which is what makes them feel like moments.
+                else -> Unit
             }
         },
     ) { insets ->
@@ -226,7 +283,7 @@ fun App() {
                 when {
                     targetState == Screen.CAPTURE ->
                         (slideInVertically { it } + fadeIn()) togetherWith fadeOut()
-                    initialState == Screen.CAPTURE && targetState == Screen.HOME ->
+                    initialState == Screen.CAPTURE && targetState != Screen.THINKING ->
                         fadeIn() togetherWith (slideOutVertically { it } + fadeOut())
                     targetState == Screen.HOME ->
                         (slideInHorizontally { -it / 6 } + fadeIn()) togetherWith
@@ -243,11 +300,11 @@ fun App() {
                     HomeScreen(
                         taxonomy = taxonomy,
                         records = records,
-                        onOpenRecord = { openRecord = it },
-                        onOpenGroup = { },
+                        onOpenRecord = { openRecordId = it.id },
+                        onOpenGroup = { group = it; screen = Screen.GROUP },
                     )
                     FloatingActionButton(
-                        onClick = { screen = Screen.CAPTURE },
+                        onClick = { photos = emptyList(); screen = Screen.CAPTURE },
                         containerColor = MaterialTheme.colorScheme.primary,
                         contentColor = MaterialTheme.colorScheme.onPrimary,
                         modifier = Modifier
@@ -264,20 +321,25 @@ fun App() {
                     }
                 }
 
+                Screen.GROUP -> Box(Modifier.fillMaxSize().padding(insets)) {
+                    GroupScreen(
+                        taxonomy = taxonomy,
+                        label = group.orEmpty(),
+                        records = records.filter {
+                            LifeList.groupOf(taxonomy, it.taxonId) == group
+                        },
+                        onOpenRecord = { openRecordId = it.id },
+                    )
+                }
+
                 Screen.CAPTURE -> CaptureScreen(
-                    onCapture = { bitmap ->
-                        if (bitmap != null) {
-                            identify(if (photos.isEmpty()) listOf(bitmap) else photos + bitmap)
-                        } else {
-                            identify(photos)
-                        }
-                    },
-                    onClose = { screen = if (photos.isEmpty()) Screen.HOME else Screen.RESULT },
+                    onCapture = ::took,
+                    onClose = { if (photos.isEmpty()) startOver() else screen = Screen.RESULT },
                     addingTo = photos.size,
                 )
 
                 Screen.THINKING -> ThinkingScreen(
-                    photo = photos.firstOrNull(),
+                    photo = photos.lastOrNull(),
                     note = thinkingNote(loaded, identifier),
                 )
 
@@ -294,19 +356,16 @@ fun App() {
                     onKeep = {
                         val node = picked?.taxonId ?: answer.taxonId
                         if (!kept && node != 0) {
-                            // Asked for the first time only when there is something to attach
-                            // it to. A sighting is never blocked on the answer.
-                            val here = Where.lastKnown(context)
-                            if (here == null && !Where.granted(context)) {
-                                askWhere.launch(Where.PERMISSION)
-                            }
+                            kept = true
                             val first = LifeList.isFirst(records, node)
+                            val paths = store.savePhotos(photos)
+                            val id = store.newId()
                             records = store.add(
                                 Record(
-                                    id = store.newId(),
+                                    id = id,
                                     taxonId = node,
                                     observedAt = System.currentTimeMillis(),
-                                    photoPath = photos.firstOrNull()?.let { store.savePhoto(it) },
+                                    photoPaths = paths,
                                     threshold = threshold,
                                     modelVersion = loaded?.meta?.version ?: "unknown",
                                     // A tap is not a model prediction and must not be reported
@@ -315,11 +374,8 @@ fun App() {
                                     else Determiner.MODEL,
                                     refinedFrom = if (picked != null) answer.taxonId else null,
                                     confidence = answer.confidence.probability,
-                                    latitude = here?.latitude,
-                                    longitude = here?.longitude,
                                 )
                             )
-                            kept = true
                             val total = LifeList.totals(taxonomy, records).taxa
                             scope.launch {
                                 snackbar.showSnackbar(
@@ -327,11 +383,38 @@ fun App() {
                                     else "Added to your list"
                                 )
                             }
+                            // Off the main thread: a fix waits up to 2.5 s and reverse
+                            // geocoding hits the network. The record is already saved, so a
+                            // slow or absent answer costs nothing.
+                            val exif = shotCoordinates
+                            thread {
+                                val latitude: Double?
+                                val longitude: Double?
+                                if (exif != null) {
+                                    latitude = exif.first; longitude = exif.second
+                                } else {
+                                    val fix = Where.current(context)
+                                    latitude = fix?.latitude; longitude = fix?.longitude
+                                }
+                                if (latitude != null && longitude != null) {
+                                    val place = Where.describe(context, latitude, longitude)
+                                    val stored = store.load().firstOrNull { it.id == id }
+                                    if (stored != null) {
+                                        records = store.update(
+                                            stored.copy(
+                                                latitude = latitude,
+                                                longitude = longitude,
+                                                place = place,
+                                            )
+                                        )
+                                    }
+                                }
+                            }
                         }
                     },
                     onAddPhoto = { screen = Screen.CAPTURE },
                     onRetake = { photos = emptyList(); screen = Screen.CAPTURE },
-                    onBack = { startOver() },
+                    onBack = { if (picked != null) picked = null else startOver() },
                     onOpenPhoto = { bitmap, label -> viewing = Viewing.Live(bitmap, label) },
                     onOpenTaxon = { readingAbout = it },
                     kept = kept,
@@ -349,14 +432,35 @@ fun App() {
         )
     }
 
-    openRecord?.let { record ->
-        RecordSheet(
-            taxonomy = taxonomy,
-            record = record,
-            article = wikipedia.article(record.taxonId),
-            onOpenPhoto = { path -> viewing = Viewing.Stored(path) },
-            onDismiss = { openRecord = null },
-        )
+    // Looked up by id rather than held as an object, so an edit made inside the sheet is
+    // visible in the sheet that made it.
+    openRecordId?.let { id ->
+        val record = records.firstOrNull { it.id == id }
+        if (record == null) {
+            openRecordId = null
+        } else {
+            RecordSheet(
+                taxonomy = taxonomy,
+                record = record,
+                article = wikipedia.article(record.taxonId),
+                onOpenPhoto = { path -> viewing = Viewing.Stored(path) },
+                onAddPhoto = {
+                    addingPhotoTo = id
+                    addPhotoToRecord.launch(
+                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                    )
+                },
+                onRefine = { taxonId ->
+                    records = store.update(
+                        LifeList.refine(taxonomy, record, taxonId, Determiner.USER)
+                    )
+                    scope.launch {
+                        snackbar.showSnackbar("Settled — saved as your determination")
+                    }
+                },
+                onDismiss = { openRecordId = null },
+            )
+        }
     }
 
     readingAbout?.let { taxonId ->

@@ -1115,6 +1115,94 @@ versions are a maintenance tax, and the value here is being able to look at the 
 
 ---
 
+## 34. Eight things from a day of real use — 19 Aug 2026
+
+The app has now been used on actual moths in an actual garden, which found more in one evening
+than the previous three days of building. All eight are fixed; two were bugs of the kind that
+look like a design decision from the outside.
+
+### The ermine moth was not asked about, and the crambid was
+
+Two identifications, minutes apart. *Yponomeuta* at 71% offered no "which one is it?"; Crambidae
+at 99% offered three. Same code.
+
+`LifeList.choices` was reading `RollupResult.candidates`, which is the **global top five**. A
+genus can easily hold one of those and no more — *Yponomeuta evonymella* at 69% was the only
+one under the genus, so `size < 2` returned nothing. It now works from the **full probability
+vector** via `subtreeLeafIndices`, so every leaf under the node is considered however far down
+the global ranking it sits.
+
+Two rules came with it. Indeterminate leaves are excluded: `Yponomeuta sp.` *is* the genus-level
+answer, and listing it among the species to choose between offers the question as one of its own
+answers. And **one contender is still a question** — "is it this one?" is something a naturalist
+can answer, and the old `size < 2` rule was the reason the ermine moth was mute.
+
+### Back threw the identification away
+
+Picking a species and then pressing back landed on the home screen with the photograph gone, so
+the shot had to be taken again. Back now un-picks first, then leaves the result, then leaves the
+group — the order a person actually means it in.
+
+### Photographs were only ever in memory
+
+"Does it add it to my regular camera roll, so I don't lose the photo if I go back to the wrong
+screen?" It did not, and it was worse than that: an un-kept capture existed only as a bitmap, so
+backing out destroyed it. Every shutter press now writes a JPEG to `Pictures/Life List` through
+MediaStore, which needs no permission from API 29.
+
+### A second photo changed nothing visible
+
+The hero kept showing the first one and the only evidence of fusion was "2 photos fused" in grey
+type at the bottom of a scroll. There is now a thumbnail strip on the photograph, and a new shot
+is the one you land on.
+
+### The group cards went nowhere
+
+`onOpenGroup = { }`. A number you cannot open is a scoreboard, and the point of grouping was
+never the score. `GroupScreen` lists the group's sightings, newest first, with genus-level
+records sitting beside species-level ones rather than in a bucket off to the side (§20).
+
+### Location was three separate faults
+
+Reported as "the location is not filling in", and none of the three was the one I would have
+guessed:
+
+1. **Asked too late.** Permission was requested after the first *keep*, so the record that
+   triggered the dialog could never benefit from it. Now requested when the camera opens.
+2. **Never actually requested a fix.** `getLastKnownLocation` is null on a phone where nothing
+   has asked recently. `Where.current` now makes a real single-shot request with a 2.5 s
+   deadline and falls back to last-known.
+3. **The photograph knew and was not asked.** A picture from the gallery carries EXIF GPS, and
+   that is better evidence of where the sighting happened than wherever the phone is standing
+   now — which may be a sofa, three days later.
+
+Suburb and town come from `Geocoder`, resolved once when the record is made and then stored: a
+field that empties itself on a walk with no signal is worse than one that never filled.
+
+**No inline map.** That means the Maps SDK and an API key in a public repository, or a second
+tile source and its licence. Tapping the location opens the phone's own map app on the point,
+which is one line and lands somewhere the user already knows how to use.
+
+### "Why this answer?" was two mistakes
+
+Renamed to **All results**, which is what it contains, and the ⓘ removed — an information icon
+promises that tapping *it* explains something further, and here it explained nothing. It was
+decoration wearing an affordance's clothes.
+
+### A determination was final, and should never have been
+
+"If I select genus level but find out more info later, I should be able to select the correct
+species." That is the promise the data model has been making since §19. Opening a record now
+offers **Settle the species**: a searchable list of the species under the recorded node, going
+through `LifeList.refine`, which refuses to move sideways or upward and keeps the original in
+`refinedFrom`. Photographs can be added to an existing record too — same sighting, same date,
+same id.
+
+Not a re-run of the model: the probabilities are long gone by then, only the one number that was
+true at the time is stored. Settling later is a *choice*, and it is recorded as the user's.
+
+---
+
 ## Open questions
 
 1. **Inference backend.** Accept the CPU-EP-first proposal in §1 above, or hold NNAPI as the

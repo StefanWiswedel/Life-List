@@ -31,7 +31,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.outlined.AddAPhoto
-import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -48,6 +47,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -122,11 +122,15 @@ fun ResultScreen(
 ) {
     var showingReference by remember(answer.taxonId) { mutableStateOf(false) }
     var why by remember(answer.taxonId) { mutableStateOf(false) }
+    // Which of *your* photographs is showing. Adding a second one used to change nothing
+    // visible — the screen kept displaying the first and the only hint that anything had
+    // happened was a grey line at the very bottom.
+    var shown by remember(photos.size) { mutableIntStateOf(photos.lastIndex.coerceAtLeast(0)) }
 
     val heroPhoto = when {
         showingReference && reference != null -> reference
         picked?.photo != null -> picked.photo
-        else -> photos.firstOrNull()
+        else -> photos.getOrNull(shown) ?: photos.firstOrNull()
     }
     val headline = picked?.vernacular ?: picked?.name?.text ?: headline(answer)
     val latin = picked?.name ?: answer.scientificName.annotated()
@@ -207,6 +211,15 @@ fun ResultScreen(
                         )
                     }
 
+                    if (photos.size > 1 && !showingReference && picked == null) {
+                        PhotoStrip(
+                            photos = photos,
+                            shown = shown,
+                            onSelect = { shown = it },
+                            modifier = Modifier.align(Alignment.TopEnd).padding(top = 62.dp, end = 10.dp),
+                        )
+                    }
+
                     Column(
                         Modifier.align(Alignment.BottomStart).padding(16.dp),
                     ) {
@@ -281,6 +294,43 @@ fun ResultScreen(
             onRetake = onRetake,
             modifier = Modifier.align(Alignment.BottomCenter),
         )
+    }
+}
+
+/**
+ * Which of your photographs is on screen, when there is more than one.
+ *
+ * Adding a second photo used to change nothing visible: the hero kept showing the first, and
+ * the only evidence anything had happened was "2 photos fused" in grey type at the very bottom
+ * of a scroll. Now the new one is what you land on, and the others are one tap away.
+ */
+@Composable
+private fun PhotoStrip(
+    photos: List<Bitmap>,
+    shown: Int,
+    onSelect: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier, verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        photos.forEachIndexed { index, bitmap ->
+            val on = index == shown
+            Surface(
+                shape = MaterialTheme.shapes.small,
+                color = Color.Transparent,
+                border = BorderStroke(
+                    2.dp,
+                    if (on) Color.White else Color.White.copy(alpha = 0.35f),
+                ),
+                modifier = Modifier.size(46.dp).clickable { onSelect(index) },
+            ) {
+                Image(
+                    bitmap = bitmap.asImageBitmap(),
+                    contentDescription = "Photo ${index + 1} of ${photos.size}",
+                    modifier = Modifier.fillMaxSize().padding(2.dp).clip(MaterialTheme.shapes.extraSmall),
+                    contentScale = ContentScale.Crop,
+                )
+            }
+        }
     }
 }
 
@@ -403,13 +453,17 @@ private fun Verdict(answer: Answer, picked: Choice?) {
 private fun Chooser(choices: List<Choice>, onPick: (Choice) -> Unit) {
     Column(Modifier.padding(horizontal = 16.dp)) {
         Text(
-            "Which one is it?",
+            if (choices.size == 1) "Is it this one?" else "Which one is it?",
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.padding(start = 2.dp, bottom = 4.dp),
         )
         Text(
-            "All of these are inside what it saw. If you can tell them apart, say so — the " +
-                "record is yours, not the model's.",
+            if (choices.size == 1)
+                "The only species it was weighing below this rank. If you recognise it, say " +
+                    "so — the record is yours, not the model's."
+            else
+                "All of these are inside what it saw. If you can tell them apart, say so — " +
+                    "the record is yours, not the model's.",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(start = 2.dp, bottom = 12.dp),
@@ -473,6 +527,8 @@ private fun Chooser(choices: List<Choice>, onPick: (Choice) -> Unit) {
                     }
                 }
             }
+            // A lone card stretched across the screen reads as the answer rather than as a
+            // question; give it a partner-shaped gap.
             if (choices.size == 1) Spacer(Modifier.weight(1f))
         }
     }
@@ -493,15 +549,10 @@ private fun Why(
             Modifier.fillMaxWidth().clickable(onClick = onToggle).padding(vertical = 15.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Icon(
-                Icons.Outlined.Info,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.secondary,
-                modifier = Modifier.size(18.dp),
-            )
-            Spacer(Modifier.width(9.dp))
+            // No leading icon. An ⓘ promises that tapping it explains something further, and
+            // here it explained nothing — it was decoration wearing an affordance's clothes.
             Text(
-                "Why this answer?",
+                "All results",
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.secondary,
             )

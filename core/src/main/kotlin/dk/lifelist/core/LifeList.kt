@@ -22,7 +22,14 @@ data class Record(
     val taxonId: Int,
     /** Epoch millis. Passed in rather than read, so tests are not at the mercy of a clock. */
     val observedAt: Long,
-    val photoPath: String?,
+    /**
+     * Every photograph of this individual, in the order they were taken.
+     *
+     * A list rather than one path because several angles are what settles a hard insect, and
+     * because a sighting you later add a photo to is the same sighting. The first is the one
+     * the list shows.
+     */
+    val photoPaths: List<String> = emptyList(),
     /** The threshold in force when this was determined, so §4.4 can re-render it honestly. */
     val threshold: Float,
     val modelVersion: String,
@@ -41,7 +48,12 @@ data class Record(
     /** Where, if the device knew and the user allowed it. Coarse, and never required. */
     val latitude: Double? = null,
     val longitude: Double? = null,
-)
+    /** "Vanløse, Copenhagen" — reverse-geocoded once, at the time, and then left alone. */
+    val place: String? = null,
+) {
+    /** The photograph that stands for this record. */
+    val photoPath: String? get() = photoPaths.firstOrNull()
+}
 
 /** The groups the list is broken into — BUILD.md §4.2, and what Seek gets right. */
 data class Group(val label: String, val taxonId: Int)
@@ -163,25 +175,51 @@ object LifeList {
     /**
      * The leaves a hedged answer was choosing between — the ones the user can settle.
      *
-     * Only candidates *under* the returned node qualify. A runner-up in another family is
-     * worth showing in the full list (§4.3) but it is not a thing to offer as "which one is
-     * it", because picking it would not be a refinement, it would be a contradiction.
+     * Built from the **full probability vector**, not from `RollupResult.candidates`. That
+     * list is the global top five, and a genus can easily hold one of them and no more: a
+     * real identification of *Yponomeuta* at 71% showed a single species below it and so was
+     * offered no question at all, while a family-level answer two taps earlier offered three.
+     * Same code, different truncation, and it read as a bug because it was one.
      *
-     * Returns empty when there is nothing to choose: a leaf answer, or a hedge with only one
-     * leaf beneath it, in which case the app has no question to ask.
+     * Indeterminate leaves are excluded. `Yponomeuta sp.` *is* the genus-level answer; putting
+     * it in the list of species to choose between would be offering the question as one of its
+     * own answers.
+     *
+     * A single contender is still worth offering — "is it this one?" is a question a naturalist
+     * can answer, and refusing to ask it is how the ermine moth ended up mute.
      */
     fun choices(
         taxonomy: Taxonomy,
-        result: RollupResult,
+        probabilities: FloatArray,
+        taxonId: Int,
         limit: Int = 3,
+        floor: Float = 0.01f,
     ): List<Candidate> {
-        if (result.isUnidentified || result.taxonId < 0) return emptyList()
-        if (taxonomy.node(result.taxonId).isLeaf) return emptyList()
-        val under = result.candidates
-            .filter { taxonomy.isAncestorOrSelf(result.taxonId, it.taxonId) }
-            .sortedByDescending { it.probability }
-        return if (under.size < 2) emptyList() else under.take(limit)
+        if (taxonId == ROOT_ID) return emptyList()
+        val node = taxonomy.node(taxonId)
+        if (node.isLeaf) return emptyList()
+
+        return taxonomy.subtreeLeafIndices(taxonId)
+            .map { index -> Candidate(taxonomy.leafId(index), index, probabilities[index]) }
+            // A negative id is the synthetic `X sp.` leaf — the hedge itself, not a rival.
+            .filter { it.taxonId > 0 && it.probability >= floor }
+            .sortedWith(compareByDescending<Candidate> { it.probability }.thenBy { it.taxonId })
+            .take(limit)
     }
+
+    /**
+     * Every species sitting under a node, for settling a record by hand later.
+     *
+     * The probabilities are long gone by the time someone looks a record up again — only the
+     * single number that was true at the time is stored (§28) — so a later refinement is a
+     * *choice*, not a re-run. This is the list to choose from, alphabetical because that is
+     * how someone scans for a name they have since looked up in a book.
+     */
+    fun speciesUnder(taxonomy: Taxonomy, taxonId: Int): List<Taxon> =
+        taxonomy.subtreeLeafIndices(taxonId)
+            .map { taxonomy.node(taxonomy.leafId(it)) }
+            .filter { it.taxonId != taxonId }
+            .sortedBy { it.vernacularEn ?: it.scientificName }
 
     /**
      * Refine a record to a deeper node, keeping the original determination in its history.

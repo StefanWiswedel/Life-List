@@ -85,7 +85,7 @@ class ScreenshotTest {
 
     private fun record(id: String, taxonId: Int, at: Long, by: Determiner = Determiner.MODEL) =
         Record(
-            id = id, taxonId = taxonId, observedAt = at, photoPath = null,
+            id = id, taxonId = taxonId, observedAt = at, photoPaths = emptyList(),
             threshold = 0.70f, modelVersion = "2026-08-18-full", determinedBy = by,
             confidence = 0.91f, latitude = 55.676, longitude = 12.568,
         )
@@ -281,6 +281,68 @@ class ScreenshotTest {
                     modelNote = null,
                 )
             }
+        }
+    }
+
+    @Test
+    fun `a lone contender is asked about, not ignored`() {
+        // Yponomeuta at 71% held exactly one species below it and so was offered no question
+        // at all, while a family two taps earlier offered three. The screen has to read as a
+        // question with one card in it, not as a stray card.
+        paparazzi.snapshot {
+            LifeListTheme {
+                ResultScreen(
+                    answer = answer(700, "genus", 0.71f),
+                    isFirst = true,
+                    photos = listOf(yours),
+                    reference = reference,
+                    referenceCredit = null,
+                    article = article,
+                    choices = listOf(choice(1688020, "69%", 0.69f)),
+                    picked = null,
+                    onPick = {}, onKeep = {}, onAddPhoto = {}, onRetake = {}, onBack = {},
+                    onOpenPhoto = { _, _ -> }, onOpenTaxon = {},
+                    kept = false,
+                    modelNote = null,
+                )
+            }
+        }
+    }
+
+    @Test
+    fun `several photographs of the same individual`() {
+        // Adding a second photo used to change nothing visible on this screen.
+        paparazzi.snapshot {
+            LifeListTheme {
+                ResultScreen(
+                    answer = answer(1688020, "species", 0.97f),
+                    isFirst = false,
+                    photos = listOf(yours, reference, yours),
+                    reference = reference,
+                    referenceCredit = ReferencePhotos.Credit("magnedylmer", "CC-BY-NC"),
+                    article = article,
+                    choices = emptyList(),
+                    picked = null,
+                    onPick = {}, onKeep = {}, onAddPhoto = {}, onRetake = {}, onBack = {},
+                    onOpenPhoto = { _, _ -> }, onOpenTaxon = {},
+                    kept = false,
+                    modelNote = "Model 2026-08-18-full · 3 photos fused",
+                )
+            }
+        }
+    }
+
+    // -- a group, opened --------------------------------------------------------
+
+    @Test
+    fun `a group you can actually open`() {
+        val records = listOf(
+            record("a", 1688020, 1_755_000_000_000).copy(place = "Vanl\u00f8se, Copenhagen"),
+            record("b", 600, 1_754_000_000_000),
+            record("c", 1692898, 1_752_000_000_000).copy(place = "Amager F\u00e6lled"),
+        )
+        paparazzi.snapshot {
+            LifeListTheme { GroupScreen(taxonomy, "Insects", records, onOpenRecord = {}) }
         }
     }
 
