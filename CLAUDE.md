@@ -37,7 +37,7 @@ When trading off, trade in favour of a record being keepable at the rank the evi
 | stage 3 (`lifelist-embed`) | written, resumable, run against real BioCLIP + S3 |
 | stage 4 (`head.py`) | written, trained, first numbers in RESULTS.md |
 | stage 6 (`export.py`) | written; **one 350 MB fp32 file, pixels → logits**, §21–22 |
-| stage 5 (eval) | partial — metrics live in `head.py`, no per-group table yet |
+| stage 5 (eval) | `evaluation.py` — per-group table and a threshold sweep (§41) |
 | `app/` — Android | **one surface**: home is the list, camera is one button (§32) |
 | screens | rendered on the JVM by Paparazzi — `./gradlew :app:recordPaparazziDebug` (§33) |
 | records | editable: settle the species later, add photos, place names, camera roll (§34) |
@@ -128,6 +128,13 @@ better there, since free Colab disconnects near 90 minutes and it takes 30–90.
   in §35 and do not need re-measuring.
 - **Genus is a trainable leaf** where genus-only observations support it, via a synthetic
   `Carabus sp.` child with a negative taxon id (spec §1.1a, VERIFICATION.md §16).
+
+## Retraining
+
+`lifelist-images --joined cache/stage2_joined` re-derives the manifest at a new threshold in two
+minutes instead of re-streaming 12.7 GB. Stage 3 then embeds only the new photos: the sampling
+is per taxon, so a lower threshold produces a strict superset and every existing shard is still
+good (§41, checked).
 
 ## Next action
 

@@ -1523,6 +1523,104 @@ No amount of calibration fixes that. Three things do, in increasing order of wor
 
 ---
 
+## 41. What a retrain costs, and the shape of the decision — 20 Aug 2026
+
+The coverage problem in §40 has one real fix: more taxa. What that costs, measured rather than
+estimated.
+
+### The threshold table
+
+From the cached stage 2 join, photo cap 150:
+
+| min observations | taxa | moths & butterflies | new photos | stage 3 on the laptop |
+|---|---|---|---|---|
+| **≥50** (shipping) | 2,376 | 468 | — | done |
+| ≥40 | 2,637 | 513 | +20,725 | ~1 h |
+| ≥30 | 3,037 | 579 | +45,394 | ~2½ h |
+| **≥20** | 3,627 | 679 | +71,775 | ~4 h |
+| ≥15 | 4,069 | — | +86,197 | ~5 h |
+
+Hours from the *measured* stage 3 rate — 333,702 photos in 18.5 h, so about 18,000/hour.
+
+At ≥20 the Geometridae go 104 → 148, plus 54 Noctuidae, 29 Tortricidae, 12 Crambidae. Outside
+Lepidoptera: 159 beetles, 86 flies, 60 bees and wasps, 59 gilled fungi, 41 spiders.
+
+The new classes are thin — median **54 photos** each in the 20–49 band, 31 in the 15–19 band.
+That is the cost side, and it will show up as lower leaf top-1.
+
+### Two things that make this much cheaper than it looks
+
+**Stage 3 resumes by photo id, and the sampling is per taxon.** `sample_photos` builds a fresh
+RNG per taxon (`random_state=seed` inside the group loop), so widening the threshold cannot
+perturb which photos an existing taxon contributes. Checked rather than assumed — the ≥20
+manifest against the shipped ≥50 one:
+
+```
+old   333,702 photos / 2376 taxa
+new   405,477 photos / 3627 taxa
+kept  333,702  (100.00% of the old set)
+gone        0
+NEW    71,775  <- the only ones stage 3 has to embed
+```
+
+A strict superset. The 84 shards on the laptop are all still good.
+
+**`lifelist-images --joined` skips the archive.** Re-deciding the threshold used to mean
+streaming the 12.7 GB open-data tarball again, because stage 2 always started from the raw
+tables. The join is deterministic and already cached; only the sampling depends on the
+threshold. Now it is a two-minute job.
+
+That gap is worth naming for its own sake: **the threshold is the single decision in this
+pipeline most likely to be revisited, and it was the most expensive one to change.** Cost of
+reversal should track how likely a decision is to be wrong, and this had it exactly backwards.
+
+### Embed once, decide after
+
+Each threshold's photo set is a subset of every lower one, and a head fit is minutes against
+hours of embedding. So the right move is to embed down to ≥20 and then train and evaluate heads
+at 20 / 30 / 40 / 50 from the same embeddings, choosing on measured accuracy. One four-hour run
+buys the whole comparison instead of one guess.
+
+### The metric that decides it is not leaf top-1
+
+Adding 1,251 thin classes will lower top-1; that much is arithmetic. The question is whether
+**rollup accuracy at a fixed threshold** holds, and it plausibly does, because a class the model
+cannot separate produces a genus or family answer — which is *correct* — rather than a confident
+wrong species. That mechanism is the entire reason this app can afford coverage that Seek could
+not.
+
+Alongside it: how often the true species was in the model's vocabulary at all. That is the
+number §40 is really about, and no run has ever reported it.
+
+### Stage 5, finally
+
+`evaluation.py` breaks every metric down by group, because one headline number has been hiding
+the answer to the question that keeps coming back from real use — *how good is it on moths?* A
+model at 94.7% overall can be 97% on birds and 70% on micro-moths, and only one of those
+describes the evening someone actually had.
+
+Grouped by the **true** taxon, never the predicted one: a model that called every moth a beetle
+would otherwise report excellent accuracy on moths, having no moths left to be wrong about.
+Temperature is the single one fitted on the whole validation set, deliberately — refitting per
+group would make every group look calibrated and destroy the finding.
+
+`threshold_sweep` reports the same table at several thresholds, which answers a question the app
+currently leaves to the user: **should the confidence threshold differ by group?** If birds
+reach 95% rollup accuracy at 0.70 and moths need 0.90, one dial is serving two very different
+instruments.
+
+One test earned its place immediately. The obvious invariant — "a higher threshold never lowers
+rollup accuracy" — is **false**, and asserting it would have hidden the trade the sweep exists
+to show. Retreating up the tree turns wrong species into right genera right up until it reaches
+root, and a refusal is never credited as correct. Accuracy rises and then falls off a cliff. The
+monotone quantity is the refusal rate, and that is what the test asserts.
+
+The group keys now exist in Python as well as Kotlin, so `tests/test_evaluation.py` reads
+`LifeList.kt` and fails if the two lists drift — the same trick `gen_golden.py --check` plays on
+the rollup.
+
+---
+
 ## Open questions
 
 1. **Inference backend.** Accept the CPU-EP-first proposal in §1 above, or hold NNAPI as the

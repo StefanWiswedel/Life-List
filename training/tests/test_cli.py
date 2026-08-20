@@ -54,9 +54,21 @@ def test_taxa_accepts_a_country_override():
     assert taxa_cli.build_parser().parse_args(["--country", "SE"]).country == "SE"
 
 
-def test_images_requires_an_archive():
-    with pytest.raises(SystemExit):
-        images_cli.build_parser().parse_args([])
+def test_images_wants_an_archive_or_a_cached_join():
+    """Neither is a parse error any more — it is a run error with an explanation.
+
+    The threshold is the one decision in this pipeline genuinely worth changing your mind
+    about, and until `--joined` existed, changing it meant streaming 12.7 GB again.
+    """
+    assert images_cli.build_parser().parse_args([]).archive is None
+    assert images_cli.main([]) == 1
+
+
+def test_images_takes_a_cached_join_instead_of_the_archive():
+    args = images_cli.build_parser().parse_args(["--joined", "cache/stage2_joined"])
+
+    assert args.joined.name == "stage2_joined"
+    assert args.archive is None
 
 
 def test_images_thresholds_are_configurable():

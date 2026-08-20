@@ -43,8 +43,18 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--archive",
         type=Path,
-        required=True,
+        default=None,
         help="inaturalist-open-data-latest.tar.gz, or a directory of already-extracted tables",
+    )
+    parser.add_argument(
+        "--joined",
+        type=Path,
+        default=None,
+        help=(
+            "cache/stage2_joined — the photo-to-taxon table this stage already produced, as a "
+            "parquet file or a directory of parts. Skips the archive entirely, which is what "
+            "makes re-deciding the threshold a two-minute job rather than a 12.7 GB download."
+        ),
     )
     parser.add_argument("--min-observations", type=int, default=80)
     parser.add_argument("--max-photos-per-taxon", type=int, default=500)
@@ -52,7 +62,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--thresholds",
         type=int,
         nargs="+",
-        default=[50, 80, 120, 200],
+        default=[20, 30, 40, 50, 80],
         help="minimums to report before committing",
     )
     parser.add_argument("--seed", type=int, default=0)
@@ -102,9 +112,33 @@ def open_table(archive: Path, table: str) -> Iterator[Iterator[pd.DataFrame]]:
             yield reader
 
 
+def read_joined(path: Path) -> pd.DataFrame:
+    """The cached photo-to-taxon table, from a file or a directory of parts."""
+    if path.is_dir():
+        parts = sorted(path.glob("*.parquet"))
+        if not parts:
+            raise FileNotFoundError(f"no parquet parts in {path}")
+        return pd.concat((pd.read_parquet(p) for p in parts), ignore_index=True)
+    return pd.read_parquet(path)
+
+
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     setup_logging(args.verbose)
+
+    if args.joined is not None:
+        # The threshold is the one decision in this pipeline that is genuinely worth changing
+        # your mind about later, and until now changing it meant streaming the whole open-data
+        # archive again. The join is deterministic and already on disk; only the sampling
+        # depends on the threshold.
+        LOG.info("reading the cached join from %s", args.joined)
+        joined = read_joined(args.joined)
+        LOG.info("%d photo rows, %d taxa", len(joined), joined["taxon_id"].nunique())
+        return report_and_maybe_commit(args, joined)
+
+    if args.archive is None:
+        LOG.error("pass --archive for a fresh run, or --joined to re-decide the threshold")
+        return 1
 
     with open_table(args.archive, "observations") as chunks:
         observations = filter_observation_chunks(chunks, DENMARK_BBOX)
@@ -124,6 +158,11 @@ def main(argv: list[str] | None = None) -> int:
     LOG.info("%d openly licensed photos of those observations", len(photos))
 
     joined = join_photos_to_taxa(observations, photos)
+    return report_and_maybe_commit(args, joined)
+
+
+def report_and_maybe_commit(args: argparse.Namespace, joined: pd.DataFrame) -> int:
+    """Everything downstream of the join: the threshold table, and the manifest."""
     coverages = coverage(joined)
     LOG.info("%d taxa with at least one usable photo", len(coverages))
 
