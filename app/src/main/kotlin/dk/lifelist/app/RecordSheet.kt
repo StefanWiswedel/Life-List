@@ -56,6 +56,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dk.lifelist.core.Determiner
 import dk.lifelist.core.LifeList
+import dk.lifelist.core.LocationSource
 import dk.lifelist.core.Presentation
 import dk.lifelist.core.Record
 import dk.lifelist.core.Taxonomy
@@ -410,8 +411,19 @@ private fun WhereRow(record: Record, onOpen: () -> Unit) {
                     else MaterialTheme.colorScheme.onSurface,
                 )
                 if (hasFix) {
+                    // Which of the two claims this is. A photograph carries where it was
+                    // taken; the phone only knows where it is now, and presenting the second
+                    // as the first is how a moth from last week ends up in the wrong county.
+                    val provenance = when (record.locationSource) {
+                        LocationSource.PHOTO -> "from the photo"
+                        LocationSource.DEVICE -> "from your phone"
+                        null -> null
+                    }
                     Text(
-                        Where.format(record.latitude!!, record.longitude!!),
+                        listOfNotNull(
+                            Where.format(record.latitude!!, record.longitude!!),
+                            provenance,
+                        ).joinToString(" · "),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.outline,
                     )

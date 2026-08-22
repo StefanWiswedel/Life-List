@@ -50,9 +50,27 @@ data class Record(
     val longitude: Double? = null,
     /** "Vanløse, Copenhagen" — reverse-geocoded once, at the time, and then left alone. */
     val place: String? = null,
+    /**
+     * Whether the coordinates came from the photograph or from the phone.
+     *
+     * These are not the same claim and the app used to present them as if they were. A picture
+     * carries where it was taken; the phone only knows where it is now, which may be a sofa
+     * three days later. Recorded so the record can say which one it is, because a coordinate
+     * that looks like evidence and is not is worse than no coordinate at all.
+     */
+    val locationSource: LocationSource? = null,
 ) {
     /** The photograph that stands for this record. */
     val photoPath: String? get() = photoPaths.firstOrNull()
+}
+
+/** Where a record's coordinates came from. See `Record.locationSource`. */
+enum class LocationSource {
+    /** Read from the photograph's own EXIF. Where the sighting actually happened. */
+    PHOTO,
+
+    /** The phone's fix at the moment the record was kept. Right for a photo taken just now. */
+    DEVICE,
 }
 
 /** The groups the list is broken into — BUILD.md §4.2, and what Seek gets right. */

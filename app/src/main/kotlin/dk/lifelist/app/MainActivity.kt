@@ -1,7 +1,9 @@
 package dk.lifelist.app
 
 import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Bundle
+import android.view.KeyEvent
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -17,7 +19,9 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
@@ -25,6 +29,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.PhotoCamera
+import androidx.compose.material.icons.outlined.PhotoLibrary
 import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -32,6 +37,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -53,10 +59,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import dk.lifelist.core.Determiner
 import dk.lifelist.core.LifeList
+import dk.lifelist.core.LocationSource
 import dk.lifelist.core.Presentation
 import dk.lifelist.core.Record
 import dk.lifelist.core.Rollup
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlin.concurrent.thread
 
 class MainActivity : ComponentActivity() {
@@ -68,6 +77,29 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         setContent { LifeListTheme { App() } }
+    }
+
+    /**
+     * Volume down or up takes the picture while the camera is open.
+     *
+     * Consumed only when the capture screen is listening, so everywhere else in the app the
+     * keys still change the volume. Handled on key *down* rather than up, because that is the
+     * moment a camera app fires and the difference is felt.
+     */
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        val isVolume = keyCode == KeyEvent.KEYCODE_VOLUME_DOWN ||
+            keyCode == KeyEvent.KEYCODE_VOLUME_UP
+        // repeatCount guards the long press: holding the key would otherwise fire a burst.
+        if (isVolume && event?.repeatCount == 0 && VolumeShutter.press()) return true
+        return super.onKeyDown(keyCode, event)
+    }
+
+    /** Swallowed to match, or the system raises the volume UI when the key comes back up. */
+    override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
+        val isVolume = keyCode == KeyEvent.KEYCODE_VOLUME_DOWN ||
+            keyCode == KeyEvent.KEYCODE_VOLUME_UP
+        if (isVolume && VolumeShutter.listening) return true
+        return super.onKeyUp(keyCode, event)
     }
 }
 
@@ -100,8 +132,13 @@ fun App() {
     val snackbar = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
+    // Both location permissions in one request rather than two launchers firing together:
+    // a second dialog raised while the first is up is simply dropped. The media one is here
+    // because without it every photograph chosen from the gallery arrives with its
+    // coordinates stripped — see Gallery.coordinatesOf. Declining either costs a field on the
+    // record, never a sighting.
     val askWhere = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestPermission()
+        ActivityResultContracts.RequestMultiplePermissions()
     ) { }
 
     var screen by remember { mutableStateOf(Screen.HOME) }
@@ -243,6 +280,30 @@ fun App() {
         identify((photos + shots.map { it.bitmap }).take(MAX_PHOTOS))
     }
 
+    // Straight from the home screen into an identification, skipping the camera entirely.
+    // Same contract as the capture screen's picker: several images, one sighting. Declared
+    // after `took` because that is what it calls, and a local function does not exist above
+    // its own declaration.
+    //
+    // Decoding runs off the main thread: six full-resolution photographs is a visible stall
+    // on the frame that should be drawing the transition into the thinking screen.
+    val pickForNewRecord = rememberLauncherForActivityResult(
+        ActivityResultContracts.PickMultipleVisualMedia(MAX_PHOTOS)
+    ) { uris: List<Uri> ->
+        if (uris.isNotEmpty()) {
+            scope.launch {
+                val shots = withContext(Dispatchers.IO) {
+                    uris.mapNotNull { uri ->
+                        runCatching { decodeSoftware(context, uri) }.getOrNull()?.let { bitmap ->
+                            Shot(bitmap, Gallery.coordinatesOf(context, uri))
+                        }
+                    }
+                }
+                if (shots.isNotEmpty()) took(shots)
+            }
+        }
+    }
+
     fun startOver() {
         screen = Screen.HOME
         photos = emptyList()
@@ -267,7 +328,14 @@ fun App() {
     // Asked while the user is already granting the camera, not after the first sighting is
     // ready to be saved — which was too late for the record that prompted it.
     LaunchedEffect(screen) {
-        if (screen == Screen.CAPTURE && !Where.granted(context)) askWhere.launch(Where.PERMISSION)
+        if (screen != Screen.CAPTURE) return@LaunchedEffect
+        val wanted = buildList {
+            if (!Where.granted(context)) add(Where.PERMISSION)
+            Gallery.MEDIA_LOCATION_PERMISSION?.let {
+                if (!Gallery.canReadPhotoLocation(context)) add(it)
+            }
+        }
+        if (wanted.isNotEmpty()) askWhere.launch(wanted.toTypedArray())
     }
 
     Scaffold(
@@ -337,21 +405,49 @@ fun App() {
                             onOpenGroup = { group = it; screen = Screen.GROUP },
                         )
                     }
-                    FloatingActionButton(
-                        onClick = { photos = emptyList(); screen = Screen.CAPTURE },
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary,
+                    // Two ways in, because there are two ways a sighting happens: pointing the
+                    // phone at something now, and coming back to the pictures you already
+                    // took. The second was reachable only *through* the camera, which is a
+                    // strange thing to make somebody open in order to say "not the camera".
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
                         modifier = Modifier
                             .align(Alignment.BottomEnd)
                             .safeDrawingPadding()
-                            .padding(18.dp)
-                            .size(68.dp),
+                            .padding(18.dp),
                     ) {
-                        Icon(
-                            Icons.Filled.PhotoCamera,
-                            contentDescription = "Identify something",
-                            modifier = Modifier.size(29.dp),
-                        )
+                        SmallFloatingActionButton(
+                            onClick = {
+                                photos = emptyList()
+                                pickForNewRecord.launch(
+                                    PickVisualMediaRequest(
+                                        ActivityResultContracts.PickVisualMedia.ImageOnly
+                                    )
+                                )
+                            },
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                            contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.size(52.dp),
+                        ) {
+                            Icon(
+                                Icons.Outlined.PhotoLibrary,
+                                contentDescription = "Identify from your photos",
+                                modifier = Modifier.size(23.dp),
+                            )
+                        }
+                        FloatingActionButton(
+                            onClick = { photos = emptyList(); screen = Screen.CAPTURE },
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary,
+                            modifier = Modifier.size(68.dp),
+                        ) {
+                            Icon(
+                                Icons.Filled.PhotoCamera,
+                                contentDescription = "Identify something",
+                                modifier = Modifier.size(29.dp),
+                            )
+                        }
                     }
                 }
 
@@ -432,11 +528,14 @@ fun App() {
                             thread {
                                 val latitude: Double?
                                 val longitude: Double?
+                                val source: LocationSource
                                 if (exif != null) {
                                     latitude = exif.first; longitude = exif.second
+                                    source = LocationSource.PHOTO
                                 } else {
                                     val fix = Where.current(context)
                                     latitude = fix?.latitude; longitude = fix?.longitude
+                                    source = LocationSource.DEVICE
                                 }
                                 if (latitude != null && longitude != null) {
                                     val place = Where.describe(context, latitude, longitude)
@@ -447,6 +546,7 @@ fun App() {
                                                 latitude = latitude,
                                                 longitude = longitude,
                                                 place = place,
+                                                locationSource = source,
                                             )
                                         )
                                     }

@@ -196,6 +196,14 @@ fun CaptureScreen(
         )
     }
 
+    // The volume keys, for as long as this screen is up. Registered after `fire` exists so it
+    // is the real shutter being called, and handed back on the way out so the keys go back to
+    // being volume keys everywhere else.
+    DisposableEffect(Unit) {
+        VolumeShutter.listen { if (!firing) fire() }
+        onDispose { VolumeShutter.listen(null) }
+    }
+
     Column(modifier.fillMaxSize().background(Color(0xFF100E0C))) {
         Box(Modifier.weight(1f).fillMaxWidth()) {
             if (permission.status.isGranted) {

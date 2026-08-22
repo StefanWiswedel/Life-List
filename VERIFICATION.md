@@ -1746,6 +1746,60 @@ down, and the person who hit it was running a 65-minute job at the time.
 
 ---
 
+## 46. The location on a gallery photograph was never the photograph's — 22 Aug 2026
+
+Asked to double-check that a record is geotagged from the picture rather than from the phone.
+The code read as if it were: EXIF first, phone fix only as a fallback, with a comment saying
+exactly that. It was wrong anyway, and silently.
+
+**Since API 29, MediaStore and the photo picker hand out URIs with the location tags stripped.**
+Reading EXIF from one returns null for latitude and longitude no matter what the file contains.
+So `Gallery.coordinatesOf` always came back empty, the fallback always fired, and every
+photograph chosen from the gallery was filed at wherever the phone was standing when the record
+was kept — a moth photographed last week in another county gets today's coordinates, and the
+record shows a place name that looks like evidence.
+
+Two halves to the fix. `ACCESS_MEDIA_LOCATION` in the manifest and requested at the camera,
+alongside the coarse-location permission the user is already being asked for — one
+`RequestMultiplePermissions` rather than two launchers, because a second dialog raised while
+the first is up is dropped. Then `MediaStore.setRequireOriginal(uri)` before opening the
+stream, which is the actual ask for the unredacted file. It throws when the permission is
+missing rather than degrading, so the permission is checked first and the plain URI is the
+fallback.
+
+**The honest half matters more than the fix.** `Record.locationSource` now records which of the
+two claims a coordinate is — `PHOTO` or `DEVICE` — and the record sheet says "from the photo"
+or "from your phone" under the coordinates. On a phone where the user declines the permission
+the app still cannot read the photograph's location, and the point is that it now says so
+instead of quietly substituting a different fact. A wrong coordinate is worse than a missing
+one, because it looks like data.
+
+Worth noting what made this invisible for so long: on the developer's own device, the photo
+being tested was usually taken minutes earlier in the same place, so the phone fix and the
+EXIF agreed. The bug only shows up in the use it was built for — coming back to pictures taken
+somewhere else.
+
+## 47. Three things from carrying the app around — 22 Aug 2026
+
+**The volume keys take the picture.** Every camera app on the phone does this, and a photograph
+of an insect is usually taken one-handed at an angle where the on-screen button is the hardest
+thing on the device to reach. The key arrives at the Activity and the shutter lives several
+composables down, so `VolumeShutter` holds one listener that the capture screen registers while
+it is on screen and hands back when it leaves. The Activity consumes the key only while
+somebody is listening — everywhere else in the app the volume keys are still volume keys — and
+swallows the matching key-up, or the system volume panel appears on release.
+
+**A gallery button on the home screen.** Choosing an existing photograph was reachable only
+*through* the camera, which is a strange thing to make somebody open in order to say "not the
+camera". The home screen now has two actions, because there are two ways a sighting happens:
+pointing the phone at something now, and coming back to the pictures you already took. The
+picker is the same multi-select contract, so several angles of one moth are still one sighting.
+
+**Multi-select was already there** and did not need doing: `PickMultipleVisualMedia(6)` on both
+the capture screen and add-a-photo-to-a-record, from §40.
+
+---
+
 ## Open questions
 
 1. **Inference backend.** Accept the CPU-EP-first proposal in §1 above, or hold NNAPI as the
