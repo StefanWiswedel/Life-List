@@ -1,11 +1,15 @@
 """Build `shared/model/taxon_bridge.json` — the crossing from iNaturalist ids to GBIF keys.
 
-    lifelist-bridge --taxa-raw cache/taxa_raw.json --inat-taxa inat/taxa.csv.gz \
-        --joined cache/stage2_joined --min-observations 20
+    lifelist-bridge --taxa-raw cache/taxa_raw.json.gz --joined cache/stage2_joined \
+        --min-observations 20
 
-Run rarely, and only where the two big inputs live: the 31 MB GBIF dump from stage 1 and the
-39 MB iNaturalist taxa table. The point of the artefact is that **nothing downstream needs
-either of them** — stage 4 reads the bridge and works from embeddings alone.
+Run rarely, and where the GBIF dump from stage 1 lives. The point of the artefact is that
+**nothing downstream needs it** — stage 4 reads the bridge and works from embeddings alone.
+
+Scientific names for the iNaturalist ids come from `--inat-taxa` if you still have their 39 MB
+taxa table, and otherwise from the iNaturalist API, 30 ids at a time. Keeping a 39 MB table
+around to look up three thousand names was never a good trade, and it is usually gone by the
+time this runs.
 
 Build it at the *lowest* threshold you might ever want, because narrowing is free
 (`bridge.restrict`) and widening means running this again.
@@ -24,14 +28,81 @@ from ..names import build_synonym_index
 from ._common import LOG, setup_logging
 
 GBIF_SPECIES = "https://api.gbif.org/v1/species"
+INAT_TAXA = "https://api.inaturalist.org/v1/taxa"
+INAT_BATCH = 30  # their ceiling for a multi-id lookup
+
+
+def read_json(path: Path) -> Any:
+    """stage 1 writes `.json`; it gets gzipped afterwards often enough to be worth handling."""
+    if path.suffix == ".gz":
+        import gzip
+
+        with gzip.open(path, "rt", encoding="utf-8") as handle:
+            return json.load(handle)
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def names_from_table(path: Path, taxon_ids: list[int]) -> list[tuple[int, str, str]]:
+    import pandas as pd
+
+    table = pd.read_csv(
+        path, sep="\t", usecols=["taxon_id", "rank", "name"], low_memory=False
+    ).set_index("taxon_id")
+    return [
+        (t, str(table.at[t, "name"]), str(table.at[t, "rank"]))
+        if t in table.index
+        else (t, "", "")
+        for t in taxon_ids
+    ]
+
+
+def names_from_api(taxon_ids: list[int]) -> list[tuple[int, str, str]]:
+    """Scientific name and rank per iNaturalist id, from their API.
+
+    A taxon that comes back without a name is returned empty rather than dropped: the bridge
+    counts it as an unknown id, which is a number worth seeing rather than a row worth losing.
+    """
+    import time
+
+    import requests
+
+    session = requests.Session()
+    found: dict[int, tuple[str, str]] = {}
+    for start in range(0, len(taxon_ids), INAT_BATCH):
+        batch = taxon_ids[start : start + INAT_BATCH]
+        joined = ",".join(str(t) for t in batch)
+        for attempt in range(4):
+            try:
+                response = session.get(f"{INAT_TAXA}/{joined}", timeout=30)
+                response.raise_for_status()
+                for result in response.json().get("results", []):
+                    found[int(result["id"])] = (
+                        str(result.get("name") or ""),
+                        str(result.get("rank") or ""),
+                    )
+                break
+            except Exception as exc:  # noqa: BLE001 — a retried batch is not a failed build
+                LOG.debug("batch at %d attempt %d: %s", start, attempt, exc)
+                time.sleep(2 * (attempt + 1))
+        else:
+            LOG.warning("gave up on ids %s", batch[:4])
+        if start and start % (INAT_BATCH * 20) == 0:
+            LOG.info("  %d of %d names", len(found), len(taxon_ids))
+        time.sleep(0.4)  # their published courtesy limit is 60 requests a minute
+    return [(t, *found.get(t, ("", ""))) for t in taxon_ids]
 
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Bridge iNaturalist taxon ids to GBIF keys")
     parser.add_argument(
-        "--taxa-raw", type=Path, required=True, help="stage 1's cache/taxa_raw.json"
+        "--taxa-raw", type=Path, required=True, help="stage 1's cache/taxa_raw.json[.gz]"
     )
-    parser.add_argument("--inat-taxa", type=Path, required=True, help="iNaturalist taxa.csv.gz")
+    parser.add_argument(
+        "--inat-taxa",
+        type=Path,
+        default=None,
+        help="iNaturalist taxa.csv.gz, if you have it. Without it, names come from their API.",
+    )
     parser.add_argument("--joined", type=Path, required=True, help="cache/stage2_joined")
     parser.add_argument("--min-observations", type=int, default=20)
     parser.add_argument("--max-photos-per-taxon", type=int, default=150)
@@ -98,9 +169,7 @@ def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     setup_logging(args.verbose)
 
-    import pandas as pd
-
-    raw = json.loads(args.taxa_raw.read_text(encoding="utf-8"))
+    raw = read_json(args.taxa_raw)
     accepted = {t["key"]: t["scientific_name"] for t in raw["taxa"]}
     doubtful = frozenset(
         t["key"] for t in raw["taxa"] if str(t.get("status", "")).upper() == "DOUBTFUL"
@@ -121,19 +190,12 @@ def main(argv: list[str] | None = None) -> int:
     selected = select_taxa(coverage(joined), args.min_observations, args.max_photos_per_taxon)
     LOG.info("%d iNaturalist taxa at >=%d observations", len(selected), args.min_observations)
 
-    names = pd.read_csv(
-        args.inat_taxa, sep="\t", usecols=["taxon_id", "rank", "name"], low_memory=False
-    ).set_index("taxon_id")
-
-    rows = []
-    for taxon_id in selected:
-        taxon_id = int(taxon_id)
-        if taxon_id in names.index:
-            rows.append(
-                (taxon_id, str(names.at[taxon_id, "name"]), str(names.at[taxon_id, "rank"]))
-            )
-        else:
-            rows.append((taxon_id, "", ""))
+    taxon_ids = sorted(int(t) for t in selected)
+    if args.inat_taxa:
+        rows = names_from_table(args.inat_taxa, taxon_ids)
+    else:
+        LOG.info("looking up %d scientific names from the iNaturalist API", len(taxon_ids))
+        rows = names_from_api(taxon_ids)
 
     mapping, parents, report = build_mapping(rows, index, genus_keys)
     LOG.info("%s", report.summary())

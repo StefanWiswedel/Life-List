@@ -1676,6 +1676,58 @@ figures through the committed builder is the check that this section is worth an
 
 ---
 
+## 43. Two out-of-memory kills, and what they were hiding — 22 Aug 2026
+
+`--compare 50 40 30 20` was run in a 7 GB cloud container against the real 410,802 embeddings.
+It was killed twice, and both causes were mine rather than the container's.
+
+**The first: `--compare` held every candidate's test logits.** Those are photographs × taxa —
+about half a gigabyte at 3,482 classes — kept so the per-group tables could be printed at the
+end. Four of them alongside a 410,000-row embedding frame reached 6 GB three fits in. Each group
+table is now rendered immediately, while its logits are still around, and the arrays are dropped
+before the next fit. Only the model actually being written keeps its weights.
+
+**The second: `evaluate` ran the softmax over the whole test set at once.** `softmax` works in
+float64 and holds three arrays — scaled, exponentiated, normalised — so 38,000 test photographs
+at 3,482 classes is three gigabytes of peak for a number then consumed one row at a time. It now
+runs in blocks of 4,096. **The softmax is row-wise, so the arithmetic is bit-for-bit what it
+was**, and the golden fixture confirms it. A third, smaller waste went with it: `fit` stacked
+all 400,000 embeddings into one 820 MB array only to slice three disjoint pieces out of it, so
+the whole thing was paid for twice at the moment it mattered.
+
+Worth writing down because of what the failure looked like. `nohup` swallowed the kill, so the
+log simply stopped after "`>=30 observations: ... 375,171 photos`" — no traceback, no exit
+status, nothing to say the run had not merely got slow. **A background run needs its own
+liveness check**; here that was `dmesg | grep oom-kill`, which said in one line what an hour of
+staring at the log did not.
+
+None of this would have shown up on the laptop, which has the headroom to absorb all three. That
+is the argument for having run it here.
+
+## 44. The threshold, measured — 22 Aug 2026
+
+Full numbers in RESULTS.md, Run 3. The three findings:
+
+**Rollup accuracy stops falling at ≥30.** 94.7 → 94.6 → 94.4 → 94.4 on the shared test
+photographs. The last 551 taxa cost nothing on the metric the product is judged on. Leaf top-1
+keeps sliding (85.4 → 83.9), which is the design working: the model is less often certain of the
+exact species and the rollup answers one rank up instead.
+
+**Calibration does not degrade.** ECE is 0.018 at ≥50 and 0.018 at ≥20. This was the number most
+at risk — stated confidence is the differentiator (§18) — and a model carrying 50% more classes
+at identical ECE is the strongest single argument for the lower threshold.
+
+**The extra classes are moths.** Lepidoptera 468 → 676, Geometridae 104 → 147. That is the
+failure from §40 addressed at its cause: a pug moth was confidently misidentified because the
+real species was not in the model at all, and no amount of calibration fixes a class that does
+not exist.
+
+The ≥50 row reproduces the shipped model (Run 2: 94.7% rollup, 85.6% top-1, ECE 0.017, T 0.731)
+through the committed builder and a re-derived manifest, and reproduced to the digit across
+three separate runs. That is the check that §42 is worth anything.
+
+---
+
 ## Open questions
 
 1. **Inference backend.** Accept the CPU-EP-first proposal in §1 above, or hold NNAPI as the

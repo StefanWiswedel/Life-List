@@ -117,6 +117,9 @@ def expected_calibration_error(
     return float(total)
 
 
+EVAL_BLOCK = 4096
+
+
 def evaluate(
     taxonomy: Taxonomy,
     logits: np.ndarray,
@@ -131,25 +134,33 @@ def evaluate(
     "Life" is perfectly accurate and useless, and one that always guesses a species is
     Arter. Neither number alone can catch that.
     """
-    probs = softmax(logits, temperature)
-    leaf_predictions = probs.argmax(axis=1)
-    leaf_top1 = float((leaf_predictions == true_leaf_indices).mean())
-
     correct: list[bool] = []
     depths: list[int] = []
     confidences: list[float] = []
     refusals = 0
+    hits = 0
 
-    for row, true_index in zip(probs, true_leaf_indices, strict=True):
-        result = rollup(taxonomy, row.astype(np.float32), threshold=threshold)
-        true_leaf_id = taxonomy.leaf_id(int(true_index))
-        hit = taxonomy.is_ancestor_or_self(result.taxon_id, true_leaf_id)
-        if result.taxon_id == taxonomy.root_id:
-            refusals += 1
-            hit = False  # a refusal is honest, but it is not a correct answer
-        correct.append(bool(hit))
-        depths.append(len(taxonomy.lineage(result.taxon_id)) - 1)
-        confidences.append(float(result.probability))
+    # In blocks, because `softmax` works in float64 and holds three arrays at once: at 38,000
+    # test photographs and 3,482 classes that is three gigabytes of peak for a number that is
+    # then thrown away row by row. The softmax is row-wise, so blocking changes the arithmetic
+    # not at all — only how much of it exists at any moment.
+    for start in range(0, len(true_leaf_indices), EVAL_BLOCK):
+        block = softmax(logits[start : start + EVAL_BLOCK], temperature)
+        truth = true_leaf_indices[start : start + EVAL_BLOCK]
+        hits += int((block.argmax(axis=1) == truth).sum())
+
+        for row, true_index in zip(block, truth, strict=True):
+            result = rollup(taxonomy, row.astype(np.float32), threshold=threshold)
+            true_leaf_id = taxonomy.leaf_id(int(true_index))
+            hit = taxonomy.is_ancestor_or_self(result.taxon_id, true_leaf_id)
+            if result.taxon_id == taxonomy.root_id:
+                refusals += 1
+                hit = False  # a refusal is honest, but it is not a correct answer
+            correct.append(bool(hit))
+            depths.append(len(taxonomy.lineage(result.taxon_id)) - 1)
+            confidences.append(float(result.probability))
+
+    leaf_top1 = hits / len(true_leaf_indices)
 
     return Evaluation(
         n=len(true_leaf_indices),

@@ -25,6 +25,7 @@ column in the table that can be read down the page.
 from __future__ import annotations
 
 import argparse
+import gc
 import json
 import time
 from pathlib import Path
@@ -128,12 +129,15 @@ def fit(taxonomy: Taxonomy, rows: Any, args: argparse.Namespace) -> dict[str, An
     summary = report(splits)
 
     position = {int(p): i for i, p in enumerate(rows["photo_id"])}
-    features = np.stack(rows["embedding"].to_numpy()).astype(np.float32)
+    embeddings = rows["embedding"].to_numpy()
     labels = rows["leaf"].to_numpy()
 
     def take(name: str) -> tuple[np.ndarray, np.ndarray]:
+        # Stacked per split rather than once for everything: a 400,000 x 512 float32 array is
+        # 820 MB, and materialising it only to slice three disjoint pieces out of it means
+        # paying for the whole thing twice at the moment it matters most.
         index = np.array([position[p.photo_id] for p in splits[name]], dtype=np.int64)
-        return features[index], labels[index]
+        return np.stack(embeddings[index]).astype(np.float32), labels[index]
 
     x_train, y_train = take("train")
     x_val, y_val = take("val")
@@ -225,8 +229,26 @@ def main(argv: list[str] | None = None) -> int:
             taxonomy, outcome["test_logits"][mask], outcome["test_labels"][mask],
             temperature=outcome["temperature"], threshold=args.threshold,
         )
+        # Rendered now, while the logits are still here, because they are about to go.
+        outcome["group_table"] = format_table(
+            by_group(
+                taxonomy, outcome["test_logits"], outcome["test_labels"],
+                temperature=outcome["temperature"], threshold=args.threshold,
+            )
+        )
         LOG.info("  own test set : %s", outcome["overall"].summary())
         LOG.info("  shared taxa  : %s", outcome["shared"].summary())
+
+        # A candidate's test logits are photos x taxa: half a gigabyte at 3,536 classes, and
+        # `--compare` holds every candidate at once. Keeping four of them alongside a 410,000
+        # row embedding frame is what an out-of-memory kill looks like three fits in, with
+        # nothing in the log to say why. Only the model actually being written needs its arrays.
+        outcome["test_logits"] = None
+        outcome["test_labels"] = outcome["test_labels"][:0]
+        if args.compare:
+            outcome["weight"] = outcome["bias"] = None
+        del rows, mask
+        gc.collect()
         results.append((minimum, outcome))
 
     print()
@@ -251,14 +273,7 @@ def main(argv: list[str] | None = None) -> int:
 
     for minimum, outcome in results:
         print(f"By group at >={minimum} observations (own test set, calibrated):")
-        print(
-            format_table(
-                by_group(
-                    outcome["taxonomy"], outcome["test_logits"], outcome["test_labels"],
-                    temperature=outcome["temperature"], threshold=args.threshold,
-                )
-            )
-        )
+        print(outcome["group_table"])
         print()
 
     if not args.commit:
@@ -306,7 +321,7 @@ def main(argv: list[str] | None = None) -> int:
             "min_observations": minimum,
             "trained_on": {
                 "photos": outcome["photos"],
-                "test": int(len(outcome["test_labels"])),
+                "test": int(outcome["overall"].n),
             },
         },
     )

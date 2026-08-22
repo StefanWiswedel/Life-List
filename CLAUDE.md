@@ -139,22 +139,17 @@ good (§41, checked).
 
 ## Next action
 
-Stage 3 is re-running on the laptop at **≥20 observations** — a strict superset of the ≥50 set,
-so every existing shard still counts and only the new photographs are fetched (§41, checked).
-
-When it finishes, on the laptop, where the inputs live:
+**The threshold is measured, not guessed: ≥20 observations** (VERIFICATION §44, RESULTS Run 3).
+Rollup accuracy plateaus at 94.4% from ≥30 down, ECE is unchanged at 0.018, and the extra 1,183
+taxa are mostly moths — Lepidoptera 468 → 676 — which is the §40 misidentification addressed at
+its cause. `shared/model/taxon_bridge.json` is built and committed for that threshold.
 
 ```bash
-lifelist-bridge --taxa-raw cache/taxa_raw.json --inat-taxa inat/taxa.csv.gz \
-    --joined cache/stage2_joined --min-observations 20
-lifelist-train --cache-dir cache --compare 50 40 30 20
+cd training
+lifelist-train --cache-dir cache --min-observations 20 --commit   # ~65 min, 2 cores
+lifelist-export ...                                               # §21-22
+lifelist-reference-photos / lifelist-wikipedia                    # only the new taxa
 ```
 
-The first takes about two minutes and writes `shared/model/taxon_bridge.json`; build it at the
-**lowest** threshold you might ever want, because narrowing is free and widening is a rebuild.
-The second writes nothing — it prints one table, and the `shared` columns are the ones to read
-down the page. Then pick a threshold, `--min-observations N --commit`, re-export (§21–22), and
-re-run reference photos and Wikipedia for the taxa that are new.
-
-Expected from the earlier one-off, and worth reproducing as a check: 3,536 of 3,627 taxa cross
-(97.5%), giving 6,673 nodes and 3,453 leaves.
+Then the app carries 3,482 leaves instead of 2,294, and a random Danish moth is much less often
+a species the model has never seen.

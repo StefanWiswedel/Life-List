@@ -5,6 +5,76 @@ this file is not for claims.
 
 ---
 
+## Run 3 — 22 Aug 2026, choosing the observation threshold
+
+410,802 embeddings over all 3,627 iNaturalist taxa at ≥20 observations, split by observation,
+fitted through the committed `lifelist-train` rather than a scratch script. Every row is a linear
+probe on the same frozen BioCLIP embeddings, so the only thing that varies is how many taxa the
+head is asked to separate.
+
+**Read the `shared` columns down the page.** They score every candidate on the same test
+photographs — those whose true taxon survives ≥50 — because a 3,482-class model and a
+2,299-class model are not being asked the same questions, and their own-test numbers are not
+comparable. The `own` columns are each model on its own harder problem.
+
+| min obs | leaves | photos | T | own rollup | own top-1 | **shared rollup** | **shared top-1** | ECE |
+|---|---|---|---|---|---|---|---|---|
+| ≥50 | 2,299 | 330,945 | 0.737 | 94.7% | 85.4% | **94.7%** | **85.4%** | 0.018 |
+| ≥40 | 2,549 | 351,014 | 0.736 | 94.5% | 84.6% | **94.6%** | **85.0%** | 0.020 |
+| ≥30 | 2,931 | 375,171 | 0.745 | 93.9% | 83.7% | **94.4%** | **84.6%** | 0.017 |
+| ≥20 | 3,482 | 400,753 | 0.759 | 93.5% | 81.7% | **94.4%** | **83.9%** | 0.018 |
+
+The ≥50 row reproduces Run 2 (94.7% rollup, 85.6% → 85.4% top-1, ECE 0.017 → 0.018, T 0.731 →
+0.737) from a different code path and a re-derived manifest, which is the check that the
+committed builder is the thing that made the shipped model. It also reproduced to the digit
+across three separate runs of this comparison.
+
+### What the extra taxa cost
+
+**Rollup accuracy stops falling at ≥30.** 94.7 → 94.6 → 94.4 → 94.4: the last 551 taxa are free
+on the metric the product is actually judged on. Leaf top-1 keeps sliding (85.4 → 83.9), which is
+the honest description of what is happening — the model is less often certain of the exact
+species, and the rollup answers one rank up instead. That is the design working, not failing.
+
+**Calibration does not degrade at all.** ECE is 0.018 at both ends. This was the number most at
+risk, since stated confidence is the differentiator (§18), and a model with 50% more classes
+having the same ECE is the strongest single argument for the lower threshold.
+
+### Coverage bought, by group
+
+| threshold | leaves | Lepidoptera | Geometridae | Noctuidae |
+|---|---|---|---|---|
+| ≥50 | 2,299 | 468 | 104 | 113 |
+| ≥40 | 2,549 | 513 | 109 | 128 |
+| ≥30 | 2,931 | 579 | 123 | 144 |
+| ≥20 | 3,482 | **676** | **147** | **167** |
+
+This is the table that matters for the failure Stefan actually hit (§40): a pug moth confidently
+misidentified because the real species was not in the model at all. Moths are where the missing
+classes are, and ≥20 adds 208 of them.
+
+### By group at ≥20 — test split, calibrated
+
+| group | n | taxa | rollup | leaf top-1 | ECE | depth | refused |
+|---|---|---|---|---|---|---|---|
+| Insects | 17,676 | 1,547 | 94.8% | 83.6% | 0.020 | 6.38 | 0.7% |
+| Plants | 12,302 | 994 | 94.3% | 84.5% | 0.018 | 6.31 | 0.9% |
+| Birds | 3,417 | 237 | 91.7% | **70.0%** | 0.006 | 5.85 | 0.6% |
+| Fungi | 2,915 | 264 | 90.2% | 81.7% | 0.030 | 6.14 | 2.7% |
+| Other | 1,385 | 123 | 89.2% | 77.8% | 0.043 | 5.43 | 2.5% |
+| Arachnids | 1,317 | 109 | 90.4% | 71.0% | 0.017 | 5.78 | 1.3% |
+| Molluscs | 909 | 77 | 92.4% | 75.8% | 0.012 | 5.85 | 0.7% |
+| Mammals | 464 | 39 | 86.0% | 74.1% | 0.057 | 5.95 | 2.4% |
+| Amphibians | 210 | 12 | 91.0% | 81.9% | 0.023 | 6.14 | 1.0% |
+
+Birds keep the shape Run 2 found: high rollup, low top-1, and the best ECE in the table. The
+model knows it is looking at a gull and says so honestly.
+
+Mammals and "Other" carry the worst calibration (ECE 0.057 and 0.043) at the fewest examples,
+which is the case for a per-group threshold that §41 left open and this run does not settle.
+
+---
+
 ## Run 2 — 18 Aug 2026, all 84 shards
 
 **This is the model that ships.** 333,700 embeddings, 260,487 train / 32,347 val / 32,939 test,
