@@ -35,9 +35,10 @@ When trading off, trade in favour of a record being keepable at the rank the evi
 | `core/` — Kotlin rollup + golden parity test | **compiles; 5 parity tests pass** (17 Aug 2026) |
 | Gradle wrapper | added 17 Aug 2026 — it had never been committed, so CI had never run |
 | stage 3 (`lifelist-embed`) | written, resumable, run against real BioCLIP + S3 |
-| stage 4 (`head.py`) | written, trained, first numbers in RESULTS.md |
+| stage 4 (`lifelist-train`) | **has a builder now** — `--compare` fits a head per threshold from one embedding set (§42) |
 | stage 6 (`export.py`) | written; **one 350 MB fp32 file, pixels → logits**, §21–22 |
 | stage 5 (eval) | `evaluation.py` — per-group table and a threshold sweep (§41) |
+| iNat→GBIF bridge | `lifelist-bridge` → `shared/model/taxon_bridge.json`; stage 4 needs no dumps (§42) |
 | `app/` — Android | **one surface**: home is the list, camera is one button (§32) |
 | screens | rendered on the JVM by Paparazzi — `./gradlew :app:recordPaparazziDebug` (§33) |
 | records | editable: settle the species later, add photos, place names, camera roll (§34) |
@@ -138,15 +139,22 @@ good (§41, checked).
 
 ## Next action
 
-The threshold is **decided: 50 observations, 150 photos per taxon** — 2,376 taxa, 333,702 photos
-(VERIFICATION.md §12–14). `cache/photo_manifest.parquet` is built. Do not re-derive it; leaf
-indices come from it.
+Stage 3 is re-running on the laptop at **≥20 observations** — a strict superset of the ≥50 set,
+so every existing shard still counts and only the new photographs are fetched (§41, checked).
 
-Run stage 3, which is resumable — re-run the same command after any interruption:
+When it finishes, on the laptop, where the inputs live:
 
 ```bash
-cd training && pip install -e '.[torch]'
-lifelist-embed --cache-dir cache --shard-size 4000 --download-workers 24 -v
+lifelist-bridge --taxa-raw cache/taxa_raw.json --inat-taxa inat/taxa.csv.gz \
+    --joined cache/stage2_joined --min-observations 20
+lifelist-train --cache-dir cache --compare 50 40 30 20
 ```
 
-4–6 hours on an 8-core laptop, measured. Then stages 4–6 are still to write.
+The first takes about two minutes and writes `shared/model/taxon_bridge.json`; build it at the
+**lowest** threshold you might ever want, because narrowing is free and widening is a rebuild.
+The second writes nothing — it prints one table, and the `shared` columns are the ones to read
+down the page. Then pick a threshold, `--min-observations N --commit`, re-export (§21–22), and
+re-run reference photos and Wikipedia for the taxa that are new.
+
+Expected from the earlier one-off, and worth reproducing as a check: 3,536 of 3,627 taxa cross
+(97.5%), giving 6,673 nodes and 3,453 leaves.

@@ -26,15 +26,17 @@ export = ["onnx>=1.16", "onnxruntime>=1.17", "onnxscript>=0.1", "open_clip_torch
 dev = ["pytest>=8.0", "pytest-cov>=4.1", "ruff>=0.4"]
 
 [project.scripts]
-# Only implemented stages are declared. Stages 4-6 (train-head, evaluate, export) are
-# still unwritten: they depend on having real embeddings to train against, and untested
-# code in a stage that costs hours to re-run is the worst place to be wrong.
+# Every stage has an entry point, and every committed artefact has a builder behind one.
+# Three artefacts once shipped with no committed builder and carried bugs for weeks
+# (taxonomy §28, reference index §37, head + bridge §42). That is the rule this list keeps.
 lifelist-taxa = "lifelist_train.cli.taxa:main"
 lifelist-images = "lifelist_train.cli.images:main"
 # Stage 3 needs the torch extra at runtime, but its sharding, resume and failure logic
 # is pure and tested without it — so the entry point is declared and `--dry-run` works
 # on a machine with no GPU and no torch.
 lifelist-embed = "lifelist_train.cli.embed:main"
+lifelist-bridge = "lifelist_train.cli.bridge:main"
+lifelist-train = "lifelist_train.cli.train:main"
 lifelist-export = "lifelist_train.cli.export:main"
 lifelist-reference-photos = "lifelist_train.cli.reference:main"
 lifelist-reference-index = "lifelist_train.cli.reference_index:main"

@@ -1621,6 +1621,61 @@ the rollup.
 
 ---
 
+## 42. The last two artefacts with no committed builder — 22 Aug 2026
+
+Two more files in `shared/model/` were made by scripts in a scratch directory and then
+committed: `head.npz`, and the iNaturalist→GBIF crossing that decides what the head's classes
+even are. Both now have builders in the repo, under test.
+
+**`training/src/lifelist_train/bridge.py` + `lifelist-bridge`.** The crossing is the step that
+went from 83% of photographs matched to 97.2% over three attempts, and it lived nowhere. It now
+precomputes `shared/model/taxon_bridge.json`, which matters beyond tidiness: with the crossing
+written down, **stage 4 needs neither the 31 MB GBIF dump nor the 39 MB iNaturalist taxa table**.
+A laptop with embeddings and that one file can fit a head. The two rules from `names.py` carry
+over unchanged — a homonym is refused rather than guessed, and a genus-rank label becomes an
+indeterminate leaf (§1.1a) rather than being forced onto some species underneath.
+
+`bridge.restrict` is what makes the threshold decision cheap. Every higher threshold is a subset
+of the taxa the artefact already covers, so narrowing is a dictionary comprehension and only
+widening needs a rebuild — hence: **build the bridge at the lowest threshold you might ever
+want.** One subtlety earned a test. A genus keeps its indeterminate leaf only if that leaf
+itself survives the narrowing; otherwise the taxonomy grows a leaf with no photographs behind it
+and every invariant downstream is quietly wrong.
+
+**`training/src/lifelist_train/cli/train.py` + `lifelist-train`.** Stage 4, with `--compare 50 40
+30 20`: fit a head at each threshold from the one embedding set, print one table, write nothing.
+A head fit is minutes against hours of embedding, so the threshold gets decided on measured
+numbers.
+
+**Comparing thresholds fairly is not obvious, and this is the part worth remembering.** A
+3,536-class model and a 2,294-class model are not solving the same problem — the bigger one is
+being asked harder questions, and its lower overall accuracy is not evidence that it is worse.
+So every candidate is *also* scored on the same test photographs: those whose true taxon
+survives the strictest threshold in the comparison. That column, and only that column, can be
+read down the page, and it answers the question actually being asked — **does adding thin
+classes damage the ones we already had?**
+
+Two guards, both from bugs already made here. `--commit` refuses to run alongside `--compare`,
+because a flag that fits four models and silently saves one is a trap. And it returns 1 if every
+vernacular is null, which is exactly the taxonomy that shipped in §28 and went unnoticed for
+weeks.
+
+Verified rather than assumed: the artefacts this writes have the **same schema as the ones
+already shipped** — identical `model_meta.json` keys but for a new informational
+`min_observations`, identical node fields, identical `head.npz` arrays and dtypes — and
+`TaxonomyAssets` reads with `ignoreUnknownKeys`, so the new field cannot break the app. Both
+CLIs were run end to end against a synthetic five-taxon dataset, since the container had no
+copy of the real inputs: the bridge crossed 5/5 with the genus becoming `-1036775`, and the
+trainer split, fitted, calibrated, printed the comparison table and the per-group table, refused
+`--compare --commit`, and wrote the three artefacts.
+
+What is *not* verified: the real numbers. `taxon_bridge.json` has to be built where the inputs
+live, which is Stefan's laptop, and the earlier one-off measured 3,536 of 3,627 taxa crossing
+(97.5%) into 6,673 nodes and 3,453 leaves, with 29 GBIF genus records fetched. Reproducing those
+figures through the committed builder is the check that this section is worth anything.
+
+---
+
 ## Open questions
 
 1. **Inference backend.** Accept the CPU-EP-first proposal in §1 above, or hold NNAPI as the
