@@ -17,6 +17,22 @@ from typing import Any
 LOG = logging.getLogger("lifelist")
 
 
+def shared_model(name: str = "") -> Path:
+    """A path under the repo's `shared/model/`, found from this file rather than the cwd.
+
+    The stages disagreed about where they were being run from: `lifelist-wikipedia` defaulted to
+    `shared/model/...` (repo root) while `lifelist-export` documented `../shared/model/...`
+    (inside `training/`), so whichever convention you had in your fingers was wrong half the
+    time. Walking up from the package finds the same directory either way. Falls back to the
+    cwd-relative path when the package is installed somewhere with no repo above it.
+    """
+    for parent in Path(__file__).resolve().parents:
+        candidate = parent / "shared" / "model"
+        if candidate.is_dir():
+            return candidate / name if name else candidate
+    return Path("shared/model") / name if name else Path("shared/model")
+
+
 def add_common_args(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
     parser.add_argument(
         "--cache-dir",

@@ -1728,6 +1728,24 @@ three separate runs. That is the check that §42 is worth anything.
 
 ---
 
+## 45. The stages disagreed about where they were being run from — 22 Aug 2026
+
+`lifelist-wikipedia` defaulted to `shared/model/taxonomy.json`, which is right from the repo
+root. `lifelist-export` documented `../shared/model/head.npz`, which is right from `training/`.
+`lifelist-train` inherited the first convention while its docstring told you to run it from the
+second. So the defaults were wrong roughly half the time, silently — `--bridge` resolving to
+`training/shared/model/taxon_bridge.json` produces "not found, run lifelist-bridge first",
+which reads as a missing artefact rather than a missing directory level.
+
+`shared_model()` walks up from the package to find `shared/model/`, so every stage resolves the
+same directory from either working directory. Only the defaults changed; an explicit path is
+still taken as given, relative to the cwd, as it always was.
+
+Small, but it is the second time this repo has cost an hour to a path convention nobody wrote
+down, and the person who hit it was running a 65-minute job at the time.
+
+---
+
 ## Open questions
 
 1. **Inference backend.** Accept the CPU-EP-first proposal in §1 above, or hold NNAPI as the

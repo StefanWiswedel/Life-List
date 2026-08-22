@@ -330,3 +330,19 @@ def test_gbif_client_only_talks_to_the_injected_session():
 
     assert client.species(123) == {"ok": True}
     assert session.calls[0][0].endswith("/species/123")
+
+
+def test_shared_model_is_found_from_the_package_not_the_cwd(tmp_path, monkeypatch):
+    """Run from `training/` or from the repo root and get the same file either way.
+
+    The stages disagreed about this — one defaulted to `shared/model/...`, another documented
+    `../shared/model/...` — so whichever you had in your fingers was wrong half the time.
+    """
+    from lifelist_train.cli._common import shared_model
+
+    monkeypatch.chdir(tmp_path)
+    found = shared_model("taxon_bridge.json")
+
+    assert found.is_absolute()
+    assert found.parent.name == "model" and found.parent.parent.name == "shared"
+    assert found.name == "taxon_bridge.json"

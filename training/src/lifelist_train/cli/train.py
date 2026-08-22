@@ -3,6 +3,9 @@
     lifelist-train --cache-dir cache --compare 50 40 30 20
     lifelist-train --cache-dir cache --min-observations 20 --commit
 
+Run it from `training/` or from the repo root: the `shared/model/` paths are found from the
+package rather than from wherever you happen to be standing.
+
 The head that shipped was produced by a script in a scratch directory. That made
 `shared/model/head.npz` the third committed artefact in this repo with no committed builder,
 after the taxonomy that shipped every vernacular null (§28) and the reference index that shipped
@@ -41,7 +44,14 @@ from ..head import evaluate, fit_linear_head, fit_temperature, logits_from
 from ..rollup import DEFAULT_THRESHOLD
 from ..splits import Photo, assert_no_observation_leakage, report, split_photos
 from ..taxonomy import Taxonomy
-from ._common import LOG, add_common_args, cache_path, setup_logging, write_json
+from ._common import (
+    LOG,
+    add_common_args,
+    cache_path,
+    setup_logging,
+    shared_model,
+    write_json,
+)
 
 BACKBONE = {
     "source": "imageomics/bioclip",
@@ -55,7 +65,7 @@ BACKBONE = {
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Train and evaluate the linear head")
-    parser.add_argument("--bridge", type=Path, default=Path("shared/model/taxon_bridge.json"))
+    parser.add_argument("--bridge", type=Path, default=shared_model("taxon_bridge.json"))
     parser.add_argument("--min-observations", type=int, default=20)
     parser.add_argument(
         "--compare",
@@ -64,7 +74,7 @@ def build_parser() -> argparse.ArgumentParser:
         default=None,
         help="fit a head at each of these thresholds and print one table. Nothing is written.",
     )
-    parser.add_argument("--out", type=Path, default=Path("shared/model"))
+    parser.add_argument("--out", type=Path, default=shared_model())
     parser.add_argument("--model-version", default=None, help="defaults to today's date")
     parser.add_argument("--threshold", type=float, default=DEFAULT_THRESHOLD)
     parser.add_argument("--epochs", type=int, default=25)

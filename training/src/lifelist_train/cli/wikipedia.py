@@ -26,15 +26,15 @@ from ..wikipedia import (
     fetch_all,
     plan_titles,
 )
-from ._common import LOG, add_common_args, setup_logging
+from ._common import LOG, add_common_args, setup_logging, shared_model
 
 USER_AGENT = "LifeList/0.6 (https://github.com/StefanWiswedel/Life-List)"
 
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Bundle Wikipedia intros for every taxon")
-    parser.add_argument("--taxonomy", default="shared/model/taxonomy.json")
-    parser.add_argument("--out", default="shared/model/wikipedia.json")
+    parser.add_argument("--taxonomy", default=shared_model("taxonomy.json"))
+    parser.add_argument("--out", default=shared_model("wikipedia.json"))
     parser.add_argument(
         "--cache",
         default="cache/wikipedia_articles.json",
