@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import argparse
 import json
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from typing import Any
 
@@ -105,6 +106,12 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--joined", type=Path, required=True, help="cache/stage2_joined")
     parser.add_argument("--min-observations", type=int, default=20)
+    parser.add_argument(
+        "--ancestor-cache",
+        type=Path,
+        default=Path("cache/gbif_ancestors.json"),
+        help="fetched higher-rank records, so an interrupted build resumes instead of restarting",
+    )
     parser.add_argument("--max-photos-per-taxon", type=int, default=150)
     parser.add_argument("--out", type=Path, default=shared_model("taxon_bridge.json"))
     parser.add_argument(
@@ -127,7 +134,11 @@ def read_joined(path: Path) -> Any:
     return pd.read_parquet(path)
 
 
-def fetch_records(keys: list[int]) -> dict[int, dict[str, Any]]:
+def fetch_records(
+    keys: list[int],
+    cache: Path | None = None,
+    workers: int = 12,
+) -> dict[int, dict[str, Any]]:
     """The GBIF records stage 1 never fetched, with their common names.
 
     Stage 1 fetched **species only** — `cache/taxa_raw.json` is 19,992 records and every one of
@@ -138,21 +149,36 @@ def fetch_records(keys: list[int]) -> dict[int, dict[str, Any]]:
     then dropped again, because there was no record to ship.
 
     Two requests per key, the same pair stage 1 makes: the backbone record, then the vernacular
-    names. Around 3,200 keys, so this is the slow part of a bridge build — twenty minutes or so
-    — and it is why a bridge build is a rare, deliberate act.
+    names. **Serially, over 3,200 keys, that ran past half an hour and was killed** — so it is
+    concurrent, the way stage 1 has always fetched, and it writes what it has to `cache` as it
+    goes. A run that dies at key 2,000 costs the next one nothing.
+
+    `ThreadPoolExecutor.map` yields in submission order, so the result is the same file whether
+    this runs with one worker or twelve.
     """
     from ..gbif import GbifClient, parse_backbone_record, pick_vernacular
 
+    done: dict[int, dict[str, Any]] = {}
+    if cache is not None and cache.exists():
+        done = {
+            int(key): value
+            for key, value in json.loads(cache.read_text(encoding="utf-8")).items()
+        }
+        LOG.info("%d ancestor records already cached", len(done))
+    todo = [key for key in keys if key not in done]
+    if not todo:
+        return done
+
     client = GbifClient()
-    out: dict[int, dict[str, Any]] = {}
-    for index, key in enumerate(keys, start=1):
+
+    def one(key: int) -> tuple[int, dict[str, Any] | None]:
         try:
             taxon = parse_backbone_record(client.species(key))
         except Exception as exc:  # noqa: BLE001 — one missing ancestor is not a failed build
             LOG.debug("species %s failed: %s", key, exc)
-            continue
+            return key, None
         if taxon is None:
-            continue
+            return key, None
 
         vernacular_en = vernacular_da = None
         try:
@@ -162,7 +188,7 @@ def fetch_records(keys: list[int]) -> dict[int, dict[str, Any]]:
         except Exception as exc:  # noqa: BLE001 — a nameless family still beats no family
             LOG.debug("vernaculars for %s failed: %s", key, exc)
 
-        out[key] = {
+        return key, {
             "scientific_name": taxon.scientific_name,
             "rank": taxon.rank,
             "status": taxon.status,
@@ -171,10 +197,21 @@ def fetch_records(keys: list[int]) -> dict[int, dict[str, Any]]:
             "vernacular_en": vernacular_en,
             "vernacular_da": vernacular_da,
         }
-        if index % 250 == 0:
-            named = sum(1 for record in out.values() if record["vernacular_en"])
-            LOG.info("  %d/%d fetched, %d with an English name", index, len(keys), named)
-    return out
+
+    with ThreadPoolExecutor(max_workers=workers) as pool:
+        for index, (key, record) in enumerate(pool.map(one, todo), start=1):
+            if record is not None:
+                done[key] = record
+            if index % 250 == 0 or index == len(todo):
+                named = sum(1 for r in done.values() if r["vernacular_en"])
+                LOG.info("  %d/%d fetched, %d with an English name", index, len(todo), named)
+                if cache is not None:
+                    cache.parent.mkdir(parents=True, exist_ok=True)
+                    cache.write_text(
+                        json.dumps({str(k): v for k, v in done.items()}, ensure_ascii=False),
+                        encoding="utf-8",
+                    )
+    return done
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -220,7 +257,7 @@ def main(argv: list[str] | None = None) -> int:
             "species, which stage 1 did not collect at all",
             len(missing),
         )
-        records.update(fetch_records(missing))
+        records.update(fetch_records(missing, cache=args.ancestor_cache))
     still = sorted(needed_keys(mapping, parents, records) - set(records))
     if still:
         LOG.warning("%d keys still have no record and will be dropped: %s", len(still), still[:8])

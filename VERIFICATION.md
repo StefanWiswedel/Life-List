@@ -1976,8 +1976,12 @@ by `if k in records`, because **stage 1 fetched species and nothing else**: `tax
 to ship.
 
 So the higher ranks have to be *fetched* — two GBIF requests each, the same pair stage 1 makes
-for a species, for about 3,200 keys. Twenty minutes, which is the price of a bridge build now
-and the reason it stays a rare deliberate act.
+for a species, for about 3,200 keys. Written serially, that estimate of "twenty minutes" was
+wrong: it ran past the server's half-hour ceiling and was killed with nothing written. It is
+now concurrent, the way stage 1 has always fetched, and it checkpoints to
+`cache/gbif_ancestors.json` every 250 keys — so a build that dies costs the next one nothing.
+`ThreadPoolExecutor.map` yields in submission order, so twelve workers and one produce the same
+file.
 
 **A test passed through all of this.** `test_the_document_ships_the_ancestors` asserted
 `doc["taxa"] == [] or {keys} >= {leaf}` — an empty list satisfied it, and the fixture's
