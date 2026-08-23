@@ -1920,6 +1920,25 @@ accident, and a rebuild could silently swap the picture on a record.
 Now one entry per leaf: a curated photograph beats a fallback, and the lower iNaturalist id
 breaks the tie, so two rebuilds of the same inputs give the same file.
 
+### Both indexes, rebuilt clean
+
+| | ≥50 model | ≥20 model |
+|---|---|---|
+| leaves | 2,294 | 3,482 |
+| with a reference photograph | 2,294 | **3,462** (99.4%) |
+| duplicate entries | 51 would have shipped | **0** |
+| with a Wikipedia intro | 2,220 | **3,261** (93.7%) |
+| Wikipedia bundle | 2.6 MB | 3.67 MB |
+
+The Wikipedia run found an empty resume cache and fetched all 6,675 titles rather than only the
+new ones — sixteen minutes instead of five, and no harm done, but worth knowing that the cache
+lives outside the repository and does not survive a machine that has been cleaned up. The
+incremental path is right; there was simply nothing to be incremental against.
+
+Twenty leaves still have no photograph and 221 no article. Both are residue rather than
+failure: a taxon whose curated photographs are all under licences the pipeline cannot re-encode,
+and a species English Wikipedia has never written about.
+
 ---
 
 ## Open questions

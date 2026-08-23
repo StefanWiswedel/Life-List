@@ -44,10 +44,10 @@ When trading off, trade in favour of a record being keepable at the rank the evi
 | records | editable: settle the species later, add photos, place names, camera roll (§34) |
 | common names | **fixed 18 Aug** — the taxonomy asset shipped with every vernacular null (§28) |
 | multi-photo | fused on device via §3.2; §3.1 needs a re-export (§29) |
-| species info | 4,475 of 4,657 taxa carry a bundled Wikipedia intro, 2.6 MB (§31) |
-| reference photos | iNaturalist's curated pick, 2,289 of 2,294, at 500 px (§37) |
+| species info | 6,302 of 6,705 nodes carry a bundled Wikipedia intro, 3.7 MB (§31, §50) |
+| reference photos | iNaturalist's curated pick, 3,462 of 3,482 leaves, at 500 px (§37, §50) |
 | corrections | rename to any taxon, or retreat to a rank you trust; the model's answer is kept (§38, §40) |
-| coverage | 2,285 species, of which **468 Lepidoptera** — a random moth is often not in the model (§40) |
+| coverage | **3,482 leaves, 676 Lepidoptera** at ≥20 observations (§44) — up from 2,294 and 468 |
 | release workflow | tag `v*` → GitHub Release with an APK attached |
 
 ## Rules that have already earned their place
@@ -139,17 +139,16 @@ good (§41, checked).
 
 ## Next action
 
-**The threshold is measured, not guessed: ≥20 observations** (VERIFICATION §44, RESULTS Run 3).
-Rollup accuracy plateaus at 94.4% from ≥30 down, ECE is unchanged at 0.018, and the extra 1,183
-taxa are mostly moths — Lepidoptera 468 → 676 — which is the §40 misidentification addressed at
-its cause. `shared/model/taxon_bridge.json` is built and committed for that threshold.
+The ≥20 model is trained and both indexes are rebuilt against it. What is left is a commit and
+a tag — CI does the rest, and has done since §21: it exports the 350 MB ONNX from `head.npz`,
+copies the taxonomy, meta and Wikipedia into assets, fetches the reference photographs and
+builds the APK.
 
 ```bash
-cd training
-lifelist-train --cache-dir cache --min-observations 20 --commit   # ~65 min, 2 cores
-lifelist-export ...                                               # §21-22
-lifelist-reference-photos / lifelist-wikipedia                    # only the new taxa
+git add shared/model && git commit -m "The >=20 model"
+git tag v0.9.0 && git push --tags
 ```
 
-Then the app carries 3,482 leaves instead of 2,294, and a random Danish moth is much less often
-a species the model has never seen.
+Nothing about the export needs doing by hand. `lifelist-export` reads its class count out of
+`head.npz`, and running it locally is only worth it to find out that it still works before
+spending a release on finding out that it does not.
