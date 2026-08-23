@@ -230,6 +230,12 @@ def _add_indeterminate_leaves(nodes: dict[int, Taxon], parents: Iterable[int]) -
             parent_id=parent_key,
             rank=child_rank,
             scientific_name=f"{parent.scientific_name} {INDETERMINATE_SUFFIX}",
+            # The genus's common names, because that is what the leaf *is*: "some burdock",
+            # not a nameless node under Burdocks. The app shows the vernacular where it has
+            # one, so without this "Arctium sp." arrives on the result screen as Latin only,
+            # which is exactly the reading §1.1a exists to avoid.
+            vernacular_en=parent.vernacular_en,
+            vernacular_da=parent.vernacular_da,
         )
 
 

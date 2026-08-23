@@ -1988,6 +1988,18 @@ file.
 ancestors were not in its records, so it never had the chance to fail. Written to pass rather
 than to catch. It now builds a family record, ships it, and reads its common name back.
 
+### And one more test that only passed because the data was empty
+
+With the genera finally carrying common names, `test_indeterminate_leaves_inherit_their_genus_name`
+went red for the first time. `_add_indeterminate_leaves` built `Arctium sp.` with no vernacular
+at all, and the assertion is guarded by `if parent.get("vernacular_en")` — so for as long as no
+genus had a name, there was never a parent name for the child to fail to inherit. Two tests in
+this section passed for weeks by writing themselves out of the way of the bug.
+
+The synthetic leaf now takes the genus's names, which is what it *is*: "some burdock", not a
+nameless node under Burdocks. Without it, `Arctium sp.` reaches the result screen as Latin only
+— exactly the reading §1.1a exists to avoid.
+
 ### Fixing labels without refitting an hour-long head
 
 None of this changes what the model *learned* — only what the app reads out. `lifelist-train

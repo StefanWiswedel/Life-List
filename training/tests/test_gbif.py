@@ -427,3 +427,30 @@ def test_a_real_record_fills_in_the_stub_its_lineage_left_behind():
         assert nodes[2986].vernacular_en == "Ducks, geese and swans"
         assert nodes[9761484].vernacular_en == "Mallard"
         assert nodes[2986].leaf_index is None and nodes[9761484].leaf_index is not None
+
+
+def test_an_indeterminate_leaf_takes_its_genus_common_name():
+    """`Arctium sp.` is a burdock, and saying so is the whole point of §1.1a.
+
+    The shipped-assets test for this passed for weeks by accident: no genus had a common name,
+    so there was never a parent name for the child to fail to inherit.
+    """
+    from lifelist_train.gbif import GbifTaxon, build_taxonomy_nodes
+
+    genus = GbifTaxon(
+        key=3097, scientific_name="Arctium", rank="genus", status="ACCEPTED",
+        lineage={"family": 3065}, lineage_names={"family": "Asteraceae"},
+        vernacular_en="Burdocks", vernacular_da="Burrer",
+    )
+    species = GbifTaxon(
+        key=3098, scientific_name="Arctium minus", rank="species", status="ACCEPTED",
+        lineage={"family": 3065, "genus": 3097},
+        lineage_names={"family": "Asteraceae", "genus": "Arctium"},
+        vernacular_en="Lesser burdock", vernacular_da=None,
+    )
+
+    nodes = {n.taxon_id: n for n in build_taxonomy_nodes([genus, species], [3097])}
+
+    assert nodes[-3097].scientific_name == "Arctium sp."
+    assert nodes[-3097].vernacular_en == "Burdocks"
+    assert nodes[-3097].vernacular_da == "Burrer"
