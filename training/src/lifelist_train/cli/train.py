@@ -82,6 +82,16 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--learning-rate", type=float, default=3e-3)
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument(
+        "--taxonomy-only",
+        action="store_true",
+        help="rewrite taxonomy.json from the bridge and stop. No fitting, no head.",
+    )
+    parser.add_argument(
+        "--allow-reorder",
+        action="store_true",
+        help="with --taxonomy-only: permit a leaf ordering that invalidates the shipped head",
+    )
+    parser.add_argument(
         "--commit",
         action="store_true",
         help="write head.npz, taxonomy.json and model_meta.json. Without it, nothing is saved.",
@@ -189,6 +199,80 @@ def common_mask(taxonomy: Taxonomy, labels: np.ndarray, common_gbif: set[int]) -
     return np.array([taxonomy.leaf_id(int(i)) in common_gbif for i in labels], dtype=bool)
 
 
+def leaf_order(taxonomy: Taxonomy) -> list[int]:
+    """Leaf taxon ids in head-output order. The head is meaningless if this changes."""
+    return [
+        node.taxon_id
+        for node in sorted(
+            (n for n in taxonomy.nodes.values() if n.leaf_index is not None),
+            key=lambda n: n.leaf_index,
+        )
+    ]
+
+
+def write_taxonomy_only(embedded: Any, bridge: dict[str, Any], counts: dict[int, int], args: Any):
+    """Rewrite `taxonomy.json` alone, when only the *labels* changed.
+
+    Adding the ancestors' records to the bridge (§51) gives every family and order its common
+    name back, and changes nothing a head was trained on: the leaves are the same taxa in the
+    same order, because `assign_leaf_indices` sorts by taxon id and an ancestor is a parent by
+    construction. That is an argument, and an argument is not a check — so the ordering is
+    compared against the taxonomy already on disk and a mismatch stops the run. Refitting an
+    hour-long head to change a string would be silly; shipping a head whose class 1,847 quietly
+    means something else would be much worse.
+    """
+    taxonomy, rows = prepare(embedded, bridge, taxa_above(counts, args.min_observations))
+    LOG.info("%d nodes, %d leaves, %d photos behind them", len(taxonomy.nodes),
+             taxonomy.n_taxa, len(rows))
+
+    destination = args.out / "taxonomy.json"
+    if destination.exists() and not args.allow_reorder:
+        previous = json.loads(destination.read_text(encoding="utf-8"))
+        was = [
+            node["taxon_id"]
+            for node in sorted(
+                (n for n in previous if n.get("leaf_index") is not None),
+                key=lambda n: n["leaf_index"],
+            )
+        ]
+        now = leaf_order(taxonomy)
+        if was != now:
+            first = next(
+                (i for i, (a, b) in enumerate(zip(was, now, strict=False)) if a != b), len(was)
+            )
+            LOG.error(
+                "leaf ordering changed (%d leaves before, %d now; first difference at index "
+                "%d). The shipped head would be wrong. Retrain, or pass --allow-reorder if "
+                "you are replacing the head anyway.",
+                len(was), len(now), first,
+            )
+            return 1
+        LOG.info("leaf ordering unchanged across %d leaves — the shipped head still fits", len(now))
+
+    named = sum(1 for n in taxonomy.nodes.values() if n.vernacular_en)
+    higher = [n for n in taxonomy.nodes.values() if n.leaf_index is None and n.rank == "family"]
+    with_names = sum(1 for n in higher if n.vernacular_en)
+    args.out.mkdir(parents=True, exist_ok=True)
+    write_json(destination, [
+        {
+            "taxon_id": node.taxon_id,
+            "parent_id": node.parent_id,
+            "rank": node.rank,
+            "scientific_name": node.scientific_name,
+            "vernacular_da": node.vernacular_da,
+            "vernacular_en": node.vernacular_en,
+            "leaf_index": node.leaf_index,
+        }
+        for node in taxonomy.nodes.values()
+    ])
+    LOG.info("vernaculars on %d of %d nodes, and %d of %d families",
+             named, len(taxonomy.nodes), with_names, len(higher))
+    if named == 0:
+        LOG.error("every vernacular is null — this is the §28 bug, do not ship this taxonomy")
+        return 1
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     setup_logging(args.verbose)
@@ -210,6 +294,10 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     counts = observation_counts(embedded)
+
+    if args.taxonomy_only:
+        return write_taxonomy_only(embedded, bridge, counts, args)
+
     thresholds = sorted(args.compare, reverse=True) if args.compare else [args.min_observations]
 
     # The strictest threshold defines the shared vocabulary every candidate is judged on.

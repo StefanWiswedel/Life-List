@@ -207,3 +207,35 @@ def test_restricting_to_nothing_is_empty_rather_than_an_error():
     mapping, parents, taxa = restrict(doc, [])
 
     assert mapping == {} and parents == [] and taxa == []
+
+
+# -- the ancestors, and why they are in the document -------------------------
+
+def test_ancestors_are_needed_after_all_when_records_are_offered():
+    """§51: a lineage carries names and ranks but not *common* names.
+
+    Rebuilding families from a leaf's lineage gave the taxonomy the right shape and left
+    every higher rank without an English name — 0 of 691 families in the ≥20 model.
+    """
+    wanted = needed_keys({1: 9761484}, [], RECORDS)
+
+    assert 2986 in wanted and 212 in wanted, "Anatidae and Aves come along now"
+    assert 9761484 in wanted
+
+
+def test_without_records_the_old_narrow_answer_is_kept():
+    assert needed_keys({1: 9761484}, []) == {9761484}
+
+
+def test_the_document_ships_the_ancestors_so_their_names_survive():
+    doc = document({6930: 9761484}, [], RECORDS)
+
+    assert doc["taxa"] == [] or {t["key"] for t in doc["taxa"]} >= {9761484}
+
+
+def test_restricting_keeps_the_ancestors_of_what_survives():
+    doc = document({6930: 9761484, 7000: 8214667}, [], RECORDS)
+    _, _, taxa = restrict(doc, [6930])
+
+    assert 9761484 in {t.key for t in taxa}
+    assert 8214667 not in {t.key for t in taxa}

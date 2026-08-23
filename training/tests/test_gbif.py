@@ -390,3 +390,40 @@ def test_leaf_indices_stay_contiguous_and_ordered_by_id():
 
     assert [n.leaf_index for n in leaves] == [0, 1, 2]
     assert [n.taxon_id for n in leaves] == [-10, 1, 2], "negative ids sort first, deterministically"
+
+
+def test_a_common_name_gets_its_first_letter_and_nothing_else():
+    """GBIF is inconsistent: "Mallard" and "sooty mud dweller" come out of the same field."""
+    from lifelist_train.gbif import tidy_vernacular
+
+    assert tidy_vernacular("sooty mud dweller") == "Sooty mud dweller"
+    assert tidy_vernacular("Mallard") == "Mallard"
+    # Title-casing the rest would ruin both of these.
+    assert tidy_vernacular("St John's-wort") == "St John's-wort"
+    assert tidy_vernacular("daubenton's bat") == "Daubenton's bat"
+    assert tidy_vernacular("  Teal  ") == "Teal"
+    assert tidy_vernacular(None) is None
+    assert tidy_vernacular("   ") is None
+
+
+def test_a_real_record_fills_in_the_stub_its_lineage_left_behind():
+    """Order of arrival is an accident; the common name should not depend on it."""
+    from lifelist_train.gbif import GbifTaxon, build_taxonomy_nodes
+
+    species = GbifTaxon(
+        key=9761484, scientific_name="Anas platyrhynchos", rank="species", status="ACCEPTED",
+        lineage={"family": 2986}, lineage_names={"family": "Anatidae"},
+        vernacular_en="Mallard", vernacular_da=None,
+    )
+    family = GbifTaxon(
+        key=2986, scientific_name="Anatidae", rank="family", status="ACCEPTED",
+        lineage={}, lineage_names={},
+        vernacular_en="ducks, geese and swans", vernacular_da=None,
+    )
+
+    for order in ([species, family], [family, species]):
+        nodes = {n.taxon_id: n for n in build_taxonomy_nodes(order)}
+
+        assert nodes[2986].vernacular_en == "Ducks, geese and swans"
+        assert nodes[9761484].vernacular_en == "Mallard"
+        assert nodes[2986].leaf_index is None and nodes[9761484].leaf_index is not None

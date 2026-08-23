@@ -1941,6 +1941,69 @@ and a species English Wikipedia has never written about.
 
 ---
 
+## 51. Every family lost its common name — 23 Aug 2026
+
+`tests/test_shipped_assets.py` reads the shipped taxonomy rather than a fixture, and the moment
+the ≥20 one landed, two of its assertions went red. Both were real.
+
+**0 of 691 families carried an English name**, where the ≥50 taxonomy had more than 60%. The
+cause is a decision made in §42 and written down as if it were obviously right: `needed_keys`
+listed only the leaves and the indeterminate parents, because "`build_taxonomy_nodes`
+reconstructs the ancestors from each record's own `lineage` and `lineage_names`". It does — and
+that gives the taxonomy the correct shape, the correct ranks and the correct scientific names.
+**What a lineage does not carry is a common name.** So "Anatidae" shipped with no "Ducks, geese
+and swans" behind it, and so did every order, class and phylum. Costing a megabyte of records to
+keep the whole upper tree readable is not a close call, and the bridge now ships the ancestors.
+
+A second bug hid behind that one. Even with the records present, `build_taxonomy_nodes` skipped
+any taxon whose key was already in the node map — and an ancestor usually *is*, put there as a
+bare stub by the first leaf that mentioned it. Whether a family got its name depended on whether
+its record happened to be iterated before or after its own children. The real record now fills
+the stub in.
+
+**And common names were not capitalised.** "sooty mud dweller", "black-streaked dung beetle" —
+GBIF's vernacular field is inconsistent, and the ≥50 model never showed it because the taxa it
+covered are the well-known ones somebody had already tidied. Only the first character is
+touched: title-casing the rest turns "St John's-wort" into "St John'S-Wort", and lowering it
+ruins "Daubenton's bat".
+
+### Fixing labels without refitting an hour-long head
+
+None of this changes what the model *learned* — only what the app reads out. `lifelist-train
+--taxonomy-only` rewrites `taxonomy.json` from the bridge and stops.
+
+That is safe because `assign_leaf_indices` orders by ascending taxon id and an ancestor is a
+parent by construction, so adding ancestor records adds no leaves and moves none. **That is an
+argument, and an argument is not a check**: the new leaf ordering is compared against the
+taxonomy already on disk and a mismatch aborts the run. Refitting an hour-long head to change a
+string would be silly; shipping a head whose class 1,847 quietly means a different animal would
+be much worse.
+
+## 52. Two more verbs, and the one that had already cost a release — 23 Aug 2026
+
+Asked why the artefacts could not be committed from here. Because the MCP server had
+`git_apply_patch`, `git_push` and `git_tag` but no `commit` — every commit until now arrived as
+a patch, and `git am` stages and commits in one step, so the gap never showed. Artefacts are the
+one thing patches cannot carry: they are produced on that machine, they are megabytes of binary,
+and a 12 MB patch is not a thing to send.
+
+`commit_artefacts(message)` fills it, staging `shared/model` and the app's assets and nothing
+else. Not a general `git add`: source keeps arriving as a patch, where it can be read as a diff
+before it lands, which is the property that makes this server worth trusting.
+
+**`git_push(tags=True)` ran `git push --tags`, which pushes the tags and not the branch.** It
+had already cost something: `v0.9.0` reached origin and CI built a release from it while `main`
+sat two commits behind, with the model commit existing nowhere but one laptop. It now pushes the
+branch and then the tags.
+
+**Long output was truncated from the wrong end.** `run` kept the first 20,000 characters, and a
+stage that fetches 3,500 taxa says what it did at the *end* — how many crossed, how many fell
+back, what it wrote. Every one of those lines was cut while hundreds of lines of HTTP debug
+survived, and twice in one afternoon the summary had to be recovered by reading the artefact
+instead. It now keeps a quarter of the budget at the head and three quarters at the tail.
+
+---
+
 ## Open questions
 
 1. **Inference backend.** Accept the CPU-EP-first proposal in §1 above, or hold NNAPI as the

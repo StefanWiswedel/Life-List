@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import time
 from collections.abc import Iterable, Iterator
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import Any
 
 from .names import SynonymIndex
@@ -119,6 +119,23 @@ def _next_rank(rank: str) -> str | None:
     return deeper[0] if deeper else None
 
 
+def tidy_vernacular(name: str | None) -> str | None:
+    """A common name as it should be read: first letter capitalised, nothing else touched.
+
+    GBIF's vernacular records are inconsistent about case — "Mallard" and "sooty mud dweller"
+    come out of the same field — and the ≥20 taxonomy surfaced it because the taxa it added
+    happen to be the obscure ones nobody has tidied. Only the first character is changed:
+    title-casing the rest would turn "St John's-wort" into "St John'S-Wort", and lowering it
+    would ruin every proper noun in a name like "Daubenton's bat".
+    """
+    if not name:
+        return None
+    cleaned = name.strip()
+    if not cleaned:
+        return None
+    return cleaned[0].upper() + cleaned[1:]
+
+
 def build_taxonomy_nodes(
     taxa: Iterable[GbifTaxon],
     indeterminate_parents: Iterable[int] = (),
@@ -165,14 +182,25 @@ def build_taxonomy_nodes(
             parent_id = key
 
         if taxon.key in nodes:
+            # A stub built from somebody else's lineage: it has a name and a rank and nothing
+            # else. The real record knows the common names, and whether it arrives before or
+            # after the species that named it is an accident of iteration order — so fill the
+            # stub in rather than skipping it. Shipping the ≥20 taxonomy without this cost
+            # every family, order and class its common name: 0 of 691 families had one.
+            existing = nodes[taxon.key]
+            nodes[taxon.key] = replace(
+                existing,
+                vernacular_en=existing.vernacular_en or tidy_vernacular(taxon.vernacular_en),
+                vernacular_da=existing.vernacular_da or tidy_vernacular(taxon.vernacular_da),
+            )
             continue
         nodes[taxon.key] = Taxon(
             taxon_id=taxon.key,
             parent_id=parent_id,
             rank=taxon.rank,
             scientific_name=taxon.scientific_name,
-            vernacular_en=taxon.vernacular_en,
-            vernacular_da=taxon.vernacular_da,
+            vernacular_en=tidy_vernacular(taxon.vernacular_en),
+            vernacular_da=tidy_vernacular(taxon.vernacular_da),
         )
 
     _add_indeterminate_leaves(nodes, indeterminate_parents)

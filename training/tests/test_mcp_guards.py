@@ -150,7 +150,9 @@ def test_a_stage_name_is_chosen_from_a_list_never_taken_verbatim():
     sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "tools"))
     import lifelist_mcp
 
-    assert set(lifelist_mcp.PIPELINE_STAGES) == {"reference-index", "wikipedia", "export"}
+    assert set(lifelist_mcp.PIPELINE_STAGES) == {
+        "bridge", "taxonomy", "reference-index", "wikipedia", "export",
+    }
     for argv in lifelist_mcp.PIPELINE_STAGES.values():
         assert argv[0] == "-m", "every stage runs a module, not a script path or a shell string"
 
@@ -162,3 +164,48 @@ def test_training_is_not_a_stage_anything_can_start():
     import lifelist_mcp
 
     assert not any("train" in name for name in lifelist_mcp.PIPELINE_STAGES)
+
+
+def _server():
+    import sys
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "tools"))
+    import lifelist_mcp
+
+    return lifelist_mcp
+
+
+def test_a_long_log_keeps_its_ending():
+    """The summary of a stage is its last line, and truncation used to eat exactly that."""
+    server = _server()
+    output = "".join(f"line {i}\n" for i in range(20_000)) + "THE ANSWER IS 3462\n"
+
+    trimmed = server.trim(output)
+
+    assert trimmed.endswith("THE ANSWER IS 3462\n")
+    assert trimmed.startswith("line 0")
+    assert "dropped from the middle" in trimmed
+
+
+def test_a_short_log_is_untouched():
+    server = _server()
+
+    assert server.trim("all done") == "all done"
+
+
+def test_only_generated_artefacts_can_be_committed():
+    """Source reaches this repository as a patch, where it can be read as a diff first."""
+    server = _server()
+
+    assert server.COMMITTABLE == ("shared/model", "app/src/main/assets")
+
+
+def test_a_commit_message_must_be_one_non_empty_line():
+    """A body belongs in a patch, where it can be read before it lands."""
+    import pytest
+
+    server = _server()
+
+    assert server.validated_message("  The >=20 model  ") == "The >=20 model"
+    for bad in ("", "   ", "a title\n\nand a body"):
+        with pytest.raises(server.Refused):
+            server.validated_message(bad)

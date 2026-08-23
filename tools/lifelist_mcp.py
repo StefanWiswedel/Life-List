@@ -45,6 +45,21 @@ ALLOWED_GRADLE_TASKS = frozenset(
 # thing a person starts deliberately. Paths are relative to `training/`, which is the cwd
 # these run in.
 PIPELINE_STAGES: dict[str, list[str]] = {
+    # Rebuild the iNaturalist->GBIF crossing from stage 1's dump. Two minutes; needed when the
+    # document's *shape* changes, not when the model does.
+    "bridge": [
+        "-m", "lifelist_train.cli.bridge",
+        "--taxa-raw", "cache/taxa_raw.json.gz",
+        "--joined", "cache/stage2_joined",
+        "--min-observations", "20",
+    ],
+    # Rewrite taxonomy.json alone, refusing if the leaf ordering moved under the shipped head.
+    "taxonomy": [
+        "-m", "lifelist_train.cli.train",
+        "--cache-dir", "cache",
+        "--min-observations", "20",
+        "--taxonomy-only",
+    ],
     # Rebuild the reference-photo index for every leaf in the current taxonomy. Two minutes
     # of iNaturalist API at their asked-for one request a second.
     "reference-index": [
@@ -52,10 +67,9 @@ PIPELINE_STAGES: dict[str, list[str]] = {
         "--bridge", "../shared/model/taxon_bridge.json",
         "--taxonomy", "../shared/model/taxonomy.json",
         "--out", "../shared/model/reference_photos.json",
-        "-v",
     ],
     # Resumable and incremental: only titles that are neither cached nor known-absent.
-    "wikipedia": ["-m", "lifelist_train.cli.wikipedia", "-v"],
+    "wikipedia": ["-m", "lifelist_train.cli.wikipedia"],
     # The 350 MB ONNX. CI does this on every tag, so running it here is for checking that it
     # still works before spending a release on finding out that it does not.
     "export": [
@@ -63,9 +77,13 @@ PIPELINE_STAGES: dict[str, list[str]] = {
         "--head", "../shared/model/head.npz",
         "--meta", "../shared/model/model_meta.json",
         "--out", "../app/src/main/assets/lifelist.onnx",
-        "-v",
     ],
 }
+
+# Directories whose contents this server may stage and commit. Generated artefacts only:
+# the model, and the assets CI copies it into. Source is committed by patch, where it can be
+# read as a diff before it lands.
+COMMITTABLE = ("shared/model", "app/src/main/assets")
 
 PATCH_NAME = re.compile(r"^[A-Za-z0-9._-]+\.patch$")
 MAX_OUTPUT = 20_000
@@ -105,6 +123,20 @@ def validated_patch(name: str) -> Path:
     return path
 
 
+def validated_message(message: str) -> str:
+    """A commit message: one non-empty line.
+
+    A body belongs in a patch, where it can be written and read before it lands, rather than
+    squeezed through a tool argument by something that cannot see the result.
+    """
+    cleaned = message.strip()
+    if not cleaned:
+        raise Refused("a commit needs a message")
+    if "\n" in cleaned:
+        raise Refused("one line, please — a body belongs in a patch")
+    return cleaned
+
+
 def validated_gradle_task(task: str) -> str:
     if task not in ALLOWED_GRADLE_TASKS:
         raise Refused(f"{task!r} is not in the allowed set: {sorted(ALLOWED_GRADLE_TASKS)}")
@@ -122,9 +154,24 @@ def run(argv: list[str], cwd: Path | None = None) -> str:
         shell=False,
     )
     output = (completed.stdout or "") + (completed.stderr or "")
-    if len(output) > MAX_OUTPUT:
-        output = output[:MAX_OUTPUT] + f"\n... truncated, {len(output) - MAX_OUTPUT} more chars"
-    return f"exit {completed.returncode}\n{output}".strip()
+    return f"exit {completed.returncode}\n{trim(output)}".strip()
+
+
+def trim(output: str) -> str:
+    """Keep the head and the tail, drop the middle.
+
+    It used to keep the first 20,000 characters, which is precisely the wrong half. A stage
+    that fetches 3,500 taxa says what it fetched at the *end* — how many crossed, how many
+    fell back, what it wrote — and every one of those lines was cut while several hundred
+    lines of HTTP debug survived. Twice in one afternoon the summary had to be recovered by
+    reading the artefact instead.
+    """
+    if len(output) <= MAX_OUTPUT:
+        return output
+    head = output[: MAX_OUTPUT // 4]
+    tail = output[-(MAX_OUTPUT * 3 // 4) :]
+    dropped = len(output) - len(head) - len(tail)
+    return f"{head}\n... {dropped} characters dropped from the middle ...\n{tail}"
 
 
 @dataclass
@@ -150,6 +197,17 @@ JOBS: dict[str, Job] = {}
 _JOBS_LOCK = threading.Lock()
 
 
+def run_all(argvs: list[list[str]], cwd: Path | None = None) -> str:
+    """Run commands in order, stopping at the first failure."""
+    parts = []
+    for argv in argvs:
+        result = run(argv, cwd)
+        parts.append(result)
+        if not result.startswith("exit 0"):
+            break
+    return "\n".join(parts)
+
+
 def start(label: str, argv: list[str], cwd: Path | None = None) -> str:
     """Run in the background and return a job id immediately.
 
@@ -163,7 +221,7 @@ def start(label: str, argv: list[str], cwd: Path | None = None) -> str:
 
     def work() -> None:
         try:
-            output = run(argv, cwd)
+            output = run_all(argv, cwd) if argv and isinstance(argv[0], list) else run(argv, cwd)
         except Exception as exc:  # noqa: BLE001 — the message is the whole point
             output = f"failed to run: {type(exc).__name__}: {exc}"
         with _JOBS_LOCK:
@@ -204,9 +262,35 @@ def build_server():  # pragma: no cover — wiring, exercised by running it
         return start("git am --abort", ["git", "am", "--abort"])
 
     @mcp.tool()
+    def commit_artefacts(message: str) -> str:
+        """Stage and commit the generated artefacts under shared/model and the app's assets.
+
+        The gap this fills: every other commit reaches this repository as a patch, and `git am`
+        stages and commits in one step. Artefacts are the one thing patches cannot carry —
+        they are produced *here*, they are megabytes of binary, and a 12 MB patch is not a
+        thing to send. So they sat uncommitted until a person typed `git add` themselves.
+
+        Deliberately not `git add <anything>`: the paths are fixed, so this can add a
+        regenerated index and never a stray file from somewhere else in the tree.
+        """
+        existing = [d for d in COMMITTABLE if (REPO / d).is_dir()]
+        return start(
+            "commit artefacts",
+            ["git", "commit", "-m", validated_message(message), "--", *existing],
+        )
+
+    @mcp.tool()
     def git_push(tags: bool = False) -> str:
-        """Push main to origin. Never force: rewriting published history stays manual."""
-        return start("git push", ["git", "push", "--tags"] if tags else ["git", "push"])
+        """Push main to origin, and the tags too if asked. Never force.
+
+        `tags=True` pushes the branch *and then* the tags, rather than `git push --tags`,
+        which pushes only the tags. That difference cost a release: the tag was on origin and
+        CI built from it, while main sat two commits behind with the model commit existing
+        nowhere but one laptop.
+        """
+        if tags:
+            return start("git push + tags", [["git", "push"], ["git", "push", "--tags"]])
+        return start("git push", ["git", "push"])
 
     @mcp.tool()
     def git_tag(name: str) -> str:

@@ -122,13 +122,31 @@ def build_mapping(
     )
 
 
-def needed_keys(mapping: Mapping[int, int], parents: Iterable[int]) -> set[int]:
+def needed_keys(
+    mapping: Mapping[int, int],
+    parents: Iterable[int],
+    records: Mapping[int, Mapping[str, Any]] | None = None,
+) -> set[int]:
     """Every GBIF key whose record the taxonomy builder will need.
 
-    Ancestors are not listed: `build_taxonomy_nodes` reconstructs them from each record's own
-    `lineage` and `lineage_names`, which is why those two fields are not optional here.
+    Leaves, the genera with an indeterminate leaf, and — when `records` is given — every
+    ancestor in their lineages.
+
+    **The ancestors were left out at first, and that was wrong.** `build_taxonomy_nodes` does
+    reconstruct them from each leaf's `lineage` and `lineage_names`, so the taxonomy had the
+    right shape and the right scientific names. What a lineage does not carry is the common
+    name, so the ≥20 taxonomy shipped with **0 of 691 families** having one — "Anatidae" with
+    no "Ducks, Geese and Swans" behind it, all the way up the tree. Costing a megabyte of
+    records to keep every higher rank readable is not a close call.
     """
-    return {abs(key) for key in mapping.values()} | set(parents)
+    wanted = {abs(key) for key in mapping.values()} | set(parents)
+    if records is None:
+        return wanted
+    for key in list(wanted):
+        record = records.get(key)
+        for ancestor in (record or {}).get("lineage", {}).values():
+            wanted.add(int(ancestor))
+    return wanted
 
 
 def document(
@@ -141,7 +159,7 @@ def document(
     Keys are strings because JSON has no other kind, and negative ids round-trip through that
     perfectly well as long as nobody assumes otherwise on the way back in.
     """
-    wanted = needed_keys(mapping, parents)
+    wanted = needed_keys(mapping, parents, records)
     return {
         "mapping": {str(k): int(v) for k, v in sorted(mapping.items())},
         "indeterminate_parents": sorted(int(p) for p in parents if int(p) in records),
@@ -197,8 +215,12 @@ def restrict(
     keep = {int(i) for i in keep_inat_ids}
     narrowed = {k: v for k, v in mapping.items() if k in keep}
     surviving = {-v for v in narrowed.values() if v < 0}
+    by_key = {
+        t.key: {"lineage": t.lineage} for t in taxa
+    }
+    wanted = needed_keys(narrowed, surviving, by_key)
     return (
         narrowed,
         [p for p in parents if p in surviving],
-        [t for t in taxa if t.key in needed_keys(narrowed, surviving)],
+        [t for t in taxa if t.key in wanted],
     )
