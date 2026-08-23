@@ -1883,6 +1883,14 @@ ONNX, copies the taxonomy, meta and Wikipedia into assets, and fetches the refer
 photographs, all on a tag. So the local work is the two index rebuilds and a commit; the 350 MB
 artefact is not something to build by hand at all.
 
+**§45 was not finished, and running a stage through the MCP server is what found it.** Two
+`shared/model/...` defaults were still resolved against the cwd — `--out` in the bridge builder,
+and `--previous` and `--out` in the reference index. From `training/`, which is where these
+stages run, the index looked for `training/shared/model/reference_photos.json` and reported
+"not found", which reads as a lost artefact rather than a wrong directory level. There is now a
+test that walks the CLI package and fails on any `Path("shared/...")` default, because fixing
+this by hand twice is evidence it will be fixed by hand a third time.
+
 **The MCP server grew one verb.** `stage(name)` runs `reference-index`, `wikipedia` or `export`
 from a fixed dict of argument vectors — a name, never a command, which is the rule the whole
 file exists to keep. Training is deliberately absent: an hour-long run that writes the shipped

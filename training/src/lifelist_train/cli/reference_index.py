@@ -45,11 +45,11 @@ PAUSE = 1.0
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Choose a reference photo for every taxon")
-    parser.add_argument("--out", type=Path, default=Path("shared/model/reference_photos.json"))
+    parser.add_argument("--out", type=Path, default=shared_model("reference_photos.json"))
     parser.add_argument(
         "--previous",
         type=Path,
-        default=Path("shared/model/reference_photos.json"),
+        default=shared_model("reference_photos.json"),
         help="the current index: supplies the fallback photo and, after the first run, the "
              "GBIF->iNaturalist mapping",
     )

@@ -25,7 +25,7 @@ from typing import Any
 from ..bridge import build_mapping, document, genus_keys_by_name, needed_keys
 from ..inat import coverage, select_taxa
 from ..names import build_synonym_index
-from ._common import LOG, setup_logging
+from ._common import LOG, setup_logging, shared_model
 
 GBIF_SPECIES = "https://api.gbif.org/v1/species"
 INAT_TAXA = "https://api.inaturalist.org/v1/taxa"
@@ -106,7 +106,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--joined", type=Path, required=True, help="cache/stage2_joined")
     parser.add_argument("--min-observations", type=int, default=20)
     parser.add_argument("--max-photos-per-taxon", type=int, default=150)
-    parser.add_argument("--out", type=Path, default=Path("shared/model/taxon_bridge.json"))
+    parser.add_argument("--out", type=Path, default=shared_model("taxon_bridge.json"))
     parser.add_argument(
         "--no-fetch",
         action="store_true",

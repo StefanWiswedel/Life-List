@@ -390,3 +390,23 @@ def test_an_indeterminate_leaf_keeps_its_negative_id(tmp_path):
     taxonomy.write_text(json.dumps([{"taxon_id": -1036775, "leaf_index": 0}]))
 
     assert pairs_from_bridge(bridge, taxonomy) == [(-1036775, 50000)]
+
+
+def test_no_stage_defaults_a_shared_model_path_against_the_cwd():
+    """§45 again, and this is why it is a test rather than a fixed line.
+
+    Two defaults were missed the first time and only surfaced when a stage was run from
+    `training/` by something that passed no explicit path — the reference index then looked for
+    `training/shared/model/reference_photos.json` and reported the artefact as missing, which
+    reads as a lost file rather than a wrong directory level.
+    """
+    from pathlib import Path
+
+    source = Path(__file__).resolve().parents[1] / "src" / "lifelist_train" / "cli"
+    offenders = [
+        path.name
+        for path in source.glob("*.py")
+        if path.name != "_common.py" and 'Path("shared/' in path.read_text(encoding="utf-8")
+    ]
+
+    assert offenders == [], f"{offenders} default a shared/ path against the cwd"
