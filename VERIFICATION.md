@@ -2004,6 +2004,35 @@ instead. It now keeps a quarter of the budget at the head and three quarters at 
 
 ---
 
+## 53. The DCIM grid did not work on the phone — 23 Aug 2026
+
+Tried in the field on v0.9.0 and reverted the same day. The system photo picker is back, with
+multi-select, which is the part that was actually wanted.
+
+What it cost to find out: a `READ_MEDIA_IMAGES` permission the picker never needed, two files,
+and a screen. What it bought is worth writing down, because the idea will come back.
+
+**The premise was sound and the implementation was untestable here.** There is no emulator in
+this container — Paparazzi renders composables on the JVM through layoutlib, which draws a
+screen but has no MediaStore behind it. So `PhotoLibrary.recent` was reasoned about carefully
+(two real bugs were caught by reading: `DATE_ADDED` in seconds against `DATE_TAKEN` in
+milliseconds, and `DCIM/%` rather than `DCIM/Camera/%`) and then shipped without ever having
+returned a row. Reading is not running. **A screen whose entire content comes from a system
+service this environment does not have is a screen that cannot be built here**, and that is a
+better rule to take away than anything about MediaStore.
+
+If it is ever revisited, the thing to establish first is which of these it was: the permission
+refused or auto-denied, the query returning nothing, or the grid drawing but the thumbnails
+failing. They have completely different fixes and the failure looks identical from the outside —
+an empty screen.
+
+**`ACCESS_MEDIA_LOCATION` stays.** It is not part of the grid; it is what §46 needs so a
+photograph's own coordinates can be read at all. Whether the *photo picker* honours it is the
+open question there, and the app is now honest about the answer either way: the record says
+"from the photo" or "from your phone", so the field will show which one is actually happening.
+
+---
+
 ## Open questions
 
 1. **Inference backend.** Accept the CPU-EP-first proposal in §1 above, or hold NNAPI as the

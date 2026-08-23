@@ -115,7 +115,7 @@ class MainActivity : ComponentActivity() {
  * A group opens on top of home rather than replacing it — the counts on the home screen were
  * going nowhere, which made them a scoreboard rather than a way in.
  */
-private enum class Screen { HOME, GROUP, CAPTURE, PHOTOS, THINKING, RESULT }
+private enum class Screen { HOME, GROUP, CAPTURE, THINKING, RESULT }
 
 /** What came back from the camera or the picker, with whatever it knows about itself. */
 data class Shot(
@@ -420,7 +420,14 @@ fun App() {
                             .padding(18.dp),
                     ) {
                         SmallFloatingActionButton(
-                            onClick = { photos = emptyList(); screen = Screen.PHOTOS },
+                            onClick = {
+                                photos = emptyList()
+                                pickForNewRecord.launch(
+                                    PickVisualMediaRequest(
+                                        ActivityResultContracts.PickVisualMedia.ImageOnly
+                                    )
+                                )
+                            },
                             containerColor = MaterialTheme.colorScheme.surfaceVariant,
                             contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.size(52.dp),
@@ -461,33 +468,8 @@ fun App() {
                     }
                 }
 
-                Screen.PHOTOS -> PhotoGridScreen(
-                    onChosen = { chosen ->
-                        scope.launch {
-                            val shots = withContext(Dispatchers.IO) {
-                                chosen.mapNotNull { item ->
-                                    runCatching { decodeSoftware(context, item.uri) }
-                                        .getOrNull()
-                                        ?.let { Shot(it, Gallery.coordinatesOf(context, item.uri)) }
-                                }
-                            }
-                            if (shots.isNotEmpty()) took(shots) else startOver()
-                        }
-                    },
-                    onUseSystemPicker = {
-                        pickForNewRecord.launch(
-                            PickVisualMediaRequest(
-                                ActivityResultContracts.PickVisualMedia.ImageOnly
-                            )
-                        )
-                    },
-                    onClose = { startOver() },
-                )
-
                 Screen.CAPTURE -> CaptureScreen(
                     onCapture = { took(it) },
-                    // Same grid the home screen opens: one place the camera roll lives.
-                    onBrowse = { screen = Screen.PHOTOS },
                     onClose = { if (photos.isEmpty()) startOver() else screen = Screen.RESULT },
                     addingTo = photos.size,
                 )
