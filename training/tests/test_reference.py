@@ -195,3 +195,35 @@ def test_the_summary_counts_where_each_photo_came_from():
 
 def test_the_minimum_is_bigger_than_what_used_to_ship():
     assert MIN_DIMENSION > 240
+
+
+def test_two_inaturalist_taxa_crossing_to_one_gbif_leaf_ship_one_entry():
+    """iNaturalist splits where GBIF lumps, so one leaf can have several iNat ids behind it.
+
+    Appending both shipped 51 duplicate `taxon_id`s in the >=20 index, and which one the app
+    saw depended on the order it read them in — reproducible only by accident.
+    """
+    taxa = {
+        900: {"taxon_photos": [photo(id=1)]},
+        800: {"taxon_photos": [photo(id=2)]},
+    }
+
+    index = build_index([(5, 900), (5, 800)], taxa, {})
+
+    assert [e["taxon_id"] for e in index] == [5]
+    assert index[0]["inat_taxon_id"] == 800, "the lower iNaturalist id breaks the tie"
+
+
+def test_a_curated_photograph_beats_a_fallback_for_the_same_leaf():
+    taxa = {900: {}, 800: {"taxon_photos": [photo(id=2)]}}
+    fallbacks = {
+        5: {
+            "photo_id": 77, "extension": "jpg", "licence": "CC BY",
+            "credit": "someone", "source": "training-manifest",
+        }
+    }
+
+    index = build_index([(5, 900), (5, 800)], taxa, fallbacks)
+
+    assert index[0]["source"] == "inaturalist-curated"
+    assert index[0]["inat_taxon_id"] == 800

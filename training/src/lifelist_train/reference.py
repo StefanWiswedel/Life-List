@@ -179,13 +179,30 @@ def build_index(
     1688020 are different organisms — and the mapping is recorded in the index itself so a
     later rebuild never has to reconstruct it by joining photo ids again.
     """
-    out: list[dict[str, Any]] = []
+    best: dict[int, dict[str, Any]] = {}
     for gbif_id, inat_id in pairs:
         chosen = select(taxa.get(inat_id, {}), fallbacks.get(gbif_id), minimum)
         if chosen is None:
             continue
-        out.append({"taxon_id": gbif_id, "inat_taxon_id": inat_id, **chosen})
-    return sorted(out, key=lambda e: e["taxon_id"])
+        entry = {"taxon_id": gbif_id, "inat_taxon_id": inat_id, **chosen}
+        # More than one iNaturalist taxon can cross to the same GBIF leaf — iNat splits where
+        # GBIF lumps, so *Pieris napi* and a subspecies of it both land on one key. Appending
+        # both shipped 51 duplicate taxon_ids, and which of them the app saw depended on the
+        # order it happened to read them in. Keep one: a curated photograph beats a fallback,
+        # and the lower iNaturalist id breaks the tie so a rebuild is reproducible.
+        previous = best.get(gbif_id)
+        if previous is None or _better(entry, previous):
+            best[gbif_id] = entry
+    return sorted(best.values(), key=lambda e: e["taxon_id"])
+
+
+def _better(candidate: Mapping[str, Any], incumbent: Mapping[str, Any]) -> bool:
+    rank = {"inaturalist-curated": 0, "training-manifest": 1}
+    candidate_rank = rank.get(str(candidate.get("source")), 2)
+    incumbent_rank = rank.get(str(incumbent.get("source")), 2)
+    if candidate_rank != incumbent_rank:
+        return candidate_rank < incumbent_rank
+    return int(candidate["inat_taxon_id"]) < int(incumbent["inat_taxon_id"])
 
 
 def summarise(index: Sequence[Mapping[str, Any]]) -> dict[str, int]:

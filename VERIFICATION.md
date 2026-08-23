@@ -1898,6 +1898,30 @@ head should be something a person starts on purpose.
 
 ---
 
+## 50. The reference index, rebuilt — 23 Aug 2026
+
+Run through the MCP server's new `stage` verb, against the ≥20 taxonomy.
+
+| | before | after |
+|---|---|---|
+| leaves with a photograph | 2,294 | **3,462 of 3,482** |
+| from iNaturalist's curated list | 2,289 | 3,509 |
+| falling back to a training photo | 5 | 7 |
+
+Twenty leaves have no photograph at all, which is the expected residue: a taxon whose curated
+list is empty or entirely under licences the pipeline cannot re-encode (§37 excludes `nd`).
+
+**One bug the rebuild exposed: 51 duplicate `taxon_id`s.** 3,531 (gbif, inat) pairs for 3,482
+leaves — iNaturalist splits where GBIF lumps, so a species and a subspecies of it both cross to
+one key. `build_index` appended an entry per pair, so the index shipped the same taxon twice and
+which photograph the app used depended on the order it read them in. Reproducible only by
+accident, and a rebuild could silently swap the picture on a record.
+
+Now one entry per leaf: a curated photograph beats a fallback, and the lower iNaturalist id
+breaks the tie, so two rebuilds of the same inputs give the same file.
+
+---
+
 ## Open questions
 
 1. **Inference backend.** Accept the CPU-EP-first proposal in §1 above, or hold NNAPI as the
