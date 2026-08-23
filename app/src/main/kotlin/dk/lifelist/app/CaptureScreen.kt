@@ -141,6 +141,8 @@ fun CaptureScreen(
     onClose: () -> Unit,
     addingTo: Int,
     modifier: Modifier = Modifier,
+    /** Null in a screenshot test, where there is nowhere to navigate to. */
+    onBrowse: (() -> Unit)? = null,
 ) {
     val permission = rememberPermissionState(Manifest.permission.CAMERA)
     val capture = remember { mutableStateOf<ImageCapture?>(null) }
@@ -267,8 +269,10 @@ fun CaptureScreen(
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Surface(
+                // The DCIM grid when the app is wired up; the system picker in a screenshot
+                // test, where there is no navigation to hand.
                 onClick = {
-                    pick.launch(
+                    onBrowse?.invoke() ?: pick.launch(
                         PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
                     )
                 },

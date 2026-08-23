@@ -1,22 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    The themed-icon variant. Only alpha is used, so the tick cannot be a hole — the leaf is
-    drawn as an outline instead and the tick sits inside it.
+    The themed-icon variant. Only the alpha channel is read, so the wings cannot be told apart
+    from the body by colour — the hindwings are drawn at a lower alpha instead, which is the
+    one distinction the channel can carry.
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <path
-        android:strokeColor="#000000"
-        android:strokeWidth="5"
-        android:strokeLineJoin="round"
-        android:pathData="M30,78 C30,52 52,30 78,30 C78,56 56,78 30,78 Z" />
-    <path
-        android:strokeColor="#000000"
-        android:strokeWidth="5.6"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round"
-        android:pathData="M43,57 L52,66 L70,42" />
+    <group android:pivotX="54" android:pivotY="54" android:scaleX="0.9" android:scaleY="0.9">
+        <path
+            android:fillColor="#000000"
+            android:pathData="M54,44 C46,33 34,28 27,32 C20,36 21,48 29,55 C36,61 47,62 54,58 Z" />
+        <path
+            android:fillColor="#000000"
+            android:pathData="M54,44 C62,33 74,28 81,32 C88,36 87,48 79,55 C72,61 61,62 54,58 Z" />
+        <path
+            android:fillColor="#000000"
+            android:fillAlpha="0.55"
+            android:pathData="M54,58 C48,60 40,64 37,70 C34,76 39,81 45,79 C50,77 53,70 54,64 Z" />
+        <path
+            android:fillColor="#000000"
+            android:fillAlpha="0.55"
+            android:pathData="M54,58 C60,60 68,64 71,70 C74,76 69,81 63,79 C58,77 55,70 54,64 Z" />
+        <path
+            android:fillColor="#000000"
+            android:pathData="M54,36 C57,36 58,40 58,46 C58,56 56,66 54,72 C52,66 50,56 50,46 C50,40 51,36 54,36 Z" />
+        <path
+            android:strokeColor="#000000"
+            android:strokeWidth="2.4"
+            android:strokeLineCap="round"
+            android:pathData="M51,35 C46,29 41,26 36,26" />
+        <path
+            android:strokeColor="#000000"
+            android:strokeWidth="2.4"
+            android:strokeLineCap="round"
+            android:pathData="M57,35 C62,29 67,26 72,26" />
+    </group>
 </vector>

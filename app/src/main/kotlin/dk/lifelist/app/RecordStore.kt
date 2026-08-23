@@ -3,6 +3,7 @@ package dk.lifelist.app
 import android.content.Context
 import android.graphics.Bitmap
 import dk.lifelist.core.Determiner
+import dk.lifelist.core.LocationSource
 import dk.lifelist.core.Record
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.ListSerializer
@@ -44,6 +45,10 @@ class RecordStore(private val context: Context) {
         val confidence: Float? = null,
         val latitude: Double? = null,
         val longitude: Double? = null,
+        // Both default to null so a list written by an older build reads back unchanged, which
+        // is the whole reason `ignoreUnknownKeys` and defaults are not optional here.
+        val locationSource: String? = null,
+        val notes: String? = null,
     )
 
     private fun Stored.toRecord() = Record(
@@ -60,6 +65,10 @@ class RecordStore(private val context: Context) {
         latitude = latitude,
         longitude = longitude,
         place = place,
+        locationSource = locationSource?.let {
+            runCatching { LocationSource.valueOf(it) }.getOrNull()
+        },
+        notes = notes,
     )
 
     private fun Record.toStored() = Stored(
@@ -76,6 +85,8 @@ class RecordStore(private val context: Context) {
         confidence = confidence,
         latitude = latitude,
         longitude = longitude,
+        locationSource = locationSource?.name,
+        notes = notes,
     )
 
     fun load(): List<Record> = runCatching {
@@ -126,6 +137,23 @@ class RecordStore(private val context: Context) {
         load().map { if (it.id == record.id) record else it }.also { save(it) }
 
     fun delete(id: String): List<Record> = load().filterNot { it.id == id }.also { save(it) }
+
+    /**
+     * The photographs behind a deleted record, once the undo window has closed.
+     *
+     * Separate from `delete` on purpose. Removing the row is instant and reversible; removing
+     * the files is neither, so it waits until the snackbar does. Only files in this app's own
+     * photo directory are touched — a path that points anywhere else is left alone, because
+     * the camera roll is not ours to tidy.
+     */
+    fun deletePhotos(paths: List<String>) {
+        paths.forEach { path ->
+            runCatching {
+                val file = File(path)
+                if (file.parentFile?.absolutePath == photos.absolutePath) file.delete()
+            }
+        }
+    }
 
     fun newId(): String = UUID.randomUUID().toString()
 }

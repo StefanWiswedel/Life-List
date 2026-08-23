@@ -1,22 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    A leaf with a tick cut through it: the two halves of what this app is, nature and a list.
+    A moth, seen from above.
 
-    Drawn inside the 66dp safe circle of the 108dp adaptive canvas, so nothing important is
-    lost when a launcher masks it to a circle, a squircle or a rounded square.
+    Chosen over a leaf, a tick and a taxonomy diagram because it is the thing this app is
+    actually pointed at, and because every competitor's icon is a green leaf. Drawn inside the
+    66dp safe circle of the 108dp adaptive canvas — the antennae are the outermost points and
+    they clear it — so nothing is lost when a launcher masks it to a circle, a squircle or a
+    rounded square.
+
+    Two wing pairs rather than one: a butterfly's silhouette is a pair of ovals, a moth's is
+    swept-back forewings over smaller hindwings, and at 48px that difference is most of what
+    tells them apart.
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <path
-        android:fillColor="#FBF7F0"
-        android:pathData="M30,78 C30,52 52,30 78,30 C78,56 56,78 30,78 Z" />
-    <path
-        android:strokeColor="#C2603A"
-        android:strokeWidth="5.6"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round"
-        android:pathData="M43,57 L52,66 L70,42" />
+    <group android:pivotX="54" android:pivotY="54" android:scaleX="0.9" android:scaleY="0.9">
+        <path
+            android:fillColor="#FBF7F0"
+            android:pathData="M54,44 C46,33 34,28 27,32 C20,36 21,48 29,55 C36,61 47,62 54,58 Z" />
+        <path
+            android:fillColor="#FBF7F0"
+            android:pathData="M54,44 C62,33 74,28 81,32 C88,36 87,48 79,55 C72,61 61,62 54,58 Z" />
+        <path
+            android:fillColor="#FBF7F0"
+            android:fillAlpha="0.72"
+            android:pathData="M54,58 C48,60 40,64 37,70 C34,76 39,81 45,79 C50,77 53,70 54,64 Z" />
+        <path
+            android:fillColor="#FBF7F0"
+            android:fillAlpha="0.72"
+            android:pathData="M54,58 C60,60 68,64 71,70 C74,76 69,81 63,79 C58,77 55,70 54,64 Z" />
+        <path
+            android:fillColor="#D9A339"
+            android:pathData="M54,36 C57,36 58,40 58,46 C58,56 56,66 54,72 C52,66 50,56 50,46 C50,40 51,36 54,36 Z" />
+        <path
+            android:strokeColor="#D9A339"
+            android:strokeWidth="2.4"
+            android:strokeLineCap="round"
+            android:pathData="M51,35 C46,29 41,26 36,26" />
+        <path
+            android:strokeColor="#D9A339"
+            android:strokeWidth="2.4"
+            android:strokeLineCap="round"
+            android:pathData="M57,35 C62,29 67,26 72,26" />
+    </group>
 </vector>

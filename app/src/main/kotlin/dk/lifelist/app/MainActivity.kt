@@ -38,8 +38,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SmallFloatingActionButton
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -113,7 +115,7 @@ class MainActivity : ComponentActivity() {
  * A group opens on top of home rather than replacing it — the counts on the home screen were
  * going nowhere, which made them a scoreboard rather than a way in.
  */
-private enum class Screen { HOME, GROUP, CAPTURE, THINKING, RESULT }
+private enum class Screen { HOME, GROUP, CAPTURE, PHOTOS, THINKING, RESULT }
 
 /** What came back from the camera or the picker, with whatever it knows about itself. */
 data class Shot(
@@ -418,14 +420,7 @@ fun App() {
                             .padding(18.dp),
                     ) {
                         SmallFloatingActionButton(
-                            onClick = {
-                                photos = emptyList()
-                                pickForNewRecord.launch(
-                                    PickVisualMediaRequest(
-                                        ActivityResultContracts.PickVisualMedia.ImageOnly
-                                    )
-                                )
-                            },
+                            onClick = { photos = emptyList(); screen = Screen.PHOTOS },
                             containerColor = MaterialTheme.colorScheme.surfaceVariant,
                             contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.size(52.dp),
@@ -466,8 +461,33 @@ fun App() {
                     }
                 }
 
+                Screen.PHOTOS -> PhotoGridScreen(
+                    onChosen = { chosen ->
+                        scope.launch {
+                            val shots = withContext(Dispatchers.IO) {
+                                chosen.mapNotNull { item ->
+                                    runCatching { decodeSoftware(context, item.uri) }
+                                        .getOrNull()
+                                        ?.let { Shot(it, Gallery.coordinatesOf(context, item.uri)) }
+                                }
+                            }
+                            if (shots.isNotEmpty()) took(shots) else startOver()
+                        }
+                    },
+                    onUseSystemPicker = {
+                        pickForNewRecord.launch(
+                            PickVisualMediaRequest(
+                                ActivityResultContracts.PickVisualMedia.ImageOnly
+                            )
+                        )
+                    },
+                    onClose = { startOver() },
+                )
+
                 Screen.CAPTURE -> CaptureScreen(
                     onCapture = { took(it) },
+                    // Same grid the home screen opens: one place the camera roll lives.
+                    onBrowse = { screen = Screen.PHOTOS },
                     onClose = { if (photos.isEmpty()) startOver() else screen = Screen.RESULT },
                     addingTo = photos.size,
                 )
@@ -605,6 +625,31 @@ fun App() {
                 )
                 suggestion = null
                 scope.launch { snackbar.showSnackbar("Corrected — saved as your determination") }
+            },
+            onEdit = { edited ->
+                records = store.update(edited)
+                scope.launch { snackbar.showSnackbar("Saved") }
+            },
+            onDelete = {
+                // Held rather than written over, so "Undo" has something to put back. The
+                // photographs are left on disk until the snackbar goes: a life list that
+                // deletes the picture the instant you tap is one you cannot change your mind
+                // about, and the whole reason this button exists is that people do.
+                val removed = openRecord
+                openRecordId = null
+                records = store.delete(removed.id)
+                scope.launch {
+                    val result = snackbar.showSnackbar(
+                        message = "Sighting deleted",
+                        actionLabel = "Undo",
+                        duration = SnackbarDuration.Long,
+                    )
+                    if (result == SnackbarResult.ActionPerformed) {
+                        records = store.add(removed)
+                    } else {
+                        thread { store.deletePhotos(removed.photoPaths) }
+                    }
+                }
             },
             suggestion = suggestion?.takeIf { it.recordId == openRecord.id },
             onUseSuggestion = {

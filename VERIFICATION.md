@@ -1800,6 +1800,58 @@ the capture screen and add-a-photo-to-a-record, from §40.
 
 ---
 
+## 48. The icon, the roll, and the three facts you can fix — 23 Aug 2026
+
+**A moth, seen from above.** Four candidates were drawn and shown at launcher size, which is
+the only size that settles anything: a ring of ticks read as a stopwatch, a stack of bars read
+as a hamburger menu, and a taxonomy descending to the node it can defend — conceptually the
+right icon, since it is the only one that says what the app *does* — read as a molecule at
+48px. The moth won because it is the thing the app is actually pointed at and because every
+competitor's icon is a green leaf. Two wing pairs rather than one: a butterfly's silhouette is
+a pair of ovals and a moth's is swept-back forewings over smaller hindwings, and at 48px that
+difference carries most of the recognition. Foreground, background and monochrome layers, drawn
+inside the 66dp safe circle with the antenna tips as the outermost points.
+
+**Our own grid over the camera roll.** The system photo picker cannot be pointed at a folder —
+that is the one thing it does not expose — and DCIM is where photographs of animals are;
+everything else in the picker is screenshots, saved memes and receipts. So `PhotoLibrary`
+queries MediaStore directly, filtered to DCIM, newest first.
+
+The trade is a permission, and it is a real cost: the photo picker needs none, because the user
+hands over specific images and nothing else. It buys three things — only camera photographs,
+newest first without scrolling past today's messages, and multi-select that looks like
+multi-select rather than hiding behind a long press. **The system picker stays as the fallback**
+on the same screen, so refusing the permission costs the grid rather than the feature.
+
+Two details that would have been bugs. `DATE_ADDED` is in seconds and `DATE_TAKEN` is in
+milliseconds, so falling back from one to the other without scaling puts every imported
+photograph in January 1970 — at the bottom of a newest-first grid, which is exactly where it
+would not be noticed. And the filter is `DCIM/%` rather than `DCIM/Camera/%`: which subfolder
+of DCIM a phone uses varies by manufacturer, and being slightly generous beats an empty grid.
+
+**Editing a sighting** covers the three facts nothing else can fix — the date, because a
+photograph imported later is dated when it was kept rather than when it was taken; the place,
+because a reverse geocode says "Frederiksberg" when you were in one specific hedge; and notes,
+because a field guide has margins for a reason. Deliberately *not* the determination, which
+already has three routes of its own, each keeping what the model said alongside your answer.
+
+**The coordinates are not editable, on purpose.** A typed place name is a label you chose; a
+latitude is a claim about where you were. Making the second hand-editable turns the one field
+that now carries its provenance (§46) back into one that does not.
+
+Delete removes the row immediately and the photographs only when the undo snackbar goes —
+reversible while the offer is on screen, and files in the app's own directory only, because the
+camera roll is not ours to tidy.
+
+**One bug from §46 caught here.** `Record.locationSource` was added to the model and rendered on
+the record sheet, but never added to `RecordStore.Stored`, so it was dropped on every save and
+every record read back as "provenance unknown". The field that exists to stop the app quietly
+losing where a coordinate came from was quietly losing where a coordinate came from. Found by
+reading the store while adding `notes` beside it — which is the argument for keeping the
+serialised shape in one small file that a person can read top to bottom.
+
+---
+
 ## Open questions
 
 1. **Inference backend.** Accept the CPU-EP-first proposal in §1 above, or hold NNAPI as the

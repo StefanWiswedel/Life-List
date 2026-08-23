@@ -25,6 +25,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.AddAPhoto
+import androidx.compose.material.icons.outlined.EditNote
 import androidx.compose.material.icons.outlined.Place
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.UnfoldLess
@@ -89,6 +90,8 @@ fun RecordSheet(
     onAddPhoto: () -> Unit,
     onRefine: (Int) -> Unit,
     onCorrect: (Int) -> Unit,
+    onEdit: (Record) -> Unit,
+    onDelete: () -> Unit,
     suggestion: Suggestion? = null,
     onUseSuggestion: () -> Unit = {},
     onDismissSuggestion: () -> Unit = {},
@@ -141,6 +144,15 @@ fun RecordSheet(
                 onPick = { mode = Mode.DETAILS; onCorrect(it.taxonId) },
             )
 
+            // The three facts nothing else can fix: when, where, and what you want to
+            // remember. Not the determination — that has its own three routes.
+            Mode.EDIT -> RecordEditContent(
+                record = record,
+                onSave = { mode = Mode.DETAILS; onEdit(it) },
+                onDelete = onDelete,
+                onBack = { mode = Mode.DETAILS },
+            )
+
             Mode.DETAILS -> Details(
                 taxonomy = taxonomy,
                 record = record,
@@ -153,12 +165,13 @@ fun RecordSheet(
                 onSettle = { mode = Mode.SETTLE },
                 onCorrect = { mode = Mode.CORRECT },
                 onBroaden = { mode = Mode.BROADER },
+                onEdit = { mode = Mode.EDIT },
             )
         }
     }
 }
 
-private enum class Mode { DETAILS, SETTLE, CORRECT, BROADER }
+private enum class Mode { DETAILS, SETTLE, CORRECT, BROADER, EDIT }
 
 @Composable
 private fun Details(
@@ -173,6 +186,7 @@ private fun Details(
     onSettle: () -> Unit,
     onCorrect: () -> Unit,
     onBroaden: () -> Unit,
+    onEdit: () -> Unit,
 ) {
     val context = LocalContext.current
     val node = taxonomy.nodeOrNull(record.taxonId)
@@ -292,6 +306,27 @@ private fun Details(
                     Text("Keep it broader")
                 }
             }
+        }
+        Spacer(Modifier.height(2.dp))
+        TextButton(onClick = onEdit) {
+            Icon(Icons.Outlined.EditNote, contentDescription = null, Modifier.size(18.dp))
+            Spacer(Modifier.width(7.dp))
+            Text("Edit date, place or notes")
+        }
+
+        record.notes?.takeIf { it.isNotBlank() }?.let { written ->
+            Spacer(Modifier.height(20.dp))
+            Text(
+                written,
+                style = MaterialTheme.typography.bodyMedium,
+                lineHeight = 21.sp,
+            )
+            Spacer(Modifier.height(4.dp))
+            Text(
+                "Your note",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.outline,
+            )
         }
 
         article?.let {

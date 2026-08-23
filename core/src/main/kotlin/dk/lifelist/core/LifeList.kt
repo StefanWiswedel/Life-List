@@ -59,6 +59,14 @@ data class Record(
      * that looks like evidence and is not is worse than no coordinate at all.
      */
     val locationSource: LocationSource? = null,
+    /**
+     * Whatever you want to remember that the photograph does not show.
+     *
+     * "On umbellifers by the stream", "second one this week", "cold, barely moving". A field
+     * guide's margin. Never shown to the model and never part of a determination — this is the
+     * user's account of the sighting, and nothing in the app may rewrite it.
+     */
+    val notes: String? = null,
 ) {
     /** The photograph that stands for this record. */
     val photoPath: String? get() = photoPaths.firstOrNull()
