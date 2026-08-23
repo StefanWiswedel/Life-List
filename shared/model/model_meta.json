@@ -1,9 +1,9 @@
 {
   "spec_version": 1,
-  "model_version": "2026-08-18-full",
+  "model_version": "2026-08-22",
   "embedding_dim": 512,
-  "n_taxa": 2294,
-  "temperature": 0.7314806548776696,
+  "n_taxa": 3482,
+  "temperature": 0.7586145836785825,
   "fusion_mode": "embedding",
   "default_threshold": 0.7,
   "backbone": {
@@ -22,11 +22,11 @@
       0.27577711
     ]
   },
-  "trained_at": "2026-08-18",
+  "trained_at": "2026-08-22",
   "max_images": 5,
+  "min_observations": 20,
   "trained_on": {
-    "shards": 84,
-    "of": 84,
-    "photos": 325773
+    "photos": 400753,
+    "test": 40595
   }
 }
