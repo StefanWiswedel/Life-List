@@ -12,8 +12,16 @@ we are licensed to redistribute. See `reference.py` for why that beats anything 
 
 The GBIF↔iNaturalist mapping is the awkward part. The two id spaces are unrelated, and the
 first build had to recover it by joining the existing index against the 334k-row photo manifest
-on `photo_id`. That join is supported here with `--manifest`, but the mapping is written into
-the index afterwards, so every later rebuild reads it straight back.
+on `photo_id`. That join is still supported with `--manifest`, and the mapping is written into
+the index, so a rebuild reads it straight back.
+
+**Reading it back is not enough when the model grows**, and that was a bug worth catching before
+it shipped: the pairs came only from the existing index, so a rebuild after the ≥20 retrain
+would have re-fetched the same 2,294 taxa and produced an index still covering 2,294 — every one
+of the 1,188 new species identifying correctly and then showing a blank where the comparison
+photograph goes. `--bridge` is the fix and is now the default source: `taxon_bridge.json`
+already holds the crossing for every taxon in the model (§42), which is exactly what this needs.
+The taxonomy decides which of them are leaves worth a photograph.
 """
 
 from __future__ import annotations
@@ -25,7 +33,7 @@ from pathlib import Path
 from typing import Any
 
 from ..reference import build_index, summarise
-from ._common import LOG, setup_logging
+from ._common import LOG, setup_logging, shared_model
 
 API = "https://api.inaturalist.org/v1/taxa"
 USER_AGENT = "LifeList/0.8 (https://github.com/StefanWiswedel/Life-List)"
@@ -46,6 +54,18 @@ def build_parser() -> argparse.ArgumentParser:
              "GBIF->iNaturalist mapping",
     )
     parser.add_argument(
+        "--bridge",
+        type=Path,
+        default=shared_model("taxon_bridge.json"),
+        help="taxon_bridge.json — the GBIF<->iNaturalist crossing for every taxon in the model",
+    )
+    parser.add_argument(
+        "--taxonomy",
+        type=Path,
+        default=shared_model("taxonomy.json"),
+        help="which taxa are leaves, and so want a photograph",
+    )
+    parser.add_argument(
         "--manifest",
         type=Path,
         default=None,
@@ -59,8 +79,33 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
+def pairs_from_bridge(bridge: Path, taxonomy: Path) -> list[tuple[int, int]]:
+    """(gbif_id, inat_id) for every leaf in the shipped taxonomy.
+
+    Signed, not absolute: an indeterminate leaf is `-1036775`, the same negative id the
+    taxonomy and the app use, and its photograph is the genus's. Taking `abs` here would file
+    "some *Carabus*" under the *Carabus* genus node, which is not a leaf and is not what the
+    result screen looks up.
+    """
+    mapping = {
+        int(inat): int(gbif)
+        for inat, gbif in json.loads(bridge.read_text(encoding="utf-8"))["mapping"].items()
+    }
+    leaves = {
+        int(node["taxon_id"])
+        for node in json.loads(taxonomy.read_text(encoding="utf-8"))
+        if node.get("leaf_index") is not None
+    }
+    pairs = sorted(
+        ((gbif, inat) for inat, gbif in mapping.items() if gbif in leaves),
+        key=lambda pair: pair[0],
+    )
+    LOG.info("%d of %d leaves have an iNaturalist taxon behind them", len(pairs), len(leaves))
+    return pairs
+
+
 def load_pairs(previous: list[dict[str, Any]], manifest: Path | None) -> list[tuple[int, int]]:
-    """(gbif_id, inat_id) for every taxon we ship a photo for."""
+    """(gbif_id, inat_id) for every taxon already in the index. Superseded by the bridge."""
     known = [
         (int(e["taxon_id"]), int(e["inat_taxon_id"]))
         for e in previous
@@ -122,7 +167,14 @@ def main(argv: list[str] | None = None) -> int:
     previous = json.loads(args.previous.read_text(encoding="utf-8"))
     fallbacks = {int(e["taxon_id"]): e for e in previous}
 
-    pairs = load_pairs(previous, args.manifest)
+    if args.bridge.exists() and args.taxonomy.exists():
+        pairs = pairs_from_bridge(args.bridge, args.taxonomy)
+    else:
+        LOG.warning(
+            "no %s — falling back to the taxa already in the index, which cannot grow",
+            args.bridge,
+        )
+        pairs = load_pairs(previous, args.manifest)
     if args.limit:
         pairs = pairs[: args.limit]
 

@@ -38,6 +38,35 @@ ALLOWED_GRADLE_TASKS = frozenset(
     {":core:test", ":app:assembleDebug", ":app:assembleRelease", "tasks"}
 )
 
+# The long-running pipeline stages, as named verbs with fixed argument vectors.
+#
+# Same rule as everything else here: the caller picks a name from this dict, never a command.
+# `train` is absent on purpose — it takes an hour and writes the shipped head, so it stays a
+# thing a person starts deliberately. Paths are relative to `training/`, which is the cwd
+# these run in.
+PIPELINE_STAGES: dict[str, list[str]] = {
+    # Rebuild the reference-photo index for every leaf in the current taxonomy. Two minutes
+    # of iNaturalist API at their asked-for one request a second.
+    "reference-index": [
+        "-m", "lifelist_train.cli.reference_index",
+        "--bridge", "../shared/model/taxon_bridge.json",
+        "--taxonomy", "../shared/model/taxonomy.json",
+        "--out", "../shared/model/reference_photos.json",
+        "-v",
+    ],
+    # Resumable and incremental: only titles that are neither cached nor known-absent.
+    "wikipedia": ["-m", "lifelist_train.cli.wikipedia", "-v"],
+    # The 350 MB ONNX. CI does this on every tag, so running it here is for checking that it
+    # still works before spending a release on finding out that it does not.
+    "export": [
+        "-m", "lifelist_train.cli.export",
+        "--head", "../shared/model/head.npz",
+        "--meta", "../shared/model/model_meta.json",
+        "--out", "../app/src/main/assets/lifelist.onnx",
+        "-v",
+    ],
+}
+
 PATCH_NAME = re.compile(r"^[A-Za-z0-9._-]+\.patch$")
 MAX_OUTPUT = 20_000
 TIMEOUT_SECONDS = 1800
@@ -191,6 +220,19 @@ def build_server():  # pragma: no cover — wiring, exercised by running it
         """Run one of a fixed set of Gradle tasks."""
         wrapper = "gradlew.bat" if os.name == "nt" else "./gradlew"
         return start(f"gradle {task}", [wrapper, validated_gradle_task(task), "--no-daemon"])
+
+    @mcp.tool()
+    def stage(name: str) -> str:
+        """Run one named pipeline stage: reference-index, wikipedia or export.
+
+        Not a shell and not a command: `name` selects a fixed argument vector. Training is
+        deliberately not on the list — an hour-long run that writes the shipped head is
+        something a person should start on purpose.
+        """
+        argv = PIPELINE_STAGES.get(name)
+        if argv is None:
+            raise Refused(f"{name!r} is not a stage; known: {sorted(PIPELINE_STAGES)}")
+        return start(f"stage {name}", [sys.executable, *argv], cwd=REPO / "training")
 
     @mcp.tool()
     def pytest_run() -> str:

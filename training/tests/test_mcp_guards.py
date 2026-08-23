@@ -142,3 +142,23 @@ def test_a_command_that_cannot_start_reports_why_instead_of_hanging():
         mcp_module.FAST_ENOUGH_SECONDS = original
 
     assert "failed to run" in out
+
+
+def test_a_stage_name_is_chosen_from_a_list_never_taken_verbatim():
+    """The whole point of this server: names, not commands."""
+    import sys
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "tools"))
+    import lifelist_mcp
+
+    assert set(lifelist_mcp.PIPELINE_STAGES) == {"reference-index", "wikipedia", "export"}
+    for argv in lifelist_mcp.PIPELINE_STAGES.values():
+        assert argv[0] == "-m", "every stage runs a module, not a script path or a shell string"
+
+
+def test_training_is_not_a_stage_anything_can_start():
+    """An hour-long run that writes the shipped head stays a deliberate act."""
+    import sys
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "tools"))
+    import lifelist_mcp
+
+    assert not any("train" in name for name in lifelist_mcp.PIPELINE_STAGES)

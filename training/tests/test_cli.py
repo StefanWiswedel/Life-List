@@ -346,3 +346,47 @@ def test_shared_model_is_found_from_the_package_not_the_cwd(tmp_path, monkeypatc
     assert found.is_absolute()
     assert found.parent.name == "model" and found.parent.parent.name == "shared"
     assert found.name == "taxon_bridge.json"
+
+
+def test_reference_pairs_come_from_the_bridge_so_the_index_can_grow(tmp_path):
+    """The bug this guards: an index that can only ever rebuild the taxa it already had.
+
+    Pairs used to be read out of the previous index, so a rebuild after a retrain re-fetched
+    the same taxa and every newly-trained species shipped with no reference photograph — and
+    with nothing in the output to say so.
+    """
+    import json
+
+    from lifelist_train.cli.reference_index import pairs_from_bridge
+
+    bridge = tmp_path / "bridge.json"
+    bridge.write_text(json.dumps({
+        "mapping": {"6930": 9761484, "6937": 8214667, "50000": -1036775, "1": 999},
+    }))
+    taxonomy = tmp_path / "taxonomy.json"
+    taxonomy.write_text(json.dumps([
+        {"taxon_id": 9761484, "leaf_index": 0},
+        {"taxon_id": 8214667, "leaf_index": 1},
+        {"taxon_id": -1036775, "leaf_index": 2},
+        # A parent, not a leaf: it has children and wants no photograph of its own.
+        {"taxon_id": 1036775, "leaf_index": None},
+    ]))
+
+    pairs = pairs_from_bridge(bridge, taxonomy)
+
+    # 999 is in the bridge but not in this model, so it is not asked for.
+    assert pairs == [(-1036775, 50000), (8214667, 6937), (9761484, 6930)]
+
+
+def test_an_indeterminate_leaf_keeps_its_negative_id(tmp_path):
+    """`abs()` here would file "some Carabus" under the genus node, which is not a leaf."""
+    import json
+
+    from lifelist_train.cli.reference_index import pairs_from_bridge
+
+    bridge = tmp_path / "b.json"
+    bridge.write_text(json.dumps({"mapping": {"50000": -1036775}}))
+    taxonomy = tmp_path / "t.json"
+    taxonomy.write_text(json.dumps([{"taxon_id": -1036775, "leaf_index": 0}]))
+
+    assert pairs_from_bridge(bridge, taxonomy) == [(-1036775, 50000)]

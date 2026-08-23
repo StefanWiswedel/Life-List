@@ -1852,6 +1852,44 @@ serialised shape in one small file that a person can read top to bottom.
 
 ---
 
+## 49. The reference index could not grow — 23 Aug 2026
+
+The ≥20 head was trained: 3,482 leaves, temperature 0.7586, 3,096 nodes carrying a vernacular,
+and the numbers reproduce the comparison exactly. Before shipping it, the three stages that
+still had to run were read rather than trusted. Two were fine. One would have shipped a
+silent hole.
+
+**`lifelist-reference-index` could only ever rebuild the taxa it already had.** Its pairs came
+from the previous index — that was the point, since the GBIF↔iNaturalist crossing is recorded
+there so a rebuild never has to reconstruct it. But it means a rebuild after a retrain fetches
+exactly the 2,294 taxa the old index knew about and writes an index still covering 2,294. Every
+one of the 1,188 new species would identify correctly and then show a blank where the
+comparison photograph goes, with nothing in the run's output to say anything was missing. The
+count would have gone *up* on the fallback line and looked healthy.
+
+The fix was already sitting in the repo: `taxon_bridge.json` holds the crossing for all 3,536
+taxa (§42), which is precisely what this needs. `--bridge` is now the default source and the
+taxonomy decides which of them are leaves. Signed ids, not absolute — an indeterminate leaf is
+`-1036775`, and taking `abs` would file "some *Carabus*" under the genus node, which is not a
+leaf and is not what the result screen looks up. Two tests pin both.
+
+**`lifelist-wikipedia` was already incremental** and needed nothing: it plans titles from the
+taxonomy and skips anything cached or known-absent, so it fetches the new taxa and no others.
+That is §31's resume cache doing the job it was built for.
+
+**`lifelist-export` is size-agnostic** — it reads the class count out of `head.npz` and stamps
+the meta with it — and, more usefully, **CI already runs it.** The release workflow exports the
+ONNX, copies the taxonomy, meta and Wikipedia into assets, and fetches the reference
+photographs, all on a tag. So the local work is the two index rebuilds and a commit; the 350 MB
+artefact is not something to build by hand at all.
+
+**The MCP server grew one verb.** `stage(name)` runs `reference-index`, `wikipedia` or `export`
+from a fixed dict of argument vectors — a name, never a command, which is the rule the whole
+file exists to keep. Training is deliberately absent: an hour-long run that writes the shipped
+head should be something a person starts on purpose.
+
+---
+
 ## Open questions
 
 1. **Inference backend.** Accept the CPU-EP-first proposal in §1 above, or hold NNAPI as the
