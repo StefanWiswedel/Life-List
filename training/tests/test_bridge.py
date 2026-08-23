@@ -228,9 +228,19 @@ def test_without_records_the_old_narrow_answer_is_kept():
 
 
 def test_the_document_ships_the_ancestors_so_their_names_survive():
-    doc = document({6930: 9761484}, [], RECORDS)
+    # The weak version of this test passed while the bug was live: it allowed an empty list.
+    # A record for the family has to be *present* for its common name to reach the app.
+    records = dict(RECORDS)
+    records[2986] = {
+        "scientific_name": "Anatidae", "rank": "family", "status": "ACCEPTED",
+        "lineage": {"class": 212}, "lineage_names": {"class": "Aves"},
+        "vernacular_en": "Ducks, geese and swans", "vernacular_da": None,
+    }
+    doc = document({6930: 9761484}, [], records)
 
-    assert doc["taxa"] == [] or {t["key"] for t in doc["taxa"]} >= {9761484}
+    shipped = {t["key"]: t for t in doc["taxa"]}
+    assert 2986 in shipped, "the family, or every higher rank ships with no common name"
+    assert shipped[2986]["vernacular_en"] == "Ducks, geese and swans"
 
 
 def test_restricting_keeps_the_ancestors_of_what_survives():

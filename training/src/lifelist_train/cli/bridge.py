@@ -128,40 +128,52 @@ def read_joined(path: Path) -> Any:
 
 
 def fetch_records(keys: list[int]) -> dict[int, dict[str, Any]]:
-    """The handful of GBIF records stage 1 never fetched.
+    """The GBIF records stage 1 never fetched, with their common names.
 
-    Almost always genera: a genus is present in the dump as somebody's ancestor but has no
-    record of its own, and a genus with an indeterminate leaf needs one.
+    Stage 1 fetched **species only** — `cache/taxa_raw.json` is 19,992 records and every one of
+    them is rank `species`. So every family, order and class in the taxonomy exists on disk
+    only as a key and a name inside somebody else's lineage, and a lineage carries no
+    vernacular. That is why the >=20 taxonomy shipped with 0 of 691 families named (section 51),
+    and why adding the ancestors to `needed_keys` alone changed nothing: they were added and
+    then dropped again, because there was no record to ship.
+
+    Two requests per key, the same pair stage 1 makes: the backbone record, then the vernacular
+    names. Around 3,200 keys, so this is the slow part of a bridge build — twenty minutes or so
+    — and it is why a bridge build is a rare, deliberate act.
     """
-    import time
+    from ..gbif import GbifClient, parse_backbone_record, pick_vernacular
 
-    import requests
-
-    from ..gbif import parse_backbone_record
-
-    session = requests.Session()
+    client = GbifClient()
     out: dict[int, dict[str, Any]] = {}
-    for key in keys:
-        for attempt in range(4):
-            try:
-                response = session.get(f"{GBIF_SPECIES}/{key}", timeout=30)
-                response.raise_for_status()
-                taxon = parse_backbone_record(response.json())
-                if taxon is not None:
-                    out[key] = {
-                        "scientific_name": taxon.scientific_name,
-                        "rank": taxon.rank,
-                        "status": taxon.status,
-                        "lineage": taxon.lineage,
-                        "lineage_names": taxon.lineage_names,
-                        "vernacular_en": None,
-                        "vernacular_da": None,
-                    }
-                break
-            except Exception as exc:  # noqa: BLE001 — one missing genus is not a failed build
-                LOG.debug("key %s attempt %d: %s", key, attempt, exc)
-                time.sleep(2)
-        time.sleep(0.15)
+    for index, key in enumerate(keys, start=1):
+        try:
+            taxon = parse_backbone_record(client.species(key))
+        except Exception as exc:  # noqa: BLE001 — one missing ancestor is not a failed build
+            LOG.debug("species %s failed: %s", key, exc)
+            continue
+        if taxon is None:
+            continue
+
+        vernacular_en = vernacular_da = None
+        try:
+            names = client.vernacular_names(key)
+            vernacular_en = pick_vernacular(names, "eng")
+            vernacular_da = pick_vernacular(names, "dan")
+        except Exception as exc:  # noqa: BLE001 — a nameless family still beats no family
+            LOG.debug("vernaculars for %s failed: %s", key, exc)
+
+        out[key] = {
+            "scientific_name": taxon.scientific_name,
+            "rank": taxon.rank,
+            "status": taxon.status,
+            "lineage": taxon.lineage,
+            "lineage_names": taxon.lineage_names,
+            "vernacular_en": vernacular_en,
+            "vernacular_da": vernacular_da,
+        }
+        if index % 250 == 0:
+            named = sum(1 for record in out.values() if record["vernacular_en"])
+            LOG.info("  %d/%d fetched, %d with an English name", index, len(keys), named)
     return out
 
 
@@ -200,11 +212,16 @@ def main(argv: list[str] | None = None) -> int:
     mapping, parents, report = build_mapping(rows, index, genus_keys)
     LOG.info("%s", report.summary())
 
-    missing = sorted(needed_keys(mapping, parents) - set(records))
+    # Ancestors included: every family, order and class the taxonomy will show a name for.
+    missing = sorted(needed_keys(mapping, parents, records) - set(records))
     if missing and not args.no_fetch:
-        LOG.info("fetching %d GBIF records stage 1 never had (mostly genera)", len(missing))
+        LOG.info(
+            "fetching %d GBIF records stage 1 never had — genera, and every rank above "
+            "species, which stage 1 did not collect at all",
+            len(missing),
+        )
         records.update(fetch_records(missing))
-    still = sorted(needed_keys(mapping, parents) - set(records))
+    still = sorted(needed_keys(mapping, parents, records) - set(records))
     if still:
         LOG.warning("%d keys still have no record and will be dropped: %s", len(still), still[:8])
 
@@ -213,10 +230,17 @@ def main(argv: list[str] | None = None) -> int:
     temporary = args.out.with_suffix(args.out.suffix + ".tmp")
     temporary.write_text(json.dumps(doc, ensure_ascii=False), encoding="utf-8")
     temporary.replace(args.out)
+    named = sum(1 for taxon in doc["taxa"] if taxon.get("vernacular_en"))
+    above = sum(1 for taxon in doc["taxa"] if taxon["rank"] not in ("species", "subspecies"))
     LOG.info(
-        "wrote %s — %d iNaturalist taxa, %d GBIF records, %d genera with an indeterminate leaf",
-        args.out, len(doc["mapping"]), len(doc["taxa"]), len(doc["indeterminate_parents"]),
+        "wrote %s — %d iNaturalist taxa, %d GBIF records (%d above species), %d with an "
+        "English name, %d genera with an indeterminate leaf",
+        args.out, len(doc["mapping"]), len(doc["taxa"]), above, named,
+        len(doc["indeterminate_parents"]),
     )
+    if above == 0:
+        LOG.error("no records above species — every family would ship unnamed, see section 51")
+        return 1
     return 0
 
 

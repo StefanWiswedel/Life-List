@@ -1967,6 +1967,23 @@ covered are the well-known ones somebody had already tidied. Only the first char
 touched: title-casing the rest turns "St John's-wort" into "St John'S-Wort", and lowering it
 ruins "Daubenton's bat".
 
+### The fix did not work, and the reason is worse than the bug
+
+Rebuilding the bridge with the ancestors added produced **exactly the same 3,482 records as
+before**. The ancestors were being added to `needed_keys` and then dropped again one line later
+by `if k in records`, because **stage 1 fetched species and nothing else**: `taxa_raw.json` is
+19,992 records and every single one is rank `species`. There was never a family record on disk
+to ship.
+
+So the higher ranks have to be *fetched* — two GBIF requests each, the same pair stage 1 makes
+for a species, for about 3,200 keys. Twenty minutes, which is the price of a bridge build now
+and the reason it stays a rare deliberate act.
+
+**A test passed through all of this.** `test_the_document_ships_the_ancestors` asserted
+`doc["taxa"] == [] or {keys} >= {leaf}` — an empty list satisfied it, and the fixture's
+ancestors were not in its records, so it never had the chance to fail. Written to pass rather
+than to catch. It now builds a family record, ships it, and reads its common name back.
+
 ### Fixing labels without refitting an hour-long head
 
 None of this changes what the model *learned* — only what the app reads out. `lifelist-train
