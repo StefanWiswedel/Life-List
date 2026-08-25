@@ -212,12 +212,16 @@ fun CaptureScreen(
                 PermissionPanel(onAllow = { permission.launchPermissionRequest() })
             }
 
-            // A frame to aim inside. Not a crop — the model centre-crops to a square, and this
-            // is that square, so what you line up is what it actually sees.
+            // A frame to aim inside, and it used to be a lie: it was drawn at two-thirds of
+            // the width while the model centre-cropped to the *full* width, so anything lined
+            // up inside it was seen at two-thirds the scale the photographer intended. It is
+            // now the square the model actually starts from. Filling it still helps — the
+            // identifier zooms in when the subject is small (§54), but it cannot invent detail
+            // that was never in the pixels.
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Box(
                     Modifier
-                        .fillMaxWidth(0.66f)
+                        .fillMaxWidth(1f)
                         .aspectRatio(1f)
                         .border(1.5.dp, Color.White.copy(alpha = 0.5f), RoundedCornerShape(26.dp))
                 )

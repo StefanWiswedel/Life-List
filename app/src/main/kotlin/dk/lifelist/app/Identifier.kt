@@ -106,8 +106,8 @@ class Identifier(
      * scale it to 224 gives the same pixels as scaling the short side to 224 and then
      * cropping 224. Integer arithmetic, so there is nothing here to drift.
      */
-    fun squarePixels(bitmap: Bitmap): Triple<ByteBuffer, Int, Int> {
-        val side = min(bitmap.width, bitmap.height)
+    fun squarePixels(bitmap: Bitmap, fraction: Float = 1f): Triple<ByteBuffer, Int, Int> {
+        val side = (min(bitmap.width, bitmap.height) * fraction).toInt().coerceAtLeast(1)
         val left = (bitmap.width - side) / 2
         val top = (bitmap.height - side) / 2
 
@@ -124,9 +124,9 @@ class Identifier(
         return Triple(buffer, side, side)
     }
 
-    /** Raw logits for one photo. */
-    fun logits(bitmap: Bitmap): FloatArray {
-        val (buffer, height, width) = squarePixels(bitmap)
+    /** Raw logits for one photo, at one zoom level. */
+    fun logits(bitmap: Bitmap, fraction: Float = 1f): FloatArray {
+        val (buffer, height, width) = squarePixels(bitmap, fraction)
         val shape = longArrayOf(1, height.toLong(), width.toLong(), 3)
         // UINT8 rather than a float tensor: the graph casts, and shipping 3 bytes per pixel
         // instead of 12 keeps a 5-photo batch at 4 MB rather than 16 on a phone.
@@ -163,7 +163,61 @@ class Identifier(
     }
 
     fun identify(bitmap: Bitmap, threshold: Float): RollupResult =
-        Rollup.rollup(taxonomy, probabilities(logits(bitmap)), threshold)
+        Rollup.rollup(taxonomy, identify(listOf(bitmap)), threshold)
+
+    /**
+     * Zoom levels to try, in the order they earn their place.
+     *
+     * The whole frame first, because a photograph where the animal fills the frame is the case
+     * the model was trained on and the one it is best at. Then a third, which is roughly what a
+     * moth on a wall occupies when you photograph it from a comfortable distance. Then a half
+     * and a quarter, which bracket the rest.
+     */
+    private val ZOOMS = floatArrayOf(1f, 0.34f, 0.5f, 0.25f)
+
+    /**
+     * The model runs this many times per identification, at most, however many photos there are.
+     *
+     * Measured at 196 ms an inference on two weak cores (§21), so eight is a shade over 1.5 s
+     * in the worst case and the budget is not binding on a Tensor G4. Photographs share it: one
+     * photo gets four zooms, six photos get one each, which is the right trade — several
+     * photographs of an animal are already several views of it.
+     */
+    private val INFERENCE_BUDGET = 8
+
+    /**
+     * The most confident view of one photograph.
+     *
+     * **This is the fix for the failure that started it: the app was feeding the model a wall.**
+     * `squarePixels` crops to the full width, so a moth 450 px across in a 2160 px frame arrives
+     * at the graph as roughly 45 px of moth in 224 px of paint. Measured over 300 reference
+     * photographs, shrinking the subject to a fifth of the frame took rollup accuracy from 92.3%
+     * to 53.4%, species-level answers from 83.2% to 1.0%, and expected calibration error from
+     * 0.034 to **0.464** — the model was not merely wrong, it was wrong and certain.
+     *
+     * Taking the most confident zoom instead recovers 90.3% accuracy and 79.5% species on those
+     * same shrunken photographs, at ECE 0.029. On photographs that were already well framed it
+     * costs 2.7 points of accuracy and *gains* 4.4 points of depth.
+     *
+     * Picking the most confident view sounds like the reckless choice and the measurement says
+     * otherwise — a crop that misses the animal is not confidently wrong, it is diffusely
+     * unsure, because a blank wall looks like nothing in particular to a model trained on
+     * organisms. Averaging the views was the tempting alternative and it is the one that fails:
+     * it keeps the accuracy and throws away the species, which is the product.
+     */
+    fun bestView(bitmap: Bitmap, zooms: Int): FloatArray {
+        var best: FloatArray? = null
+        var bestConfidence = -1f
+        for (i in 0 until zooms.coerceIn(1, ZOOMS.size)) {
+            val candidate = logits(bitmap, ZOOMS[i])
+            val confidence = probabilities(candidate).max()
+            if (confidence > bestConfidence) {
+                bestConfidence = confidence
+                best = candidate
+            }
+        }
+        return best!!
+    }
 
     /**
      * Several photos of one individual, fused into one set of probabilities.
@@ -185,9 +239,10 @@ class Identifier(
      */
     fun identify(bitmaps: List<Bitmap>): FloatArray {
         require(bitmaps.isNotEmpty()) { "nothing to identify" }
-        val summed = logits(bitmaps.first()).copyOf()
+        val zooms = (INFERENCE_BUDGET / bitmaps.size).coerceIn(1, ZOOMS.size)
+        val summed = bestView(bitmaps.first(), zooms).copyOf()
         for (bitmap in bitmaps.drop(1)) {
-            val next = logits(bitmap)
+            val next = bestView(bitmap, zooms)
             require(next.size == summed.size) { "the model changed shape mid-identification" }
             for (i in summed.indices) summed[i] += next[i]
         }

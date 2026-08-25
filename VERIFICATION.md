@@ -2066,6 +2066,70 @@ open question there, and the app is now honest about the answer either way: the 
 
 ---
 
+## 54. The app was feeding the model a wall — 24 Aug 2026
+
+A moth on a white door frame. Our app: *Gymnoscelis rufifasciata*, Double-striped Pug, 75%.
+Seek, ObsIdentify and Arter all said *Pelurga comitata*, Dark Spinach — ObsIdentify at 100%.
+
+**Dark Spinach is in the model.** Leaf 2473, common name already attached. So this was never
+the coverage problem the ≥20 retrain was meant to fix, and the retrain could never have fixed
+it. Running the shipped head on the photograph directly:
+
+| input | top-1 | Dark Spinach |
+|---|---|---|
+| the whole photograph, as the app sends it | Double-striped Pug, 0.726 | rank 12, p=0.003 |
+| cropped to the moth | **Dark Spinach, 0.954** | rank 1 |
+
+Same weights, same image, opposite answers. The photograph is 2160×3840 and the moth is about
+450 px across. `Identifier.squarePixels` crops to a square of side `min(w, h)` — the full 2160
+— and the graph scales that to 224. **The model was being shown a 45-pixel moth in 224 pixels of
+paint.** At that size a Dark Spinach and a Double-striped Pug are both brown smudges with wavy
+lines, and it picked the commoner one.
+
+### Measured, because one moth cannot choose a policy
+
+300 reference photographs — known species, subject filling the frame — scored twice: as they
+come, and pasted at a fifth of the frame width onto a blank wall, which is what a phone
+photograph of a moth actually is. Threshold 0.70.
+
+| policy | subject fills frame | | | subject small in frame | | |
+|---|---|---|---|---|---|---|
+| | correct | species | ECE | correct | species | ECE |
+| single view (what shipped) | 92.3% | 83.2% | 0.034 | **53.4%** | **1.0%** | **0.464** |
+| most confident zoom | 89.6% | 87.6% | 0.044 | **90.3%** | **79.5%** | **0.029** |
+| mean of probabilities | 92.6% | 23.2% | 0.182 | 93.6% | 22.5% | 0.255 |
+| mean of logits (§3.2) | 93.6% | 53.7% | 0.058 | 93.0% | 48.0% | 0.107 |
+| mean of logits, zoomed only | 89.9% | 30.2% | 0.105 | 93.0% | 61.1% | 0.046 |
+
+The first row is the bug at scale. When the subject is small the app was **right about half the
+time, reached species once in a hundred, and had an ECE of 0.464** — not merely wrong but wrong
+and certain, which is the one failure this project exists to avoid.
+
+**Picking the most confident zoom sounds reckless and the measurement says otherwise.** A crop
+that misses the animal is not confidently wrong; it is diffusely unsure, because blank wall
+looks like nothing in particular to a model trained on organisms. So the confident view is
+almost always the one that found the animal. It recovers 90.3% accuracy and 79.5% species on
+shrunken photographs at ECE 0.029 — *better calibrated than the shipped path is on well-framed
+ones* — and on well-framed photographs it costs 2.7 points of accuracy while **gaining** 4.4
+points of depth.
+
+Averaging was the tempting alternative and it is the one that fails. It holds accuracy up and
+throws the species away — 23% and 48% species-level — which is the product.
+
+### What shipped
+
+Four zooms — the whole frame, a third, a half, a quarter — with a budget of eight inferences per
+identification, so one photograph gets four zooms and six photographs get one each. Several
+photographs of an animal are already several views of it, which is where the budget should go.
+
+**The framing guide was lying, and that is fixed too.** It was drawn at two-thirds of the frame
+width while the model cropped to the full width, so anything carefully lined up inside it was
+seen at two-thirds the intended scale. The guide now matches the square the model starts from.
+
+The user was clear that a manual crop step is not wanted, and this needed none.
+
+---
+
 ## Open questions
 
 1. **Inference backend.** Accept the CPU-EP-first proposal in §1 above, or hold NNAPI as the

@@ -43,7 +43,7 @@ When trading off, trade in favour of a record being keepable at the rank the evi
 | screens | rendered on the JVM by Paparazzi — `./gradlew :app:recordPaparazziDebug` (§33) |
 | records | editable: settle the species later, add photos, place names, camera roll (§34) |
 | common names | **fixed 18 Aug** — the taxonomy asset shipped with every vernacular null (§28) |
-| multi-photo | fused on device via §3.2; the system picker takes up to 6 at once (§29, §53) |
+| multi-photo | fused via §3.2; **four zooms per photo, most confident wins** (§29, §53, §54) |
 | species info | 6,302 of 6,705 nodes carry a bundled Wikipedia intro, 3.7 MB (§31, §50) |
 | reference photos | iNaturalist's curated pick, 3,462 of 3,482 leaves, at 500 px (§37, §50) |
 | corrections | rename to any taxon, or retreat to a rank you trust; the model's answer is kept (§38, §40) |
