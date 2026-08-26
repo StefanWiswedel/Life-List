@@ -68,6 +68,8 @@ PIPELINE_STAGES: dict[str, list[str]] = {
         "--taxonomy", "../shared/model/taxonomy.json",
         "--out", "../shared/model/reference_photos.json",
     ],
+    # 13,899 assessments over 695 pages, about twelve minutes at the API's pace.
+    "redlist": ["-m", "lifelist_train.cli.redlist", "-v"],
     # Resumable and incremental: only titles that are neither cached nor known-absent.
     "wikipedia": ["-m", "lifelist_train.cli.wikipedia"],
     # The 350 MB ONNX. CI does this on every tag, so running it here is for checking that it
