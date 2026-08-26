@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dk.lifelist.core.LifeList
 import dk.lifelist.core.Presentation
+import dk.lifelist.core.Families
 import dk.lifelist.core.Record
 import dk.lifelist.core.Taxonomy
 import java.text.SimpleDateFormat
@@ -57,10 +58,16 @@ fun GroupScreen(
     records: List<Record>,
     onOpenRecord: (Record) -> Unit,
     modifier: Modifier = Modifier,
+    danishTotals: Map<String, Int> = emptyMap(),
 ) {
     val sorted = remember(records) { records.sortedByDescending { it.observedAt } }
     val species = remember(records) {
         records.count { taxonomy.nodeOrNull(it.taxonId)?.isLeaf == true && it.taxonId > 0 }
+    }
+    // The families you have something from, fullest first. This is the part of a life list
+    // that pulls you back: a group is a pile of sightings, a family is a thing to finish.
+    val families = remember(records, danishTotals) {
+        runCatching { Families.seenFamilies(taxonomy, records, danishTotals) }.getOrDefault(emptyList())
     }
 
     LazyColumn(modifier.fillMaxSize(), contentPadding = PaddingValues(bottom = 120.dp)) {
@@ -79,6 +86,26 @@ fun GroupScreen(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
+        }
+
+        if (families.isNotEmpty()) {
+            item {
+                Column(Modifier.padding(horizontal = 20.dp).padding(bottom = 6.dp)) {
+                    Text(
+                        "Families",
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
+            items(families, key = { it.familyId }) { progress ->
+                FamilyProgressRow(
+                    progress = progress,
+                    compact = true,
+                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 7.dp),
+                )
+            }
+            item { Spacer(Modifier.height(18.dp)) }
         }
 
         items(sorted, key = { it.id }) { record ->

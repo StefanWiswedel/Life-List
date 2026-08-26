@@ -60,6 +60,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import dk.lifelist.core.Determiner
+import dk.lifelist.core.Families
 import dk.lifelist.core.LifeList
 import dk.lifelist.core.LocationSource
 import dk.lifelist.core.Presentation
@@ -131,6 +132,7 @@ fun App() {
     val store = remember { RecordStore(context) }
     val references = remember { ReferencePhotos(context) }
     val wikipedia = remember { Wikipedia(context) }
+    val redList = remember { RedList(context) }
     val snackbar = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
@@ -464,6 +466,7 @@ fun App() {
                                 LifeList.groupOf(listTaxonomy, it.taxonId) == group
                             },
                             onOpenRecord = { openRecordId = it.id },
+                            danishTotals = redList.familyTotals,
                         )
                     }
                 }
@@ -588,6 +591,14 @@ fun App() {
             taxonomy = listTaxonomy,
             record = openRecord,
             article = wikipedia.article(openRecord.taxonId),
+            redListStatus = redList.notable(openRecord.taxonId),
+            familyProgress = remember(openRecord.taxonId, records, redList) {
+                runCatching {
+                    Families.progressFor(
+                        listTaxonomy, records, openRecord.taxonId, redList.familyTotals
+                    )
+                }.getOrNull()
+            },
             onOpenPhoto = { path -> viewing = Viewing.Stored(path) },
             onAddPhoto = {
                 addingPhotoTo = openRecord.id

@@ -56,6 +56,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dk.lifelist.core.Determiner
+import dk.lifelist.core.Families
 import dk.lifelist.core.LifeList
 import dk.lifelist.core.LocationSource
 import dk.lifelist.core.Presentation
@@ -92,6 +93,8 @@ fun RecordSheet(
     onCorrect: (Int) -> Unit,
     onEdit: (Record) -> Unit,
     onDelete: () -> Unit,
+    redListStatus: RedList.Status? = null,
+    familyProgress: Families.Progress? = null,
     suggestion: Suggestion? = null,
     onUseSuggestion: () -> Unit = {},
     onDismissSuggestion: () -> Unit = {},
@@ -166,6 +169,8 @@ fun RecordSheet(
                 onCorrect = { mode = Mode.CORRECT },
                 onBroaden = { mode = Mode.BROADER },
                 onEdit = { mode = Mode.EDIT },
+                redListStatus = redListStatus,
+                familyProgress = familyProgress,
             )
         }
     }
@@ -187,6 +192,8 @@ private fun Details(
     onCorrect: () -> Unit,
     onBroaden: () -> Unit,
     onEdit: () -> Unit,
+    redListStatus: RedList.Status? = null,
+    familyProgress: Families.Progress? = null,
 ) {
     val context = LocalContext.current
     val node = taxonomy.nodeOrNull(record.taxonId)
@@ -240,6 +247,16 @@ private fun Details(
                     }
                 }
             }
+        }
+
+        redListStatus?.let { status ->
+            Spacer(Modifier.height(16.dp))
+            RedListBadge(status)
+        }
+
+        familyProgress?.let { progress ->
+            Spacer(Modifier.height(18.dp))
+            FamilyProgressRow(progress)
         }
 
         Spacer(Modifier.height(18.dp))

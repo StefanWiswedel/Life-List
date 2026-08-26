@@ -2130,6 +2130,68 @@ The user was clear that a manual crop step is not wanted, and this needed none.
 
 ---
 
+## 55. "12 of 310 Geometridae" — 24 Aug 2026
+
+A rarity indicator was asked for, and the Red List is the obvious answer and the weakest one:
+it measures extinction risk, not whether a find was good. A Mallard and a Dark Spinach are both
+Least Concern, and one of them you see every day. So the Red List ships as a **badge**, and the
+thing it is actually valuable for is something else entirely.
+
+**It carries a family for each of 13,899 Danish species, which is a denominator.** Until now the
+only number available for "how many of these are there" was our own vocabulary — 147 Geometridae
+— which measures how much training data could be scraped and moves under the reader at every
+retrain. Denmark has 310. That is a fact about the country, and it is the number the app shows.
+
+| family | the model knows | Denmark has |
+|---|---|---|
+| Geometridae | 147 | 310 |
+| Noctuidae | 167 | 377 |
+| Syrphidae | 63 | 298 |
+| Asteraceae | 99 | 333 |
+| Anatidae | 41 | 65 |
+
+Coverage: 2,538 of 3,482 leaves matched by scientific name, 79% of leaves in a family the Red
+List also lists, 128 species worth a badge, and 47 Danish vernaculars for species where ours
+were blank.
+
+### Fixed at family, on purpose
+
+The better-sized denominator comes from walking up until a clade has enough members — family
+53% of the time, order 29%, class 10%. It was rejected: a reader has to work out what level each
+number is at before it means anything, and consistency is worth more than fit. Family is what
+field guides are organised by. Being occasionally awkward — three Canidae — is the smaller cost.
+
+The tiny-family worry mostly dissolved once the denominator came from Denmark rather than from
+us: leaves whose family has one species drop from 9% to 5%, and 55% now sit in a family of
+thirty or more.
+
+### Three decisions that keep the number honest
+
+**`max(Denmark, ours)`, never Denmark alone.** The Red List does not assess every group — it
+lists 19 Plantaginaceae where the model recognises 31. A denominator smaller than the numerator
+is worse than one that undersells the country.
+
+**The sentence changes with the source.** "Geometridae in Denmark" when the total is Denmark's,
+"Geometridae this app can recognise" when it is ours. Not a hedge for its own sake: the second
+number moves when the model is retrained, and a reader who takes it for a fact about Denmark has
+been misled by us.
+
+**Species only, in the numerator.** A record kept at genus — "some *Eupithecia*" — is a real
+record and the whole point of the rollup, but it is not one of the 310, and counting it as one
+would make the numerator a different kind of thing from the denominator. Indeterminate leaves
+carry negative ids and are excluded for the same reason.
+
+### Not IUCN
+
+*"All forms of reposting, and any sub-licensing, reselling, or other forms of redistribution of
+IUCN Red List Data… are strictly prohibited without the prior written permission of IUCN."* An
+offline-first app bundles its data, and bundling is redistribution. The Danish list's terms are
+one sentence — free for anyone to use as they are, not without proper citation — so the citation
+travels inside the artefact rather than in a comment, and the screen that shows a category shows
+where it came from.
+
+---
+
 ## Open questions
 
 1. **Inference backend.** Accept the CPU-EP-first proposal in §1 above, or hold NNAPI as the
