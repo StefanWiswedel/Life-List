@@ -79,9 +79,16 @@ jobs:
           cp shared/model/taxonomy.json shared/model/model_meta.json app/src/main/assets/
           # Committed, not fetched: it is a megabyte of text, and the app is offline-first.
           cp shared/model/wikipedia.json app/src/main/assets/
+          # Optional, and the app draws no rows without it — which is a silent failure, so the
+          # copy is guarded rather than assumed. See VERIFICATION.md section 55.
+          if [ -f shared/model/redlist.json ]; then
+            cp shared/model/redlist.json app/src/main/assets/
+          else
+            echo "::warning::no shared/model/redlist.json — shipping without Red List data"
+          fi
           ls -lh app/src/main/assets/
 
-      # 2,294 CC-licensed photographs by named people. The index is committed; the bytes
+      # 3,462 CC-licensed photographs by named people. The index is committed; the bytes
       # belong to the bucket, and every one carries its photographer into the app.
       - name: Fetch reference photos
         run: |

@@ -2181,6 +2181,15 @@ record and the whole point of the rollup, but it is not one of the 310, and coun
 would make the numerator a different kind of thing from the denominator. Indeterminate leaves
 carry negative ids and are excluded for the same reason.
 
+### Built
+
+13,899 assessments fetched in eight minutes. **2,538 of 3,482 leaves matched (72.9%), 210 worth
+a badge, 47 Danish names gained, 928 families with a Danish total** — 71 KB of artefact.
+
+The release workflow copies it into assets behind an `if`, and warns when it is missing rather
+than failing. The app draws no rows without it, which is the right fallback and a silent one,
+so the build says out loud what it shipped without.
+
 ### Not IUCN
 
 *"All forms of reposting, and any sub-licensing, reselling, or other forms of redistribution of
