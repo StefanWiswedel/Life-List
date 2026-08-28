@@ -118,6 +118,21 @@ class MainActivity : ComponentActivity() {
  */
 private enum class Screen { HOME, GROUP, CAPTURE, THINKING, RESULT }
 
+/**
+ * The location permissions a photograph wants, and does not have yet.
+ *
+ * Both or neither, in one dialog: a second request raised while the first is up is dropped.
+ * Coarse location is for a photograph taken now; `ACCESS_MEDIA_LOCATION` is what stops the
+ * gallery handing over pictures with their coordinates stripped (§46).
+ */
+private fun missingLocationPermissions(context: android.content.Context): Array<String> =
+    buildList {
+        if (!Where.granted(context)) add(Where.PERMISSION)
+        Gallery.MEDIA_LOCATION_PERMISSION?.let {
+            if (!Gallery.canReadPhotoLocation(context)) add(it)
+        }
+    }.toTypedArray()
+
 /** What came back from the camera or the picker, with whatever it knows about itself. */
 data class Shot(
     val bitmap: Bitmap,
@@ -136,14 +151,6 @@ fun App() {
     val snackbar = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
-    // Both location permissions in one request rather than two launchers firing together:
-    // a second dialog raised while the first is up is simply dropped. The media one is here
-    // because without it every photograph chosen from the gallery arrives with its
-    // coordinates stripped — see Gallery.coordinatesOf. Declining either costs a field on the
-    // record, never a sighting.
-    val askWhere = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions()
-    ) { }
 
     var screen by remember { mutableStateOf(Screen.HOME) }
     var group by remember { mutableStateOf<String?>(null) }
@@ -308,6 +315,28 @@ fun App() {
         }
     }
 
+    // Both location permissions in one request rather than two launchers firing together: a
+    // second dialog raised while the first is up is simply dropped. The media one is here
+    // because without it every photograph chosen from the gallery arrives with its coordinates
+    // stripped — see Gallery.coordinatesOf. Declining either costs a field on the record,
+    // never a sighting.
+    //
+    // Declared after `pickForNewRecord` because it finishes by opening it: the gallery button
+    // has to ask *before* the picker rather than on the way into the camera it never visits,
+    // and a dialog the user answers should hand them straight on to what they were doing.
+    var pickAfterPermissions by remember { mutableStateOf(false) }
+
+    val askWhere = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) {
+        if (pickAfterPermissions) {
+            pickAfterPermissions = false
+            pickForNewRecord.launch(
+                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+            )
+        }
+    }
+
     fun startOver() {
         screen = Screen.HOME
         photos = emptyList()
@@ -333,13 +362,8 @@ fun App() {
     // ready to be saved — which was too late for the record that prompted it.
     LaunchedEffect(screen) {
         if (screen != Screen.CAPTURE) return@LaunchedEffect
-        val wanted = buildList {
-            if (!Where.granted(context)) add(Where.PERMISSION)
-            Gallery.MEDIA_LOCATION_PERMISSION?.let {
-                if (!Gallery.canReadPhotoLocation(context)) add(it)
-            }
-        }
-        if (wanted.isNotEmpty()) askWhere.launch(wanted.toTypedArray())
+        val wanted = missingLocationPermissions(context)
+        if (wanted.isNotEmpty()) askWhere.launch(wanted)
     }
 
     Scaffold(
@@ -424,11 +448,21 @@ fun App() {
                         SmallFloatingActionButton(
                             onClick = {
                                 photos = emptyList()
-                                pickForNewRecord.launch(
-                                    PickVisualMediaRequest(
-                                        ActivityResultContracts.PickVisualMedia.ImageOnly
+                                // Ask *before* the picker, not on the way into the camera.
+                                // This button never visits the capture screen, so a photograph
+                                // chosen here used to arrive with its coordinates stripped and
+                                // the record honestly but wrongly said "from your phone" (§56).
+                                val wanted = missingLocationPermissions(context)
+                                if (wanted.isEmpty()) {
+                                    pickForNewRecord.launch(
+                                        PickVisualMediaRequest(
+                                            ActivityResultContracts.PickVisualMedia.ImageOnly
+                                        )
                                     )
-                                )
+                                } else {
+                                    pickAfterPermissions = true
+                                    askWhere.launch(wanted)
+                                }
                             },
                             containerColor = MaterialTheme.colorScheme.surfaceVariant,
                             contentColor = MaterialTheme.colorScheme.onSurfaceVariant,

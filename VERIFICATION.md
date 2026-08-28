@@ -2201,6 +2201,36 @@ where it came from.
 
 ---
 
+## 56. The permission was asked for on a screen the gallery button never visits — 24 Aug 2026
+
+Field report: the location on a record chosen from the gallery reads **"from your phone"**. That
+line exists because of §46, so it did its job — but the cause is not the one it was built to
+expose.
+
+`ACCESS_MEDIA_LOCATION` was requested inside `LaunchedEffect(screen)`, guarded by
+`if (screen != Screen.CAPTURE) return@LaunchedEffect`. The reasoning in §46 was sound: ask while
+the user is already granting the camera. Then §47 added a gallery button to the *home* screen,
+which opens the picker directly and never touches the capture screen. So on that path the
+permission was never requested at all, `setRequireOriginal` was skipped, and every photograph
+arrived with its coordinates stripped.
+
+**Two features that each worked, composed into one that did not.** Neither commit was wrong on
+its own, and nothing in either test would have caught it — the failure only exists in the path
+between them.
+
+The request now happens before the picker rather than on the way into a camera that path never
+opens, and the launcher hands the user straight on to the picker when they answer, so the first
+gallery use is not the one that silently misses out.
+
+**What this does not yet settle.** It is still unknown whether the system photo picker honours
+the permission at all — that was the open question §46 left, and this bug was standing in front
+of it. The record still says which source it used, so the next gallery photograph answers it: if
+it says "from the photo", the picker honours it; if it still says "from your phone" with the
+permission granted, it does not, and the honest options are to read location only from the
+camera path or to stop offering it for gallery photographs.
+
+---
+
 ## Open questions
 
 1. **Inference backend.** Accept the CPU-EP-first proposal in §1 above, or hold NNAPI as the
