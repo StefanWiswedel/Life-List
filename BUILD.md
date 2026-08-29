@@ -431,6 +431,42 @@ when it is not.
 Audio sits at 8 rather than earlier because it depends on the taxonomy spine from 4–5. But its
 *interfaces* are fixed in step 1, so nothing about the earlier steps has to be redone.
 
+### 6A. What is next, and why in this order **[added 24 Aug 2026]**
+
+Steps 1–7 are done and in daily use. This is what 8 and 9 became once the app met the field, and
+the ordering is an argument rather than a list.
+
+**1. Per-group thresholds (§41, §44).** One dial serves very different instruments: birds reach
+91.7% rollup accuracy on 70% top-1 with the best calibration in the set (ECE 0.006), while
+mammals have the worst (0.057) on the fewest examples. Stated confidence is the whole
+differentiator (§18), so a threshold that means something different per group is the most direct
+thing we can fix. Cheap, measurable, and the framing worth reaching for is that the user's dial
+is a *target accuracy* rather than a probability — "I want to be 95% right" is a sentence
+someone can hold an opinion about, and "probability ≥ 0.70" is not.
+
+**2. The backbone comparison.** `bioclip` against `bioclip-vit-b-16-inat-only`, open since §2 of
+this file. It is the only lever on model quality never pulled, and the only change that could
+lift every group at once. Costs a re-embed — 4–6 hours — so it wants to be a deliberate day, not
+a Tuesday.
+
+**3. Seasonality.** Stage 2 already reads `observed_on` from the iNaturalist export and drops it
+at the join. Keeping it gives "mostly recorded May–July; you found this in August", which makes a
+common species interesting on the right date. Nothing else on this list can do that: a count
+cannot, and neither can a Red List category.
+
+**4. BirdNET (step 8 above).** Deferred on purpose, and not for scheduling reasons. It is the
+least testable thing on the list: a recording UI, a microphone, a second model, a second
+name-bridge with its own homonyms, and the geo prior — several hundred lines that cannot be
+executed until they are on a phone. **§53 is the precedent**: a screen whose content came from a
+system service this environment cannot run was reasoned about carefully and shipped broken.
+When it is built, build it in slices that can be tested — the label bridge and the prior are
+pure functions; only the capture screen is not.
+
+**Not on this list, and deliberately: the map (§35).** Measured, deferred, and the phone's map
+app is already good, offline and installed. What would change that is wanting something it
+cannot do — every sighting plotted together — which is a different feature wearing a map's
+clothes.
+
 ---
 
 ## 7. Visual design

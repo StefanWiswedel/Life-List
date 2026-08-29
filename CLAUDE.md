@@ -140,16 +140,9 @@ good (§41, checked).
 
 ## Next action
 
-The ≥20 model is trained and both indexes are rebuilt against it. What is left is a commit and
-a tag — CI does the rest, and has done since §21: it exports the 350 MB ONNX from `head.npz`,
-copies the taxonomy, meta and Wikipedia into assets, fetches the reference photographs and
-builds the APK.
+**The backlog lives in BUILD.md §6A**, in order and with the reasoning. Short version: per-group
+thresholds, then the backbone comparison, then seasonality, then BirdNET. The map stays deferred
+(§35).
 
-```bash
-git add shared/model && git commit -m "The >=20 model"
-git tag v0.9.0 && git push --tags
-```
-
-Nothing about the export needs doing by hand. `lifelist-export` reads its class count out of
-`head.npz`, and running it locally is only worth it to find out that it still works before
-spending a release on finding out that it does not.
+Next up is per-group thresholds. `lifelist-thresholds` fits one threshold per group against a
+target rollup accuracy, using the committed head — no retraining, minutes not hours.
