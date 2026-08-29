@@ -152,6 +152,7 @@ def test_a_stage_name_is_chosen_from_a_list_never_taken_verbatim():
 
     assert set(lifelist_mcp.PIPELINE_STAGES) == {
         "bridge", "taxonomy", "reference-index", "wikipedia", "export", "redlist",
+        "thresholds",
     }
     for argv in lifelist_mcp.PIPELINE_STAGES.values():
         assert argv[0] == "-m", "every stage runs a module, not a script path or a shell string"

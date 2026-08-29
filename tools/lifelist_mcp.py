@@ -68,6 +68,11 @@ PIPELINE_STAGES: dict[str, list[str]] = {
         "--taxonomy", "../shared/model/taxonomy.json",
         "--out", "../shared/model/reference_photos.json",
     ],
+    # No training: the head is already fitted, so this is a split, a matrix multiply and a
+    # sweep. Prints the table; writes nothing without --commit.
+    "thresholds": [
+        "-m", "lifelist_train.cli.thresholds", "--cache-dir", "cache", "-v",
+    ],
     # 13,899 assessments over 695 pages, about twelve minutes at the API's pace.
     "redlist": ["-m", "lifelist_train.cli.redlist", "-v"],
     # Resumable and incremental: only titles that are neither cached nor known-absent.

@@ -42,6 +42,7 @@ lifelist-reference-photos = "lifelist_train.cli.reference:main"
 lifelist-reference-index = "lifelist_train.cli.reference_index:main"
 lifelist-wikipedia = "lifelist_train.cli.wikipedia:main"
 lifelist-redlist = "lifelist_train.cli.redlist:main"
+lifelist-thresholds = "lifelist_train.cli.thresholds:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
