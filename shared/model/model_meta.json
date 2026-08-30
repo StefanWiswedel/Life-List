@@ -28,5 +28,180 @@
   "trained_on": {
     "photos": 400753,
     "test": 40595
-  }
+  },
+  "group_thresholds": {
+    "0.90": {
+      "Amphibians": {
+        "threshold": 0.7,
+        "accuracy": 0.9074,
+        "reached": true,
+        "n": 216
+      },
+      "Arachnids": {
+        "threshold": 0.64,
+        "accuracy": 0.9059,
+        "reached": true,
+        "n": 1286
+      },
+      "Birds": {
+        "threshold": 0.64,
+        "accuracy": 0.9049,
+        "reached": true,
+        "n": 3387
+      },
+      "Fungi": {
+        "threshold": 0.68,
+        "accuracy": 0.9018,
+        "reached": true,
+        "n": 2912
+      },
+      "Insects": {
+        "threshold": 0.5,
+        "accuracy": 0.9041,
+        "reached": true,
+        "n": 17531
+      },
+      "Mammals": {
+        "threshold": 0.92,
+        "accuracy": 0.8974,
+        "reached": false,
+        "n": 497
+      },
+      "Molluscs": {
+        "threshold": 0.64,
+        "accuracy": 0.9044,
+        "reached": true,
+        "n": 910
+      },
+      "Other": {
+        "threshold": 0.84,
+        "accuracy": 0.9008,
+        "reached": true,
+        "n": 1432
+      },
+      "Plants": {
+        "threshold": 0.52,
+        "accuracy": 0.9004,
+        "reached": true,
+        "n": 12424
+      }
+    },
+    "0.95": {
+      "Amphibians": {
+        "threshold": 0.8,
+        "accuracy": 0.9537,
+        "reached": true,
+        "n": 216
+      },
+      "Arachnids": {
+        "threshold": 0.84,
+        "accuracy": 0.9541,
+        "reached": true,
+        "n": 1286
+      },
+      "Birds": {
+        "threshold": 0.82,
+        "accuracy": 0.9536,
+        "reached": true,
+        "n": 3387
+      },
+      "Fungi": {
+        "threshold": 0.84,
+        "accuracy": 0.9166,
+        "reached": false,
+        "n": 2912
+      },
+      "Insects": {
+        "threshold": 0.7,
+        "accuracy": 0.9535,
+        "reached": true,
+        "n": 17531
+      },
+      "Mammals": {
+        "threshold": 0.92,
+        "accuracy": 0.8974,
+        "reached": false,
+        "n": 497
+      },
+      "Molluscs": {
+        "threshold": 0.88,
+        "accuracy": 0.9516,
+        "reached": true,
+        "n": 910
+      },
+      "Other": {
+        "threshold": 0.84,
+        "accuracy": 0.9008,
+        "reached": false,
+        "n": 1432
+      },
+      "Plants": {
+        "threshold": 0.86,
+        "accuracy": 0.9433,
+        "reached": false,
+        "n": 12424
+      }
+    },
+    "0.98": {
+      "Amphibians": {
+        "threshold": 0.8,
+        "accuracy": 0.9537,
+        "reached": false,
+        "n": 216
+      },
+      "Arachnids": {
+        "threshold": 0.94,
+        "accuracy": 0.9635,
+        "reached": false,
+        "n": 1286
+      },
+      "Birds": {
+        "threshold": 0.94,
+        "accuracy": 0.9708,
+        "reached": false,
+        "n": 3387
+      },
+      "Fungi": {
+        "threshold": 0.84,
+        "accuracy": 0.9166,
+        "reached": false,
+        "n": 2912
+      },
+      "Insects": {
+        "threshold": 0.92,
+        "accuracy": 0.9762,
+        "reached": false,
+        "n": 17531
+      },
+      "Mammals": {
+        "threshold": 0.92,
+        "accuracy": 0.8974,
+        "reached": false,
+        "n": 497
+      },
+      "Molluscs": {
+        "threshold": 0.94,
+        "accuracy": 0.9604,
+        "reached": false,
+        "n": 910
+      },
+      "Other": {
+        "threshold": 0.84,
+        "accuracy": 0.9008,
+        "reached": false,
+        "n": 1432
+      },
+      "Plants": {
+        "threshold": 0.86,
+        "accuracy": 0.9433,
+        "reached": false,
+        "n": 12424
+      }
+    }
+  },
+  "group_threshold_targets": [
+    0.9,
+    0.95,
+    0.98
+  ]
 }
