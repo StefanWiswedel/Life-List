@@ -34,6 +34,15 @@ taxonomy = [
 # and writes nothing without --commit.
 thresholds = ["-m", "lifelist_train.cli.thresholds", "--cache-dir", "cache", "-v"]
 
+# The same sweep, saved into model_meta.json. Separate from `thresholds` on purpose: reading
+# the table and agreeing to it are two decisions, and the second one edits a shipped file.
+thresholds-commit = [
+    "-m", "lifelist_train.cli.thresholds",
+    "--cache-dir", "cache",
+    "--commit",
+    "-v",
+]
+
 # Rebuild the reference-photo index for every leaf in the current taxonomy. Two minutes of
 # iNaturalist API at their asked-for one request a second.
 reference-index = [
