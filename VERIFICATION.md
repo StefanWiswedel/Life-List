@@ -2310,6 +2310,19 @@ One bug did surface while writing it: the descent wrote `at` inside the loop and
 back, which let a row descend twice in one pass and appear twice in the next. Snapshotting
 fixes it, and the equality test is what would have caught it.
 
+### Two things the table itself got wrong
+
+The printed table had an `n` header with nothing under it — `Choice` never carried the sample
+size. That is the column that decides whether "mammals cannot reach 95%" is a limit of the
+model or a thin slice of the test set, so it is now filled in and a test asserts it.
+
+And `document` recorded only the threshold. Four of the nine groups — Plants, Fungi, Mammals,
+Other — cannot reach 95% at any threshold, and mammals top out at 89.7%. A file holding just
+the dial setting would have let the app say "95% sure" over a model that is not. Each entry now
+carries `accuracy`, `reached` and `n` alongside the threshold, so the screen can say "as good as
+it gets: 90%" instead. Nothing on the Kotlin side reads this yet, which is the cheapest moment
+to fix the shape.
+
 `EVAL_BLOCK` drops from 4,096 to 2,048, because the node-probability block is 6,705 columns
 wide where the softmax is 3,482 — peak stays where it was after the two OOM kills in §48.
 

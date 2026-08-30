@@ -105,13 +105,46 @@ def test_the_biggest_group_comes_first():
 def test_the_document_is_keyed_by_target_because_that_is_what_the_app_asks_for():
     swept = {"Birds": points([(0.62, 0.96)]), "Insects": points([(0.7, 0.96)])}
 
-    assert document(table(swept, targets=(0.95,))) == {"0.95": {"Birds": 0.62, "Insects": 0.7}}
+    assert document(table(swept, targets=(0.95,))) == {
+        "0.95": {
+            "Birds": {"threshold": 0.62, "accuracy": 0.96, "reached": True, "n": 500},
+            "Insects": {"threshold": 0.7, "accuracy": 0.96, "reached": True, "n": 500},
+        }
+    }
+
+
+def test_the_document_says_when_the_target_was_not_reached():
+    """Otherwise the app promises 95% over a model that manages 80%, and the file cannot tell.
+
+    Four of the nine real groups are in exactly this position, so this is the common case,
+    not the corner one.
+    """
+    swept = {"Mammals": points([(0.6, 0.80), (0.9, 0.82)])}
+
+    entry = document(table(swept, targets=(0.95,)))["0.95"]["Mammals"]
+
+    assert entry["reached"] is False
+    assert entry["accuracy"] == 0.82
 
 
 def test_an_unreachable_target_is_marked_in_the_printed_table():
     printed = format_table(table({"Birds": points([(0.6, 0.80)])}, targets=(0.95,)))
 
     assert "*" in printed and "out of reach" in printed
+
+
+def test_the_table_shows_how_many_photographs_each_row_rests_on():
+    """The first version printed a blank under the `n` header — `Choice` had no such field.
+
+    It is the column that decides whether "mammals cannot reach 95%" is a real limit of the
+    model or a thin slice of test set, so a header with nothing under it is worse than no
+    column at all.
+    """
+    printed = format_table(
+        table({"Mammals": points([(0.6, 0.96)], n=1234)}, targets=(0.95,))
+    )
+
+    assert "1,234" in printed
 
 
 # -- the candidate list ----------------------------------------------------

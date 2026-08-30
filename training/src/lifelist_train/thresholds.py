@@ -72,6 +72,7 @@ class Choice:
     """The threshold chosen for a group, and what it costs."""
 
     group: str
+    n: int
     target: float
     threshold: float
     accuracy: float
@@ -151,6 +152,7 @@ def choose(points: Sequence[Point], target: float) -> Choice | None:
     )
     return Choice(
         group="",
+        n=best.n,
         target=target,
         threshold=best.threshold,
         accuracy=best.accuracy,
@@ -182,6 +184,7 @@ def table(
                 out.append(
                     Choice(
                         group=group,
+                        n=chosen.n,
                         target=chosen.target,
                         threshold=chosen.threshold,
                         accuracy=chosen.accuracy,
@@ -193,12 +196,26 @@ def table(
     return out
 
 
-def document(choices: Sequence[Choice]) -> dict[str, dict[str, float]]:
-    """`{"0.95": {"Birds": 0.62, ...}, ...}` — keyed by target, because that is what the app
-    will ask for."""
-    out: dict[str, dict[str, float]] = {}
+def document(choices: Sequence[Choice]) -> dict[str, dict[str, dict[str, float | bool]]]:
+    """Keyed by target, because that is what the app will ask for.
+
+    Each group carries what it actually delivers, not only the dial setting:
+
+        {"0.95": {"Birds": {"threshold": 0.82, "accuracy": 0.954, "reached": true}, ...}}
+
+    `accuracy` and `reached` are the difference between a promise and a guess. Four of the
+    nine groups cannot reach 95% at any threshold — mammals top out at 89.7% — and a file
+    that recorded only the number would let the app say "95% sure" over a model that is not.
+    With this, the screen can say "as good as it gets: 90%" instead, which is true.
+    """
+    out: dict[str, dict[str, dict[str, float | bool]]] = {}
     for choice in choices:
-        out.setdefault(f"{choice.target:.2f}", {})[choice.group] = choice.threshold
+        out.setdefault(f"{choice.target:.2f}", {})[choice.group] = {
+            "threshold": choice.threshold,
+            "accuracy": round(choice.accuracy, 4),
+            "reached": choice.reached,
+            "n": choice.n,
+        }
     return {target: dict(sorted(groups.items())) for target, groups in sorted(out.items())}
 
 
@@ -211,7 +228,7 @@ def format_table(choices: Sequence[Choice]) -> str:
     for choice in choices:
         flag = "" if choice.reached else "  *"
         lines.append(
-            f"{choice.group:<12}{'':>7}{choice.target:>7.0%}{choice.threshold:>11.2f}"
+            f"{choice.group:<12}{choice.n:>7,}{choice.target:>7.0%}{choice.threshold:>11.2f}"
             f"{choice.accuracy:>9.1%}{choice.refusal_rate:>9.1%}{choice.mean_depth:>7.2f}{flag}"
         )
     if any(not c.reached for c in choices):
