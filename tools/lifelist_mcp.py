@@ -38,54 +38,51 @@ ALLOWED_GRADLE_TASKS = frozenset(
     {":core:test", ":app:assembleDebug", ":app:assembleRelease", "tasks"}
 )
 
-# The long-running pipeline stages, as named verbs with fixed argument vectors.
-#
-# Same rule as everything else here: the caller picks a name from this dict, never a command.
-# `train` is absent on purpose — it takes an hour and writes the shipped head, so it stays a
-# thing a person starts deliberately. Paths are relative to `training/`, which is the cwd
-# these run in.
-PIPELINE_STAGES: dict[str, list[str]] = {
-    # Rebuild the iNaturalist->GBIF crossing from stage 1's dump. Two minutes; needed when the
-    # document's *shape* changes, not when the model does.
-    "bridge": [
-        "-m", "lifelist_train.cli.bridge",
-        "--taxa-raw", "cache/taxa_raw.json.gz",
-        "--joined", "cache/stage2_joined",
-        "--min-observations", "20",
-    ],
-    # Rewrite taxonomy.json alone, refusing if the leaf ordering moved under the shipped head.
-    "taxonomy": [
-        "-m", "lifelist_train.cli.train",
-        "--cache-dir", "cache",
-        "--min-observations", "20",
-        "--taxonomy-only",
-    ],
-    # Rebuild the reference-photo index for every leaf in the current taxonomy. Two minutes
-    # of iNaturalist API at their asked-for one request a second.
-    "reference-index": [
-        "-m", "lifelist_train.cli.reference_index",
-        "--bridge", "../shared/model/taxon_bridge.json",
-        "--taxonomy", "../shared/model/taxonomy.json",
-        "--out", "../shared/model/reference_photos.json",
-    ],
-    # No training: the head is already fitted, so this is a split, a matrix multiply and a
-    # sweep. Prints the table; writes nothing without --commit.
-    "thresholds": [
-        "-m", "lifelist_train.cli.thresholds", "--cache-dir", "cache", "-v",
-    ],
-    # 13,899 assessments over 695 pages, about twelve minutes at the API's pace.
-    "redlist": ["-m", "lifelist_train.cli.redlist", "-v"],
-    # Resumable and incremental: only titles that are neither cached nor known-absent.
-    "wikipedia": ["-m", "lifelist_train.cli.wikipedia"],
-    # The 350 MB ONNX. CI does this on every tag, so running it here is for checking that it
-    # still works before spending a release on finding out that it does not.
-    "export": [
-        "-m", "lifelist_train.cli.export",
-        "--head", "../shared/model/head.npz",
-        "--meta", "../shared/model/model_meta.json",
-        "--out", "../app/src/main/assets/lifelist.onnx",
-    ],
-}
+#: Where the stages live. A file rather than a dict in this module, and that is the point:
+#: the tool list an MCP server advertises is fixed when the process starts, so every new stage
+#: used to cost a restart of the whole desktop app. `stage(name)` never changes — only the set
+#: of names does — so the set is read from disk at call time and a stage arrives with the patch
+#: that adds it.
+STAGES_FILE = REPO / "tools" / "stages.toml"
+
+#: The one thing a stage may be: a module under `lifelist_train`, run with `-m`.
+#:
+#: This file arrives by patch like any other source, so it is reviewable in a diff before it
+#: lands — but "reviewable" is not "safe", and a stage list that could name any module at all
+#: would quietly turn this server into the arbitrary-command tool it exists not to be.
+STAGE_MODULE_PREFIX = "lifelist_train."
+
+
+def load_stages() -> dict[str, list[str]]:
+    """The stages, as they are on disk right now.
+
+    Never raises: a malformed file means no stages, which is a server that refuses everything
+    rather than one that cannot start. The refusal names the file, so the cause is findable.
+    """
+    if not STAGES_FILE.is_file():
+        return {}
+    try:
+        import tomllib
+
+        parsed = tomllib.loads(STAGES_FILE.read_text(encoding="utf-8"))
+    except Exception:  # noqa: BLE001 — a broken stage list is not a broken server
+        return {}
+
+    out: dict[str, list[str]] = {}
+    for name, argv in (parsed.get("stages") or {}).items():
+        if validated_stage_argv(argv):
+            out[str(name)] = [str(a) for a in argv]
+    return out
+
+
+def validated_stage_argv(argv: object) -> bool:
+    """A list of strings, running a module, and that module ours."""
+    if not isinstance(argv, list) or len(argv) < 2:
+        return False
+    if not all(isinstance(a, str) for a in argv):
+        return False
+    return argv[0] == "-m" and str(argv[1]).startswith(STAGE_MODULE_PREFIX)
+
 
 # Directories whose contents this server may stage and commit. Generated artefacts only:
 # the model, and the assets CI copies it into. Source is committed by patch, where it can be
@@ -314,16 +311,29 @@ def build_server():  # pragma: no cover — wiring, exercised by running it
 
     @mcp.tool()
     def stage(name: str) -> str:
-        """Run one named pipeline stage: reference-index, wikipedia or export.
+        """Run one named pipeline stage. Call `stages()` for the names.
 
-        Not a shell and not a command: `name` selects a fixed argument vector. Training is
-        deliberately not on the list — an hour-long run that writes the shipped head is
-        something a person should start on purpose.
+        Not a shell and not a command: `name` selects a fixed argument vector from
+        `tools/stages.toml`, read fresh on every call so a new stage does not cost a restart.
+        Training is deliberately not on the list — an hour-long run that writes the shipped
+        head is something a person should start on purpose.
         """
-        argv = PIPELINE_STAGES.get(name)
+        stages = load_stages()
+        argv = stages.get(name)
         if argv is None:
-            raise Refused(f"{name!r} is not a stage; known: {sorted(PIPELINE_STAGES)}")
+            known = sorted(stages) or f"none — check {STAGES_FILE.name}"
+            raise Refused(f"{name!r} is not a stage; known: {known}")
         return start(f"stage {name}", [sys.executable, *argv], cwd=REPO / "training")
+
+    @mcp.tool()
+    def stages() -> str:
+        """The stages this repository currently defines, read from disk."""
+        current = load_stages()
+        if not current:
+            return f"no stages — {STAGES_FILE} is missing or unreadable"
+        return "\n".join(
+            f"{name}: python {' '.join(argv)}" for name, argv in sorted(current.items())
+        )
 
     @mcp.tool()
     def pytest_run() -> str:

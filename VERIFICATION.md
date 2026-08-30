@@ -2231,6 +2231,33 @@ camera path or to stop offering it for gallery photographs.
 
 ---
 
+## 57. Adding a stage should not cost a restart of the desktop app — 24 Aug 2026
+
+Asked why every new pipeline stage needed Claude Desktop restarting. The answer was a design
+flaw rather than a fact about MCP.
+
+An MCP server advertises its tool list once, when the client spawns it, so a genuinely new
+*tool* does need a restart. But `stage(name)` is not a new tool — it has existed since §52 and
+its signature never changes. What changes is the dict it picks a name from, and that dict was
+baked into the module at import, so a one-line addition meant a stale process and a restart of
+the whole app. Five stages, five restarts, each one interrupting whatever was running.
+
+`tools/stages.toml` now holds them, read fresh on every call. A stage arrives with the patch
+that adds it and works immediately.
+
+**The allow-list is still an allow-list**, which is the property worth keeping. The file is in
+the repository and lands by patch like any other source, so it is reviewable in a diff — but
+reviewable is not safe, and a stage list that could name any module at all would quietly turn
+this server into the arbitrary-command tool it exists not to be. So each entry must run a
+module under `lifelist_train` with `-m`; anything else is ignored rather than refused, since a
+malformed line should cost that line and not the file.
+
+A broken or missing `stages.toml` yields no stages rather than an exception. A server that will
+not start is a worse failure than one that will not run anything, and the refusal names the file
+so the cause is findable.
+
+---
+
 ## Open questions
 
 1. **Inference backend.** Accept the CPU-EP-first proposal in §1 above, or hold NNAPI as the

@@ -1,0 +1,59 @@
+# The long-running pipeline stages, as named verbs with fixed argument vectors.
+#
+# Read by tools/lifelist_mcp.py on every `stage` call, so adding one here is enough — the MCP
+# server does not need restarting and neither does the desktop app. Same rule as everything
+# else in that server: the caller picks a name from this file, never a command. Each entry must
+# run a `lifelist_train` module with `-m`; anything else is ignored.
+#
+# `train` is absent on purpose. It takes an hour and writes the shipped head, so it stays a
+# thing a person starts deliberately.
+#
+# Paths are relative to `training/`, which is the working directory these run in.
+
+[stages]
+
+# Rebuild the iNaturalist->GBIF crossing from stage 1's dump. Needed when the document's
+# *shape* changes, not when the model does. Ten minutes, mostly fetching the families.
+bridge = [
+    "-m", "lifelist_train.cli.bridge",
+    "--taxa-raw", "cache/taxa_raw.json.gz",
+    "--joined", "cache/stage2_joined",
+    "--min-observations", "20",
+]
+
+# Rewrite taxonomy.json alone, refusing if the leaf ordering moved under the shipped head.
+taxonomy = [
+    "-m", "lifelist_train.cli.train",
+    "--cache-dir", "cache",
+    "--min-observations", "20",
+    "--taxonomy-only",
+]
+
+# One rollup threshold per group, against an accuracy a person can ask for. No training: the
+# head is already fitted, so this is a split, a matrix multiply and a sweep. Prints the table
+# and writes nothing without --commit.
+thresholds = ["-m", "lifelist_train.cli.thresholds", "--cache-dir", "cache", "-v"]
+
+# Rebuild the reference-photo index for every leaf in the current taxonomy. Two minutes of
+# iNaturalist API at their asked-for one request a second.
+reference-index = [
+    "-m", "lifelist_train.cli.reference_index",
+    "--bridge", "../shared/model/taxon_bridge.json",
+    "--taxonomy", "../shared/model/taxonomy.json",
+    "--out", "../shared/model/reference_photos.json",
+]
+
+# 13,899 assessments over 695 pages, about eight minutes at the API's pace.
+redlist = ["-m", "lifelist_train.cli.redlist", "-v"]
+
+# Resumable and incremental: only titles that are neither cached nor known-absent.
+wikipedia = ["-m", "lifelist_train.cli.wikipedia"]
+
+# The 350 MB ONNX. CI does this on every tag, so running it here is for checking that it still
+# works before spending a release on finding out that it does not.
+export = [
+    "-m", "lifelist_train.cli.export",
+    "--head", "../shared/model/head.npz",
+    "--meta", "../shared/model/model_meta.json",
+    "--out", "../app/src/main/assets/lifelist.onnx",
+]

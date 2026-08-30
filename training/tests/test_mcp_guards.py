@@ -144,31 +144,10 @@ def test_a_command_that_cannot_start_reports_why_instead_of_hanging():
     assert "failed to run" in out
 
 
-def test_a_stage_name_is_chosen_from_a_list_never_taken_verbatim():
-    """The whole point of this server: names, not commands."""
-    import sys
-    sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "tools"))
-    import lifelist_mcp
-
-    assert set(lifelist_mcp.PIPELINE_STAGES) == {
-        "bridge", "taxonomy", "reference-index", "wikipedia", "export", "redlist",
-        "thresholds",
-    }
-    for argv in lifelist_mcp.PIPELINE_STAGES.values():
-        assert argv[0] == "-m", "every stage runs a module, not a script path or a shell string"
-
-
-def test_training_is_not_a_stage_anything_can_start():
-    """An hour-long run that writes the shipped head stays a deliberate act."""
-    import sys
-    sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "tools"))
-    import lifelist_mcp
-
-    assert not any("train" in name for name in lifelist_mcp.PIPELINE_STAGES)
-
-
 def _server():
+    """The server module, imported from `tools/` where it lives beside the repo it drives."""
     import sys
+
     sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "tools"))
     import lifelist_mcp
 
@@ -188,16 +167,12 @@ def test_a_long_log_keeps_its_ending():
 
 
 def test_a_short_log_is_untouched():
-    server = _server()
-
-    assert server.trim("all done") == "all done"
+    assert _server().trim("all done") == "all done"
 
 
 def test_only_generated_artefacts_can_be_committed():
     """Source reaches this repository as a patch, where it can be read as a diff first."""
-    server = _server()
-
-    assert server.COMMITTABLE == ("shared/model", "app/src/main/assets")
+    assert _server().COMMITTABLE == ("shared/model", "app/src/main/assets")
 
 
 def test_a_commit_message_must_be_one_non_empty_line():
@@ -210,3 +185,49 @@ def test_a_commit_message_must_be_one_non_empty_line():
     for bad in ("", "   ", "a title\n\nand a body"):
         with pytest.raises(server.Refused):
             server.validated_message(bad)
+
+
+def test_a_stage_name_is_chosen_from_a_list_never_taken_verbatim():
+    """The whole point of this server: names, not commands."""
+    server = _server()
+
+    stages = server.load_stages()
+    assert {"bridge", "taxonomy", "reference-index", "wikipedia", "export", "redlist",
+            "thresholds"} <= set(stages)
+    for argv in stages.values():
+        assert argv[0] == "-m", "every stage runs a module, not a script path or a shell string"
+
+
+def test_training_is_not_a_stage_anything_can_start():
+    """An hour-long run that writes the shipped head stays a deliberate act."""
+    assert not any(name == "train" for name in _server().load_stages())
+
+
+def test_a_stage_may_only_run_one_of_our_own_modules():
+    """The list arrives by patch and is reviewable, which is not the same as safe."""
+    server = _server()
+
+    assert server.validated_stage_argv(["-m", "lifelist_train.cli.redlist"])
+    assert not server.validated_stage_argv(["-m", "os", "-c", "..."])
+    assert not server.validated_stage_argv(["rm", "-rf", "/"])
+    assert not server.validated_stage_argv("-m lifelist_train.cli.redlist")
+    assert not server.validated_stage_argv(["-m"])
+    assert not server.validated_stage_argv([1, 2])
+
+
+def test_a_broken_stage_file_refuses_everything_rather_than_breaking_the_server(tmp_path,
+                                                                               monkeypatch):
+    """A server that will not start is a worse failure than one that will not run anything."""
+    server = _server()
+    broken = tmp_path / "stages.toml"
+    broken.write_text("this is not toml [[[", encoding="utf-8")
+    monkeypatch.setattr(server, "STAGES_FILE", broken)
+
+    assert server.load_stages() == {}
+
+
+def test_a_missing_stage_file_is_empty_rather_than_an_error(tmp_path, monkeypatch):
+    server = _server()
+    monkeypatch.setattr(server, "STAGES_FILE", tmp_path / "gone.toml")
+
+    assert server.load_stages() == {}
