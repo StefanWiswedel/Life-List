@@ -6,6 +6,7 @@ import numpy as np
 import pytest
 
 from lifelist_train.rollup import (
+    chosen_nodes,
     is_rollup_correct,
     node_probabilities,
     rollup,
@@ -277,3 +278,55 @@ def test_species_aggregate_is_a_valid_leaf():
     )
     assert tax.n_taxa == 1
     assert tax.node(2).is_leaf
+
+
+# -- the block path -------------------------------------------------------------
+
+
+def test_the_block_path_and_the_row_path_agree_exactly():
+    """`chosen_nodes` exists only to be faster. If it is also different, it is worthless.
+
+    Exact equality, not approximate: the node ids must match and the probabilities must be
+    bit-identical float32. The block path sums each node's subtree in the same ascending
+    order and the same dtype as the row path, so there is no tolerance to allow.
+    """
+    tax = build_beetles()
+    rng = np.random.default_rng(0)
+    block = rng.dirichlet(np.ones(tax.n_taxa) * 0.3, size=200).astype(np.float32)
+
+    for threshold in (0.5, 0.6, 0.7, 0.85, 0.95):
+        node_ids, probability = chosen_nodes(tax, block, threshold=threshold)
+        expected = [rollup(tax, row, threshold=threshold) for row in block]
+
+        assert node_ids == [r.taxon_id for r in expected]
+        assert np.array_equal(
+            probability, np.array([r.probability for r in expected], dtype=np.float32)
+        )
+
+
+def test_the_block_path_refuses_at_the_root_like_the_row_path():
+    """A block of hopeless rows must come back as root, not as a shallow guess."""
+    tax = build_beetles()
+    # 0.6 on the animals, 0.4 on the plant: no kingdom clears 0.7, so neither branch is safe.
+    block = np.array([[0.2, 0.2, 0.2, 0.4]] * 3, dtype=np.float32)
+
+    node_ids, probability = chosen_nodes(tax, block, threshold=0.7)
+
+    assert node_ids == [tax.root_id] * 3
+    assert [rollup(tax, row, threshold=0.7).taxon_id for row in block] == node_ids
+    assert np.allclose(probability, 1.0)
+
+
+def test_the_block_path_rejects_an_unsettable_threshold():
+    tax = build_beetles()
+    block = np.full((2, tax.n_taxa), 0.25, dtype=np.float32)
+
+    with pytest.raises(ValueError, match="settable range"):
+        chosen_nodes(tax, block, threshold=0.3)
+
+
+def test_the_block_path_wants_a_block():
+    tax = build_beetles()
+
+    with pytest.raises(ValueError, match="2-D"):
+        chosen_nodes(tax, np.array([0.4, 0.3, 0.2, 0.1], dtype=np.float32))

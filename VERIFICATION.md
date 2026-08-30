@@ -2256,6 +2256,65 @@ A broken or missing `stages.toml` yields no stages rather than an exception. A s
 not start is a worse failure than one that will not run anything, and the refusal names the file
 so the cause is findable.
 
+## 58. The threshold sweep asked for numbers the app cannot be set to — 30 Aug 2026
+
+`stage("thresholds")` ran for four minutes on your laptop and died:
+
+```
+ValueError: threshold 0.3 outside the settable range [0.5, 0.95]
+```
+
+The candidate list was written out by hand as `0.30 + 0.02 * i` for 36 steps — 0.30 to 1.00 —
+next to a `rollup` that refuses anything outside `[MIN_THRESHOLD, MAX_THRESHOLD]`. Both ends
+were illegal. The table would have recommended a threshold the app has no way to apply.
+
+The unit tests passed because every one of them **passed its own candidates in**:
+`sweep(..., candidates=(0.5, 0.9))`. That is the fourth test in this project that was green
+only because it avoided the real value. The list is now derived from the settable range rather
+than written beside it, and two tests run every candidate through the actual `rollup` and
+assert the sweep's default is that list — so the two cannot drift apart again.
+
+### The sweep was also a nine-hour job
+
+Fixing the range exposed the real problem. Measured on the shipped taxonomy: `rollup` costs
+**34.5 ms per photograph**, and the sweep is 40,595 test photographs by 24 thresholds. That is
+9.2 hours — well past the server's 30-minute ceiling, so it would have failed a second time
+after another four minutes of waiting.
+
+Two costs, neither of them necessary:
+
+- `rollup` returns a five-candidate list, which means a 3,482-element Python sort *per
+  photograph*. Evaluation never looks at it.
+- `node_probabilities` walks all 6,705 nodes summing subtrees, one row at a time — and the
+  sums do not depend on the threshold, so the sweep was recomputing them 24 times over.
+
+So the rollup is now split at that seam. `node_probability_block` does the subtree sums for a
+whole block of rows at once; `descend_block` walks the tree with the block moving together, one
+pass per node visited rather than one per photograph. `evaluate_many` computes the softmax and
+the node probabilities once per block and scores every threshold against them.
+
+**Measured: 9.2 hours → under a minute.** The single-row `rollup` is untouched — it is the
+reference implementation the Kotlin has to match, and the golden fixture still passes.
+
+### Why it is the same answer, not just a faster one
+
+An optimisation that changes the arithmetic is a bug with a benchmark attached. Every node
+still sums exactly its own subtree leaves, in ascending `leaf_index` order, in float64; the
+block form hands numpy the same values in the same order per row, so the pairwise summation is
+identical. Ties still break to the lower `taxon_id`. `test_the_block_path_and_the_row_path_agree_exactly`
+runs 200 random rows at five thresholds through both paths and asserts the node ids are equal
+and the probabilities **bit-identical** as float32 — no tolerance, because there is nothing to
+tolerate. It agrees on the shipped 3,482-leaf taxonomy too.
+
+One bug did surface while writing it: the descent wrote `at` inside the loop and then read it
+back, which let a row descend twice in one pass and appear twice in the next. Snapshotting
+fixes it, and the equality test is what would have caught it.
+
+`EVAL_BLOCK` drops from 4,096 to 2,048, because the node-probability block is 6,705 columns
+wide where the softmax is 3,482 — peak stays where it was after the two OOM kills in §48.
+
+---
+
 ---
 
 ## Open questions

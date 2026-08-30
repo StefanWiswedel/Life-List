@@ -5,8 +5,10 @@ from __future__ import annotations
 import numpy as np
 
 from lifelist_train.gbif import GbifTaxon, build_taxonomy_nodes
+from lifelist_train.rollup import MAX_THRESHOLD, MIN_THRESHOLD, rollup
 from lifelist_train.taxonomy import Taxonomy
 from lifelist_train.thresholds import (
+    CANDIDATES,
     Point,
     choose,
     document,
@@ -110,3 +112,31 @@ def test_an_unreachable_target_is_marked_in_the_printed_table():
     printed = format_table(table({"Birds": points([(0.6, 0.80)])}, targets=(0.95,)))
 
     assert "*" in printed and "out of reach" in printed
+
+
+# -- the candidate list ----------------------------------------------------
+
+def test_every_candidate_is_a_threshold_the_app_can_be_set_to():
+    """The sweep may only recommend a number the app can actually use.
+
+    The first version of this list ran 0.30 to 1.00, and `rollup` refuses both ends. Every
+    candidate went through the real function here, so the two cannot drift apart again.
+    """
+    taxonomy = two_class_taxonomy()
+    p = np.array([0.9, 0.1], dtype=np.float32)
+
+    assert CANDIDATES
+    assert min(CANDIDATES) == MIN_THRESHOLD
+    assert max(CANDIDATES) == MAX_THRESHOLD
+    for threshold in CANDIDATES:
+        rollup(taxonomy, p, threshold=threshold)
+
+
+def test_the_sweep_defaults_to_that_list():
+    """A default that skipped it would put the bug straight back."""
+    taxonomy = two_class_taxonomy()
+    logits = np.array([[4.0, 0.0]], dtype=np.float32)
+
+    swept = sweep(taxonomy, logits, np.array([0]), temperature=1.0)
+
+    assert [point.threshold for point in next(iter(swept.values()))] == list(CANDIDATES)

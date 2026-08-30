@@ -98,6 +98,105 @@ def rollup(
     )
 
 
+def node_probability_block(tax: Taxonomy, p: np.ndarray) -> dict[int, np.ndarray]:
+    """P(n) for every node, for a whole block of rows at once.
+
+    This is the expensive half of a rollup and the half that does not depend on the
+    threshold, so a sweep over two dozen thresholds pays it once rather than two dozen times.
+
+    The arithmetic is deliberately unchanged from `node_probabilities`: each node still sums
+    exactly its own subtree leaves, in ascending `leaf_index` order, in float64 — only now for
+    every row in one call, so numpy's pairwise summation sees the same values in the same
+    order per row. `test_the_block_path_and_the_row_path_agree_exactly` holds the two together.
+    """
+    if p.ndim != 2:
+        raise ValueError(f"expected a 2-D block of leaf probabilities, got shape {p.shape}")
+    if p.shape[1] != tax.n_taxa:
+        raise ValueError(
+            f"probability block has {p.shape[1]} columns but the taxonomy "
+            f"has {tax.n_taxa} leaves"
+        )
+    if np.any(p < 0):
+        raise ValueError("probability block contains negative entries")
+
+    p64 = np.ascontiguousarray(p, dtype=np.float64)
+    return {
+        taxon_id: p64[:, tax.subtree_leaf_indices(taxon_id)].sum(axis=1)
+        for taxon_id in tax.nodes
+    }
+
+
+def descend_block(
+    tax: Taxonomy,
+    probs: dict[int, np.ndarray],
+    threshold: float = DEFAULT_THRESHOLD,
+) -> tuple[list[int], np.ndarray]:
+    """The node `rollup` returns for each row, given node probabilities already computed.
+
+    Cheap: the whole block walks the tree together, so the descent costs one pass per node
+    visited rather than one pass per photograph.
+    """
+    if not MIN_THRESHOLD <= threshold <= MAX_THRESHOLD:
+        raise ValueError(
+            f"threshold {threshold} outside the settable range "
+            f"[{MIN_THRESHOLD}, {MAX_THRESHOLD}]"
+        )
+
+    rows = len(probs[tax.root_id])
+    live = np.arange(rows)
+    at = np.full(rows, tax.root_id, dtype=np.int64)
+
+    # `current` is a snapshot — `at` is written inside the loop, and reading it back would let
+    # a row descend twice in one pass and land in `moved` twice.
+    while live.size:
+        current = at[live].copy()
+        moved: list[np.ndarray] = []
+        for node_id in np.unique(current):
+            children = tax.node(int(node_id)).children
+            if not children:
+                continue
+            here = live[current == node_id]
+            # max by probability, ties to the lower taxon_id (spec §4.2); `children` is
+            # ascending, so a strict > keeps the first, exactly as the row path does.
+            best = np.full(here.size, children[0], dtype=np.int64)
+            best_p = probs[children[0]][here]
+            for child in children[1:]:
+                child_p = probs[child][here]
+                better = child_p > best_p
+                best = np.where(better, child, best)
+                best_p = np.where(better, child_p, best_p)
+            clears = best_p >= threshold
+            if not clears.any():
+                continue
+            advancing = here[clears]
+            at[advancing] = best[clears]
+            moved.append(advancing)
+        live = np.concatenate(moved) if moved else np.empty(0, dtype=np.int64)
+
+    node_ids = at.tolist()
+    probability = np.array(
+        [np.float32(probs[node_id][i]) for i, node_id in enumerate(node_ids)],
+        dtype=np.float32,
+    )
+    return node_ids, probability
+
+
+def chosen_nodes(
+    tax: Taxonomy,
+    p: np.ndarray,
+    threshold: float = DEFAULT_THRESHOLD,
+) -> tuple[list[int], np.ndarray]:
+    """The node `rollup` returns, for a whole block of rows at once.
+
+    Same answer, two costs removed. `rollup` pays for a candidate list nobody asked for — a
+    3,482-element Python sort per photograph — and it walks all 6,705 nodes summing subtrees
+    one row at a time. Evaluation wants neither: it needs the chosen node and its probability,
+    over tens of thousands of rows and two dozen thresholds. At 35 ms a row the per-group
+    sweep was a nine-hour job; this makes it minutes.
+    """
+    return descend_block(tax, node_probability_block(tax, p), threshold)
+
+
 def top_candidates(tax: Taxonomy, p: np.ndarray, n: int = N_CANDIDATES) -> tuple[Candidate, ...]:
     """Top-``n`` leaves by probability, descending; ties break by lower taxon_id.
 

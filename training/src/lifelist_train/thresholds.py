@@ -28,12 +28,29 @@ from dataclasses import dataclass
 import numpy as np
 
 from .groups import DEFAULT_GROUPS, group_of
-from .head import evaluate
+from .head import evaluate_many
+from .rollup import MAX_THRESHOLD, MIN_THRESHOLD
 from .taxonomy import Taxonomy
 
-#: Thresholds to try. Coarse below 0.5 — nothing sensible lives there — and fine where the
-#: answer actually moves.
-CANDIDATES: tuple[float, ...] = tuple(round(0.30 + 0.02 * i, 2) for i in range(36))
+
+def _candidates(step: float = 0.02) -> tuple[float, ...]:
+    """Every threshold the app can actually be set to, and no others.
+
+    The sweep is only allowed to recommend a number the app can be set to, so the candidate
+    list is derived from the settable range rather than written out beside it. An earlier
+    version started at 0.30 and ran to 1.00; both ends are outside the range and `rollup`
+    refuses them, which cost four minutes of somebody's laptop to discover.
+    """
+    out, threshold = [], MIN_THRESHOLD
+    while threshold < MAX_THRESHOLD:
+        out.append(round(threshold, 2))
+        threshold += step
+    out.append(MAX_THRESHOLD)
+    return tuple(out)
+
+
+#: Thresholds to try: the settable range, fine enough that the chosen number is not a rounding.
+CANDIDATES: tuple[float, ...] = _candidates()
 
 #: What a person might ask for. Not a slider of probabilities: a promise about being right.
 TARGETS: tuple[float, ...] = (0.90, 0.95, 0.98)
@@ -100,21 +117,22 @@ def sweep(
     for label in dict.fromkeys(labels.tolist()):
         mask = labels == label
         block, truth = logits[mask], true_leaf_indices[mask]
-        points = []
-        for threshold in candidates:
-            result = evaluate(
-                taxonomy, block, truth, temperature=temperature, threshold=float(threshold)
+        # All the thresholds in one pass: the softmax and the subtree sums do not depend on
+        # the threshold, and paying for them once per candidate is what made this an
+        # overnight job.
+        scored = evaluate_many(
+            taxonomy, block, truth, temperature=temperature, thresholds=candidates
+        )
+        out[label] = [
+            Point(
+                threshold=float(threshold),
+                n=result.n,
+                accuracy=result.rollup_accuracy,
+                refusal_rate=result.refusal_rate,
+                mean_depth=result.mean_returned_depth,
             )
-            points.append(
-                Point(
-                    threshold=float(threshold),
-                    n=result.n,
-                    accuracy=result.rollup_accuracy,
-                    refusal_rate=result.refusal_rate,
-                    mean_depth=result.mean_returned_depth,
-                )
-            )
-        out[label] = points
+            for threshold, result in scored.items()
+        ]
     return out
 
 

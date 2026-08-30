@@ -13,11 +13,12 @@ so calibration error sits beside accuracy rather than in a footnote (VERIFICATIO
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass
 
 import numpy as np
 
-from .rollup import DEFAULT_THRESHOLD, rollup
+from .rollup import DEFAULT_THRESHOLD, descend_block, node_probability_block
 from .taxonomy import Taxonomy
 
 
@@ -117,7 +118,7 @@ def expected_calibration_error(
     return float(total)
 
 
-EVAL_BLOCK = 4096
+EVAL_BLOCK = 2048
 
 
 def evaluate(
@@ -134,45 +135,75 @@ def evaluate(
     "Life" is perfectly accurate and useless, and one that always guesses a species is
     Arter. Neither number alone can catch that.
     """
-    correct: list[bool] = []
-    depths: list[int] = []
-    confidences: list[float] = []
-    refusals = 0
+    return evaluate_many(taxonomy, logits, true_leaf_indices, temperature, (threshold,))[
+        float(threshold)
+    ]
+
+
+def evaluate_many(
+    taxonomy: Taxonomy,
+    logits: np.ndarray,
+    true_leaf_indices: np.ndarray,
+    temperature: float = 1.0,
+    thresholds: Sequence[float] = (DEFAULT_THRESHOLD,),
+) -> dict[float, Evaluation]:
+    """The same score at several thresholds, for the price of very nearly one.
+
+    A threshold sweep asks the same question of the same photographs two dozen times, and
+    almost all of the work — the softmax, and the per-node subtree sums — does not depend on
+    the threshold at all. Doing it once per block instead of once per threshold is the
+    difference between a sweep that runs over lunch and one that runs overnight.
+
+    In blocks, because `softmax` works in float64 and holds three arrays at once: at 40,000
+    test photographs and 3,482 classes that is gigabytes of peak for a number that is then
+    thrown away row by row. The softmax is row-wise, so blocking changes the arithmetic not
+    at all — only how much of it exists at any moment.
+    """
+    wanted = tuple(dict.fromkeys(float(t) for t in thresholds))
+    if not wanted:
+        raise ValueError("evaluate_many needs at least one threshold")
+
+    correct: dict[float, list[bool]] = {t: [] for t in wanted}
+    depths: dict[float, list[int]] = {t: [] for t in wanted}
+    confidences: dict[float, list[float]] = {t: [] for t in wanted}
+    refusals: dict[float, int] = dict.fromkeys(wanted, 0)
     hits = 0
 
-    # In blocks, because `softmax` works in float64 and holds three arrays at once: at 38,000
-    # test photographs and 3,482 classes that is three gigabytes of peak for a number that is
-    # then thrown away row by row. The softmax is row-wise, so blocking changes the arithmetic
-    # not at all — only how much of it exists at any moment.
     for start in range(0, len(true_leaf_indices), EVAL_BLOCK):
         block = softmax(logits[start : start + EVAL_BLOCK], temperature)
         truth = true_leaf_indices[start : start + EVAL_BLOCK]
         hits += int((block.argmax(axis=1) == truth).sum())
 
-        for row, true_index in zip(block, truth, strict=True):
-            result = rollup(taxonomy, row.astype(np.float32), threshold=threshold)
-            true_leaf_id = taxonomy.leaf_id(int(true_index))
-            hit = taxonomy.is_ancestor_or_self(result.taxon_id, true_leaf_id)
-            if result.taxon_id == taxonomy.root_id:
-                refusals += 1
-                hit = False  # a refusal is honest, but it is not a correct answer
-            correct.append(bool(hit))
-            depths.append(len(taxonomy.lineage(result.taxon_id)) - 1)
-            confidences.append(float(result.probability))
+        true_leaf_ids = [taxonomy.leaf_id(int(i)) for i in truth]
+        probs = node_probability_block(taxonomy, block.astype(np.float32))
+        for threshold in wanted:
+            node_ids, probability = descend_block(taxonomy, probs, threshold)
+            for node_id, prob, true_leaf_id in zip(
+                node_ids, probability, true_leaf_ids, strict=True
+            ):
+                hit = taxonomy.is_ancestor_or_self(node_id, true_leaf_id)
+                if node_id == taxonomy.root_id:
+                    refusals[threshold] += 1
+                    hit = False  # a refusal is honest, but it is not a correct answer
+                correct[threshold].append(bool(hit))
+                depths[threshold].append(len(taxonomy.lineage(node_id)) - 1)
+                confidences[threshold].append(float(prob))
 
-    leaf_top1 = hits / len(true_leaf_indices)
-
-    return Evaluation(
-        n=len(true_leaf_indices),
-        leaf_top1=leaf_top1,
-        rollup_accuracy=float(np.mean(correct)),
-        refusal_rate=refusals / len(true_leaf_indices),
-        mean_returned_depth=float(np.mean(depths)),
-        expected_calibration_error=expected_calibration_error(
-            np.asarray(confidences), np.asarray(correct)
-        ),
-        temperature=temperature,
-    )
+    n = len(true_leaf_indices)
+    return {
+        threshold: Evaluation(
+            n=n,
+            leaf_top1=hits / n,
+            rollup_accuracy=float(np.mean(correct[threshold])),
+            refusal_rate=refusals[threshold] / n,
+            mean_returned_depth=float(np.mean(depths[threshold])),
+            expected_calibration_error=expected_calibration_error(
+                np.asarray(confidences[threshold]), np.asarray(correct[threshold])
+            ),
+            temperature=temperature,
+        )
+        for threshold in wanted
+    }
 
 
 def fit_linear_head(
