@@ -50,7 +50,7 @@ When trading off, trade in favour of a record being keepable at the rank the evi
 | coverage | **3,482 leaves, 676 Lepidoptera** at ≥20 observations (§44) — up from 2,294 and 468 |
 | rarity | Danish Red List badge, and **family progress against Denmark's totals** (§55) |
 | certainty | **the dial is an accuracy, not a probability** — one threshold per group (§58, §59) |
-| audio | §4A in both languages with a golden fixture; **801 BirdNET classes crossed, 480 new species** (§60–62) |
+| audio | §4A in both languages with a golden fixture; **801 BirdNET classes crossed, 529 new species** (§60–62) |
 | release workflow | tag `v*` → GitHub Release with an APK attached |
 
 ## Rules that have already earned their place

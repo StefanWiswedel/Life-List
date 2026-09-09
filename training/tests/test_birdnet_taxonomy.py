@@ -70,12 +70,68 @@ def test_an_exact_species_match_becomes_a_leaf():
 def test_a_synonym_resolves_to_the_accepted_taxon():
     """Storing the retired name would put the same bird in the list twice."""
     payload = match_payload(
-        "Parus caeruleus", 2482577, status="SYNONYM", acceptedUsageKey=2482578
+        "Carduelis chloris",
+        2494642,
+        status="SYNONYM",
+        acceptedUsageKey=5845582,
+        species="Chloris chloris",
+        speciesKey=5845582,
     )
 
-    found = resolve(labels("Parus caeruleus_Eurasian Blue Tit"), lambda name: payload)
+    found = resolve(labels("Chloris chloris_European Greenfinch"), lambda name: payload)
 
-    assert class_map(found) == {0: 2482578}
+    assert class_map(found) == {0: 5845582}
+    taxon = found.taxa[0]
+    # The accepted *name*, not the matched one. GBIF's match already carries it in `species`.
+    assert taxon.scientific_name == "Chloris chloris"
+    # And accepted status, so `build_taxonomy_nodes` keeps it. Carrying "SYNONYM" through left
+    # the greenfinch out of the tree while its class stayed in the map — a crash the first time
+    # one sings (VERIFICATION §64).
+    assert taxon.is_accepted
+
+
+def test_a_subspecies_is_recorded_as_its_species():
+    """Otherwise the parent species stops being a leaf, and any class naming it points at an
+    internal node — which throws at the first detection of that bird, mid-session."""
+    payload = match_payload(
+        "Motacilla alba yarrellii",
+        6082657,
+        rank="SUBSPECIES",
+        species="Motacilla alba",
+        speciesKey=2490947,
+    )
+
+    found = resolve(labels("Motacilla alba yarrellii_Pied Wagtail"), lambda name: payload)
+
+    assert class_map(found) == {0: 2490947}
+    assert found.taxa[0].rank == "species"
+    assert found.taxa[0].scientific_name == "Motacilla alba"
+
+
+def test_every_class_names_a_leaf_of_the_tree_that_gets_built():
+    """The property the artefacts are read under: a class map pointing anywhere but a leaf is
+    an exception on a phone, in a field, in the middle of a session."""
+    payloads = {
+        "Motacilla alba": match_payload(
+            "Motacilla alba", 2490947, species="Motacilla alba", speciesKey=2490947
+        ),
+        "Motacilla alba yarrellii": match_payload(
+            "Motacilla alba yarrellii", 6082657, rank="SUBSPECIES",
+            species="Motacilla alba", speciesKey=2490947,
+        ),
+        "Phylloscopus collybita": CHIFFCHAFF,
+    }
+    given = labels(
+        "Motacilla alba_White Wagtail",
+        "Motacilla alba yarrellii_Pied Wagtail",
+        "Phylloscopus collybita_Common Chiffchaff",
+    )
+
+    found = resolve(given, payloads.get)
+    taxonomy = Taxonomy(build_taxonomy_nodes(found.taxa.values()))
+
+    for index, taxon_id in class_map(found).items():
+        assert taxonomy.node(taxon_id).leaf_index is not None, f"class {index} is not a leaf"
 
 
 # -- and what may not ------------------------------------------------------------

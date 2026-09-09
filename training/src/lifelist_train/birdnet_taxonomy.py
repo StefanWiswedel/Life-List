@@ -31,7 +31,13 @@ from .gbif import GbifTaxon, parse_rank
 ACCEPTED_MATCH_TYPES = frozenset({"EXACT"})
 
 #: Ranks a detection may land on. A class that resolves to a family is not an identification.
-LEAF_RANKS = frozenset({"species", "species_aggregate", "subspecies"})
+#:
+#: Species only, and a subspecies is folded up into its species rather than kept. Two reasons,
+#: and the second is the one that bites. Nothing else in the app records a subspecies — §1.1a's
+#: genus leaves are the one deliberate exception to species-level records. And a subspecies leaf
+#: makes its *parent species* an internal node, so another class naming that species would point
+#: at a non-leaf and throw at the first detection of it — on a phone, mid-session.
+LEAF_RANKS = frozenset({"species", "species_aggregate"})
 
 LINEAGE_RANKS = ("kingdom", "phylum", "class", "order", "family", "genus", "species")
 
@@ -97,34 +103,63 @@ def taxon_from_match(payload: Mapping[str, Any]) -> GbifTaxon | None:
         return None
 
     rank = parse_rank(payload.get("rank"))
+
+    # A subspecies is recorded as its species. The match already carries `speciesKey` and
+    # `species`, so this costs no extra request and keeps every class on a leaf.
+    if rank == "subspecies" and payload.get("speciesKey") and payload.get("species"):
+        return GbifTaxon(
+            key=int(payload["speciesKey"]),
+            scientific_name=str(payload["species"]),
+            rank="species",
+            status="ACCEPTED",
+            lineage=_lineage_keys(payload),
+            lineage_names=_lineage_names(payload),
+        )
+
     if rank not in LEAF_RANKS:
         return None
 
     # A synonym match names the accepted taxon in `acceptedUsageKey`; follow it rather than
     # storing a name GBIF has already retired.
-    key = payload.get("acceptedUsageKey") or payload.get("usageKey")
+    accepted_key = payload.get("acceptedUsageKey")
+    key = accepted_key or payload.get("usageKey")
     if key is None:
         return None
 
-    lineage = {
+    # The lineage fields describe the *accepted* taxon even when the matched name is a synonym:
+    # matching `Carduelis chloris` returns `species: "Chloris chloris"`, `speciesKey: 5845582`.
+    # So the accepted name is already here, and `canonicalName` — the retired one — is not what
+    # to store. Getting this wrong left the greenfinch out of the tree while leaving its class
+    # in the map, which is a crash the first time one sings (VERIFICATION §64).
+    name = payload.get(rank) if accepted_key else None
+    status = "ACCEPTED" if accepted_key else str(payload.get("status") or "ACCEPTED")
+
+    return GbifTaxon(
+        key=int(key),
+        scientific_name=str(
+            name or payload.get("canonicalName") or payload.get("scientificName") or key
+        ),
+        rank=rank,
+        status=status,
+        lineage=_lineage_keys(payload),
+        lineage_names=_lineage_names(payload),
+    )
+
+
+def _lineage_keys(payload: Mapping[str, Any]) -> dict[str, int]:
+    return {
         rank_name: int(payload[f"{rank_name}Key"])
         for rank_name in LINEAGE_RANKS
         if payload.get(f"{rank_name}Key") is not None
     }
-    lineage_names = {
+
+
+def _lineage_names(payload: Mapping[str, Any]) -> dict[str, str]:
+    return {
         rank_name: str(payload[rank_name])
         for rank_name in LINEAGE_RANKS
         if payload.get(rank_name)
     }
-
-    return GbifTaxon(
-        key=int(key),
-        scientific_name=str(payload.get("canonicalName") or payload.get("scientificName") or key),
-        rank=rank,
-        status=str(payload.get("status") or "ACCEPTED"),
-        lineage=lineage,
-        lineage_names=lineage_names,
-    )
 
 
 def resolve(

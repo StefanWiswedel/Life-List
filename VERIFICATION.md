@@ -2551,7 +2551,7 @@ That is a slice of work, not a paragraph, and it is where audio goes next.
 artefacts plus a report. It follows the rule §28, §37 and §42 all paid for: **every committed
 artefact has a committed builder behind it.**
 
-- `shared/model/audio_taxonomy.json` — 1,293 nodes, **746 leaves**.
+- `shared/model/audio_taxonomy.json` — 1,362 nodes, **801 leaves**. *(Was 1,293 and 746 when first written; see §64 for why those numbers were wrong.)*
 - `shared/model/birdnet_classes.json` — output-vector position → GBIF key. Index order is the
   contract, which is why BUILD.md §3.1 makes a BirdNET version bump a deliberate re-run.
 
@@ -2600,16 +2600,17 @@ read. Four attempts with backoff, and a test that fails twice before succeeding.
 
 | | |
 |---|---|
-| audio leaves | 746 |
-| already in the vision taxonomy | 266 |
-| **species the app could not log at all before** | **480** |
+| audio leaves | 801 |
+| already in the vision taxonomy | 272 |
+| **species the app could not log at all before** | **529** |
 
-Of the 480: 432 birds, **22 Orthoptera**, 20 mammals, 6 amphibians. Bush-crickets, field
+Of the 529: 481 birds, **22 Orthoptera**, 20 mammals, 6 amphibians. Bush-crickets, field
 crickets, *Bombina variegata*, *Psophus stridulus* — which is §3.2's argument arriving as a
 measurement rather than a claim. Those are precisely the groups the vision model is worst at and
 where sound is diagnostic, and 48 of them are not birds at all.
 
-**Checked:** 433 Python tests, ruff clean, both golden fixtures in sync.
+**Checked:** 433 Python tests, ruff clean, both golden fixtures in sync. *(The leaf counts
+here were corrected by §64 — 55 classes were pointing at taxa the tree did not contain.)*
 
 ---
 
@@ -2691,6 +2692,63 @@ off-device have been; the rest is honestly unknown.
 
 **Checked:** 147 Kotlin tests, 440 Python tests, ruff clean, both golden fixtures in sync, the
 app compiles.
+
+---
+
+## 64. The class map pointed at 55 taxa the tree did not contain — 9 Sep 2026
+
+A test that loads the shipped artefacts through the *Kotlin* readers found it, before a phone
+did. That is the whole reason it was written: Python built those files and Python's `Taxonomy`
+validated them, but Python's validation is not the one that runs on a device.
+
+Two bugs, both in `taxon_from_match`, both invisible in the summary line. `801/801 classes
+resolved (100.0%)` was true and the artefacts were still wrong.
+
+### A synonym was stored with its retired name and its retired status
+
+GBIF's match for `Carduelis chloris` — the greenfinch, reached through an alias — returns
+`status: SYNONYM` with `acceptedUsageKey: 5845582`. The key was followed correctly. The
+**status** was not: `SYNONYM` was carried through into the `GbifTaxon`, and
+`build_taxonomy_nodes` keeps only accepted taxa, so the greenfinch was filtered out of the tree
+while its class stayed in the map pointing at it. The first greenfinch to sing would have thrown.
+
+The name was wrong in the same way. `canonicalName` is the matched — retired — name, while the
+lineage fields already describe the *accepted* taxon: the same payload carries
+`species: "Chloris chloris"`. So the accepted name was there all along, next to the one being
+stored.
+
+### A subspecies made its own parent species an internal node
+
+`Motacilla alba yarrellii` is a leaf; `Motacilla alba` is its parent. Another class names the
+parent — and a parent is not a leaf, so `identify` would raise *"taxon 2490947 is not a leaf and
+cannot carry a detection score"* the first time a white wagtail called.
+
+Subspecies are now folded into their species, which the match payload supports for free. Nothing
+else in the app records a subspecies anyway: §1.1a's genus leaves are the one deliberate
+exception to species-level records, and it was made on purpose.
+
+### The corrected numbers
+
+| | before | after |
+|---|---|---|
+| leaves in the audio taxonomy | 746 | **801** |
+| classes naming a leaf | 746 | **801** |
+| shared with the vision taxonomy | 266 | 272 |
+| species the app could not log before | 480 | **529** |
+
+§62's table is corrected above. Every class now names a distinct species-rank leaf, and a test
+asserts exactly that over the shipped files rather than over a fixture.
+
+### The test that would not have caught it
+
+`test_the_resolved_classes_build_a_valid_taxonomy` passed throughout. It builds a tree from two
+chiffchaffs and checks the tree is valid — which it was. The property that mattered was never
+about the tree in isolation: it is that **the class map and the tree agree**, and nothing
+compared them until something loaded both.
+
+**Checked:** 151 Kotlin tests, 442 Python tests. The new asset test loads
+`audio_taxonomy.json` and `birdnet_classes.json` from disk, asserts every one of the 801 classes
+names a leaf, and checks the two trees agree about the 272 taxa they share.
 
 ---
 
