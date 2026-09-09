@@ -151,10 +151,14 @@ the app, which now asks "how sure do you want to be?" instead of showing a proba
 The same 95% costs an insect 0.70 and a bird 0.82, and four groups cannot reach it at all — the
 sheet says so rather than promising it.
 
-**Audio is in progress**, out of §6A order at your request. Done: §4A in Kotlin against a golden
-fixture, and the audio taxonomy — `lifelist-birdnet` crosses all 801 western-palearctic classes
-into GBIF (§60–62). Not done: the model asset, `AudioRecord` capture, ONNX inference, the session
-screen. Nothing in `app/` references audio yet.
+**Audio is written end to end and has never run on a phone** (§60–63). §4A in both languages
+against `golden_audio.json`; the audio taxonomy and class map from `lifelist-birdnet`; the model
+pinned by digest and fetched in CI by `lifelist-birdnet-model`; `Listener`, `Recorder`,
+`WindowBuffer` and a listening screen. Verified off-device down to a real recording — a
+Wikimedia robin identifies at 93% and, in a quieter window at 0.62, is honestly refused.
+
+**Untested and unknowable from here:** the microphone, the permission flow, the 149 MB model on
+a real heap, and whether a Pixel hears a blackbird. That wants a tagged build and a garden.
 
 The backbone comparison (`bioclip` vs `bioclip-vit-b-16-inat-only`) is still the next non-audio
 item. It costs a re-embed, 4–6 hours, so it wants a deliberate day.

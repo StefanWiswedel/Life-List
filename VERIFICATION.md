@@ -2613,6 +2613,87 @@ where sound is diagnostic, and 48 of them are not birds at all.
 
 ---
 
+## 63. The model runs, on a real recording — 9 Sep 2026
+
+The pinned asset, fetched, verified, inspected, and pointed at a bird.
+
+### What was checked, in order
+
+**The bytes.** `b77eda58…e48c`, matching both the mirror's `SHA256SUMS` and its `models.json`.
+`shared/birdnet/models.lock.json` pins that digest **in the repository**, not by reading the
+manifest served beside the file — a mirror that swapped the model would swap its manifest in the
+same breath. `lifelist-birdnet-model` fetches to a `.part`, verifies, and only then moves into
+place, because an interrupted download that lands on the final name looks to every later step
+exactly like a good one.
+
+**The graph.** opset 18, produced by PyTorch 2.9. Input `input: [batch, 160000]` float32; outputs
+`predictions: [batch, 801]` and `embeddings: [batch, 1280]`. 1,166 nodes, of which 177 are Conv
+and 133 Sigmoid, and **no STFT op** — the spectrogram is a Conv1d inside the graph. So the client
+does no signal processing at all, which is the same division of labour §22 forced on the vision
+side after a bilinear resize cost 8% of predictions.
+
+**It runs.** 104 ms per five-second window on two weak cloud cores. Silence and white noise
+produce nothing above 0.25 and everything stays inside [0, 1] without summing to 1 — sigmoid,
+multi-label, confirmed by running it rather than by reading about it.
+
+**It hears a bird.** BirdNET's own example soundscape gave one detection, Red Crossbill at 0.29,
+with everything else at 0.01 — which is what a North American recording *should* look like
+through a western-palearctic model, and is weak evidence of anything else. So: a CC-licensed
+European robin from Wikimedia Commons, 67 seconds, resampled 48 kHz → 32 kHz.
+
+```
+0.936  European Robin        (Erithacus rubecula)
+0.749  Carrion Crow          (Corvus corone)
+0.487  Rose-ringed Parakeet  (Psittacula krameri)
+```
+
+Around 0.9 in every one of the fourteen windows. The crow and the parakeet are in the recording
+too — multi-label doing exactly what §4A.1 says it does.
+
+### Then the same audio through the whole app path
+
+Class map → GBIF ids → audio taxonomy → §4A. Two windows, at the 70% target:
+
+| window | BirdNET | the app says |
+|---|---|---|
+| 0–5 s | robin 0.93 | **European Robin**, species, 93% |
+| 60–65 s | robin 0.62 | **cannot identify**, 38% held by "none of these" |
+
+The second row is the decision from §60 arriving unprompted on real audio. Under the old §4A.3
+that window said "European Robin, 100%".
+
+### The client, and what is testable in it
+
+`WindowBuffer` and `pcm16ToFloat` are in `core`, with tests, because they are where a session's
+timestamps go quietly wrong by one hop and where a half-filled microphone buffer becomes a
+stutter the model tries to identify. Nine tests, including the one that matters: the same audio
+must window identically whether it arrives in one lump or in the ragged chunks a real device
+hands over.
+
+`Recorder` is deliberately thin — `AudioRecord`, a loop, and nothing else — because none of it
+can run anywhere but a phone. That is §53's lesson applied rather than restated: the way to be
+wrong less often about unrunnable code is to have less of it, not to reason harder about what
+there is. It asks for `UNPROCESSED` where the device offers it, since the default `MIC` source
+runs noise suppression tuned to keep a human voice and discard everything else — the exact wrong
+instinct for a bush-cricket.
+
+**Each detection is resolved at its own group's threshold.** A soundscape is precisely where a
+bird and a frog turn up in one window, and answering both at one number would undo the argument
+§59 exists to make. The record stores the threshold it was decided at, as a photographed record
+does.
+
+### Not verified, and it cannot be from here
+
+Nothing in this section ran on Android. The microphone, the permission flow, the 149 MB model
+mapping into a phone's memory, and whether a Pixel hears a blackbird in a garden are all
+untested and will stay that way until the APK is on the device. The parts that *could* be tested
+off-device have been; the rest is honestly unknown.
+
+**Checked:** 147 Kotlin tests, 440 Python tests, ruff clean, both golden fixtures in sync, the
+app compiles.
+
+---
+
 ---
 
 ## Open questions

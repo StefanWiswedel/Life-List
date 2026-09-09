@@ -10,7 +10,14 @@
         than where it was taken. See Gallery.coordinatesOf.
     -->
     <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION" />
+    <!--
+        Audio identification. Asked for when the listening screen is opened and never before —
+        a permission prompt on launch, for a feature the person has not gone looking for, is
+        how an app teaches people to deny it.
+    -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-feature android:name="android.hardware.camera.any" android:required="false" />
+    <uses-feature android:name="android.hardware.microphone" android:required="false" />
 
     <application
         android:allowBackup="true"

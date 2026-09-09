@@ -88,6 +88,16 @@ jobs:
           fi
           ls -lh app/src/main/assets/
 
+      # The 149 MB BirdNET graph, pinned by digest in shared/birdnet/models.lock.json. The
+      # digest lives in the repository rather than being read from the mirror's own manifest:
+      # a mirror that swapped the model would swap its manifest in the same breath.
+      - name: Fetch the BirdNET model
+        run: |
+          lifelist-birdnet-model --out app/src/main/assets/birdnet.onnx -v
+          cp shared/model/audio_taxonomy.json shared/model/birdnet_classes.json \
+             app/src/main/assets/
+          ls -lh app/src/main/assets/birdnet.onnx
+
       # 3,462 CC-licensed photographs by named people. The index is committed; the bytes
       # belong to the bucket, and every one carries its photographer into the app.
       - name: Fetch reference photos
@@ -138,7 +148,5 @@ jobs:
             cannot upgrade a differently-signed build. Enable installation from unknown
             sources, then open the APK on the device.
 
-            The identification model is not in this build yet — stage 6 has exported
-            nothing. The result screen runs the real rollup over stand-in probabilities,
-            so what is testable here is the wording, the typography and the threshold
-            behaviour, not accuracy.
+            **Powered by BirdNET** — BirdNET+ V3.0 developer preview (Preview 3.1),
+            CC BY-SA 4.0, Lasseck, Eibl, Klinck & Kahl 2026.

@@ -1,9 +1,12 @@
 package dk.lifelist.app
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.view.KeyEvent
+import androidx.core.content.ContextCompat
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -29,6 +32,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.PhotoCamera
+import androidx.compose.material.icons.outlined.GraphicEq
 import androidx.compose.material.icons.outlined.PhotoLibrary
 import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -118,7 +122,7 @@ class MainActivity : ComponentActivity() {
  * A group opens on top of home rather than replacing it — the counts on the home screen were
  * going nowhere, which made them a scoreboard rather than a way in.
  */
-private enum class Screen { HOME, GROUP, CAPTURE, THINKING, RESULT }
+private enum class Screen { HOME, GROUP, CAPTURE, THINKING, RESULT, LISTEN }
 
 /**
  * The location permissions a photograph wants, and does not have yet.
@@ -170,6 +174,21 @@ fun App() {
     // changes underneath it (spec §4.4).
     var target by remember { mutableFloatStateOf(Prefs.target(context)) }
     var caseIndex by remember { mutableIntStateOf(0) }
+
+    // Listening. The session lives on a background thread and posts into these; a session is a
+    // container of observations, not one observation, so `heard` is a list that grows.
+    var listening by remember { mutableStateOf(false) }
+    var heard by remember { mutableStateOf<List<Heard>>(emptyList()) }
+    var listenedFor by remember { mutableFloatStateOf(0f) }
+    var listenNote by remember { mutableStateOf<String?>(null) }
+    var micGranted by remember {
+        mutableStateOf(
+            ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) ==
+                PackageManager.PERMISSION_GRANTED
+        )
+    }
+    val recorder = remember { Recorder() }
+    var listener by remember { mutableStateOf<Listener?>(null) }
 
     var photos by remember { mutableStateOf<List<Bitmap>>(emptyList()) }
     var shotCoordinates by remember { mutableStateOf<Pair<Double, Double>?>(null) }
@@ -361,6 +380,7 @@ fun App() {
         when {
             screen == Screen.RESULT && picked != null -> picked = null
             screen == Screen.RESULT -> startOver()
+            screen == Screen.LISTEN -> { recorder.stop(); screen = Screen.HOME }
             screen == Screen.CAPTURE && photos.isNotEmpty() -> screen = Screen.RESULT
             else -> { screen = Screen.HOME; group = null }
         }
@@ -374,6 +394,66 @@ fun App() {
         if (wanted.isNotEmpty()) askWhere.launch(wanted)
     }
 
+    val askMicrophone = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted -> micGranted = granted }
+
+    /**
+     * Run a session on a background thread.
+     *
+     * Every window is scored and identified as it arrives, so the list grows while the bird is
+     * still singing. A species already on the list is *updated* rather than repeated when a
+     * later window hears it better — a blackbird singing for two minutes is one record, not
+     * twenty-four, and the best window is the one worth keeping.
+     */
+    fun startListening() {
+        val model = listener ?: run {
+            listenNote = "The audio model is not in this build."
+            return
+        }
+        heard = emptyList()
+        listenedFor = 0f
+        listening = true
+        listenNote = null
+        thread {
+            runCatching {
+                recorder.record { window ->
+                    listenedFor = window.startS + 5f
+                    val found = model.listen(
+                        window.samples,
+                        certainty = certaintyTable,
+                        target = target,
+                        windowStartS = window.startS,
+                    )
+                    if (found.isEmpty()) return@record
+                    val fresh = found.map { heardFrom(model.taxonomy, it) }
+                    heard = (heard + fresh)
+                        .groupBy { it.taxonId }
+                        .map { (_, rows) -> rows.maxByOrNull { it.confidence ?: it.detected }!! }
+                        .sortedByDescending { it.confidence ?: it.detected }
+                }
+            }.onFailure { error ->
+                listenNote = "The microphone stopped: ${error.message ?: error::class.simpleName}"
+            }
+            listening = false
+        }
+    }
+
+    // Opened when the screen is first visited, not at launch: mapping 149 MB for a feature
+    // nobody has opened is a second of cold start spent on nothing.
+    LaunchedEffect(screen) {
+        if (screen != Screen.LISTEN || listener != null) return@LaunchedEffect
+        thread {
+            when (val outcome = Listener.openOrReport(context)) {
+                is Listener.Companion.Outcome.Ready -> listener = outcome.listener
+                is Listener.Companion.Outcome.NotBundled ->
+                    listenNote = "This build does not carry the audio model."
+                is Listener.Companion.Outcome.Failed ->
+                    listenNote = "The audio model would not open — ${outcome.reason}"
+            }
+        }
+    }
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         containerColor = MaterialTheme.colorScheme.background,
@@ -385,6 +465,19 @@ fun App() {
                     actions = {
                         IconButton(onClick = { thresholdSheet = true }) {
                             Icon(Icons.Outlined.Tune, contentDescription = "How sure before it commits")
+                        }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.background,
+                        titleContentColor = MaterialTheme.colorScheme.onBackground,
+                    ),
+                )
+
+                Screen.LISTEN -> TopAppBar(
+                    title = { Text("Listen", style = MaterialTheme.typography.titleLarge) },
+                    navigationIcon = {
+                        IconButton(onClick = { recorder.stop(); screen = Screen.HOME }) {
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                         }
                     },
                     colors = TopAppBarDefaults.topAppBarColors(
@@ -482,6 +575,21 @@ fun App() {
                                 modifier = Modifier.size(23.dp),
                             )
                         }
+                        SmallFloatingActionButton(
+                            onClick = {
+                                screen = Screen.LISTEN
+                                if (!micGranted) askMicrophone.launch(Manifest.permission.RECORD_AUDIO)
+                            },
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                            contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.size(52.dp),
+                        ) {
+                            Icon(
+                                Icons.Outlined.GraphicEq,
+                                contentDescription = "Identify a sound",
+                                modifier = Modifier.size(23.dp),
+                            )
+                        }
                         FloatingActionButton(
                             onClick = { photos = emptyList(); screen = Screen.CAPTURE },
                             containerColor = MaterialTheme.colorScheme.primary,
@@ -511,6 +619,37 @@ fun App() {
                             danishTotals = redList.familyTotals,
                         )
                     }
+                }
+
+                Screen.LISTEN -> Box(Modifier.fillMaxSize().padding(insets)) {
+                    ListenScreen(
+                        listening = listening,
+                        heard = heard,
+                        elapsedSeconds = listenedFor,
+                        permission = micGranted,
+                        modelReady = listener != null,
+                        note = listenNote,
+                        onStart = ::startListening,
+                        onStop = { recorder.stop() },
+                        onSave = { entry ->
+                            val paths = emptyList<String>()
+                            val id = store.newId()
+                            records = store.add(
+                                Record(
+                                    id = id,
+                                    taxonId = entry.taxonId,
+                                    observedAt = System.currentTimeMillis(),
+                                    photoPaths = paths,
+                                    threshold = entry.threshold,
+                                    modelVersion = loaded?.meta?.version ?: "unknown",
+                                    determinedBy = Determiner.MODEL,
+                                    confidence = entry.confidence,
+                                )
+                            )
+                            heard = heard.map { if (it.taxonId == entry.taxonId) it.copy(saved = true) else it }
+                            scope.launch { snackbar.showSnackbar("Added to your list") }
+                        },
+                    )
                 }
 
                 Screen.CAPTURE -> CaptureScreen(

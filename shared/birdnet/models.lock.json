@@ -1,0 +1,46 @@
+{
+  "note": [
+    "The BirdNET asset the release build fetches, pinned by digest.",
+    "",
+    "The digest lives HERE, in the repository, and not in the remote manifest. Reading the",
+    "expected hash from the same server that serves the file verifies nothing: a mirror that",
+    "swapped the model would swap its manifest in the same breath. Pinned here, a changed file",
+    "fails the build and a deliberate upgrade is a commit somebody can read.",
+    "",
+    "BirdNET V3.0 publishes on Zenodo, which this project's network cannot reach (VERIFICATION",
+    "§61). These bytes come from a third-party mirror and matched the digests that mirror",
+    "publishes; they have not been checked against Zenodo's own. Said plainly because it is the",
+    "kind of thing that is easy to forget once it works.",
+    "",
+    "fp32 rather than fp16: ONNX Runtime upconverts fp16 on CPU, so it is slower and saves no",
+    "memory — the same conclusion §21 reached for the vision model."
+  ],
+  "birdnet_version": "3.0-preview3.1",
+  "upstream": "https://zenodo.org/records/20703646",
+  "mirror": "https://huggingface.co/tphakala/BirdNET-v3.0-Models",
+  "licence": "CC BY-SA 4.0 — 'Powered by BirdNET' belongs in the credits screen and the README",
+  "region": "western-palearctic",
+  "files": {
+    "model": {
+      "url": "https://huggingface.co/tphakala/BirdNET-v3.0-Models/resolve/main/regional/western-palearctic/birdnet-v3.0-preview3.1-western-palearctic-fp32-b1.onnx",
+      "sha256": "b77eda5827064e1ca244ff16b4c4fc98040da1dc848ad0608683e6bda9f0e48c",
+      "bytes": 149354791
+    },
+    "labels": {
+      "url": "https://huggingface.co/tphakala/BirdNET-v3.0-Models/resolve/main/regional/western-palearctic/birdnet-v3.0-preview3.1-western-palearctic-labels-b1.txt",
+      "sha256": "10a2fb277ce4dc981f6a68ac11bd073ff3c9e28f2c929c1bcf0ecb553aa56ff3",
+      "bytes": 28565
+    }
+  },
+  "graph": {
+    "opset": 18,
+    "input": {"name": "input", "shape": ["batch", 160000], "dtype": "float32"},
+    "outputs": [
+      {"name": "predictions", "shape": ["batch", 801], "activation": "sigmoid", "multi_label": true},
+      {"name": "embeddings", "shape": ["batch", 1280]}
+    ],
+    "sample_rate": 32000,
+    "window_seconds": 5,
+    "measured": "104 ms per window on two weak cloud cores; see VERIFICATION.md §63"
+  }
+}

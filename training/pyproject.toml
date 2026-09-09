@@ -43,6 +43,7 @@ lifelist-reference-index = "lifelist_train.cli.reference_index:main"
 lifelist-wikipedia = "lifelist_train.cli.wikipedia:main"
 # Audio: BirdNET's classes crossed into GBIF, and the second taxonomy they make (§61).
 lifelist-birdnet = "lifelist_train.cli.birdnet:main"
+lifelist-birdnet-model = "lifelist_train.cli.birdnet_model:main"
 lifelist-redlist = "lifelist_train.cli.redlist:main"
 lifelist-thresholds = "lifelist_train.cli.thresholds:main"
 
