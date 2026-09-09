@@ -52,6 +52,21 @@ reference-index = [
     "--out", "../shared/model/reference_photos.json",
 ]
 
+# BirdNET's 801 western-palearctic classes crossed into GBIF, producing the audio taxonomy and
+# the class map. Twenty seconds of GBIF; prints the refusals and writes nothing without --commit.
+birdnet = [
+    "-m", "lifelist_train.cli.birdnet",
+    "--labels", "../shared/birdnet/birdnet-v3.0-preview3.1-western-palearctic-labels-b1.txt",
+    "-v",
+]
+
+birdnet-commit = [
+    "-m", "lifelist_train.cli.birdnet",
+    "--labels", "../shared/birdnet/birdnet-v3.0-preview3.1-western-palearctic-labels-b1.txt",
+    "--commit",
+    "-v",
+]
+
 # 13,899 assessments over 695 pages, about eight minutes at the API's pace.
 redlist = ["-m", "lifelist_train.cli.redlist", "-v"]
 

@@ -1,0 +1,40 @@
+{
+  "note": [
+    "BirdNET names a class; GBIF is the app's spine; sometimes they disagree. Every entry here",
+    "is a decision a person made once, so it stays made and shows up in a diff rather than",
+    "being re-litigated on each run. Nothing is aliased automatically — an unaliased",
+    "disagreement is reported and refused, because a silently coarsened detection looks",
+    "exactly like a working bridge (build plan §3.5).",
+    "",
+    "Two kinds live here, and the difference matters. A nomenclatural alias renames the same",
+    "organism and loses nothing. A lump maps a split BirdNET models onto the broader species",
+    "GBIF still recognises, which does lose information — the record will read as the parent",
+    "species. Each is marked below."
+  ],
+  "aliases": {
+    "Astur gentilis": "Accipiter gentilis",
+    "Tachyspiza badia": "Accipiter badius",
+    "Tachyspiza brevipes": "Accipiter brevipes",
+    "Anarhynchus atrifrons": "Charadrius atrifrons",
+    "Anarhynchus pecuarius": "Charadrius pecuarius",
+    "Botaurus minutus": "Ixobrychus minutus",
+    "Thinornis dubius": "Charadrius dubius",
+    "Gyps rueppelli": "Gyps rueppellii",
+    "Phylloscopus sibilatrix": "Phylloscopus sibillatrix",
+    "Chloris chloris": "Carduelis chloris",
+    "Cecropis rufula": "Cecropis daurica"
+  },
+  "kind": {
+    "Astur gentilis": "nomenclature — the goshawk moved to Astur in recent checklists; GBIF still says Accipiter",
+    "Tachyspiza badia": "nomenclature — Accipiter split into Tachyspiza and others; GBIF has not adopted it",
+    "Tachyspiza brevipes": "nomenclature — as above",
+    "Anarhynchus atrifrons": "nomenclature — sand plovers moved to Anarhynchus; GBIF accepts Charadrius atrifrons",
+    "Anarhynchus pecuarius": "nomenclature — as above",
+    "Botaurus minutus": "nomenclature — little bittern moved from Ixobrychus to Botaurus; GBIF still says Ixobrychus",
+    "Thinornis dubius": "nomenclature — little ringed plover moved to Thinornis; GBIF still says Charadrius",
+    "Gyps rueppelli": "spelling — GBIF holds the name as rueppellii, so the match came back FUZZY",
+    "Phylloscopus sibilatrix": "spelling — GBIF itself holds the wood warbler as sibillatrix, with two l's",
+    "Chloris chloris": "nomenclature — GBIF files the greenfinch under Carduelis chloris and resolves it to the accepted key",
+    "Cecropis rufula": "LUMP — BirdNET splits the European red-rumped swallow from Cecropis daurica and GBIF does not, so a detection will read as daurica"
+  }
+}

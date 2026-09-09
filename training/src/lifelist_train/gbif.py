@@ -375,6 +375,20 @@ class GbifClient:
             if max_pages is not None and pages >= max_pages:
                 return
 
+    def match(self, name: str, strict: bool = False) -> dict[str, Any]:
+        """Resolve a scientific name against the backbone.
+
+        One request carries the whole lineage — keys *and* names — so a tree can be built
+        without a second call per taxon. At BirdNET's 801 western-palearctic classes that is
+        the difference between a minute and twenty.
+
+        `strict=False` on purpose: the endpoint then reports `matchType: FUZZY` or
+        `HIGHERRANK` instead of returning nothing, and the caller can tell a spelling slip
+        from a taxonomic disagreement. Both are refused — see `birdnet_taxonomy.resolve` —
+        but they need different humans to look at them.
+        """
+        return self._get("/species/match", name=name, strict=str(bool(strict)).lower())
+
     def species(self, key: int) -> dict[str, Any]:
         return self._get(f"/species/{key}")
 

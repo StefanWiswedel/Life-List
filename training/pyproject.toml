@@ -41,6 +41,8 @@ lifelist-export = "lifelist_train.cli.export:main"
 lifelist-reference-photos = "lifelist_train.cli.reference:main"
 lifelist-reference-index = "lifelist_train.cli.reference_index:main"
 lifelist-wikipedia = "lifelist_train.cli.wikipedia:main"
+# Audio: BirdNET's classes crossed into GBIF, and the second taxonomy they make (§61).
+lifelist-birdnet = "lifelist_train.cli.birdnet:main"
 lifelist-redlist = "lifelist_train.cli.redlist:main"
 lifelist-thresholds = "lifelist_train.cli.thresholds:main"
 

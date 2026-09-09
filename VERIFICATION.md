@@ -2545,6 +2545,74 @@ That is a slice of work, not a paragraph, and it is where audio goes next.
 
 ---
 
+## 62. The audio taxonomy: 801 classes, 801 crossed, 480 species the app could not log before — 9 Sep 2026
+
+`lifelist-birdnet` crosses BirdNET's western-palearctic label file into GBIF and writes two
+artefacts plus a report. It follows the rule §28, §37 and §42 all paid for: **every committed
+artefact has a committed builder behind it.**
+
+- `shared/model/audio_taxonomy.json` — 1,293 nodes, **746 leaves**.
+- `shared/model/birdnet_classes.json` — output-vector position → GBIF key. Index order is the
+  contract, which is why BUILD.md §3.1 makes a BirdNET version bump a deliberate re-run.
+
+### Only exact matches, and the reason is a goshawk
+
+`801/801 classes resolved.` That number is only worth anything because of what is refused.
+
+GBIF's match endpoint answers `HIGHERRANK` when it knows a genus but not the species under that
+name. `Astur gentilis` — BirdNET's placement for the goshawk — comes back as the **genus**
+*Astur*, `DOUBTFUL`, at confidence 92. Accepting it would file every goshawk detection under a
+genus stub, and from the outside that is indistinguishable from a bridge that works. `FUZZY` is
+GBIF guessing at a spelling, and this project does not accept guesses about which organism
+something is.
+
+So both are refused and reported separately, because they need different fixes. The first run
+refused 11 classes:
+
+| | |
+|---|---|
+| known only above species | 8 — `Astur`, `Tachyspiza`, `Anarhynchus`, `Botaurus`, `Thinornis`: recent generic moves GBIF has not adopted |
+| fuzzy | 2 — including `Phylloscopus sibilatrix`, where **GBIF itself** holds the wood warbler as `sibillatrix`, with two l's |
+| no match | 1 — `Chloris chloris`, the greenfinch, which GBIF files under `Carduelis chloris` |
+
+Every one is a real taxonomic disagreement, and every one is about a bird you can see from a
+Danish garden.
+
+### Aliases, so a decision stays decided
+
+`shared/birdnet_aliases.json` records eleven human decisions, each with a note saying which kind
+it is — a **nomenclatural** rename that loses nothing, or a **lump** that does. Only one is a
+lump: BirdNET splits the European red-rumped swallow `Cecropis rufula` from `Cecropis daurica`
+and GBIF does not, so a detection will read as *daurica*. That is written down rather than
+buried, because it is the sort of thing that is invisible once it works.
+
+With the aliases: **801/801, 100%**, in twenty seconds.
+
+### A retry, because a dropped connection is not a taxonomic fact
+
+The aliased run first came back 798/801, and the three failures were the goshawk, the Levant
+sparrowhawk and the bank myna — names that had just been *proved* to resolve. They were
+connection resets. Recorded straight into an artefact, "GBIF has never heard of the goshawk" and
+"the connection dropped" are indistinguishable, and a report that is mostly noise stops being
+read. Four attempts with backoff, and a test that fails twice before succeeding.
+
+### What audio actually buys
+
+| | |
+|---|---|
+| audio leaves | 746 |
+| already in the vision taxonomy | 266 |
+| **species the app could not log at all before** | **480** |
+
+Of the 480: 432 birds, **22 Orthoptera**, 20 mammals, 6 amphibians. Bush-crickets, field
+crickets, *Bombina variegata*, *Psophus stridulus* — which is §3.2's argument arriving as a
+measurement rather than a claim. Those are precisely the groups the vision model is worst at and
+where sound is diagnostic, and 48 of them are not birds at all.
+
+**Checked:** 433 Python tests, ruff clean, both golden fixtures in sync.
+
+---
+
 ---
 
 ## Open questions

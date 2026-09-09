@@ -50,6 +50,7 @@ When trading off, trade in favour of a record being keepable at the rank the evi
 | coverage | **3,482 leaves, 676 Lepidoptera** at ≥20 observations (§44) — up from 2,294 and 468 |
 | rarity | Danish Red List badge, and **family progress against Denmark's totals** (§55) |
 | certainty | **the dial is an accuracy, not a probability** — one threshold per group (§58, §59) |
+| audio | §4A in both languages with a golden fixture; **801 BirdNET classes crossed, 480 new species** (§60–62) |
 | release workflow | tag `v*` → GitHub Release with an APK attached |
 
 ## Rules that have already earned their place
@@ -150,5 +151,10 @@ the app, which now asks "how sure do you want to be?" instead of showing a proba
 The same 95% costs an insect 0.70 and a bird 0.82, and four groups cannot reach it at all — the
 sheet says so rather than promising it.
 
-Next up is the backbone comparison: `bioclip` against `bioclip-vit-b-16-inat-only`. It costs a
-re-embed, 4–6 hours, so it wants a deliberate day.
+**Audio is in progress**, out of §6A order at your request. Done: §4A in Kotlin against a golden
+fixture, and the audio taxonomy — `lifelist-birdnet` crosses all 801 western-palearctic classes
+into GBIF (§60–62). Not done: the model asset, `AudioRecord` capture, ONNX inference, the session
+screen. Nothing in `app/` references audio yet.
+
+The backbone comparison (`bioclip` vs `bioclip-vit-b-16-inat-only`) is still the next non-audio
+item. It costs a re-embed, 4–6 hours, so it wants a deliberate day.
