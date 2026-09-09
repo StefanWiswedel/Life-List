@@ -38,3 +38,4 @@ jobs:
         working-directory: training
         run: |
           python tools/gen_golden.py --check
+          python tools/gen_golden_audio.py --check

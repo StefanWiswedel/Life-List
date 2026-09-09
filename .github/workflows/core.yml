@@ -35,6 +35,7 @@ jobs:
         run: |
           pip install -e '.[dev]'
           python tools/gen_golden.py --check
+          python tools/gen_golden_audio.py --check
 
       - name: Kotlin rollup reproduces the fixture
         run: ./gradlew :core:test --no-daemon

@@ -19,6 +19,20 @@ DEFAULT_DETECTION_THRESHOLD = 0.25
 DEFAULT_CONFUSION_MARGIN = 0.5
 DEFAULT_GEO_WEIGHT = 1.0
 
+#: A range likelihood of zero must lower a species' odds, never make it unloggable.
+GEO_FLOOR = 1e-6
+
+
+def f32(x: float) -> float:
+    """Round to float32 and hand back a Python float.
+
+    Every score in this module is a float32 on the phone — BirdNET emits fp16 or fp32 and
+    Kotlin holds `Float`. Carrying float64 through here instead would make the golden fixture
+    disagree with the app in the seventh decimal for no reason anybody could act on, and would
+    make a real disagreement impossible to spot among the noise.
+    """
+    return float(np.float32(x))
+
 # Confusion sets are only coherent within a family; a frog and a warbler singing at the
 # same time are two detections, not two candidates for one identification.
 MAX_LCA_RANK = RANK_ORDER["family"]
@@ -52,9 +66,9 @@ def detect(
     if not 0.0 < detection_threshold < 1.0:
         raise ValueError(f"detection_threshold must be in (0, 1), got {detection_threshold}")
     out = [
-        Detection(taxon_id=tid, score=float(s), window_start_s=window_start_s)
+        Detection(taxon_id=tid, score=f32(s), window_start_s=window_start_s)
         for tid, s in scores.items()
-        if s >= detection_threshold
+        if f32(s) >= f32(detection_threshold)
     ]
     # descending score, ties by lower taxon_id — deterministic, as everywhere else
     out.sort(key=lambda d: (-d.score, d.taxon_id))
@@ -70,13 +84,19 @@ def apply_geo_prior(
 
     A hard range filter would make a genuine vagrant unloggable, which is exactly the
     record a naturalist most wants. Weight 0.0 disables.
+
+    Multiplied in float64 and stored back in float32, because that is what the phone does:
+    `Audio.applyGeoPrior` widens two floats, raises to the power, and narrows the result.
+    Doing it any other way here would put a difference into the golden fixture that is not a
+    difference in the algorithm.
     """
     if weight < 0:
         raise ValueError(f"geo_weight must be non-negative, got {weight}")
     if weight == 0.0:
-        return dict(scores)
+        return {tid: f32(s) for tid, s in scores.items()}
     return {
-        tid: float(s * (max(geo.get(tid, 0.0), 1e-6) ** weight)) for tid, s in scores.items()
+        tid: f32(np.float64(f32(s)) * max(np.float64(f32(geo.get(tid, 0.0))), GEO_FLOOR) ** weight)
+        for tid, s in scores.items()
     }
 
 
@@ -99,12 +119,14 @@ def confusion_set(
     """Spec §4A.2 — taxonomically coherent competitors scoring within ``margin``."""
     if not 0.0 < margin <= 1.0:
         raise ValueError(f"margin must be in (0, 1], got {margin}")
-    floor = detection.score * margin
+    # float32 product, as Kotlin's `detection.score * margin` is — the margin decides set
+    # membership, so a difference here is a different answer, not a rounding.
+    floor = f32(np.float32(detection.score) * np.float32(margin))
     members = {detection.taxon_id}
     for tid, s in scores.items():
         if tid == detection.taxon_id:
             continue
-        if s >= floor and lca_rank_depth(tax, detection.taxon_id, tid) >= MAX_LCA_RANK:
+        if f32(s) >= floor and lca_rank_depth(tax, detection.taxon_id, tid) >= MAX_LCA_RANK:
             members.add(tid)
     return tuple(sorted(members))
 
@@ -133,25 +155,26 @@ def identify(
     members = confusion_set(tax, raw, detection, margin)
     effective = apply_geo_prior(raw, geo, geo_weight) if geo else raw
 
-    total = sum(effective[m] for m in members)
+    # float64 accumulation over the ascending member list, exactly as Kotlin's `sumOf` does.
+    total = sum(np.float64(f32(effective[m])) for m in members)
     if total <= 0:
         raise ValueError("confusion set has zero total score")
 
     # Project onto the full leaf vector: everything outside the confusion set is
     # conditioned away, which is the point — we are asking "given one of these, which?"
-    p = np.zeros(tax.n_taxa, dtype=np.float64)
+    p = np.zeros(tax.n_taxa, dtype=np.float32)
     for m in members:
         node = tax.node(m)
         if node.leaf_index is None:
             raise ValueError(f"taxon {m} is not a leaf and cannot carry a detection score")
-        p[node.leaf_index] = effective[m] / total
+        p[node.leaf_index] = f32(np.float64(f32(effective[m])) / total)
 
     return AudioIdentification(
         detection=detection,
         result=rollup(tax, p, threshold=threshold),
         confusion_set=members,
         geo_applied=bool(geo) and geo_weight > 0.0,
-        raw_scores={m: raw[m] for m in members},
+        raw_scores={m: f32(raw[m]) for m in members},
     )
 
 
