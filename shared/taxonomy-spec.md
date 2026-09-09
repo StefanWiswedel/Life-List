@@ -262,17 +262,38 @@ simultaneous frog and warbler are two detections, not two candidates for one ide
 
 `c` is always in its own confusion set.
 
-### 4A.3 Conditional renormalisation
+### 4A.3 Conditional renormalisation, and the absent outcome
+
+The confusion set is not the whole sample space. **"None of these" is an outcome too**, and it
+carries the question asked first: was anything there at all?
 
 ```
-p_d = s_d / sum(s_e for e in confusion_set(c))
+absent      = product(1 - s_d for d in confusion_set(c))
+total       = sum(s_e for e in confusion_set(c)) + absent
+p_d         = s_d / total
+reserved    = absent / total
 ```
 
-This is a proper conditional distribution: *given that this sound is one of these, which is it?*
-It is then fed to §4 unchanged, over the subtree induced by the confusion set.
+BirdNET's scores are independent per-class probabilities, so `absent` is the product of their
+complements. It is handed to §4 as **reserved mass belonging to no taxon in the tree** — the
+leaves sum to `1 - reserved`, and the root's probability is `1 - reserved` rather than 1.
 
-The result: two *Phylloscopus* candidates at 0.45 and 0.40 resolve to the genus, not to a
-coin-flip binomial — the same honesty property the vision path has, from the same code.
+**[changed 9 Sep 2026]** This paragraph used to renormalise across the confusion set alone:
+`p_d = s_d / sum(...)`. That answers "given that this sound is one of these, which is it?" and
+silently drops the prior question. A detection with no close competitor divided by itself and
+came back at **1.0**, so BirdNET at 0.26 produced exactly the same card as BirdNET at 0.99 and
+no threshold could refuse either. See VERIFICATION.md §60.
+
+Two properties fall out, and both are the point:
+
+- **A lone detection is worth exactly its own score.** `s / (s + (1 - s)) = s`. With nothing to
+  confuse it with, the app is precisely as sure as BirdNET was — no more, and no less.
+- **Confident competitors still reach the genus.** Two candidates at 0.90 and 0.85 leave
+  `0.10 x 0.15 = 0.015` for the absent outcome, so the pair clears the threshold together even
+  though neither clears it alone. Two *Phylloscopus* candidates resolve to the genus rather than
+  to a coin-flip binomial — the same honesty property the vision path has, from the same code.
+
+Store `reserved` on the observation alongside the raw scores.
 
 ### 4A.4 Geographic prior
 

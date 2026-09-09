@@ -39,13 +39,15 @@ class RollupResult:
         return self.rank == "root"
 
 
-def node_probabilities(tax: Taxonomy, p: np.ndarray) -> dict[int, float]:
+def node_probabilities(
+    tax: Taxonomy, p: np.ndarray, reserved: float = 0.0
+) -> dict[int, float]:
     """P(n) for every node: the sum of its descendant leaves (spec §4.1).
 
     Accumulated in ascending leaf_index order in float64, per the determinism
     requirement — Kotlin must do the same or the golden test drifts.
     """
-    _check_leaf_probs(tax, p)
+    _check_leaf_probs(tax, p, reserved)
     p64 = p.astype(np.float64, copy=False)
     out: dict[int, float] = {}
     for taxon_id in tax.nodes:
@@ -59,18 +61,30 @@ def rollup(
     p: np.ndarray,
     threshold: float = DEFAULT_THRESHOLD,
     n_candidates: int = N_CANDIDATES,
+    reserved: float = 0.0,
 ) -> RollupResult:
     """Descend to the deepest node whose probability clears ``threshold``.
 
     Returns the root when nothing clears it, which the UI renders as "cannot
     identify" rather than as a bad guess.
+
+    ``reserved`` is probability mass belonging to **no taxon in this tree** — the "none
+    of these" outcome the audio path needs (spec §4A.3). The vision head is a softmax
+    over the leaves and always leaves it at zero. Audio does not: BirdNET's detection
+    score says whether anything is there at all, and holding that mass outside the tree
+    is what lets a weak lone detection fail to clear the threshold rather than
+    renormalising to a confident 100%.
+
+    A parameter rather than a slackened tolerance, on purpose. "Leaves plus reserved
+    sums to one" is still an invariant that catches a malformed vector; "the leaves sum
+    to whatever" would not be.
     """
     if not MIN_THRESHOLD <= threshold <= MAX_THRESHOLD:
         raise ValueError(
             f"threshold {threshold} outside the settable range "
             f"[{MIN_THRESHOLD}, {MAX_THRESHOLD}]"
         )
-    probs = node_probabilities(tax, p)
+    probs = node_probabilities(tax, p, reserved=reserved)
 
     node_id = tax.root_id
     while True:
@@ -93,7 +107,7 @@ def rollup(
         taxon_id=node_id,
         rank=node.rank,
         probability=float(np.float32(probs[node_id])),
-        candidates=top_candidates(tax, p, n_candidates),
+        candidates=top_candidates(tax, p, n_candidates, reserved),
         threshold=float(threshold),
     )
 
@@ -197,12 +211,14 @@ def chosen_nodes(
     return descend_block(tax, node_probability_block(tax, p), threshold)
 
 
-def top_candidates(tax: Taxonomy, p: np.ndarray, n: int = N_CANDIDATES) -> tuple[Candidate, ...]:
+def top_candidates(
+    tax: Taxonomy, p: np.ndarray, n: int = N_CANDIDATES, reserved: float = 0.0
+) -> tuple[Candidate, ...]:
     """Top-``n`` leaves by probability, descending; ties break by lower taxon_id.
 
     Not restricted to the returned node's subtree — see spec §4.3.
     """
-    _check_leaf_probs(tax, p)
+    _check_leaf_probs(tax, p, reserved)
     order = sorted(
         range(len(p)),
         key=lambda i: (-float(p[i]), tax.leaf_id(i)),
@@ -228,7 +244,7 @@ def is_rollup_correct(tax: Taxonomy, result: RollupResult, true_leaf_id: int) ->
     return tax.is_ancestor_or_self(result.taxon_id, true_leaf_id)
 
 
-def _check_leaf_probs(tax: Taxonomy, p: np.ndarray) -> None:
+def _check_leaf_probs(tax: Taxonomy, p: np.ndarray, reserved: float = 0.0) -> None:
     if p.ndim != 1:
         raise ValueError(f"expected a 1-D leaf probability vector, got shape {p.shape}")
     if len(p) != tax.n_taxa:
@@ -237,6 +253,10 @@ def _check_leaf_probs(tax: Taxonomy, p: np.ndarray) -> None:
         )
     if np.any(p < 0):
         raise ValueError("probability vector contains negative entries")
-    total = float(np.sum(p.astype(np.float64)))
+    if not 0.0 <= reserved <= 1.0:
+        raise ValueError(f"reserved must be in [0, 1], got {reserved}")
+    total = float(np.sum(p.astype(np.float64))) + float(reserved)
     if not np.isclose(total, 1.0, atol=1e-4):
-        raise ValueError(f"probability vector sums to {total}, expected 1.0")
+        raise ValueError(
+            f"probability vector plus reserved mass sums to {total}, expected 1.0"
+        )

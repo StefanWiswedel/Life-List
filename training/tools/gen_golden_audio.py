@@ -37,42 +37,56 @@ CASES: list[tuple[str, dict[int, float], float, float, float, dict[int, float] |
     (
         # The case the whole design exists for: two warblers a poor recording cannot separate.
         "confusable_congeners_resolve_to_genus",
-        {CHIFFCHAFF: 0.45, WILLOW: 0.40, ROBIN: 0.05},
+        {CHIFFCHAFF: 0.90, WILLOW: 0.85, ROBIN: 0.05},
         0.70, 0.25, 0.5, None, 1.0,
     ),
     (
         "a_clear_singer_reaches_species",
-        {CHIFFCHAFF: 0.90, WILLOW: 0.10, ROBIN: 0.05},
+        {CHIFFCHAFF: 0.95, WILLOW: 0.10, ROBIN: 0.05},
         0.70, 0.25, 0.5, None, 1.0,
     ),
     (
         # A frog and a warbler at once are two detections, not two candidates for one.
         "a_frog_and_a_warbler_are_two_detections",
-        {CHIFFCHAFF: 0.80, FROG: 0.70},
+        {CHIFFCHAFF: 0.80, FROG: 0.78},
         0.70, 0.25, 0.5, None, 1.0,
     ),
     (
         # The prior outvotes an out-of-season bird without removing it from the set.
         "the_prior_outvotes_but_does_not_erase",
-        {CHIFFCHAFF: 0.45, WILLOW: 0.40, ROBIN: 0.05},
+        {CHIFFCHAFF: 0.95, WILLOW: 0.92, ROBIN: 0.05},
         0.70, 0.25, 0.5, {CHIFFCHAFF: 0.05, WILLOW: 0.95, ROBIN: 0.5}, 1.0,
     ),
     (
         # Ordering, made visible: built prior-first, the willow warbler would have fallen
         # below the margin and vanished. Built to spec, it is still in the confusion set.
         "a_vagrant_survives_a_hostile_prior",
-        {CHIFFCHAFF: 0.60, WILLOW: 0.55},
+        {CHIFFCHAFF: 0.97, WILLOW: 0.95},
         0.70, 0.25, 0.5, {CHIFFCHAFF: 0.99, WILLOW: 0.000001}, 1.0,
     ),
     (
         "geo_weight_zero_disables_the_prior",
-        {CHIFFCHAFF: 0.45, WILLOW: 0.40},
+        {CHIFFCHAFF: 0.90, WILLOW: 0.85},
         0.70, 0.25, 0.5, {CHIFFCHAFF: 0.01, WILLOW: 0.99}, 0.0,
     ),
     (
         "a_wide_margin_takes_in_the_whole_genus",
-        {CHIFFCHAFF: 0.60, WILLOW: 0.20, ROBIN: 0.30},
+        {CHIFFCHAFF: 0.90, WILLOW: 0.30, ROBIN: 0.35},
         0.70, 0.25, 0.3, None, 1.0,
+    ),
+    (
+        # §4A.3's absent outcome: with nothing to confuse it with, the app is exactly as
+        # sure as BirdNET was — 0.99 reaches the species.
+        "a_lone_detection_carries_its_own_score",
+        {CHIFFCHAFF: 0.99, ROBIN: 0.01},
+        0.70, 0.25, 0.5, None, 1.0,
+    ),
+    (
+        # The same arithmetic on a sound scraping over the detection threshold: refused,
+        # where renormalising across the set alone would have said "chiffchaff, 100%".
+        "a_weak_lone_detection_is_refused",
+        {CHIFFCHAFF: 0.26, ROBIN: 0.01},
+        0.70, 0.25, 0.5, None, 1.0,
     ),
 ]
 
@@ -105,6 +119,7 @@ def build() -> dict:
                         "detection_score": round(ident.detection.score, 7),
                         "confusion_set": list(ident.confusion_set),
                         "geo_applied": ident.geo_applied,
+                        "absent": round(ident.absent, 7),
                         "raw_scores": {
                             str(k): round(v, 7) for k, v in sorted(ident.raw_scores.items())
                         },

@@ -163,55 +163,8 @@
     {
       "name": "confusable_congeners_resolve_to_genus",
       "scores": {
-        "100": 0.45,
-        "101": 0.4,
-        "110": 0.05
-      },
-      "threshold": 0.7,
-      "detection_threshold": 0.25,
-      "margin": 0.5,
-      "geo": null,
-      "geo_weight": 1.0,
-      "expected": [
-        {
-          "detection_taxon_id": 100,
-          "detection_score": 0.45,
-          "confusion_set": [
-            100,
-            101
-          ],
-          "geo_applied": false,
-          "raw_scores": {
-            "100": 0.45,
-            "101": 0.4
-          },
-          "taxon_id": 6,
-          "rank": "genus",
-          "probability": 1.0
-        },
-        {
-          "detection_taxon_id": 101,
-          "detection_score": 0.4,
-          "confusion_set": [
-            100,
-            101
-          ],
-          "geo_applied": false,
-          "raw_scores": {
-            "100": 0.45,
-            "101": 0.4
-          },
-          "taxon_id": 6,
-          "rank": "genus",
-          "probability": 1.0
-        }
-      ]
-    },
-    {
-      "name": "a_clear_singer_reaches_species",
-      "scores": {
         "100": 0.9,
-        "101": 0.1,
+        "101": 0.85,
         "110": 0.05
       },
       "threshold": 0.7,
@@ -224,15 +177,65 @@
           "detection_taxon_id": 100,
           "detection_score": 0.9,
           "confusion_set": [
+            100,
+            101
+          ],
+          "geo_applied": false,
+          "absent": 0.0084986,
+          "raw_scores": {
+            "100": 0.9,
+            "101": 0.85
+          },
+          "taxon_id": 6,
+          "rank": "genus",
+          "probability": 0.9915015
+        },
+        {
+          "detection_taxon_id": 101,
+          "detection_score": 0.85,
+          "confusion_set": [
+            100,
+            101
+          ],
+          "geo_applied": false,
+          "absent": 0.0084986,
+          "raw_scores": {
+            "100": 0.9,
+            "101": 0.85
+          },
+          "taxon_id": 6,
+          "rank": "genus",
+          "probability": 0.9915015
+        }
+      ]
+    },
+    {
+      "name": "a_clear_singer_reaches_species",
+      "scores": {
+        "100": 0.95,
+        "101": 0.1,
+        "110": 0.05
+      },
+      "threshold": 0.7,
+      "detection_threshold": 0.25,
+      "margin": 0.5,
+      "geo": null,
+      "geo_weight": 1.0,
+      "expected": [
+        {
+          "detection_taxon_id": 100,
+          "detection_score": 0.95,
+          "confusion_set": [
             100
           ],
           "geo_applied": false,
+          "absent": 0.05,
           "raw_scores": {
-            "100": 0.9
+            "100": 0.95
           },
           "taxon_id": 100,
           "rank": "species",
-          "probability": 1.0
+          "probability": 0.95
         }
       ]
     },
@@ -240,7 +243,7 @@
       "name": "a_frog_and_a_warbler_are_two_detections",
       "scores": {
         "100": 0.8,
-        "200": 0.7
+        "200": 0.78
       },
       "threshold": 0.7,
       "detection_threshold": 0.25,
@@ -255,34 +258,36 @@
             100
           ],
           "geo_applied": false,
+          "absent": 0.2,
           "raw_scores": {
             "100": 0.8
           },
           "taxon_id": 100,
           "rank": "species",
-          "probability": 1.0
+          "probability": 0.8
         },
         {
           "detection_taxon_id": 200,
-          "detection_score": 0.7,
+          "detection_score": 0.78,
           "confusion_set": [
             200
           ],
           "geo_applied": false,
+          "absent": 0.22,
           "raw_scores": {
-            "200": 0.7
+            "200": 0.78
           },
           "taxon_id": 200,
           "rank": "species",
-          "probability": 1.0
+          "probability": 0.78
         }
       ]
     },
     {
       "name": "the_prior_outvotes_but_does_not_erase",
       "scores": {
-        "100": 0.45,
-        "101": 0.4,
+        "100": 0.95,
+        "101": 0.92,
         "110": 0.05
       },
       "threshold": 0.7,
@@ -297,43 +302,45 @@
       "expected": [
         {
           "detection_taxon_id": 100,
-          "detection_score": 0.45,
+          "detection_score": 0.95,
           "confusion_set": [
             100,
             101
           ],
           "geo_applied": true,
+          "absent": 0.1152312,
           "raw_scores": {
-            "100": 0.45,
-            "101": 0.4
+            "100": 0.95,
+            "101": 0.92
           },
           "taxon_id": 101,
           "rank": "species",
-          "probability": 0.9440994
+          "probability": 0.8391622
         },
         {
           "detection_taxon_id": 101,
-          "detection_score": 0.4,
+          "detection_score": 0.92,
           "confusion_set": [
             100,
             101
           ],
           "geo_applied": true,
+          "absent": 0.1152312,
           "raw_scores": {
-            "100": 0.45,
-            "101": 0.4
+            "100": 0.95,
+            "101": 0.92
           },
           "taxon_id": 101,
           "rank": "species",
-          "probability": 0.9440994
+          "probability": 0.8391622
         }
       ]
     },
     {
       "name": "a_vagrant_survives_a_hostile_prior",
       "scores": {
-        "100": 0.6,
-        "101": 0.55
+        "100": 0.97,
+        "101": 0.95
       },
       "threshold": 0.7,
       "detection_threshold": 0.25,
@@ -346,43 +353,45 @@
       "expected": [
         {
           "detection_taxon_id": 100,
-          "detection_score": 0.6,
+          "detection_score": 0.97,
           "confusion_set": [
             100,
             101
           ],
           "geo_applied": true,
+          "absent": 0.0396999,
           "raw_scores": {
-            "100": 0.6,
-            "101": 0.55
+            "100": 0.97,
+            "101": 0.95
           },
           "taxon_id": 100,
           "rank": "species",
-          "probability": 0.999999
+          "probability": 0.9602991
         },
         {
           "detection_taxon_id": 101,
-          "detection_score": 0.55,
+          "detection_score": 0.95,
           "confusion_set": [
             100,
             101
           ],
           "geo_applied": true,
+          "absent": 0.0396999,
           "raw_scores": {
-            "100": 0.6,
-            "101": 0.55
+            "100": 0.97,
+            "101": 0.95
           },
           "taxon_id": 100,
           "rank": "species",
-          "probability": 0.999999
+          "probability": 0.9602991
         }
       ]
     },
     {
       "name": "geo_weight_zero_disables_the_prior",
       "scores": {
-        "100": 0.45,
-        "101": 0.4
+        "100": 0.9,
+        "101": 0.85
       },
       "threshold": 0.7,
       "detection_threshold": 0.25,
@@ -395,44 +404,46 @@
       "expected": [
         {
           "detection_taxon_id": 100,
-          "detection_score": 0.45,
+          "detection_score": 0.9,
           "confusion_set": [
             100,
             101
           ],
           "geo_applied": false,
+          "absent": 0.0084986,
           "raw_scores": {
-            "100": 0.45,
-            "101": 0.4
+            "100": 0.9,
+            "101": 0.85
           },
           "taxon_id": 6,
           "rank": "genus",
-          "probability": 1.0
+          "probability": 0.9915015
         },
         {
           "detection_taxon_id": 101,
-          "detection_score": 0.4,
+          "detection_score": 0.85,
           "confusion_set": [
             100,
             101
           ],
           "geo_applied": false,
+          "absent": 0.0084986,
           "raw_scores": {
-            "100": 0.45,
-            "101": 0.4
+            "100": 0.9,
+            "101": 0.85
           },
           "taxon_id": 6,
           "rank": "genus",
-          "probability": 1.0
+          "probability": 0.9915015
         }
       ]
     },
     {
       "name": "a_wide_margin_takes_in_the_whole_genus",
       "scores": {
-        "100": 0.6,
-        "101": 0.2,
-        "110": 0.3
+        "100": 0.9,
+        "101": 0.3,
+        "110": 0.35
       },
       "threshold": 0.7,
       "detection_threshold": 0.25,
@@ -442,33 +453,110 @@
       "expected": [
         {
           "detection_taxon_id": 100,
-          "detection_score": 0.6,
+          "detection_score": 0.9,
           "confusion_set": [
             100,
             101
           ],
           "geo_applied": false,
+          "absent": 0.0551181,
           "raw_scores": {
-            "100": 0.6,
-            "101": 0.2
+            "100": 0.9,
+            "101": 0.3
           },
           "taxon_id": 100,
           "rank": "species",
-          "probability": 0.75
+          "probability": 0.7086614
         },
         {
           "detection_taxon_id": 110,
-          "detection_score": 0.3,
+          "detection_score": 0.35,
           "confusion_set": [
             110
           ],
           "geo_applied": false,
+          "absent": 0.65,
           "raw_scores": {
-            "110": 0.3
+            "110": 0.35
           },
-          "taxon_id": 110,
+          "taxon_id": 0,
+          "rank": "root",
+          "probability": 0.35
+        },
+        {
+          "detection_taxon_id": 101,
+          "detection_score": 0.3,
+          "confusion_set": [
+            100,
+            101
+          ],
+          "geo_applied": false,
+          "absent": 0.0551181,
+          "raw_scores": {
+            "100": 0.9,
+            "101": 0.3
+          },
+          "taxon_id": 100,
           "rank": "species",
-          "probability": 1.0
+          "probability": 0.7086614
+        }
+      ]
+    },
+    {
+      "name": "a_lone_detection_carries_its_own_score",
+      "scores": {
+        "100": 0.99,
+        "110": 0.01
+      },
+      "threshold": 0.7,
+      "detection_threshold": 0.25,
+      "margin": 0.5,
+      "geo": null,
+      "geo_weight": 1.0,
+      "expected": [
+        {
+          "detection_taxon_id": 100,
+          "detection_score": 0.99,
+          "confusion_set": [
+            100
+          ],
+          "geo_applied": false,
+          "absent": 0.01,
+          "raw_scores": {
+            "100": 0.99
+          },
+          "taxon_id": 100,
+          "rank": "species",
+          "probability": 0.99
+        }
+      ]
+    },
+    {
+      "name": "a_weak_lone_detection_is_refused",
+      "scores": {
+        "100": 0.26,
+        "110": 0.01
+      },
+      "threshold": 0.7,
+      "detection_threshold": 0.25,
+      "margin": 0.5,
+      "geo": null,
+      "geo_weight": 1.0,
+      "expected": [
+        {
+          "detection_taxon_id": 100,
+          "detection_score": 0.26,
+          "confusion_set": [
+            100
+          ],
+          "geo_applied": false,
+          "absent": 0.74,
+          "raw_scores": {
+            "100": 0.26
+          },
+          "taxon_id": 0,
+          "rank": "root",
+          "probability": 0.26
         }
       ]
     }

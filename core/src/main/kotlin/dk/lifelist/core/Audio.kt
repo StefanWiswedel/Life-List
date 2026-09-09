@@ -49,6 +49,8 @@ object Audio {
         val result: RollupResult,
         val confusionSet: List<Int>,
         val geoApplied: Boolean,
+        /** Mass held by "none of these" (spec §4A.3). 0.74 for a lone detection at 0.26. */
+        val absent: Float,
         /** Pre-prior scores, kept so a suppressed vagrant stays recoverable (spec §4A.4). */
         val rawScores: Map<Int, Float>,
     )
@@ -139,7 +141,25 @@ object Audio {
         val members = confusionSet(tax, raw, detection, margin)
         val effective = if (geo != null) applyGeoPrior(raw, geo, geoWeight) else raw
 
-        val total = members.sumOf { effective.getValue(it).toDouble() }
+        // "None of these" — spec §4A.3.
+        //
+        // Renormalising across the confusion set alone answers "given that this sound is one
+        // of these, which is it?" and throws away the question asked first: whether anything
+        // is there at all. A lone detection then divides by itself and comes back at 100%, so
+        // BirdNET at 0.26 was presented exactly like BirdNET at 0.99 and no threshold could
+        // refuse either (VERIFICATION §60).
+        //
+        // BirdNET's scores are independent per-class probabilities, so P(none present) is the
+        // product of their complements. Giving that outcome its own mass — outside the tree,
+        // where no taxon can claim it — restores the missing question. A single member
+        // collapses to `s / (s + (1 - s)) = s`: with nothing to confuse it with, the app is
+        // exactly as sure as BirdNET was.
+        var absent = 1.0
+        for (member in members) {
+            absent *= (1f - effective.getValue(member)).coerceIn(0f, 1f).toDouble()
+        }
+
+        val total = members.sumOf { effective.getValue(it).toDouble() } + absent
         require(total > 0.0) { "confusion set has zero total score" }
 
         // Project onto the full leaf vector: everything outside the confusion set is conditioned
@@ -153,11 +173,13 @@ object Audio {
             p[leafIndex] = (effective.getValue(member).toDouble() / total).toFloat()
         }
 
+        val reserved = (absent / total).toFloat()
         return AudioIdentification(
             detection = detection,
-            result = Rollup.rollup(tax, p, threshold),
+            result = Rollup.rollup(tax, p, threshold, reserved = reserved),
             confusionSet = members,
             geoApplied = geo != null && geoWeight > 0f,
+            absent = reserved,
             rawScores = members.associateWith { raw.getValue(it) },
         )
     }

@@ -149,16 +149,21 @@ def test_clear_winner_resolves_to_species():
     assert ident.result.rank == "species"
 
 
-def test_conditional_distribution_sums_to_one():
-    """Renormalisation inside the confusion set (spec §4A.3)."""
+def test_the_distribution_sums_to_one_once_none_of_these_is_counted():
+    """Renormalisation across the confusion set *plus* the absent outcome (spec §4A.3).
+
+    The leaves alone no longer sum to 1, and that is the point: the missing mass is the
+    chance that none of these is what made the sound, and no taxon may claim it.
+    """
     tax = build_soundscape()
     scores = {CHIFFCHAFF: 0.45, WILLOW: 0.40}
     det = detect(scores)[0]
 
     ident = identify(tax, scores, det, threshold=0.70)
-    total = sum(c.probability for c in ident.result.candidates)
+    over_leaves = sum(c.probability for c in ident.result.candidates)
 
-    assert total == pytest.approx(1.0, abs=1e-5)
+    assert over_leaves + ident.absent == pytest.approx(1.0, abs=1e-5)
+    assert over_leaves < 1.0
 
 
 def test_each_detection_is_identified_independently():
@@ -178,7 +183,9 @@ def test_each_detection_is_identified_independently():
 def test_geo_prior_reweights_without_masking():
     """Spec §4A.4 — a vagrant must stay loggable."""
     tax = build_soundscape()
-    scores = {CHIFFCHAFF: 0.50, WILLOW: 0.48}
+    # Strong detections, so what is being tested is the prior breaking the tie rather than
+    # the absent outcome refusing a weak sound — that is the test below.
+    scores = {CHIFFCHAFF: 0.95, WILLOW: 0.92}
     geo = {CHIFFCHAFF: 0.9, WILLOW: 0.01}  # willow warbler out of season
     det = detect(scores)[0]
 
@@ -186,7 +193,56 @@ def test_geo_prior_reweights_without_masking():
 
     assert ident.result.taxon_id == CHIFFCHAFF  # prior broke the tie
     assert WILLOW in ident.confusion_set  # but it was not erased
-    assert ident.raw_scores[WILLOW] == pytest.approx(0.48)  # raw score recoverable
+    assert ident.raw_scores[WILLOW] == pytest.approx(0.92)  # raw score recoverable
+
+
+# -- "none of these" (spec §4A.3) -------------------------------------------------
+
+
+def test_a_lone_detection_is_only_as_sure_as_birdnet_was():
+    """With nothing to confuse it with, the app's confidence *is* the detection score.
+
+    Renormalising across the confusion set alone divided a lone detection by itself and
+    returned 100%, so 0.26 and 0.99 produced identical cards and no threshold could refuse
+    either (VERIFICATION §60). The absent outcome carries `1 - s`, and the arithmetic
+    collapses to `s / (s + (1 - s)) = s`.
+    """
+    tax = build_soundscape()
+    scores = {CHIFFCHAFF: 0.99, ROBIN: 0.01}
+    det = detect(scores)[0]
+
+    ident = identify(tax, scores, det, threshold=0.70)
+
+    assert ident.result.taxon_id == CHIFFCHAFF
+    assert ident.result.probability == pytest.approx(0.99, abs=1e-4)
+
+
+def test_a_weak_lone_detection_is_refused_rather_than_named():
+    tax = build_soundscape()
+    scores = {CHIFFCHAFF: 0.26, ROBIN: 0.01}
+    det = detect(scores)[0]
+
+    ident = identify(tax, scores, det, threshold=0.70)
+
+    assert ident.result.is_unidentified
+    assert ident.result.probability == pytest.approx(0.26, abs=1e-4)
+    assert ident.absent == pytest.approx(0.74, abs=1e-4)
+
+
+def test_two_strong_congeners_still_reach_the_genus():
+    """The absent outcome must not make the genus answer unreachable.
+
+    Two confident candidates leave almost nothing for "none of these", so the pair still
+    clears the threshold together even though neither clears it alone.
+    """
+    tax = build_soundscape()
+    scores = {CHIFFCHAFF: 0.90, WILLOW: 0.85}
+    det = detect(scores)[0]
+
+    ident = identify(tax, scores, det, threshold=0.70)
+
+    assert ident.result.rank == "genus"
+    assert ident.absent < 0.02
 
 
 def test_geo_weight_zero_disables_the_prior():

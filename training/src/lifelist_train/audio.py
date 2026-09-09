@@ -53,6 +53,9 @@ class AudioIdentification:
     result: RollupResult
     confusion_set: tuple[int, ...]
     geo_applied: bool
+    absent: float
+    """Mass held by "none of these" (spec §4A.3). 0.74 for a lone detection scoring 0.26."""
+
     raw_scores: dict[int, float]
     """Pre-prior scores, kept so a suppressed vagrant stays recoverable (spec §4A.4)."""
 
@@ -155,8 +158,29 @@ def identify(
     members = confusion_set(tax, raw, detection, margin)
     effective = apply_geo_prior(raw, geo, geo_weight) if geo else raw
 
+    # "None of these" — spec §4A.3.
+    #
+    # Renormalising across the confusion set alone answers "given that this sound is one of
+    # these, which is it?" and throws away the question the user actually cares about first:
+    # whether anything is there at all. A lone detection then divides by itself and comes back
+    # at 100%, so BirdNET at 0.26 was presented exactly like BirdNET at 0.99 and no threshold
+    # could refuse either (VERIFICATION §60).
+    #
+    # BirdNET's scores are independent per-class probabilities, so P(none of them present) is
+    # the product of their complements. Giving that outcome its own mass — outside the tree,
+    # where no taxon can claim it — restores the missing question. A single member collapses to
+    # `s / (s + (1 - s)) = s`, which is the right answer stated the obvious way: with nothing to
+    # confuse it with, the app is exactly as sure as BirdNET was.
+    # The subtraction is float32, as Kotlin's `1f - score` is, then widened for the product —
+    # float64 there because Kotlin multiplies in Double. Every narrowing in this module sits
+    # where the phone has one.
+    absent = np.float64(1.0)
+    for m in members:
+        complement = np.float32(1.0) - np.float32(f32(effective[m]))
+        absent *= np.float64(min(max(float(complement), 0.0), 1.0))
+
     # float64 accumulation over the ascending member list, exactly as Kotlin's `sumOf` does.
-    total = sum(np.float64(f32(effective[m])) for m in members)
+    total = sum(np.float64(f32(effective[m])) for m in members) + absent
     if total <= 0:
         raise ValueError("confusion set has zero total score")
 
@@ -169,11 +193,13 @@ def identify(
             raise ValueError(f"taxon {m} is not a leaf and cannot carry a detection score")
         p[node.leaf_index] = f32(np.float64(f32(effective[m])) / total)
 
+    reserved = f32(absent / total)
     return AudioIdentification(
         detection=detection,
-        result=rollup(tax, p, threshold=threshold),
+        result=rollup(tax, p, threshold=threshold, reserved=reserved),
         confusion_set=members,
         geo_applied=bool(geo) and geo_weight > 0.0,
+        absent=reserved,
         raw_scores={m: f32(raw[m]) for m in members},
     )
 

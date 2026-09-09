@@ -2441,8 +2441,46 @@ sure it is, that is the wrong number in the most visible place — and BirdNET's
 being over-trusted in the field is something §3.3 already names as a thing to fix rather than
 inherit.
 
-Raised rather than patched: the fix changes §4A of the spec, and which fix is right is a product
-decision. See open question 5.
+### Fixed the same day: "none of these" is an outcome too
+
+Decided: give the confusion set an implicit extra member. BirdNET's scores are independent
+per-class probabilities, so the chance that none of them is what made the sound is the product
+of their complements, and that mass is handed to the rollup as **reserved** — belonging to no
+taxon in the tree, where nothing can claim it. The leaves sum to `1 - reserved`; the root's
+probability is `1 - reserved` rather than 1.
+
+`reserved` is a parameter on `rollup` rather than a slackened tolerance on its "sums to 1"
+check. The invariant becomes "leaves plus reserved sums to one", which still catches a malformed
+vector; "the leaves sum to whatever" would not.
+
+Two properties fall out, and both are why this was the option to take:
+
+| | before | after |
+|---|---|---|
+| chiffchaff alone, 0.99 | species, **100%** | species, **99%** |
+| chiffchaff alone, 0.26 | species, **100%** | **refused**, 26% |
+| chiffchaff 0.90 + willow 0.85 | genus | genus, absent mass 0.015 |
+
+A lone detection is worth exactly its own score — `s / (s + (1 - s)) = s` — so with nothing to
+confuse it with the app is precisely as sure as BirdNET was. And confident competitors leave
+almost nothing for the absent outcome, so the genus answer that justifies the whole design is
+still reachable. **It also puts audio under the certainty dial from §59**, which the alternatives
+did not: the same threshold now governs both modalities, from the same rollup.
+
+Spec §4A.3 rewritten, both implementations updated, two fixture cases added to pin it —
+`a_lone_detection_carries_its_own_score` and `a_weak_lone_detection_is_refused`.
+
+### Three fixture cases were passing for the wrong reason
+
+Raising the scores exposed it. `the_prior_outvotes_but_does_not_erase` used 0.45 and 0.40; under
+the absent outcome that whole window is too weak to answer at all, so the case would have proved
+its point by refusing — which is not the point it is named for. Four cases now use strong scores,
+so each one demonstrates the thing its name claims rather than colliding with an unrelated
+threshold. The boundary itself is still guarded, by `threshold_boundary` in the rollup fixture
+where it belongs.
+
+**Checked:** 138 Kotlin tests, 419 Python tests, both golden fixtures in sync. Kotlin reproduced
+all nine audio cases on the first run, before and after the change.
 
 ---
 
@@ -2457,15 +2495,10 @@ decision. See open question 5.
 3. ~~**Genus-level leaves.**~~ **Decided 18 Aug 2026: yes.** See §16.
 4. **The 1.5 s budget.** If an INT8 ViT-B/16 on CPU misses it on a Tensor G1, which gives —
    the budget, the resolution, or the backbone?
-5. **What a lone audio detection should claim (§60).** §4A.3 renormalises across the confusion
-   set, so a detection with no close competitors comes back at 100% whether BirdNET scored it
-   0.99 or 0.26. Three ways out, and they are not equivalent:
-   - **Show two numbers.** Detection strength and identification confidence side by side. Truest
-     to the maths — the conditional really does mean "given that this is one of these" — but it
-     asks the user to hold two ideas, and the rollup still commits to a species on a 0.26.
-   - **A "none of these" outcome.** Give the confusion set an implicit extra member with mass
-     `1 - s_c`, so a weak lone detection cannot clear any threshold and rolls up to the genus or
-     refuses. One line, and it makes the existing certainty dial govern audio too.
-   - **Raise the detection threshold** and leave §4A alone. Cheapest, and wrong: it makes weak
-     detections invisible rather than honest, which is the same silent-mask objection §4A.4
-     already rejects for the geographic prior.
+5. ~~**What a lone audio detection should claim (§60).**~~ **Decided 9 Sep 2026: the absent
+   outcome.** The confusion set gets an implicit "none of these" member carrying the product of
+   the complements, handed to the rollup as reserved mass. A lone detection is then worth exactly
+   its own score, and audio comes under the same certainty dial as the camera. See §60.
+6. **The confusion-set margin** (BUILD.md §3.3, still open). It defaults to 0.5 and was never
+   fitted against Danish recordings. Flagged rather than guessed since the plan was written; it
+   wants real audio, which is the next slice.

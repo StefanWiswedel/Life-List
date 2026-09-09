@@ -42,8 +42,12 @@ object Rollup {
      * determinism requirement. Float addition is not associative, so summing in a
      * different order from Python would drift the golden test for no visible reason.
      */
-    fun nodeProbabilities(tax: Taxonomy, p: FloatArray): Map<Int, Double> {
-        checkLeafProbabilities(tax, p)
+    fun nodeProbabilities(
+        tax: Taxonomy,
+        p: FloatArray,
+        reserved: Float = 0f,
+    ): Map<Int, Double> {
+        checkLeafProbabilities(tax, p, reserved)
         val out = HashMap<Int, Double>(tax.nodes.size)
         for (taxonId in tax.nodes.keys) {
             var sum = 0.0
@@ -58,17 +62,25 @@ object Rollup {
      *
      * Returns the root when nothing clears it, which the UI renders as "cannot identify"
      * rather than as a bad guess.
+     *
+     * [reserved] is probability mass belonging to **no taxon in this tree** — the "none of
+     * these" outcome the audio path needs (spec §4A.3). The vision head is a softmax over the
+     * leaves and always leaves it at zero. Audio does not: BirdNET's detection score says
+     * whether anything is there at all, and holding that mass outside the tree is what lets a
+     * weak lone detection fail to clear the threshold rather than renormalising to a confident
+     * 100%.
      */
     fun rollup(
         tax: Taxonomy,
         p: FloatArray,
         threshold: Float = DEFAULT_THRESHOLD,
         nCandidates: Int = N_CANDIDATES,
+        reserved: Float = 0f,
     ): RollupResult {
         require(threshold in MIN_THRESHOLD..MAX_THRESHOLD) {
             "threshold $threshold outside the settable range [$MIN_THRESHOLD, $MAX_THRESHOLD]"
         }
-        val probs = nodeProbabilities(tax, p)
+        val probs = nodeProbabilities(tax, p, reserved)
 
         var nodeId = tax.rootId
         while (true) {
@@ -88,7 +100,7 @@ object Rollup {
             taxonId = nodeId,
             rank = tax.node(nodeId).rank,
             probability = probs.getValue(nodeId).toFloat(),
-            candidates = topCandidates(tax, p, nCandidates),
+            candidates = topCandidates(tax, p, nCandidates, reserved),
             threshold = threshold,
         )
     }
@@ -100,11 +112,18 @@ object Rollup {
      * naturalist wants to see the runner-up genus, and hiding it because the rollup
      * stopped higher would be exactly the opacity this app is against.
      */
-    fun topCandidates(tax: Taxonomy, p: FloatArray, n: Int = N_CANDIDATES): List<Candidate> =
-        p.indices
+    fun topCandidates(
+        tax: Taxonomy,
+        p: FloatArray,
+        n: Int = N_CANDIDATES,
+        reserved: Float = 0f,
+    ): List<Candidate> {
+        checkLeafProbabilities(tax, p, reserved)
+        return p.indices
             .sortedWith(compareByDescending<Int> { p[it] }.thenBy { tax.leafId(it) })
             .take(n)
             .map { Candidate(taxonId = tax.leafId(it), leafIndex = it, probability = p[it]) }
+    }
 
     /**
      * Rollup accuracy predicate: is the answer an honest ancestor of the truth?
@@ -115,14 +134,15 @@ object Rollup {
     fun isRollupCorrect(tax: Taxonomy, result: RollupResult, trueLeafId: Int): Boolean =
         !result.isUnidentified && tax.isAncestorOrSelf(result.taxonId, trueLeafId)
 
-    private fun checkLeafProbabilities(tax: Taxonomy, p: FloatArray) {
+    private fun checkLeafProbabilities(tax: Taxonomy, p: FloatArray, reserved: Float = 0f) {
         require(p.size == tax.nTaxa) {
             "probability vector has ${p.size} entries but the taxonomy has ${tax.nTaxa} leaves"
         }
         require(p.all { it >= 0f }) { "probability vector contains negative entries" }
-        val total = p.fold(0.0) { acc, v -> acc + v }
+        require(reserved in 0f..1f) { "reserved must be in [0, 1], got $reserved" }
+        val total = p.fold(0.0) { acc, v -> acc + v } + reserved
         require(kotlin.math.abs(total - 1.0) < 1e-4) {
-            "probability vector sums to $total, expected 1.0"
+            "probability vector plus reserved mass sums to $total, expected 1.0"
         }
     }
 }

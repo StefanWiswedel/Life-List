@@ -1,5 +1,6 @@
 package dk.lifelist.core
 
+import kotlin.math.abs
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -85,12 +86,13 @@ class AudioTest {
 
     @Test
     fun `a hostile prior outvotes a candidate without removing it`() {
-        // Built prior-first, the willow warbler at 0.55 x 1e-6 would fall below the 0.30 margin
-        // and leave the confusion set entirely — a silent mask wearing a prior's clothes, and
-        // the record a naturalist most wants to keep. Built to spec, it is outvoted and visible.
+        // Built prior-first, the willow warbler at 0.95 x 1e-6 would fall below the 0.485
+        // margin and leave the confusion set entirely — a silent mask wearing a prior's
+        // clothes, and the record a naturalist most wants to keep. Built to spec, it is
+        // outvoted and visible.
         val found = Audio.identifyWindow(
             taxonomy,
-            mapOf(chiffchaff to 0.60f, willow to 0.55f),
+            mapOf(chiffchaff to 0.97f, willow to 0.95f),
             threshold = 0.70f,
             geo = mapOf(chiffchaff to 0.99f, willow to 0.000001f),
         )
@@ -98,7 +100,7 @@ class AudioTest {
         val first = found.first()
         assertEquals(listOf(chiffchaff, willow), first.confusionSet)
         assertEquals(chiffchaff, first.result.taxonId)
-        assertEquals(0.55f, first.rawScores.getValue(willow))
+        assertEquals(0.95f, first.rawScores.getValue(willow))
     }
 
     @Test
@@ -138,5 +140,49 @@ class AudioTest {
             mapOf(chiffchaff to 0.45f, willow to 0.40f),
             found.first().rawScores,
         )
+    }
+
+    // -- "none of these" (spec §4A.3) --------------------------------------------
+
+    @Test
+    fun `a lone detection is only as sure as BirdNET was`() {
+        val found = Audio.identifyWindow(
+            taxonomy,
+            mapOf(chiffchaff to 0.99f, robin to 0.01f),
+            threshold = 0.70f,
+        )
+
+        assertEquals(chiffchaff, found.first().result.taxonId)
+        assertTrue(abs(0.99f - found.first().result.probability) < 1e-4f)
+    }
+
+    @Test
+    fun `a weak lone detection is refused rather than named`() {
+        // Renormalising across the confusion set alone divided a lone detection by itself and
+        // returned 100%, so 0.26 and 0.99 produced identical cards and no threshold could
+        // refuse either (VERIFICATION §60). The absent outcome carries the rest.
+        val found = Audio.identifyWindow(
+            taxonomy,
+            mapOf(chiffchaff to 0.26f, robin to 0.01f),
+            threshold = 0.70f,
+        )
+
+        assertTrue(found.first().result.isUnidentified)
+        assertTrue(abs(0.74f - found.first().absent) < 1e-4f)
+    }
+
+    @Test
+    fun `two strong congeners still reach the genus`() {
+        // The absent outcome must not put the genus answer out of reach: two confident
+        // candidates leave almost nothing for "none of these", so the pair clears the
+        // threshold together even though neither clears it alone.
+        val found = Audio.identifyWindow(
+            taxonomy,
+            mapOf(chiffchaff to 0.90f, willow to 0.85f),
+            threshold = 0.70f,
+        )
+
+        assertEquals("genus", found.first().result.rank)
+        assertTrue(found.first().absent < 0.02f)
     }
 }

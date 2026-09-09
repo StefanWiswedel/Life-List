@@ -113,6 +113,11 @@ class AudioGoldenTest {
                     a.geoApplied,
                     "$where: geo_applied"
                 )
+                val expectedAbsent = e["absent"]!!.jsonPrimitive.content.toFloat()
+                assertTrue(
+                    abs(expectedAbsent - a.absent) < 1e-5f,
+                    "$where: absent mass expected $expectedAbsent, got ${a.absent}"
+                )
                 assertEquals(
                     e["taxon_id"]!!.jsonPrimitive.content.toInt(),
                     a.result.taxonId,
