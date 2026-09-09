@@ -436,7 +436,7 @@ Audio sits at 8 rather than earlier because it depends on the taxonomy spine fro
 Steps 1–7 are done and in daily use. This is what 8 and 9 became once the app met the field, and
 the ordering is an argument rather than a list.
 
-**1. Per-group thresholds (§41, §44).** One dial serves very different instruments: birds reach
+**1. Per-group thresholds (§41, §44). Done — §58, §59.** One dial serves very different instruments: birds reach
 91.7% rollup accuracy on 70% top-1 with the best calibration in the set (ECE 0.006), while
 mammals have the worst (0.057) on the fewest examples. Stated confidence is the whole
 differentiator (§18), so a threshold that means something different per group is the most direct

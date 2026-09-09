@@ -1,9 +1,12 @@
 package dk.lifelist.app
 
 import android.content.Context
+import dk.lifelist.core.CertaintyTable
+import dk.lifelist.core.GroupThreshold
 import dk.lifelist.core.Taxon
 import dk.lifelist.core.Taxonomy
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
@@ -19,7 +22,14 @@ object TaxonomyAssets {
 
     private val json = Json { ignoreUnknownKeys = true }
 
-    data class Meta(val specVersion: Int, val temperature: Float, val nTaxa: Int, val version: String)
+    data class Meta(
+        val specVersion: Int,
+        val temperature: Float,
+        val nTaxa: Int,
+        val version: String,
+        /** Empty for a model exported before the thresholds were fitted. */
+        val certainty: CertaintyTable = CertaintyTable.EMPTY,
+    )
 
     fun loadTaxonomy(context: Context, asset: String = "taxonomy.json"): Taxonomy {
         val text = context.assets.open(asset).use { it.readBytes().decodeToString() }
@@ -42,10 +52,12 @@ object TaxonomyAssets {
         return Taxonomy(taxa)
     }
 
-    fun loadMeta(context: Context, asset: String = "model_meta.json"): Meta {
-        val o = json.parseToJsonElement(
-            context.assets.open(asset).use { it.readBytes().decodeToString() }
-        ).jsonObject
+    fun loadMeta(context: Context, asset: String = "model_meta.json"): Meta =
+        parseMeta(context.assets.open(asset).use { it.readBytes().decodeToString() })
+
+    /** Separated from the asset so the parsing is testable without a device. */
+    fun parseMeta(text: String): Meta {
+        val o = json.parseToJsonElement(text).jsonObject
         val spec = o["spec_version"]!!.jsonPrimitive.content.toInt()
         require(spec == SUPPORTED_SPEC_VERSION) {
             "model asset declares spec_version $spec; this build implements " +
@@ -56,7 +68,36 @@ object TaxonomyAssets {
             temperature = o["temperature"]!!.jsonPrimitive.content.toFloat(),
             nTaxa = o["n_taxa"]!!.jsonPrimitive.content.toInt(),
             version = o["model_version"]?.jsonPrimitive?.content ?: "unknown",
+            certainty = certaintyTable(o["group_thresholds"]),
         )
+    }
+
+    /**
+     * `{"0.95": {"Birds": {"threshold": 0.82, "accuracy": 0.954, "reached": true, "n": 3387}}}`.
+     *
+     * Absent rather than required: an older `model_meta.json` has no such key, and a build that
+     * refused to start over a missing *optional* table would be worse than one that falls back
+     * to the global threshold. A malformed entry is skipped for the same reason — one bad group
+     * should cost that group, not the app.
+     */
+    private fun certaintyTable(element: JsonElement?): CertaintyTable {
+        val byTarget = element?.jsonObject.orEmpty().mapNotNull { (target, groups) ->
+            val key = target.toFloatOrNull() ?: return@mapNotNull null
+            val fitted = groups.jsonObject.mapNotNull { (group, entry) ->
+                val o = entry.jsonObject
+                val threshold = o["threshold"]?.jsonPrimitive?.content?.toFloatOrNull()
+                val accuracy = o["accuracy"]?.jsonPrimitive?.content?.toFloatOrNull()
+                if (threshold == null || accuracy == null) return@mapNotNull null
+                group to GroupThreshold(
+                    threshold = threshold,
+                    accuracy = accuracy,
+                    reached = o["reached"]?.jsonPrimitive?.content?.toBooleanStrictOrNull() ?: false,
+                    n = o["n"]?.jsonPrimitive?.content?.toIntOrNull() ?: 0,
+                )
+            }.toMap()
+            if (fitted.isEmpty()) null else key to fitted
+        }.toMap()
+        return CertaintyTable(byTarget)
     }
 
     const val SUPPORTED_SPEC_VERSION = 1

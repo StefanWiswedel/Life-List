@@ -2328,6 +2328,67 @@ wide where the softmax is 3,482 — peak stays where it was after the two OOM ki
 
 ---
 
+## 59. The dial is an accuracy now, not a probability — 9 Sep 2026
+
+§58 fitted the table. This reads it back, and it changes what the app asks.
+
+The old sheet was a slider from 0.50 to 0.95 labelled "50% · more species, more mistakes" and
+"95% · cautious" — which reads as an accuracy and is not one. It is a summed probability, and
+the number a person picks has no fixed relationship to how often the app is right. **The same
+0.70 delivers 95.3% on insects and about 76% on mammals.** Anyone reading that slider as a
+promise was being misled by us, gently and by accident.
+
+Now the sheet offers the accuracies the model was actually fitted against — 90%, 95%, 98% — and
+resolves each one to a threshold *per group at display time*:
+
+| | 95% costs | delivers |
+|---|---|---|
+| Insects | 0.70 | 95.3% |
+| Birds | 0.82 | 95.4% |
+| Molluscs | 0.88 | 95.2% |
+| Mammals | — | 89.7%, and no threshold does better |
+
+### The group has to be the predicted one
+
+The threshold is an *input* to the rollup, so it cannot depend on the rollup's output. It comes
+off the highest-scoring leaf, before any descent — the same condition the fit was measured
+under. Choosing it from the true group would report a number measured under circumstances that
+never occur at the moment of choosing, and would read as better than it is.
+
+### Three things the screen is now allowed to say, and one it is not
+
+- **Reached.** "For birds, that means committing above 82% — right about 95% of the time,
+  measured on 3,387 photographs it had never seen."
+- **Out of reach.** "95% is out of reach for mammals: at its best the model is right 90% of the
+  time, on 497 photographs. This is that best." Four of the nine groups are in this position.
+- **Unmeasured.** Reptiles and Fish had fewer than 100 test photographs, so nothing was fitted
+  for them and they fall back to the global 0.70 — and say so, rather than borrowing a
+  neighbour's number.
+- **Not allowed:** "95%" over a group that manages 89.7%. That is the whole reason `reached` and
+  `accuracy` are in the file at all, and it is what a table of bare thresholds would have let
+  through.
+
+### Two things found on the way
+
+**The setting was never saved.** `var threshold by remember { mutableFloatStateOf(0.70f) }` — it
+lived for one composition's lifetime, so every cold start silently put it back. Someone who
+decided they wanted to be careful got the default again the next morning without being told. It
+now persists, and it persists the *target* rather than the threshold: the threshold depends on
+the group and on the model, both of which change under a phone in a pocket, and the accuracy a
+person asked for does not.
+
+**A stored preference outlives the model that answered it.** A phone holding 98% against a table
+fitted at 90 and 95 resolves *upward* to the highest available, never down — becoming quietly
+less careful than someone asked for is the one direction that must not happen silently.
+
+Records still store the threshold they were saved at, so an old record re-renders exactly as it
+did (spec §4.4). Nothing was rewritten.
+
+**Checked:** 125 Kotlin tests including 9 new ones in `CertaintyTest`, the app unit tests, and
+the golden rollup fixture still passes — the descent itself is untouched.
+
+---
+
 ---
 
 ## Open questions

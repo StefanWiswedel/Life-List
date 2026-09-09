@@ -59,6 +59,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import dk.lifelist.core.Certainties
+import dk.lifelist.core.CertaintyTable
 import dk.lifelist.core.Determiner
 import dk.lifelist.core.Families
 import dk.lifelist.core.LifeList
@@ -163,7 +165,10 @@ fun App() {
     var searchingAll by remember { mutableStateOf(false) }
     var keepingBroader by remember { mutableStateOf(false) }
 
-    var threshold by remember { mutableFloatStateOf(0.70f) }
+    // The accuracy the person asked for, remembered across launches. The *threshold* is derived
+    // from it per group at display time, so the same record re-renders honestly when the model
+    // changes underneath it (spec §4.4).
+    var target by remember { mutableFloatStateOf(Prefs.target(context)) }
     var caseIndex by remember { mutableIntStateOf(0) }
 
     var photos by remember { mutableStateOf<List<Bitmap>>(emptyList()) }
@@ -231,7 +236,10 @@ fun App() {
     val answerTaxonomy = if (live) identifier!!.taxonomy else Demo.taxonomy
     val probabilities = if (live) leafProbabilities!! else Demo.cases[caseIndex].probabilities
 
-    val rollup = Rollup.rollup(answerTaxonomy, probabilities, threshold)
+    val certaintyTable = loaded?.meta?.certainty ?: CertaintyTable.EMPTY
+    val targeted = Certainties.rollup(answerTaxonomy, probabilities, certaintyTable, target)
+    val rollup = targeted.result
+    val threshold = targeted.certainty.threshold
     val answer = Presentation.present(answerTaxonomy, rollup)
 
     // The contenders a hedge can hand back. Built from the full probability vector rather than
@@ -609,8 +617,13 @@ fun App() {
 
     if (thresholdSheet) {
         ThresholdSheet(
-            threshold = threshold,
-            onChange = { threshold = it },
+            target = target,
+            table = certaintyTable,
+            certainty = if (live) targeted.certainty else null,
+            onChange = {
+                target = it
+                Prefs.setTarget(context, it)
+            },
             onDismiss = { thresholdSheet = false },
         )
     }

@@ -49,6 +49,7 @@ When trading off, trade in favour of a record being keepable at the rank the evi
 | corrections | rename to any taxon, or retreat to a rank you trust; the model's answer is kept (§38, §40) |
 | coverage | **3,482 leaves, 676 Lepidoptera** at ≥20 observations (§44) — up from 2,294 and 468 |
 | rarity | Danish Red List badge, and **family progress against Denmark's totals** (§55) |
+| certainty | **the dial is an accuracy, not a probability** — one threshold per group (§58, §59) |
 | release workflow | tag `v*` → GitHub Release with an APK attached |
 
 ## Rules that have already earned their place
@@ -144,5 +145,10 @@ good (§41, checked).
 thresholds, then the backbone comparison, then seasonality, then BirdNET. The map stays deferred
 (§35).
 
-Next up is per-group thresholds. `lifelist-thresholds` fits one threshold per group against a
-target rollup accuracy, using the committed head — no retraining, minutes not hours.
+**Per-group thresholds are done** (§58, §59): fitted, shipped in `model_meta.json`, and read by
+the app, which now asks "how sure do you want to be?" instead of showing a probability slider.
+The same 95% costs an insect 0.70 and a bird 0.82, and four groups cannot reach it at all — the
+sheet says so rather than promising it.
+
+Next up is the backbone comparison: `bioclip` against `bioclip-vit-b-16-inat-only`. It costs a
+re-embed, 4–6 hours, so it wants a deliberate day.
