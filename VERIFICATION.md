@@ -2484,6 +2484,67 @@ all nine audio cases on the first run, before and after the change.
 
 ---
 
+## 61. BirdNET, measured — and a source that is not Zenodo — 9 Sep 2026
+
+Zenodo, where BirdNET V3.0 publishes, times out through this session's network from both the
+cloud container and your machine, and from your browser too. So the models came from
+`tphakala/BirdNET-v3.0-Models` on Hugging Face: the same preview3.1 build, CC BY-SA 4.0, with
+published SHA256SUMS.
+
+**Stated plainly: that is a third-party mirror.** Its checksums can be verified against
+themselves, but not against the official hashes while Zenodo is unreachable. Worth knowing
+before this ships, not after.
+
+### Four things that were assumed and are now read off the model
+
+| | BUILD.md said | the model says |
+|---|---|---|
+| window | 3 s | **5 s** — `[batch, 160000]` float32 at 32 kHz |
+| output | "independent per-class sigmoid confidences" | `activation: sigmoid, multi_label: true` ✓ |
+| precision to ship | fp16 (smaller) | **fp32** — "ONNX Runtime upconverts FP16 on CPU; slower, and not a RAM saving" |
+| geo model | "BirdNET ships a geo/meta model" | not in the V3.0 record — but `BirdNET+_Geomodel_V3.0.2` exists separately |
+
+The window was V2.4's fixed segment, inherited into the plan and never rechecked; spec §4A.1 and
+BUILD.md §3.6 are corrected. The sigmoid is the premise §4A is built on, and it is now confirmed
+rather than trusted. The precision reaches the same conclusion as §21 did for vision, by the same
+argument, which is reassuring in both directions. And §3.4 was about to be written down as wrong:
+the geo model does exist, just not where the plan expected.
+
+### Regional models, which change the size question entirely
+
+| | classes | fp32 | min RAM |
+|---|---|---|---|
+| global | 11,560 | 557 MB | 800 MB |
+| western-palearctic | 801 | 149 MB | 400 MB |
+| central-europe | 644 | 143 MB | 350 MB |
+| nordic | 422 | 135 MB | 300 MB |
+
+And they are **validated numerically identical to the global model on the classes they keep** —
+max absolute difference 1.1e-7. So scoping to a region costs coverage, not accuracy. That is the
+audio analogue of filtering GBIF to `country=DK`, and it makes the difference between shipping
+audio at 149 MB and shipping it at 557 MB alongside a 350 MB vision model.
+
+**Taking western-palearctic**: 14 MB more than nordic, and it will not drop a central-European
+species that turns up in Jutland. The choice is a build-time parameter, not a fork.
+
+### The measurement that matters, and the problem it exposes
+
+Of the 801 western-palearctic classes, **267 correspond to a leaf the app can already store.**
+The other 534 are species BirdNET can hear and the shipped taxonomy has no room for — great reed
+warbler, Blyth's reed warbler, house cricket — because that taxonomy is the *vision head's output
+space*, and a bird that never reached 20 photographs has no class in it.
+
+So audio cannot simply reuse `taxonomy.json`. A leaf there carries a `leaf_index` into the vision
+head, contiguous by spec §1.1, and an audio-only leaf would break that invariant rather than bend
+it. The clean shape is a **second taxonomy for audio**, built by the same GBIF machinery from
+BirdNET's label list, with its own leaf indices — the rollup is already written against "a
+taxonomy", not against the vision one. Records store a GBIF taxon id, which both trees share, so
+the life list stays one list.
+
+That is a slice of work, not a paragraph, and it is where audio goes next.
+
+---
+
 ---
 
 ## Open questions

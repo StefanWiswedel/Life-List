@@ -137,7 +137,7 @@ Two live options, and the choice is not obvious:
 | classes | 6,522 (birds) | ~11,000, **incl. non-birds** |
 | format | TFLite only | **PyTorch + ONNX FP16** |
 | sample rate | 48 kHz | 32 kHz |
-| segment | 3 s fixed | variable, 3 s default |
+| segment | 3 s fixed | variable, **5 s** default [corrected §61] |
 | licence | CC **BY-NC-SA** 4.0 | CC **BY-SA** 4.0 |
 | stability | stable | *"models, labels and code will change before final release"* |
 
@@ -240,8 +240,9 @@ a guess.
 
 ### 3.6 Audio capture
 
-CameraX has an audio analogue in `AudioRecord`: 32 kHz mono PCM, 3-second windows with
-configurable overlap. Live "listening" session with a running list of detections, in the shape of
+CameraX has an audio analogue in `AudioRecord`: 32 kHz mono PCM, **5-second** windows with
+configurable overlap — 160,000 float32 samples, which is V3.0's published input signature.
+**[corrected 9 Sep 2026]** This said 3 seconds, which was V2.4's fixed segment (§61). Live "listening" session with a running list of detections, in the shape of
 the acoustic session view in your third screenshot — which, notably, has a warm cream and amber
 palette much closer to the herbarium direction than either green app, and gets tabular
 confidence figures right. Worth stealing the layout logic from; not the colours.

@@ -243,9 +243,15 @@ So audio takes an extra step before it reaches §4.
 
 ### 4A.1 Detection
 
-Over a 3-second window, class `c` is **detected** if `sigmoid_c >= detection_threshold`.
-Multi-label by design: three singing species give three detections. Default
-`detection_threshold = 0.25`, user-adjustable. This is BirdNET's native semantics, undistorted.
+Over one window, class `c` is **detected** if `sigmoid_c >= detection_threshold`. Multi-label by
+design: three singing species give three detections. Default `detection_threshold = 0.25`,
+user-adjustable. This is BirdNET's native semantics, undistorted.
+
+**[corrected 9 Sep 2026]** The window is **5 seconds, not 3** — BirdNET V3.0's published input
+signature is `[batch, 160000]` float32 at 32 kHz. Three seconds was inherited from V2.4, which
+did have a fixed 3-second segment. Read off the model metadata, not assumed: the same source
+confirms the output activation really is `sigmoid` with `multi_label: true`, which is the premise
+this whole section is built on. See VERIFICATION.md §61.
 
 ### 4A.2 Confusion set
 
