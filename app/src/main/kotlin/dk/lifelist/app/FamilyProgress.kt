@@ -1,5 +1,9 @@
 package dk.lifelist.app
 
+import android.graphics.Bitmap
+import androidx.compose.foundation.Image
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -49,6 +53,8 @@ fun FamilyProgressRow(
     expanded: Boolean = false,
     onToggle: (() -> Unit)? = null,
     onOpenTaxon: (Int) -> Unit = {},
+    /** A small photograph of a species, where this build has one. */
+    thumbnailFor: (Int) -> Bitmap? = { null },
 ) {
     Column(
         modifier
@@ -100,7 +106,7 @@ fun FamilyProgressRow(
 
         if (expanded && members != null) {
             Spacer(Modifier.height(10.dp))
-            Roster(progress, members, onOpenTaxon)
+            Roster(progress, members, onOpenTaxon, thumbnailFor)
         }
     }
 }
@@ -120,6 +126,7 @@ private fun Roster(
     progress: Families.Progress,
     members: List<Families.Member>,
     onOpenTaxon: (Int) -> Unit,
+    thumbnailFor: (Int) -> Bitmap?,
 ) {
     val unnamed = Families.unnamed(progress, members)
     Column(Modifier.padding(start = 2.dp)) {
@@ -142,6 +149,31 @@ private fun Roster(
                     modifier = Modifier.size(15.dp),
                 )
                 Spacer(Modifier.width(9.dp))
+
+                // A picture of the thing. A list of eleven binomials is a list of eleven
+                // binomials; a list with photographs is eleven animals, and telling two
+                // bush-crickets apart starts with having seen them.
+                val thumbnail = thumbnailFor(member.taxonId)
+                if (thumbnail != null) {
+                    Image(
+                        bitmap = thumbnail.asImageBitmap(),
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .size(THUMBNAIL_SIZE)
+                            .clip(RoundedCornerShape(7.dp)),
+                    )
+                } else {
+                    // A hole where a photograph would be, so a row without one lines up with
+                    // the rows that have one rather than shuffling the names out of a column.
+                    Box(
+                        Modifier
+                            .size(THUMBNAIL_SIZE)
+                            .clip(RoundedCornerShape(7.dp))
+                            .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+                    )
+                }
+                Spacer(Modifier.width(11.dp))
                 Column(Modifier.weight(1f)) {
                     Text(
                         member.vernacularEn ?: member.scientificName,
@@ -187,6 +219,9 @@ private fun Roster(
         }
     }
 }
+
+/** Big enough to make out an insect, small enough that eleven of them are still a list. */
+private val THUMBNAIL_SIZE = 44.dp
 
 @Composable
 private fun Bar(fraction: Float) {

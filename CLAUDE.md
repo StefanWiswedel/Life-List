@@ -49,7 +49,7 @@ When trading off, trade in favour of a record being keepable at the rank the evi
 | reference sound | xeno-canto, **731 of 795 species**, ten-second Opus clips (§69) |
 | corrections | rename to any taxon, or retreat to a rank you trust; the model's answer is kept (§38, §40) |
 | coverage | **3,482 leaves, 676 Lepidoptera** at ≥20 observations (§44) — up from 2,294 and 468 |
-| rarity | Danish Red List badge, and **family progress against Denmark's totals** (§55) |
+| rarity | Red List badge, family progress, and **Danish recording effort per species** (§55, §72) |
 | certainty | **the dial is an accuracy, not a probability** — one threshold per group (§58, §59) |
 | audio | §4A in both languages with a golden fixture; **801 BirdNET classes crossed, 795 leaves** (§60–62) |
 | release workflow | tag `v*` → GitHub Release with an APK attached |

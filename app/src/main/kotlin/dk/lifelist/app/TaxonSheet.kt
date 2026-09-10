@@ -22,6 +22,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material3.OutlinedButton
+import dk.lifelist.core.Occurrence
+import dk.lifelist.core.Occurrences
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -47,6 +49,9 @@ data class TaxonBrief(
     /** A bundled recording of this species, where there is one (§69). */
     val clip: String? = null,
     val clipCredit: ReferenceAudio.Credit? = null,
+    /** How often it is recorded in Denmark, and against which family (§72). */
+    val occurrence: Occurrence? = null,
+    val family: String? = null,
 )
 
 /**
@@ -126,6 +131,19 @@ fun TaxonSheet(
             }
             Spacer(Modifier.height(4.dp))
             FieldLabel(brief.rank)
+
+            // How often it is recorded here, coloured only when it is worth noticing. A line on
+            // every species is noise that teaches the reader to skip the place where the
+            // interesting ones appear.
+            brief.occurrence?.let { occurrence ->
+                Spacer(Modifier.height(8.dp))
+                Text(
+                    Occurrences.phrase(occurrence, brief.family),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = if (Occurrences.notable(occurrence)) MaterialTheme.colorScheme.primary
+                    else MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
 
             Spacer(Modifier.height(14.dp))
 

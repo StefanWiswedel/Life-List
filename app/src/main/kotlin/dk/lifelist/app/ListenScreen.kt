@@ -5,6 +5,12 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import android.graphics.Bitmap
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -86,6 +92,8 @@ fun ListenScreen(
     onPlay: (String) -> Unit = {},
     /** The bundled recording of a species, if this build has one. */
     referenceFor: (Int) -> String? = { null },
+    /** A small photograph of a species, if this build has one. */
+    thumbnailFor: (Int) -> Bitmap? = { null },
     modifier: Modifier = Modifier,
 ) {
     // Its own ground, rather than the Scaffold's. The palette is ink on paper and there is no
@@ -117,6 +125,7 @@ fun ListenScreen(
                     val reference = referenceFor(entry.taxonId)
                     HeardCard(
                         entry,
+                        thumbnail = thumbnailFor(entry.taxonId),
                         playing = playing == entry.clipPath && entry.clipPath != null,
                         referencePlaying = reference != null && playing == reference,
                         hasReference = reference != null,
@@ -205,6 +214,7 @@ private fun Empty(listening: Boolean) {
 @Composable
 private fun HeardCard(
     entry: Heard,
+    thumbnail: Bitmap?,
     playing: Boolean,
     referencePlaying: Boolean,
     hasReference: Boolean,
@@ -226,6 +236,20 @@ private fun HeardCard(
             Modifier.fillMaxWidth().padding(16.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
+            // The bird, next to the claim about the bird. Sound identification is the case
+            // where you have not seen the thing, so a photograph is not decoration — it is the
+            // first way to tell whether the answer is plausible at all.
+            if (thumbnail != null) {
+                Image(
+                    bitmap = thumbnail.asImageBitmap(),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(56.dp)
+                        .clip(RoundedCornerShape(10.dp)),
+                )
+                Spacer(Modifier.width(13.dp))
+            }
             Column(Modifier.weight(1f)) {
                 FieldLabel(if (entry.confidence == null) "Not sure enough" else entry.rank)
                 Spacer(Modifier.height(2.dp))

@@ -3,6 +3,7 @@ package dk.lifelist.app
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import android.graphics.Bitmap
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -64,6 +65,7 @@ fun GroupScreen(
     modifier: Modifier = Modifier,
     danishTotals: Map<String, Int> = emptyMap(),
     onOpenTaxon: (Int) -> Unit = {},
+    thumbnailFor: (Int) -> Bitmap? = { null },
 ) {
     // Which family's species list is open, if any. Remembered by label so walking into
     // Insects, opening Katydids, going back and returning does not lose your place.
@@ -127,6 +129,7 @@ fun GroupScreen(
                         openFamily = if (openFamily == progress.familyId) null else progress.familyId
                     },
                     onOpenTaxon = onOpenTaxon,
+                    thumbnailFor = thumbnailFor,
                     modifier = Modifier.padding(horizontal = 20.dp, vertical = 7.dp),
                 )
             }

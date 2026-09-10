@@ -3091,6 +3091,94 @@ a picture, a paragraph and a sound.
 
 ---
 
+## 72. A rarity signal, measured before it was chosen — 10 Sep 2026
+
+The proposal was iNaturalist observation counts as a proxy for rarity. I measured both
+candidates first, and the source changes:
+
+| species | GBIF Denmark | iNaturalist Denmark |
+|---|---|---|
+| Blackbird | 685,953 | 10,582 |
+| **Fire-bellied toad** | **3,434** | **0** |
+| Stag beetle | 73 | 93 |
+| Speckled bush-cricket | 2,079 | 952 |
+
+**The toad settles it.** *Bombina bombina* is genuinely scarce, legally protected, and
+intensively monitored — and iNaturalist has **zero** Danish records of it, because those
+thousands come from amphibian surveys rather than from people with phones. iNaturalist would
+file one of Denmark's most notable finds as "never seen". Its Danish coverage is thin in
+general: 10,582 blackbirds where GBIF has 685,953.
+
+So: **GBIF occurrence facets for Denmark**. Broader, country-scoped, and stage 1 already asks
+that endpoint this exact question and throws the answer away after using it as a filter.
+
+### Two things that stop it being a lie
+
+**It measures recording effort, not abundance.** 686,000 blackbirds against 65,000 small
+tortoiseshells does not mean ten times as many blackbirds; it means birds get recorded more. A
+raw count compared across the tree is meaningless.
+
+So the shipped figure is a **position within the species' own family** — the same argument that
+put the progress figure at family level (§55). "Among the least recorded of the Tettigoniidae
+this app knows" compares things recorded by the same people in the same way. Ties share the
+better rank: three species on twelve records each are indistinguishable on the evidence, and
+numbering them 4th, 5th and 6th would invent a difference.
+
+**And it is never called rarity.** "Rare" is a claim about the animal; this is a fact about the
+records. A test asserts the word never appears in any phrase the app can produce, and that
+"record" always does. The Red List badge stays the authoritative signal where it exists — this
+is the complement for the species nobody assessed.
+
+### What the run found
+
+52,397 Danish species keys in about eighty seconds. Of our 3,981:
+
+| | |
+|---|---|
+| have Danish records | 3,754 |
+| **never recorded in Denmark** | **227** |
+| under 100 records | 509 |
+| over 100,000 records | 142 |
+| median | 900 records |
+
+A zero is written down rather than left out, because "never recorded here" is among the more
+interesting things the file can say — most of the 227 are birds BirdNET can hear and Denmark
+has never had — and an absent key would read as missing data.
+
+Two species have no family above them and are left unranked rather than guessed at. A family of
+one gets the number and no position, because "fewest of its family" is silly when its family is
+itself — hornwrack is exactly that case. And the line is only coloured when it is worth
+noticing: an adjective on every species is noise that teaches the reader to skip the place where
+the interesting ones appear.
+
+173 KB.
+
+---
+
+## 73. Photographs where the names are — 10 Sep 2026
+
+A list of eleven binomials is a list of eleven binomials. With photographs it is eleven animals,
+and telling two bush-crickets apart begins with having seen them. So the roster rows carry a
+44 dp thumbnail, and the listening card a 56 dp one — sound identification is precisely the case
+where you have *not* seen the thing, which makes a picture the first way to judge whether the
+answer is plausible at all.
+
+Decoded small rather than scaled afterwards: a family of eleven at 500 px is about 11 MB of heap
+to draw 200 KB of pixels anybody can see. `inSampleSize` decodes at a power-of-two fraction, so
+what reaches memory is already the size of the hole it goes in — and the thumbnails cache apart
+from the full photographs, because the same taxon can want both and one cache at the other's
+size would make whichever came second look wrong.
+
+A species with no photograph gets an empty rounded square rather than nothing, so its name stays
+in the same column as the rest.
+
+**Rendered before shipped, and the first render was wrong** — the stand-in bitmaps in the
+snapshot test were built from `photo(40, 150)`, and 40 and 150 as ARGB integers are transparent
+black. The photographs were being drawn perfectly and were invisible, which is a thing no amount
+of reading the code would have shown.
+
+---
+
 ---
 
 ## Open questions

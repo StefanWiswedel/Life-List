@@ -95,7 +95,7 @@ jobs:
         run: |
           lifelist-birdnet-model --out app/src/main/assets/birdnet.onnx -v
           cp shared/model/audio_taxonomy.json shared/model/birdnet_classes.json \
-             app/src/main/assets/
+             shared/model/occurrences.json app/src/main/assets/
           ls -lh app/src/main/assets/birdnet.onnx
 
       # 3,462 CC-licensed photographs by named people. The index is committed; the bytes

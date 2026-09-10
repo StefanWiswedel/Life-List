@@ -190,6 +190,7 @@ fun App() {
     val recorder = remember { Recorder() }
     val clipPlayer = rememberClipPlayer()
     val referenceAudio = remember { ReferenceAudio(context) }
+    val occurrences = remember { OccurrenceIndex(context) }
     var listener by remember { mutableStateOf<Listener?>(null) }
 
     var photos by remember { mutableStateOf<List<Bitmap>>(emptyList()) }
@@ -625,6 +626,7 @@ fun App() {
                             onOpenRecord = { openRecordId = it.id },
                             danishTotals = redList.familyTotals,
                             onOpenTaxon = { readingAbout = it },
+                            thumbnailFor = { references.thumbnail(it) },
                         )
                     }
                 }
@@ -634,6 +636,7 @@ fun App() {
                         playing = clipPlayer.playing,
                         onPlay = { clipPlayer.toggle(it) },
                         referenceFor = { referenceAudio.clip(it) },
+                        thumbnailFor = { references.thumbnail(it) },
                         listening = listening,
                         heard = heard,
                         elapsedSeconds = listenedFor,
@@ -900,6 +903,8 @@ fun App() {
                 article = wikipedia.article(aboutId),
                 clip = referenceAudio.clip(aboutId),
                 clipCredit = referenceAudio.credit(aboutId),
+                occurrence = occurrences.forTaxon(aboutId),
+                family = Families.familyOf(listTaxonomy ?: answerTaxonomy, aboutId)?.scientificName,
             ),
             onOpenPhoto = { bitmap, label -> viewing = Viewing.Live(bitmap, label) },
             onDismiss = { readingAbout = null },

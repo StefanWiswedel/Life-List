@@ -442,6 +442,7 @@ class ScreenshotTest {
         paparazzi.snapshot {
             LifeListTheme {
                 ListenScreen(
+                    thumbnailFor = { photo(Color.rgb(96, 84, 66), Color.rgb(38, 32, 24)) },
                     listening = true,
                     heard = listOf(
                         heard(2490719, "Common Blackbird", "species", 0.94f, 0.94f, 12f),
@@ -535,6 +536,12 @@ class ScreenshotTest {
                         members = members,
                         expanded = true,
                         onToggle = {},
+                        // Two of the three have a photograph and one does not, because a row
+                        // with no picture has to line up with the rows that have one.
+                        thumbnailFor = { taxonId ->
+                            if (taxonId == 700) null
+                            else photo(Color.rgb(108, 126, 78), Color.rgb(40, 52, 30))
+                        },
                     )
                 }
             }
