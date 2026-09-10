@@ -17,6 +17,11 @@ import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Stop
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -39,6 +44,9 @@ data class TaxonBrief(
     val photo: Bitmap?,
     val credit: ReferencePhotos.Credit?,
     val article: Wikipedia.Article?,
+    /** A bundled recording of this species, where there is one (§69). */
+    val clip: String? = null,
+    val clipCredit: ReferenceAudio.Credit? = null,
 )
 
 /**
@@ -51,7 +59,13 @@ data class TaxonBrief(
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TaxonSheet(brief: TaxonBrief, onOpenPhoto: (Bitmap, String) -> Unit, onDismiss: () -> Unit) {
+fun TaxonSheet(
+    brief: TaxonBrief,
+    onOpenPhoto: (Bitmap, String) -> Unit,
+    onDismiss: () -> Unit,
+    playingClip: String? = null,
+    onPlayClip: (String) -> Unit = {},
+) {
     val context = LocalContext.current
 
     ModalBottomSheet(
@@ -78,6 +92,29 @@ fun TaxonSheet(brief: TaxonBrief, onOpenPhoto: (Bitmap, String) -> Unit, onDismi
                 )
                 brief.credit?.let { CreditLine(it.credit, it.licence) }
                 Spacer(Modifier.height(14.dp))
+            }
+
+            brief.clip?.let { clip ->
+                OutlinedButton(
+                    onClick = { onPlayClip(clip) },
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp),
+                ) {
+                    Icon(
+                        if (playingClip == clip) Icons.Filled.Stop else Icons.Filled.PlayArrow,
+                        contentDescription = null,
+                        modifier = Modifier.size(17.dp),
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Text(if (playingClip == clip) "Stop" else "Hear it")
+                }
+                brief.clipCredit?.let {
+                    Text(
+                        "Recording by ${it.credit}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(bottom = 12.dp),
+                    )
+                }
             }
 
             Text(

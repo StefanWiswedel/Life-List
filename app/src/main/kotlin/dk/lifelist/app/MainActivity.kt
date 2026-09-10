@@ -624,6 +624,7 @@ fun App() {
                             },
                             onOpenRecord = { openRecordId = it.id },
                             danishTotals = redList.familyTotals,
+                            onOpenTaxon = { readingAbout = it },
                         )
                     }
                 }
@@ -897,9 +898,13 @@ fun App() {
                 photo = references.photo(aboutId),
                 credit = references.credit(aboutId),
                 article = wikipedia.article(aboutId),
+                clip = referenceAudio.clip(aboutId),
+                clipCredit = referenceAudio.credit(aboutId),
             ),
             onOpenPhoto = { bitmap, label -> viewing = Viewing.Live(bitmap, label) },
             onDismiss = { readingAbout = null },
+            playingClip = clipPlayer.playing,
+            onPlayClip = { clipPlayer.toggle(it) },
         )
     }
 

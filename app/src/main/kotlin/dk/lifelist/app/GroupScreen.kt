@@ -63,6 +63,7 @@ fun GroupScreen(
     onOpenRecord: (Record) -> Unit,
     modifier: Modifier = Modifier,
     danishTotals: Map<String, Int> = emptyMap(),
+    onOpenTaxon: (Int) -> Unit = {},
 ) {
     // Which family's species list is open, if any. Remembered by label so walking into
     // Insects, opening Katydids, going back and returning does not lose your place.
@@ -125,9 +126,7 @@ fun GroupScreen(
                     onToggle = {
                         openFamily = if (openFamily == progress.familyId) null else progress.familyId
                     },
-                    onOpenTaxon = { taxonId ->
-                        records.firstOrNull { it.taxonId == taxonId }?.let(onOpenRecord)
-                    },
+                    onOpenTaxon = onOpenTaxon,
                     modifier = Modifier.padding(horizontal = 20.dp, vertical = 7.dp),
                 )
             }

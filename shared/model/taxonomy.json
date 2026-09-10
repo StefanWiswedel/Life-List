@@ -131,7 +131,7 @@
     "rank": "species",
     "scientific_name": "Xylota sp.",
     "vernacular_da": null,
-    "vernacular_en": null,
+    "vernacular_en": "Leafwalkers and Forest Flies",
     "leaf_index": 14
   },
   {
@@ -140,7 +140,7 @@
     "rank": "species",
     "scientific_name": "Eupeodes sp.",
     "vernacular_da": null,
-    "vernacular_en": null,
+    "vernacular_en": "Aphideaters",
     "leaf_index": 15
   },
   {
@@ -167,7 +167,7 @@
     "rank": "species",
     "scientific_name": "Eristalis sp.",
     "vernacular_da": null,
-    "vernacular_en": null,
+    "vernacular_en": "Drone Flies",
     "leaf_index": 18
   },
   {
@@ -176,7 +176,7 @@
     "rank": "species",
     "scientific_name": "Syrphus sp.",
     "vernacular_da": null,
-    "vernacular_en": null,
+    "vernacular_en": "Common Flower Flies",
     "leaf_index": 19
   },
   {
@@ -8438,7 +8438,7 @@
     "rank": "species",
     "scientific_name": "Nicrophorus vespilloides",
     "vernacular_da": "Høst ådselgraver",
-    "vernacular_en": null,
+    "vernacular_en": "Lesser Vespillo Burying Beetle",
     "leaf_index": 44
   },
   {
@@ -9194,7 +9194,7 @@
     "rank": "species",
     "scientific_name": "Anoplotrupes stercorosus",
     "vernacular_da": "Skovskarnbasse",
-    "vernacular_en": null,
+    "vernacular_en": "Woodland Dor Beetle",
     "leaf_index": 77
   },
   {
@@ -9248,7 +9248,7 @@
     "rank": "species",
     "scientific_name": "Protaetia cuprea",
     "vernacular_da": "Guldbasse",
-    "vernacular_en": null,
+    "vernacular_en": "Copper Chafer",
     "leaf_index": 80
   },
   {
@@ -9257,7 +9257,7 @@
     "rank": "species",
     "scientific_name": "Trichius gallicus",
     "vernacular_da": null,
-    "vernacular_en": null,
+    "vernacular_en": "French Flower Chafer",
     "leaf_index": 81
   },
   {
@@ -9473,7 +9473,7 @@
     "rank": "species",
     "scientific_name": "Pachytodes cerambyciformis",
     "vernacular_da": "Bleggul blomsterbuk",
-    "vernacular_en": null,
+    "vernacular_en": "Speckled longhorn beetle",
     "leaf_index": 88
   },
   {
@@ -9509,7 +9509,7 @@
     "rank": "species",
     "scientific_name": "Rhagium bifasciatum",
     "vernacular_da": "Båndet tandbuk",
-    "vernacular_en": null,
+    "vernacular_en": "Two-banded Longhorn Beetle",
     "leaf_index": 90
   },
   {
@@ -10211,7 +10211,7 @@
     "rank": "species",
     "scientific_name": "Pimpla rufipes",
     "vernacular_da": null,
-    "vernacular_en": null,
+    "vernacular_en": "Black Slip Wasp",
     "leaf_index": 126
   },
   {
@@ -10301,7 +10301,7 @@
     "rank": "species",
     "scientific_name": "Amblyteles armatorius",
     "vernacular_da": "Tandet tigersnyltehveps",
-    "vernacular_en": null,
+    "vernacular_en": "Toothed Tiger Ichneumon",
     "leaf_index": 131
   },
   {
@@ -10328,7 +10328,7 @@
     "rank": "species",
     "scientific_name": "Diphyus quadripunctorius",
     "vernacular_da": "Fireplettet Hulesnyltehveps",
-    "vernacular_en": null,
+    "vernacular_en": "Four-spotted Cave Ichneumon",
     "leaf_index": 132
   },
   {
@@ -12254,7 +12254,7 @@
     "rank": "species",
     "scientific_name": "Cistogaster globosa",
     "vernacular_da": null,
-    "vernacular_en": null,
+    "vernacular_en": "Bishop's-mitre Parasite Fly",
     "leaf_index": 261
   },
   {
@@ -12317,7 +12317,7 @@
     "rank": "species",
     "scientific_name": "Eriothrix rufomaculatus",
     "vernacular_da": "Rød snylteflue",
-    "vernacular_en": null,
+    "vernacular_en": "Red Spotted Parasite Fly",
     "leaf_index": 264
   },
   {
@@ -12641,7 +12641,7 @@
     "rank": "species",
     "scientific_name": "Tipula oleracea",
     "vernacular_da": "Kålstankelben",
-    "vernacular_en": null,
+    "vernacular_en": "Marsh Crane Fly",
     "leaf_index": 282
   },
   {
@@ -12668,7 +12668,7 @@
     "rank": "species",
     "scientific_name": "Tipula maxima",
     "vernacular_da": "Kæmpestankelben",
-    "vernacular_en": null,
+    "vernacular_en": "Giant cranefly",
     "leaf_index": 285
   },
   {
@@ -12884,7 +12884,7 @@
     "rank": "species",
     "scientific_name": "Caliprobola speciosa",
     "vernacular_da": "Pragtsvirreflue",
-    "vernacular_en": null,
+    "vernacular_en": "Orange-winged hoverfly",
     "leaf_index": 297
   },
   {
@@ -12938,7 +12938,7 @@
     "rank": "species",
     "scientific_name": "Meliscaeva auricollis",
     "vernacular_da": "Trapez-svirreflue",
-    "vernacular_en": null,
+    "vernacular_en": "Spotted Thintail",
     "leaf_index": 300
   },
   {
@@ -12956,7 +12956,7 @@
     "rank": "species",
     "scientific_name": "Chrysotoxum cautum",
     "vernacular_da": "Stor hvepsesvirreflue",
-    "vernacular_en": null,
+    "vernacular_en": "Large Meadow Fly",
     "leaf_index": 301
   },
   {
@@ -13019,7 +13019,7 @@
     "rank": "species",
     "scientific_name": "Chrysogaster solstitialis",
     "vernacular_da": "Sortvinget engsvirreflue",
-    "vernacular_en": null,
+    "vernacular_en": "Dark-winged Chrysogaster",
     "leaf_index": 304
   },
   {
@@ -13055,7 +13055,7 @@
     "rank": "species",
     "scientific_name": "Rhingia campestris",
     "vernacular_da": "Mark-snabelsvirreflue",
-    "vernacular_en": null,
+    "vernacular_en": "Heineken Fly",
     "leaf_index": 307
   },
   {
@@ -13073,7 +13073,7 @@
     "rank": "species",
     "scientific_name": "Scaeva selenitica",
     "vernacular_da": "Gulplettet agersvirreflue",
-    "vernacular_en": null,
+    "vernacular_en": "Yellow-bowed Smoothwing",
     "leaf_index": 308
   },
   {
@@ -13082,7 +13082,7 @@
     "rank": "species",
     "scientific_name": "Scaeva pyrastri",
     "vernacular_da": "Hvidplettet agersvirreflue",
-    "vernacular_en": null,
+    "vernacular_en": "Eurasian Smoothwing",
     "leaf_index": 309
   },
   {
@@ -13109,7 +13109,7 @@
     "rank": "species",
     "scientific_name": "Sericomyia silentis",
     "vernacular_da": "Tørve-silkesvirreflue",
-    "vernacular_en": null,
+    "vernacular_en": "Yellow-barred Peat Hover Fly",
     "leaf_index": 311
   },
   {
@@ -13127,7 +13127,7 @@
     "rank": "species",
     "scientific_name": "Sericomyia lappona",
     "vernacular_da": "Tidlig silkesvirreflue",
-    "vernacular_en": null,
+    "vernacular_en": "White-barred peat hoverfly",
     "leaf_index": 313
   },
   {
@@ -13190,7 +13190,7 @@
     "rank": "species",
     "scientific_name": "Sphaerophoria scripta",
     "vernacular_da": "Almindelig kuglebærerflue",
-    "vernacular_en": null,
+    "vernacular_en": "Common Globetail",
     "leaf_index": 317
   },
   {
@@ -13208,7 +13208,7 @@
     "rank": "species",
     "scientific_name": "Cheilosia morio",
     "vernacular_da": null,
-    "vernacular_en": null,
+    "vernacular_en": "Stripe-winged Drone Fly",
     "leaf_index": 318
   },
   {
@@ -13217,7 +13217,7 @@
     "rank": "species",
     "scientific_name": "Cheilosia illustrata",
     "vernacular_da": "Broget urtesvirreflue",
-    "vernacular_en": null,
+    "vernacular_en": "Bumblebee Blacklet",
     "leaf_index": 319
   },
   {
@@ -13235,7 +13235,7 @@
     "rank": "species",
     "scientific_name": "Eupeodes corollae",
     "vernacular_da": "Almindelig marksvirreflue",
-    "vernacular_en": null,
+    "vernacular_en": "Migrant Hover Fly",
     "leaf_index": 320
   },
   {
@@ -13244,7 +13244,7 @@
     "rank": "species",
     "scientific_name": "Eristalis pertinax",
     "vernacular_da": "Gulfodet dyndflue",
-    "vernacular_en": null,
+    "vernacular_en": "Tapered Drone Fly",
     "leaf_index": 321
   },
   {
@@ -13262,7 +13262,7 @@
     "rank": "species",
     "scientific_name": "Eristalis obscura",
     "vernacular_da": "Sump-dyndflue",
-    "vernacular_en": null,
+    "vernacular_en": "Carr Drone Fly",
     "leaf_index": 323
   },
   {
@@ -13280,7 +13280,7 @@
     "rank": "species",
     "scientific_name": "Eristalis intricaria",
     "vernacular_da": "Håret dyndflue",
-    "vernacular_en": null,
+    "vernacular_en": "Furry Dronefly",
     "leaf_index": 325
   },
   {
@@ -13307,7 +13307,7 @@
     "rank": "species",
     "scientific_name": "Xylota sylvarum",
     "vernacular_da": "Guldhåret træsvirreflue",
-    "vernacular_en": null,
+    "vernacular_en": "Golden-tailed Leafwalker",
     "leaf_index": 327
   },
   {
@@ -13316,7 +13316,7 @@
     "rank": "species",
     "scientific_name": "Volucella inanis",
     "vernacular_da": "Gul humlesvirreflue",
-    "vernacular_en": null,
+    "vernacular_en": "Lesser Hornet Hoverfly",
     "leaf_index": 328
   },
   {
@@ -13325,7 +13325,7 @@
     "rank": "species",
     "scientific_name": "Volucella bombylans",
     "vernacular_da": "Foranderlig humlesvirreflue",
-    "vernacular_en": null,
+    "vernacular_en": "Bumble Bee Hover Fly",
     "leaf_index": 329
   },
   {
@@ -13334,7 +13334,7 @@
     "rank": "species",
     "scientific_name": "Volucella pellucens",
     "vernacular_da": "Hvidbåndet humlesvirreflue",
-    "vernacular_en": null,
+    "vernacular_en": "Pellucid Hover Fly",
     "leaf_index": 330
   },
   {
@@ -13361,7 +13361,7 @@
     "rank": "species",
     "scientific_name": "Dasysyrphus tricinctus",
     "vernacular_da": "Bredbåndet skovsvirreflue",
-    "vernacular_en": null,
+    "vernacular_en": "Yellow-girdled Brusheye",
     "leaf_index": 332
   },
   {
@@ -13370,7 +13370,7 @@
     "rank": "species",
     "scientific_name": "Dasysyrphus albostriatus",
     "vernacular_da": "Stribet skovsvirreflue",
-    "vernacular_en": null,
+    "vernacular_en": "Stripe-backed Brusheye",
     "leaf_index": 333
   },
   {
@@ -13388,7 +13388,7 @@
     "rank": "species",
     "scientific_name": "Tropidia scita",
     "vernacular_da": "Køl-svirreflue",
-    "vernacular_en": null,
+    "vernacular_en": "Tooth-thighed Hoverfly",
     "leaf_index": 334
   },
   {
@@ -13415,7 +13415,7 @@
     "rank": "species",
     "scientific_name": "Eristalinus sepulchralis",
     "vernacular_da": "Gødnings-dyndflue",
-    "vernacular_en": null,
+    "vernacular_en": "Small Spotty-eyed Drone Fly",
     "leaf_index": 336
   },
   {
@@ -13433,7 +13433,7 @@
     "rank": "species",
     "scientific_name": "Ferdinandea cuprea",
     "vernacular_da": "Sorthornet guldsvirreflue",
-    "vernacular_en": null,
+    "vernacular_en": "Common Copperback",
     "leaf_index": 337
   },
   {
@@ -13757,7 +13757,7 @@
     "rank": "species",
     "scientific_name": "Jaapiella veronicae",
     "vernacular_da": "Ærenprisgalmyg",
-    "vernacular_en": null,
+    "vernacular_en": "Germander Speedwell Gall-midge",
     "leaf_index": 357
   },
   {
@@ -15044,7 +15044,7 @@
     "rank": "species",
     "scientific_name": "Cochylis dubitana",
     "vernacular_da": null,
-    "vernacular_en": null,
+    "vernacular_en": "Little Conch",
     "leaf_index": 437
   },
   {
@@ -17843,7 +17843,7 @@
     "rank": "species",
     "scientific_name": "Ypsolophus sequella",
     "vernacular_da": null,
-    "vernacular_en": null,
+    "vernacular_en": "Pied Smudge",
     "leaf_index": 608
   },
   {
@@ -17933,7 +17933,7 @@
     "rank": "species",
     "scientific_name": "Schiffermuelleria procerella",
     "vernacular_da": null,
-    "vernacular_en": null,
+    "vernacular_en": "Kent Tubic",
     "leaf_index": 613
   },
   {
@@ -18140,7 +18140,7 @@
     "rank": "species",
     "scientific_name": "Mompha epilobiella",
     "vernacular_da": null,
-    "vernacular_en": null,
+    "vernacular_en": "Common Cosmet",
     "leaf_index": 627
   },
   {
@@ -18320,7 +18320,7 @@
     "rank": "species",
     "scientific_name": "Adela viridella",
     "vernacular_da": null,
-    "vernacular_en": null,
+    "vernacular_en": "Green Longhorn Moth",
     "leaf_index": 637
   },
   {
@@ -18761,7 +18761,7 @@
     "rank": "species",
     "scientific_name": "Zophodia convolutella",
     "vernacular_da": null,
-    "vernacular_en": null,
+    "vernacular_en": "Gooseberry Fruitworm Moth",
     "leaf_index": 659
   },
   {
@@ -18959,7 +18959,7 @@
     "rank": "species",
     "scientific_name": "Crambus nemorella",
     "vernacular_da": null,
-    "vernacular_en": null,
+    "vernacular_en": "Hook-streaked Grass-veneer",
     "leaf_index": 673
   },
   {
@@ -19022,7 +19022,7 @@
     "rank": "species",
     "scientific_name": "Scoparia pyralella",
     "vernacular_da": null,
-    "vernacular_en": null,
+    "vernacular_en": "Meadow Grey",
     "leaf_index": 676
   },
   {
@@ -19328,7 +19328,7 @@
     "rank": "species",
     "scientific_name": "Clossiana euphrosyne",
     "vernacular_da": null,
-    "vernacular_en": null,
+    "vernacular_en": "Pearl-bordered Fritillary",
     "leaf_index": 696
   },
   {
@@ -19715,7 +19715,7 @@
     "rank": "species",
     "scientific_name": "Loweia tityrus",
     "vernacular_da": null,
-    "vernacular_en": null,
+    "vernacular_en": "Sooty Copper",
     "leaf_index": 718
   },
   {
@@ -20723,7 +20723,7 @@
     "rank": "species",
     "scientific_name": "Eulithis pyraliata",
     "vernacular_da": null,
-    "vernacular_en": null,
+    "vernacular_en": "Barred Straw",
     "leaf_index": 775
   },
   {
@@ -22775,7 +22775,7 @@
     "rank": "species",
     "scientific_name": "Chrysopa perla",
     "vernacular_da": null,
-    "vernacular_en": null,
+    "vernacular_en": "Pearly Green Lacewing",
     "leaf_index": 881
   },
   {
@@ -22856,7 +22856,7 @@
     "rank": "species",
     "scientific_name": "Orchesella cincta",
     "vernacular_da": "Bælte-pragtspringhale",
-    "vernacular_en": null,
+    "vernacular_en": "Belted Springtail",
     "leaf_index": 885
   },
   {
@@ -22865,7 +22865,7 @@
     "rank": "species",
     "scientific_name": "Orchesella villosa",
     "vernacular_da": "Mønstret pragtspringhale",
-    "vernacular_en": null,
+    "vernacular_en": "Shaggy Springtail",
     "leaf_index": 886
   },
   {
@@ -23009,7 +23009,7 @@
     "rank": "species",
     "scientific_name": "Drapetisca socialis",
     "vernacular_da": "Barkjæger",
-    "vernacular_en": null,
+    "vernacular_en": "Invisible Spider",
     "leaf_index": 895
   },
   {
@@ -23162,7 +23162,7 @@
     "rank": "species",
     "scientific_name": "Trochosa terricola",
     "vernacular_da": "Almindelig bjørneedderkop",
-    "vernacular_en": null,
+    "vernacular_en": "Ground wolf spider",
     "leaf_index": 903
   },
   {
@@ -23189,7 +23189,7 @@
     "rank": "species",
     "scientific_name": "Pardosa lugubris",
     "vernacular_da": null,
-    "vernacular_en": null,
+    "vernacular_en": "Common Forest Wolf Spider Complex",
     "leaf_index": 905
   },
   {
@@ -23648,7 +23648,7 @@
     "rank": "species",
     "scientific_name": "Neoscona adianta",
     "vernacular_da": "Klithjulspinder",
-    "vernacular_en": null,
+    "vernacular_en": "Bordered Orbweaver",
     "leaf_index": 931
   },
   {
@@ -23738,7 +23738,7 @@
     "rank": "species",
     "scientific_name": "Zygiella x-notata",
     "vernacular_da": "Grå sektoredderkop",
-    "vernacular_en": null,
+    "vernacular_en": "Silver-sided Sector Spider",
     "leaf_index": 937
   },
   {
@@ -23756,7 +23756,7 @@
     "rank": "species",
     "scientific_name": "Araneus quadratus",
     "vernacular_da": "Kvadratedderkop",
-    "vernacular_en": null,
+    "vernacular_en": "Four-spot Orbweaver",
     "leaf_index": 938
   },
   {
@@ -23900,7 +23900,7 @@
     "rank": "species",
     "scientific_name": "Diaea dorsata",
     "vernacular_da": "Grøn krabbeedderkop",
-    "vernacular_en": null,
+    "vernacular_en": "Eurasian Green Crab Spider",
     "leaf_index": 949
   },
   {
@@ -23963,7 +23963,7 @@
     "rank": "species",
     "scientific_name": "Marpissa muscosa",
     "vernacular_da": "Stor springedderkop",
-    "vernacular_en": null,
+    "vernacular_en": "Fencepost jumping spider",
     "leaf_index": 952
   },
   {
@@ -24062,7 +24062,7 @@
     "rank": "species",
     "scientific_name": "Evarcha falcata",
     "vernacular_da": "Broget springedderkop",
-    "vernacular_en": null,
+    "vernacular_en": "Woodland Jumping Spider",
     "leaf_index": 957
   },
   {
@@ -43016,7 +43016,7 @@
     "rank": "species",
     "scientific_name": "Apterygida albipennis",
     "vernacular_da": null,
-    "vernacular_en": null,
+    "vernacular_en": "Hop-garden Earwig",
     "leaf_index": 2006
   },
   {
@@ -43376,7 +43376,7 @@
     "rank": "species",
     "scientific_name": "Silpha obscura",
     "vernacular_da": "Almindelig ådselbille",
-    "vernacular_en": null,
+    "vernacular_en": "Obscure Carrion Beetle",
     "leaf_index": 2042
   },
   {
@@ -43385,7 +43385,7 @@
     "rank": "species",
     "scientific_name": "Silpha tristis",
     "vernacular_da": "Kornet ådselbille",
-    "vernacular_en": null,
+    "vernacular_en": "Sad Carrion Beetle",
     "leaf_index": 2043
   },
   {
@@ -43799,7 +43799,7 @@
     "rank": "species",
     "scientific_name": "Leptura quadrifasciata",
     "vernacular_da": "Firebåndet blomsterbuk",
-    "vernacular_en": null,
+    "vernacular_en": "Four-banded longhorn beetle",
     "leaf_index": 2085
   },
   {
@@ -43808,7 +43808,7 @@
     "rank": "species",
     "scientific_name": "Grammoptera ruficornis",
     "vernacular_da": "Liden sirbuk",
-    "vernacular_en": null,
+    "vernacular_en": "Common grammoptera",
     "leaf_index": 2086
   },
   {
@@ -43817,7 +43817,7 @@
     "rank": "species",
     "scientific_name": "Stictoleptura scutellata",
     "vernacular_da": "Hvidskjoldet smalbuk",
-    "vernacular_en": null,
+    "vernacular_en": "Large black longhorn beetle",
     "leaf_index": 2087
   },
   {
@@ -43826,7 +43826,7 @@
     "rank": "species",
     "scientific_name": "Pseudovadonia livida",
     "vernacular_da": "Bleg sirbuk",
-    "vernacular_en": null,
+    "vernacular_en": "Fairy-ring Longhorn Beetle",
     "leaf_index": 2088
   },
   {
@@ -43889,7 +43889,7 @@
     "rank": "species",
     "scientific_name": "Chrysomela polita",
     "vernacular_da": null,
-    "vernacular_en": null,
+    "vernacular_en": "Knotgrass leaf beetle",
     "leaf_index": 2095
   },
   {
@@ -44168,7 +44168,7 @@
     "rank": "species",
     "scientific_name": "Carabus coriaceus",
     "vernacular_da": "Almindelig læderløber",
-    "vernacular_en": null,
+    "vernacular_en": "Leather Beetle",
     "leaf_index": 2125
   },
   {
@@ -44186,7 +44186,7 @@
     "rank": "species",
     "scientific_name": "Carabus clatratus",
     "vernacular_da": "Dyndløber",
-    "vernacular_en": null,
+    "vernacular_en": "Golden-dimpled Ground Beetle",
     "leaf_index": 2127
   },
   {
@@ -44366,7 +44366,7 @@
     "rank": "species",
     "scientific_name": "Carpocoris fuscispinus",
     "vernacular_da": "Glat bredtæge",
-    "vernacular_en": null,
+    "vernacular_en": "Northern fruit bug",
     "leaf_index": 2147
   },
   {
@@ -44573,7 +44573,7 @@
     "rank": "species",
     "scientific_name": "Calocoris roseomaculatus",
     "vernacular_da": "Rølliketæge",
-    "vernacular_en": null,
+    "vernacular_en": "Rosy plant bug",
     "leaf_index": 2168
   },
   {
@@ -44636,7 +44636,7 @@
     "rank": "species",
     "scientific_name": "Dryophilocoris flavoquadrimaculatus",
     "vernacular_da": "Fireplettet blomstertæge",
-    "vernacular_en": null,
+    "vernacular_en": "Four-spotted plant bug",
     "leaf_index": 2175
   },
   {
@@ -44762,7 +44762,7 @@
     "rank": "species",
     "scientific_name": "Tenthredo temula",
     "vernacular_da": null,
-    "vernacular_en": null,
+    "vernacular_en": "Small Yellow-girdled Tenthredo",
     "leaf_index": 2188
   },
   {
@@ -44897,7 +44897,7 @@
     "rank": "species",
     "scientific_name": "Nematus miliaris",
     "vernacular_da": null,
-    "vernacular_en": null,
+    "vernacular_en": "Army Willow Nematine",
     "leaf_index": 2202
   },
   {
@@ -44906,7 +44906,7 @@
     "rank": "species",
     "scientific_name": "Nematus pavidus",
     "vernacular_da": null,
-    "vernacular_en": null,
+    "vernacular_en": "Lesser Willow Sawfly",
     "leaf_index": 2203
   },
   {
@@ -44924,7 +44924,7 @@
     "rank": "species",
     "scientific_name": "Craesus septentrionalis",
     "vernacular_da": null,
-    "vernacular_en": null,
+    "vernacular_en": "Hazel Sawfly",
     "leaf_index": 2205
   },
   {
@@ -45131,7 +45131,7 @@
     "rank": "species",
     "scientific_name": "Myathropa florea",
     "vernacular_da": "Dødningehoved-svirreflue",
-    "vernacular_en": null,
+    "vernacular_en": "Yellow-haired Sun Fly",
     "leaf_index": 2227
   },
   {
@@ -45140,7 +45140,7 @@
     "rank": "species",
     "scientific_name": "Platycheirus albimanus",
     "vernacular_da": "Sortblå bredfodsflue",
-    "vernacular_en": null,
+    "vernacular_en": "Grey-spotted Sedgesitter",
     "leaf_index": 2228
   },
   {
@@ -45149,7 +45149,7 @@
     "rank": "species",
     "scientific_name": "Chrysotoxum festivum",
     "vernacular_da": "Klit-hvepsesvirreflue",
-    "vernacular_en": null,
+    "vernacular_en": "Hook-barred Spearhorn",
     "leaf_index": 2229
   },
   {
@@ -45752,7 +45752,7 @@
     "rank": "species",
     "scientific_name": "Charanyca ferruginea",
     "vernacular_da": null,
-    "vernacular_en": null,
+    "vernacular_en": "Brown Rustic",
     "leaf_index": 2286
   },
   {
@@ -46022,7 +46022,7 @@
     "rank": "species",
     "scientific_name": "Dicranopalpus ramosus",
     "vernacular_da": "Gaffelmejer",
-    "vernacular_en": null,
+    "vernacular_en": "Fork-palped Harvestman",
     "leaf_index": 2313
   },
   {
@@ -46049,7 +46049,7 @@
     "rank": "species",
     "scientific_name": "Opilio canestrinii",
     "vernacular_da": "Orange vægmejer",
-    "vernacular_en": null,
+    "vernacular_en": "Canestrini's Harvestman",
     "leaf_index": 2315
   },
   {
@@ -47057,7 +47057,7 @@
     "rank": "species",
     "scientific_name": "Leucozona lucorum",
     "vernacular_da": "Hvidplettet svirreflue",
-    "vernacular_en": null,
+    "vernacular_en": "Blotch-winged Hoverfly",
     "leaf_index": 2378
   },
   {
@@ -47066,7 +47066,7 @@
     "rank": "species",
     "scientific_name": "Helophilus pendulus",
     "vernacular_da": "Almindelig sumpsvirreflue",
-    "vernacular_en": null,
+    "vernacular_en": "Sun Fly",
     "leaf_index": 2379
   },
   {
@@ -47075,7 +47075,7 @@
     "rank": "species",
     "scientific_name": "Helophilus hybridus",
     "vernacular_da": "Hybrid-sumpsvirreflue",
-    "vernacular_en": null,
+    "vernacular_en": "Woolly-tailed Marsh Fly",
     "leaf_index": 2380
   },
   {
@@ -47084,7 +47084,7 @@
     "rank": "species",
     "scientific_name": "Helophilus trivittatus",
     "vernacular_da": "Trebåndet sumpsvirreflue",
-    "vernacular_en": null,
+    "vernacular_en": "Trivittate Marsh Fly",
     "leaf_index": 2381
   },
   {
@@ -47237,7 +47237,7 @@
     "rank": "species",
     "scientific_name": "Epiblema aquana",
     "vernacular_da": null,
-    "vernacular_en": null,
+    "vernacular_en": "Summer Rose Bell",
     "leaf_index": 2397
   },
   {
@@ -47696,7 +47696,7 @@
     "rank": "species",
     "scientific_name": "Plebejus amanda",
     "vernacular_da": null,
-    "vernacular_en": null,
+    "vernacular_en": "Amanda's Blue",
     "leaf_index": 2442
   },
   {
@@ -48182,7 +48182,7 @@
     "rank": "species",
     "scientific_name": "Segestria senoculata",
     "vernacular_da": "Seksøjet edderkop",
-    "vernacular_en": null,
+    "vernacular_en": "Snake-back Spider",
     "leaf_index": 2491
   },
   {
@@ -48227,7 +48227,7 @@
     "rank": "species",
     "scientific_name": "Euophrys frontalis",
     "vernacular_da": null,
-    "vernacular_en": null,
+    "vernacular_en": "White-Palped Jumping Spider",
     "leaf_index": 2496
   },
   {
@@ -51800,7 +51800,7 @@
     "rank": "species",
     "scientific_name": "Cantharis fusca",
     "vernacular_da": "Grå blødvinge",
-    "vernacular_en": null,
+    "vernacular_en": "Dark Sailor Beetle",
     "leaf_index": 2866
   },
   {
@@ -52025,7 +52025,7 @@
     "rank": "species",
     "scientific_name": "Poecilus cupreus",
     "vernacular_da": "Bred metaljordløber",
-    "vernacular_en": null,
+    "vernacular_en": "Copper Greenclock Beetle",
     "leaf_index": 2891
   },
   {
@@ -52142,7 +52142,7 @@
     "rank": "species",
     "scientific_name": "Rhyparochromus pini",
     "vernacular_da": "Stor frøtæge",
-    "vernacular_en": null,
+    "vernacular_en": "Black-spotted groundbug",
     "leaf_index": 2904
   },
   {
@@ -52187,7 +52187,7 @@
     "rank": "species",
     "scientific_name": "Melanostoma scalare",
     "vernacular_da": "Lang græssvirreflue",
-    "vernacular_en": null,
+    "vernacular_en": "Ladder-backed Hover Fly",
     "leaf_index": 2909
   },
   {
@@ -52196,7 +52196,7 @@
     "rank": "species",
     "scientific_name": "Epistrophe eligans",
     "vernacular_da": "Rødgul glanssvirreflue",
-    "vernacular_en": null,
+    "vernacular_en": "Spring Epistrophe",
     "leaf_index": 2910
   },
   {
@@ -52907,7 +52907,7 @@
     "rank": "species",
     "scientific_name": "Holcostethus strictus",
     "vernacular_da": null,
-    "vernacular_en": null,
+    "vernacular_en": "Vernal Shield Bug",
     "leaf_index": 2975
   },
   {
@@ -53366,7 +53366,7 @@
     "rank": "species",
     "scientific_name": "Silpha atrata",
     "vernacular_da": null,
-    "vernacular_en": null,
+    "vernacular_en": "Black snail beetle",
     "leaf_index": 3019
   },
   {
@@ -53429,7 +53429,7 @@
     "rank": "species",
     "scientific_name": "Aceria brevipunctata",
     "vernacular_da": null,
-    "vernacular_en": null,
+    "vernacular_en": "Elm Leaf Gall Mite",
     "leaf_index": 3024
   },
   {
@@ -54644,7 +54644,7 @@
     "rank": "species",
     "scientific_name": "Saperda scalaris",
     "vernacular_da": "Ellebuk",
-    "vernacular_en": null,
+    "vernacular_en": "Ladder-marked Longhorn Beetle",
     "leaf_index": 3089
   },
   {
@@ -54680,7 +54680,7 @@
     "rank": "species",
     "scientific_name": "Geastrum michelianum",
     "vernacular_da": "Kødet stjernebold",
-    "vernacular_en": null,
+    "vernacular_en": "Collared Earthstar",
     "leaf_index": 3093
   },
   {
@@ -54689,7 +54689,7 @@
     "rank": "species",
     "scientific_name": "Petasites spurius",
     "vernacular_da": "Filtet hestehov",
-    "vernacular_en": null,
+    "vernacular_en": "Woolly Butterbur",
     "leaf_index": 3094
   },
   {
@@ -54860,7 +54860,7 @@
     "rank": "species",
     "scientific_name": "Deporaus betulae",
     "vernacular_da": null,
-    "vernacular_en": null,
+    "vernacular_en": "Birch Leaf-rolling Weevil",
     "leaf_index": 3106
   },
   {
@@ -54923,7 +54923,7 @@
     "rank": "species",
     "scientific_name": "Claytonia perfoliata",
     "vernacular_da": null,
-    "vernacular_en": null,
+    "vernacular_en": "Miner's lettuce",
     "leaf_index": 3112
   },
   {
@@ -55481,7 +55481,7 @@
     "rank": "species",
     "scientific_name": "Alchemilla vulgaris",
     "vernacular_da": null,
-    "vernacular_en": null,
+    "vernacular_en": "Lady's-mantle",
     "leaf_index": 3156
   },
   {
@@ -55742,7 +55742,7 @@
     "rank": "species",
     "scientific_name": "Phytoecia cylindrica",
     "vernacular_da": "Almindelig cylinderbuk",
-    "vernacular_en": null,
+    "vernacular_en": "Umbellifer Longhorn Beetle",
     "leaf_index": 3174
   },
   {
@@ -55922,7 +55922,7 @@
     "rank": "species",
     "scientific_name": "Hymenopellis radicata",
     "vernacular_da": "Almindelig pælerodshat",
-    "vernacular_en": null,
+    "vernacular_en": "Rooting shank",
     "leaf_index": 3190
   },
   {
@@ -55958,7 +55958,7 @@
     "rank": "species",
     "scientific_name": "Typhula fistulosa",
     "vernacular_da": null,
-    "vernacular_en": null,
+    "vernacular_en": "Pipe Club",
     "leaf_index": 3192
   },
   {
@@ -56003,7 +56003,7 @@
     "rank": "species",
     "scientific_name": "Anaglyptus mysticus",
     "vernacular_da": "Hvidbåndet vædderbuk",
-    "vernacular_en": null,
+    "vernacular_en": "Rufous-shouldered Longhorn Beetle",
     "leaf_index": 3195
   },
   {
@@ -56390,7 +56390,7 @@
     "rank": "species",
     "scientific_name": "Anticlea badiata",
     "vernacular_da": null,
-    "vernacular_en": null,
+    "vernacular_en": "Shoulder-stripe",
     "leaf_index": 3225
   },
   {
@@ -56957,7 +56957,7 @@
     "rank": "species",
     "scientific_name": "Silene viscosa",
     "vernacular_da": "Klæbrig limurt",
-    "vernacular_en": null,
+    "vernacular_en": "White Sticky Catchfly",
     "leaf_index": 3268
   },
   {
@@ -57056,7 +57056,7 @@
     "rank": "species",
     "scientific_name": "Stenocorus meridianus",
     "vernacular_da": "Middagsbuk",
-    "vernacular_en": null,
+    "vernacular_en": "Variable longhorn beetle",
     "leaf_index": 3276
   },
   {
@@ -57407,7 +57407,7 @@
     "rank": "species",
     "scientific_name": "Chlorociboria aeruginascens",
     "vernacular_da": "Almindelig grønskive",
-    "vernacular_en": null,
+    "vernacular_en": "Green Wood Cup",
     "leaf_index": 3296
   },
   {
@@ -57515,7 +57515,7 @@
     "rank": "species",
     "scientific_name": "Rhagium inquisitor",
     "vernacular_da": "Fyrretandbuk",
-    "vernacular_en": null,
+    "vernacular_en": "Ribbed Pine Borer",
     "leaf_index": 3302
   },
   {
@@ -57524,7 +57524,7 @@
     "rank": "species",
     "scientific_name": "Agapanthia villosoviridescens",
     "vernacular_da": "Almindelig smalbuk",
-    "vernacular_en": null,
+    "vernacular_en": "Golden-bloomed Longhorn Beetle",
     "leaf_index": 3303
   },
   {
@@ -57560,7 +57560,7 @@
     "rank": "species",
     "scientific_name": "Molorchus minor",
     "vernacular_da": "Almindelig fluebuk",
-    "vernacular_en": null,
+    "vernacular_en": "Spruce shortwing beetle",
     "leaf_index": 3306
   },
   {
@@ -57569,7 +57569,7 @@
     "rank": "species",
     "scientific_name": "Stenurella melanura",
     "vernacular_da": "Sortsømmet blomsterbuk",
-    "vernacular_en": null,
+    "vernacular_en": "Black-striped Longhorn Beetle",
     "leaf_index": 3307
   },
   {
@@ -57686,7 +57686,7 @@
     "rank": "species",
     "scientific_name": "Stenurella nigra",
     "vernacular_da": "Rødbuget spidsbuk",
-    "vernacular_en": null,
+    "vernacular_en": "Small black longhorn beetle",
     "leaf_index": 3314
   },
   {
@@ -57920,7 +57920,7 @@
     "rank": "species",
     "scientific_name": "Cuthonella concinna",
     "vernacular_da": null,
-    "vernacular_en": null,
+    "vernacular_en": "Neat Aeolid",
     "leaf_index": 3328
   },
   {
@@ -58001,7 +58001,7 @@
     "rank": "species",
     "scientific_name": "Stictoleptura rubra",
     "vernacular_da": "Brun blomsterbuk",
-    "vernacular_en": null,
+    "vernacular_en": "Red Pine Longhorn Beetle",
     "leaf_index": 3336
   },
   {
@@ -58370,7 +58370,7 @@
     "rank": "species",
     "scientific_name": "Rhagium mordax",
     "vernacular_da": "Almindelig tandbuk",
-    "vernacular_en": null,
+    "vernacular_en": "Blackspotted Longhorn Beetle",
     "leaf_index": 3359
   },
   {
@@ -58694,7 +58694,7 @@
     "rank": "species",
     "scientific_name": "Pterostichus niger",
     "vernacular_da": "Skovjordløber",
-    "vernacular_en": null,
+    "vernacular_en": "Great Blackclock",
     "leaf_index": 3383
   },
   {
@@ -58901,7 +58901,7 @@
     "rank": "species",
     "scientific_name": "Mecinus pascuorum",
     "vernacular_da": null,
-    "vernacular_en": null,
+    "vernacular_en": "Plantain Weevil",
     "leaf_index": 3397
   },
   {
@@ -59387,7 +59387,7 @@
     "rank": "species",
     "scientific_name": "Arctosa cinerea",
     "vernacular_da": "Sandgraveedderkop",
-    "vernacular_en": null,
+    "vernacular_en": "Northern Bear Spider",
     "leaf_index": 3427
   },
   {
@@ -59675,7 +59675,7 @@
     "rank": "species",
     "scientific_name": "Rutpela maculata",
     "vernacular_da": "Gulplettet blomsterbuk",
-    "vernacular_en": null,
+    "vernacular_en": "Spotted Longhorn Beetle",
     "leaf_index": 3445
   },
   {
@@ -59882,7 +59882,7 @@
     "rank": "species",
     "scientific_name": "Bovistella utriformis",
     "vernacular_da": null,
-    "vernacular_en": null,
+    "vernacular_en": "Mosaic puffball",
     "leaf_index": 3453
   },
   {
@@ -59981,7 +59981,7 @@
     "rank": "species",
     "scientific_name": "Leucozona laternaria",
     "vernacular_da": "Lygte-svirreflue",
-    "vernacular_en": null,
+    "vernacular_en": "Dark-saddled Leucozona",
     "leaf_index": 3459
   },
   {
@@ -59999,7 +59999,7 @@
     "rank": "species",
     "scientific_name": "Sarcomyxa serotina",
     "vernacular_da": null,
-    "vernacular_en": null,
+    "vernacular_en": "Late Oyster",
     "leaf_index": 3461
   },
   {
@@ -60089,7 +60089,7 @@
     "rank": "species",
     "scientific_name": "Philhelius pedissequum",
     "vernacular_da": "Sen ornamentsvirreflue",
-    "vernacular_en": null,
+    "vernacular_en": "Superb Ant-hill Hoverfly",
     "leaf_index": 3464
   },
   {
@@ -60107,7 +60107,7 @@
     "rank": "species",
     "scientific_name": "Thelephora terrestris",
     "vernacular_da": null,
-    "vernacular_en": null,
+    "vernacular_en": "Common Fiber Vase",
     "leaf_index": 3465
   },
   {
@@ -60152,7 +60152,7 @@
     "rank": "species",
     "scientific_name": "Loscopia scolopacina",
     "vernacular_da": null,
-    "vernacular_en": null,
+    "vernacular_en": "Slender Brindle",
     "leaf_index": 3468
   },
   {
@@ -60233,7 +60233,7 @@
     "rank": "species",
     "scientific_name": "Cortinarius bolaris",
     "vernacular_da": null,
-    "vernacular_en": null,
+    "vernacular_en": "Dappled webcap",
     "leaf_index": 3473
   },
   {
@@ -60260,7 +60260,7 @@
     "rank": "species",
     "scientific_name": "Glaucomaria rupicola",
     "vernacular_da": null,
-    "vernacular_en": null,
+    "vernacular_en": "White Rim Lichen",
     "leaf_index": 3476
   },
   {
@@ -60287,7 +60287,7 @@
     "rank": "species",
     "scientific_name": "Salicornia europaea",
     "vernacular_da": null,
-    "vernacular_en": null,
+    "vernacular_en": "Common Glasswort",
     "leaf_index": 3477
   },
   {
@@ -60296,7 +60296,7 @@
     "rank": "species",
     "scientific_name": "Cladonia digitata",
     "vernacular_da": null,
-    "vernacular_en": null,
+    "vernacular_en": "Finger Cup Lichen",
     "leaf_index": 3478
   },
   {
@@ -60323,7 +60323,7 @@
     "rank": "species",
     "scientific_name": "Orthotrichum anomalum",
     "vernacular_da": null,
-    "vernacular_en": null,
+    "vernacular_en": "Anomalous Bristle-moss",
     "leaf_index": 3481
   },
   {

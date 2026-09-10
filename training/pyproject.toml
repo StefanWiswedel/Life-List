@@ -47,6 +47,7 @@ lifelist-birdnet-model = "lifelist_train.cli.birdnet_model:main"
 lifelist-audio-bridge = "lifelist_train.cli.audio_bridge:main"
 lifelist-recordings = "lifelist_train.cli.recordings:main"
 lifelist-reference-audio = "lifelist_train.cli.reference_audio:main"
+lifelist-vernaculars = "lifelist_train.cli.vernaculars:main"
 lifelist-redlist = "lifelist_train.cli.redlist:main"
 lifelist-thresholds = "lifelist_train.cli.thresholds:main"
 

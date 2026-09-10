@@ -42,7 +42,7 @@ When trading off, trade in favour of a record being keepable at the rank the evi
 | `app/` — Android | **one surface**: home is the list, camera is one button (§32) |
 | screens | rendered on the JVM by Paparazzi — `./gradlew :app:recordPaparazziDebug` (§33) |
 | records | editable: settle the species later, add photos, place names, camera roll (§34) |
-| common names | **fixed 18 Aug** — the taxonomy asset shipped with every vernacular null (§28) |
+| common names | **3,253 of 3,482 species** have one; the other 229 have none anywhere (§28, §71) |
 | multi-photo | fused via §3.2; **four zooms per photo, most confident wins** (§29, §53, §54) |
 | species info | **7,111 of 7,493 nodes** carry a bundled Wikipedia intro (§31, §50, §70) |
 | reference photos | iNaturalist's curated pick — **3,462 vision leaves and 790 audio ones** (§37, §50, §66) |

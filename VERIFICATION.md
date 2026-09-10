@@ -3046,6 +3046,51 @@ somebody made it resumable before it needed to be.
 
 ---
 
+## 71. Names for the nameless, and a page behind every one — 10 Sep 2026
+
+Two things from opening a family: rows reading `Apterygida albipennis` where every other row has
+a name somebody would say, and no way to find out what one is.
+
+### 142 names found, and 229 that do not exist
+
+371 of the 3,482 species the camera knows had no English name. GBIF gave what it had when the
+taxonomy was built (§28); **iNaturalist knows 142 more**, because its names come from the people
+using it rather than from a nomenclatural authority — *Nicrophorus vespilloides* is the "Lesser
+Vespillo Burying Beetle" to somebody, and nowhere in GBIF.
+
+The other **229 have no English name anywhere**, and no amount of fetching will invent one. That
+is the honest ceiling: weevils and small flies mostly, things with a binomial and nothing else.
+"All should have common names" is a reasonable thing to want and a third of it is unavailable.
+
+So the display changes instead. A binomial standing in for a name is now set in **italics**,
+like the scientific name it is, rather than upright like a name that failed to load. The row
+says "this is what it is called" rather than "something is missing here".
+
+Two rules the stage keeps:
+
+- **Only empty fields are touched.** A name GBIF already chose is not up for revision by a
+  second source. This fills gaps; it does not arbitrate between authorities.
+- **Leaf ordering must not move.** The shipped head is 3,482 logits whose meaning is positional,
+  so a reordered taxonomy would silently relabel every prediction. The stage refuses to write if
+  the order changed — the same guard `--taxonomy-only` has carried since §42.
+
+iNaturalist's names arrive in whatever casing their contributors typed — "speckled longhorn
+beetle" beside "Two-banded Longhorn Beetle" — so they go through the same `tidy_vernacular` as
+GBIF's. Two capitalisation styles in one list reads as a bug in us.
+
+### Every species opens, not only the ones you have
+
+The roster creates a question — *what is the one I have not found?* — and the app already held
+the answer. `TaxonSheet` has existed since §38: reference photograph, credit, the Wikipedia
+paragraph. Now every row opens it, found or not, and it plays the **reference recording** too
+(§69), so a species page about a bird lets you hear the bird.
+
+That is the whole point of the roster having names rather than numbers: the ten you have not
+found stop being a gap in a fraction and become ten things you could go and look for, each with
+a picture, a paragraph and a sound.
+
+---
+
 ---
 
 ## Open questions

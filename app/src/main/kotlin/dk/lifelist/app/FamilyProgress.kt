@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
@@ -126,10 +127,10 @@ private fun Roster(
             Row(
                 Modifier
                     .fillMaxWidth()
-                    .then(
-                        if (member.seen) Modifier.clickable { onOpenTaxon(member.taxonId) }
-                        else Modifier
-                    )
+                    // Every species opens, not only the ones you have. "What is the one I have
+                    // not found?" is the question the roster creates, and the app already holds
+                    // the answer — a photograph, a paragraph, and now a recording.
+                    .clickable { onOpenTaxon(member.taxonId) }
                     .padding(vertical = 5.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
@@ -141,10 +142,16 @@ private fun Roster(
                     modifier = Modifier.size(15.dp),
                 )
                 Spacer(Modifier.width(9.dp))
-                Column {
+                Column(Modifier.weight(1f)) {
                     Text(
                         member.vernacularEn ?: member.scientificName,
                         style = MaterialTheme.typography.bodyMedium,
+                        // 229 species have no English name in GBIF or iNaturalist, and no
+                        // amount of fetching will invent one. Where the binomial is standing in
+                        // for a name it is set in italics like the name it is, rather than
+                        // upright like a name that failed to load.
+                        fontStyle = if (member.vernacularEn == null) FontStyle.Italic
+                        else FontStyle.Normal,
                         color = if (member.seen) MaterialTheme.colorScheme.onSurface
                         else MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -157,6 +164,12 @@ private fun Roster(
                         )
                     }
                 }
+                Icon(
+                    Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.outlineVariant,
+                    modifier = Modifier.size(16.dp),
+                )
             }
         }
 

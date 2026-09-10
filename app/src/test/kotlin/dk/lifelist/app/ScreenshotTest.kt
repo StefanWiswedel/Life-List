@@ -516,6 +516,8 @@ class ScreenshotTest {
             dk.lifelist.core.Families.Member(
                 1692898, "Tettigonia viridissima", "Great green bush-cricket", seen = false
             ),
+            // No English name anywhere — 229 species are in this position, so the row has to
+            // read as a scientific name rather than as one that failed to load.
             dk.lifelist.core.Families.Member(700, "Conocephalus fuscus", null, seen = false),
         )
 
