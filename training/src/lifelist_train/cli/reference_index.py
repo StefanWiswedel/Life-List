@@ -29,6 +29,7 @@ from __future__ import annotations
 import argparse
 import json
 import time
+from collections.abc import Sequence
 from pathlib import Path
 from typing import Any
 
@@ -56,14 +57,14 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--bridge",
         type=Path,
-        default=shared_model("taxon_bridge.json"),
-        help="taxon_bridge.json — the GBIF<->iNaturalist crossing for every taxon in the model",
+        action="append",
+        help="a GBIF<->iNaturalist crossing. Repeatable; defaults to the vision and audio ones",
     )
     parser.add_argument(
         "--taxonomy",
         type=Path,
-        default=shared_model("taxonomy.json"),
-        help="which taxa are leaves, and so want a photograph",
+        action="append",
+        help="which taxa are leaves, and so want a photograph. Repeatable, same default",
     )
     parser.add_argument(
         "--manifest",
@@ -79,23 +80,58 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def pairs_from_bridge(bridge: Path, taxonomy: Path) -> list[tuple[int, int]]:
-    """(gbif_id, inat_id) for every leaf in the shipped taxonomy.
+def pairs_from_bridge(
+    bridge: Path | Sequence[Path],
+    taxonomy: Path | Sequence[Path],
+) -> list[tuple[int, int]]:
+    """(gbif_id, inat_id) for every leaf in the shipped taxonomies.
 
     Signed, not absolute: an indeterminate leaf is `-1036775`, the same negative id the
     taxonomy and the app use, and its photograph is the genus's. Taking `abs` here would file
     "some *Carabus*" under the *Carabus* genus node, which is not a leaf and is not what the
     result screen looks up.
+
+    **Several of each, on purpose.** There are two taxonomies now — the vision head's output
+    space and the audio one — and a bird identified by ear wants the same comparison photograph
+    as one identified by eye. Both trees are keyed by GBIF, so one index serves both, and the
+    529 species only audio can reach stop showing a blank (VERIFICATION §66).
     """
-    mapping = {
-        int(inat): int(gbif)
-        for inat, gbif in json.loads(bridge.read_text(encoding="utf-8"))["mapping"].items()
-    }
-    leaves = {
-        int(node["taxon_id"])
-        for node in json.loads(taxonomy.read_text(encoding="utf-8"))
-        if node.get("leaf_index") is not None
-    }
+    bridges = [bridge] if isinstance(bridge, Path) else list(bridge)
+    taxonomies = [taxonomy] if isinstance(taxonomy, Path) else list(taxonomy)
+
+    # First bridge wins, and a disagreement is reported rather than absorbed. Letting a later
+    # file overwrite an earlier one is how the northern wheatear lost its photograph: a stale
+    # audio crossing pointed iNaturalist 12822 at a taxon the tree no longer had, quietly
+    # replacing the vision crossing that was right (VERIFICATION §67).
+    mapping: dict[int, int] = {}
+    clashes: list[tuple[int, int, int]] = []
+    for path in bridges:
+        if not path.exists():
+            LOG.warning("no %s — skipping it", path)
+            continue
+        for inat, gbif in json.loads(path.read_text(encoding="utf-8"))["mapping"].items():
+            held = mapping.get(int(inat))
+            if held is None:
+                mapping[int(inat)] = int(gbif)
+            elif held != int(gbif):
+                clashes.append((int(inat), held, int(gbif)))
+    if clashes:
+        LOG.warning(
+            "%d iNaturalist taxa are claimed by two GBIF ids; keeping the first: %s",
+            len(clashes),
+            clashes[:5],
+        )
+
+    leaves: set[int] = set()
+    for path in taxonomies:
+        if not path.exists():
+            LOG.warning("no %s — skipping it", path)
+            continue
+        leaves |= {
+            int(node["taxon_id"])
+            for node in json.loads(path.read_text(encoding="utf-8"))
+            if node.get("leaf_index") is not None
+        }
     pairs = sorted(
         ((gbif, inat) for inat, gbif in mapping.items() if gbif in leaves),
         key=lambda pair: pair[0],
@@ -167,12 +203,17 @@ def main(argv: list[str] | None = None) -> int:
     previous = json.loads(args.previous.read_text(encoding="utf-8"))
     fallbacks = {int(e["taxon_id"]): e for e in previous}
 
-    if args.bridge.exists() and args.taxonomy.exists():
-        pairs = pairs_from_bridge(args.bridge, args.taxonomy)
+    bridges = args.bridge or [shared_model("taxon_bridge.json"), shared_model("audio_bridge.json")]
+    taxonomies = args.taxonomy or [
+        shared_model("taxonomy.json"),
+        shared_model("audio_taxonomy.json"),
+    ]
+    if any(path.exists() for path in bridges) and any(path.exists() for path in taxonomies):
+        pairs = pairs_from_bridge(bridges, taxonomies)
     else:
         LOG.warning(
-            "no %s — falling back to the taxa already in the index, which cannot grow",
-            args.bridge,
+            "none of %s — falling back to the taxa already in the index, which cannot grow",
+            [path.name for path in bridges],
         )
         pairs = load_pairs(previous, args.manifest)
     if args.limit:

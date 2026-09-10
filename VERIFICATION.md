@@ -2829,6 +2829,95 @@ two can differ by three days and a sofa.
 
 ---
 
+## 66. A photograph for the birds only the microphone can reach — 10 Sep 2026
+
+The result screen shows a reference photograph beside what the model said, so you can look at
+both and disagree. A bird identified by ear showed a blank there, because the index is keyed by
+**iNaturalist** taxon id and `taxon_bridge.json` only crosses the taxa the *camera* was trained
+on — 272 of the audio tree's leaves. The other 523 had never been looked up by anything.
+
+`lifelist-audio-bridge` resolves them by scientific name, which is the only handle there is:
+the two id spaces are unrelated and GBIF carries no iNaturalist keys. **A name that resolves to
+more than one taxon is refused**, per the rule that has held since the first synonym table. Here
+a wrong answer only means a wrong photograph — and a wrong photograph beside a confident
+identification is exactly what makes somebody trust the wrong bird.
+
+### The three checklists disagree in different places
+
+First pass: **475 of 525**. All fifty failures had one thing in common — iNaturalist follows the
+*modern* checklist, and GBIF does not:
+
+| the audio tree says (GBIF) | iNaturalist wants | |
+|---|---|---|
+| `Sylvia nisoria` | `Curruca nisoria` | and eleven more *Sylvia* |
+| `Accipiter gentilis` | `Astur gentilis` | |
+| `Charadrius dubius` | `Thinornis dubius` | little ringed plover |
+| `Phylloscopus sibillatrix` | `Phylloscopus sibilatrix` | GBIF's own second l |
+
+Which are, almost exactly, the names §62 aliased *away* — BirdNET is modern too. So the second
+pass tries BirdNET's name where GBIF's failed, one extra request for a name that already
+missed. **All 50 resolved**, and the two crossings together now cover every leaf.
+
+**Result: 790 of 795 audio leaves have a reference photograph**, up from 272. The reference
+index reads both trees, and the same photograph serves a bird whether it was seen or heard.
+
+---
+
+## 67. The wheatear that was two birds — 10 Sep 2026
+
+The rebuild added 519 photographs and quietly took one away: *Oenanthe oenanthe*, the northern
+wheatear, which had one before. One taxon out of four thousand, in a log line that said only a
+larger number than last time.
+
+**Two bugs met in the middle**, and each was invisible on its own.
+
+### GBIF's rank field lied, so the audio tree had two wheatears
+
+BirdNET has a class for `Oenanthe seebohmi`, the Atlas wheatear. GBIF answers:
+
+```
+rank: SPECIES, status: SYNONYM, acceptedUsageKey: 5845303, speciesKey: 5231240
+```
+
+Rank SPECIES — but 5845303 is the **subspecies** *Oenanthe oenanthe seebohmi*. §62's code
+followed `acceptedUsageKey` and took the name from the `species` field, producing a leaf keyed
+**5845303 and named "Oenanthe oenanthe"**. The vision tree already had that bird as **5231240**.
+
+So a wheatear photographed and a wheatear heard were **two entries in one life list**, under one
+name. Sharing GBIF ids is the whole reason two taxonomies can be one list, and this broke it
+silently.
+
+`speciesKey` is now what decides, rather than the reported rank — it is the one field that names
+the species whatever the matched name turns out to be. 801 classes still resolve; the tree is
+795 leaves rather than 801, because six BirdNET splits GBIF does not recognise fold into their
+species, which is what §62 said should happen and did not.
+
+### And a stale crossing quietly outvoted a good one
+
+The first bridge had already written `iNaturalist 12822 → 5845303`. After the fix that taxon no
+longer existed, but a `--merge` rerun kept the line, and `pairs_from_bridge` merged the two
+bridges with **last-wins**. So the dead crossing overwrote the live one and the wheatear's
+photograph was filed under a leaf that was not there.
+
+Two guards, because either alone would have left the other:
+
+- **First bridge wins**, and a disagreement is *reported* rather than absorbed. A silent
+  overwrite is how one taxon in four thousand loses its photograph without a line in the log.
+- **A merge drops crossings whose taxon is no longer a leaf.** A crossing kept past its taxon is
+  worse than a missing one: it points somewhere that does not exist, and the taxon that should
+  have had it loses it.
+
+Rebuilt: **3,980 entries, 518 added, none lost.**
+
+### What now checks it
+
+A Kotlin test over the shipped files asserts **no species appears in both trees under two ids**.
+That is the property that makes two taxonomies one life list, it is not implied by either tree
+being valid, and nothing was checking it — the same shape of gap as §64, where the class map and
+the tree were each fine and disagreed with each other.
+
+---
+
 ---
 
 ## Open questions

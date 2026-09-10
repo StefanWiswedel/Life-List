@@ -33,7 +33,13 @@ USER_AGENT = "LifeList/0.6 (https://github.com/StefanWiswedel/Life-List)"
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Bundle Wikipedia intros for every taxon")
-    parser.add_argument("--taxonomy", default=shared_model("taxonomy.json"))
+    parser.add_argument(
+        "--taxonomy",
+        action="append",
+        help="a taxonomy whose nodes want an article. Repeatable; defaults to the vision and "
+             "audio trees, because a bird identified by ear deserves the same paragraph as one "
+             "identified by eye",
+    )
     parser.add_argument("--out", default=shared_model("wikipedia.json"))
     parser.add_argument(
         "--cache",
@@ -119,12 +125,25 @@ def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     setup_logging(args.verbose)
 
-    taxonomy_path = Path(args.taxonomy)
-    if not taxonomy_path.exists():
-        LOG.error("%s not found — stage 1 writes it", taxonomy_path)
+    taxonomy_paths = [
+        Path(path) for path in (
+            args.taxonomy or [shared_model("taxonomy.json"), shared_model("audio_taxonomy.json")]
+        )
+    ]
+    present = [path for path in taxonomy_paths if path.exists()]
+    if not present:
+        LOG.error("none of %s found — stage 1 writes them", [str(p) for p in taxonomy_paths])
         return 1
+    for path in taxonomy_paths:
+        if path not in present:
+            LOG.warning("no %s — skipping it", path)
 
-    nodes = json.loads(taxonomy_path.read_text(encoding="utf-8"))
+    # Merged by taxon_id: the two trees share 272 taxa and a node in both wants one article.
+    merged: dict[int, dict] = {}
+    for path in present:
+        for node in json.loads(path.read_text(encoding="utf-8")):
+            merged.setdefault(int(node["taxon_id"]), node)
+    nodes = list(merged.values())
     titles = plan_titles(nodes)
 
     cache_path, missing_path = Path(args.cache), Path(args.absent)

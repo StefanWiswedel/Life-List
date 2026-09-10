@@ -59,7 +59,7 @@ class AudioTaxonomyAssetTest {
 
     @Test
     fun `the shipped audio taxonomy satisfies every invariant Kotlin checks`() {
-        assertEquals(801, taxonomy.nTaxa, "leaf count moved; see VERIFICATION.md §62")
+        assertEquals(795, taxonomy.nTaxa, "leaf count moved; see VERIFICATION.md §62")
         assertTrue(taxonomy.nodes.size > 1200)
     }
 
@@ -92,6 +92,28 @@ class AudioTaxonomyAssetTest {
             assertNotNull(node, "$name ($taxonId) is missing from the audio taxonomy")
             assertEquals(name, node.vernacularEn)
         }
+    }
+
+    @Test
+    fun `no species is in both trees under two different ids`() {
+        // One life list, one bird. `Oenanthe seebohmi` resolved to the *subspecies* Oenanthe
+        // oenanthe seebohmi and was stored as a leaf named "Oenanthe oenanthe" keyed 5845303,
+        // while the vision tree already had that bird as 5231240 — so a wheatear photographed
+        // and a wheatear heard were two entries (VERIFICATION §67). Sharing an id is what makes
+        // the two trees one list, and a name with two ids quietly breaks that.
+        val visionByName = Json.parseToJsonElement(
+            repoFile("shared/model/taxonomy.json").readText()
+        ).jsonArray.groupBy(
+            { it.jsonObject["scientific_name"]!!.jsonPrimitive.content },
+            { it.jsonObject["taxon_id"]!!.jsonPrimitive.content.toInt() },
+        )
+
+        val clashes = taxonomy.nodes.values.mapNotNull { node ->
+            val ids = visionByName[node.scientificName] ?: return@mapNotNull null
+            if (node.taxonId in ids) null else "${node.scientificName}: ${node.taxonId} vs $ids"
+        }
+
+        assertTrue(clashes.isEmpty(), "the two trees name the same species twice: $clashes")
     }
 
     @Test

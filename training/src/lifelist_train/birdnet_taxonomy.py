@@ -21,6 +21,7 @@ from typing import Any
 
 from .birdnet import BirdNetLabel
 from .gbif import GbifTaxon, parse_rank
+from .taxonomy import RANK_ORDER
 
 #: GBIF `matchType` values we accept. Deliberately only the exact ones.
 #:
@@ -103,12 +104,23 @@ def taxon_from_match(payload: Mapping[str, Any]) -> GbifTaxon | None:
         return None
 
     rank = parse_rank(payload.get("rank"))
+    if rank is None or RANK_ORDER[rank] < RANK_ORDER["species"]:
+        return None
 
-    # A subspecies is recorded as its species. The match already carries `speciesKey` and
-    # `species`, so this costs no extra request and keeps every class on a leaf.
-    if rank == "subspecies" and payload.get("speciesKey") and payload.get("species"):
+    # **Everything below species is recorded as its species**, and the test is `speciesKey`
+    # rather than the reported rank, because the rank lies. `Oenanthe seebohmi` comes back
+    # `rank: SPECIES, status: SYNONYM, acceptedUsageKey: 5845303, speciesKey: 5231240` — the
+    # accepted taxon is the *subspecies* `Oenanthe oenanthe seebohmi`, and following
+    # `acceptedUsageKey` produced a leaf keyed 5845303 and named "Oenanthe oenanthe". The vision
+    # taxonomy already had that bird as 5231240, so a wheatear photographed and a wheatear heard
+    # were two entries in one life list (VERIFICATION §67).
+    #
+    # `speciesKey` is the one field that always names the species, whatever the matched name
+    # turned out to be, so it is what decides.
+    species_key = payload.get("speciesKey")
+    if species_key and payload.get("species"):
         return GbifTaxon(
-            key=int(payload["speciesKey"]),
+            key=int(species_key),
             scientific_name=str(payload["species"]),
             rank="species",
             status="ACCEPTED",

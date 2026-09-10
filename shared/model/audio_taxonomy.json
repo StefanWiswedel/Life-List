@@ -2444,7 +2444,7 @@
   "rank": "species",
   "scientific_name": "Porphyrio porphyrio",
   "vernacular_da": null,
-  "vernacular_en": "Western Swamphen",
+  "vernacular_en": "Grey-headed Swamphen",
   "leaf_index": 68
  },
  {
@@ -4316,7 +4316,7 @@
   "rank": "species",
   "scientific_name": "Calonectris diomedea",
   "vernacular_da": null,
-  "vernacular_en": "Scopoli's Shearwater",
+  "vernacular_en": "Cory's Shearwater",
   "leaf_index": 196
  },
  {
@@ -5958,6 +5958,15 @@
   "leaf_index": null
  },
  {
+  "taxon_id": 2490663,
+  "parent_id": 2490661,
+  "rank": "species",
+  "scientific_name": "Eremalauda dunni",
+  "vernacular_da": null,
+  "vernacular_en": "Arabian Lark",
+  "leaf_index": 311
+ },
+ {
   "taxon_id": 2490664,
   "parent_id": 7211,
   "rank": "genus",
@@ -5973,7 +5982,7 @@
   "scientific_name": "Pseudalaemon fremantlii",
   "vernacular_da": null,
   "vernacular_en": "Short-tailed Lark",
-  "leaf_index": 311
+  "leaf_index": 312
  },
  {
   "taxon_id": 2490666,
@@ -5991,7 +6000,7 @@
   "scientific_name": "Galerida cristata",
   "vernacular_da": null,
   "vernacular_en": "Crested Lark",
-  "leaf_index": 312
+  "leaf_index": 313
  },
  {
   "taxon_id": 2490673,
@@ -6009,7 +6018,7 @@
   "scientific_name": "Chersophilus duponti",
   "vernacular_da": null,
   "vernacular_en": "Dupont's Lark",
-  "leaf_index": 313
+  "leaf_index": 314
  },
  {
   "taxon_id": 2490675,
@@ -6027,7 +6036,7 @@
   "scientific_name": "Calandrella brachydactyla",
   "vernacular_da": null,
   "vernacular_en": "Greater Short-toed Lark",
-  "leaf_index": 314
+  "leaf_index": 315
  },
  {
   "taxon_id": 2490682,
@@ -6035,8 +6044,8 @@
   "rank": "species",
   "scientific_name": "Calandrella rufescens",
   "vernacular_da": null,
-  "vernacular_en": "Mediterranean Short-toed Lark",
-  "leaf_index": 315
+  "vernacular_en": "Turkestan Short-toed Lark",
+  "leaf_index": 316
  },
  {
   "taxon_id": 2490688,
@@ -6054,7 +6063,7 @@
   "scientific_name": "Eremopterix verticalis",
   "vernacular_da": null,
   "vernacular_en": "Grey-backed Sparrow-Lark",
-  "leaf_index": 316
+  "leaf_index": 317
  },
  {
   "taxon_id": 2490692,
@@ -6063,7 +6072,7 @@
   "scientific_name": "Eremopterix leucotis",
   "vernacular_da": null,
   "vernacular_en": "Chestnut-backed Sparrow-Lark",
-  "leaf_index": 317
+  "leaf_index": 318
  },
  {
   "taxon_id": 2490694,
@@ -6072,7 +6081,7 @@
   "scientific_name": "Eremopterix nigriceps",
   "vernacular_da": null,
   "vernacular_en": "Black-crowned Sparrow-Lark",
-  "leaf_index": 318
+  "leaf_index": 319
  },
  {
   "taxon_id": 2490696,
@@ -6090,7 +6099,7 @@
   "scientific_name": "Alauda gulgula",
   "vernacular_da": null,
   "vernacular_en": "Oriental Skylark",
-  "leaf_index": 319
+  "leaf_index": 320
  },
  {
   "taxon_id": 2490714,
@@ -6108,7 +6117,7 @@
   "scientific_name": "Turdus merula",
   "vernacular_da": null,
   "vernacular_en": "Common Blackbird",
-  "leaf_index": 320
+  "leaf_index": 321
  },
  {
   "taxon_id": 2490737,
@@ -6117,7 +6126,7 @@
   "scientific_name": "Turdus pilaris",
   "vernacular_da": null,
   "vernacular_en": "Fieldfare",
-  "leaf_index": 321
+  "leaf_index": 322
  },
  {
   "taxon_id": 2490749,
@@ -6126,7 +6135,7 @@
   "scientific_name": "Turdus menachensis",
   "vernacular_da": null,
   "vernacular_en": "Yemen Thrush",
-  "leaf_index": 322
+  "leaf_index": 323
  },
  {
   "taxon_id": 2490774,
@@ -6135,7 +6144,7 @@
   "scientific_name": "Turdus viscivorus",
   "vernacular_da": null,
   "vernacular_en": "Mistle Thrush",
-  "leaf_index": 323
+  "leaf_index": 324
  },
  {
   "taxon_id": 2490781,
@@ -6144,7 +6153,7 @@
   "scientific_name": "Turdus iliacus",
   "vernacular_da": null,
   "vernacular_en": "Redwing",
-  "leaf_index": 324
+  "leaf_index": 325
  },
  {
   "taxon_id": 2490869,
@@ -6162,7 +6171,7 @@
   "scientific_name": "Monticola solitarius",
   "vernacular_da": null,
   "vernacular_en": "Blue Rock Thrush",
-  "leaf_index": 325
+  "leaf_index": 326
  },
  {
   "taxon_id": 2490956,
@@ -6171,7 +6180,7 @@
   "scientific_name": "Monticola saxatilis",
   "vernacular_da": null,
   "vernacular_en": "Common Rock Thrush",
-  "leaf_index": 326
+  "leaf_index": 327
  },
  {
   "taxon_id": 2491468,
@@ -6189,7 +6198,7 @@
   "scientific_name": "Emberiza cineracea",
   "vernacular_da": null,
   "vernacular_en": "Cinereous Bunting",
-  "leaf_index": 327
+  "leaf_index": 328
  },
  {
   "taxon_id": 2491482,
@@ -6198,7 +6207,7 @@
   "scientific_name": "Emberiza hortulana",
   "vernacular_da": null,
   "vernacular_en": "Ortolan Bunting",
-  "leaf_index": 328
+  "leaf_index": 329
  },
  {
   "taxon_id": 2491490,
@@ -6207,7 +6216,7 @@
   "scientific_name": "Emberiza caesia",
   "vernacular_da": null,
   "vernacular_en": "Cretzschmar's Bunting",
-  "leaf_index": 329
+  "leaf_index": 330
  },
  {
   "taxon_id": 2491491,
@@ -6216,7 +6225,7 @@
   "scientific_name": "Emberiza tahapisi",
   "vernacular_da": null,
   "vernacular_en": "Cinnamon-breasted Bunting",
-  "leaf_index": 330
+  "leaf_index": 331
  },
  {
   "taxon_id": 2491498,
@@ -6225,7 +6234,7 @@
   "scientific_name": "Emberiza cia",
   "vernacular_da": null,
   "vernacular_en": "Rock Bunting",
-  "leaf_index": 331
+  "leaf_index": 332
  },
  {
   "taxon_id": 2491521,
@@ -6234,7 +6243,7 @@
   "scientific_name": "Emberiza bruniceps",
   "vernacular_da": null,
   "vernacular_en": "Red-headed Bunting",
-  "leaf_index": 332
+  "leaf_index": 333
  },
  {
   "taxon_id": 2491534,
@@ -6243,7 +6252,7 @@
   "scientific_name": "Emberiza citrinella",
   "vernacular_da": null,
   "vernacular_en": "Yellowhammer",
-  "leaf_index": 333
+  "leaf_index": 334
  },
  {
   "taxon_id": 2491544,
@@ -6252,7 +6261,7 @@
   "scientific_name": "Emberiza pusilla",
   "vernacular_da": null,
   "vernacular_en": "Little Bunting",
-  "leaf_index": 334
+  "leaf_index": 335
  },
  {
   "taxon_id": 2491557,
@@ -6261,7 +6270,7 @@
   "scientific_name": "Emberiza schoeniclus",
   "vernacular_da": null,
   "vernacular_en": "Common Reed Bunting",
-  "leaf_index": 335
+  "leaf_index": 336
  },
  {
   "taxon_id": 2491582,
@@ -6270,7 +6279,7 @@
   "scientific_name": "Emberiza rustica",
   "vernacular_da": null,
   "vernacular_en": "Rustic Bunting",
-  "leaf_index": 336
+  "leaf_index": 337
  },
  {
   "taxon_id": 2491585,
@@ -6279,7 +6288,7 @@
   "scientific_name": "Emberiza striolata",
   "vernacular_da": null,
   "vernacular_en": "Striolated Bunting",
-  "leaf_index": 337
+  "leaf_index": 338
  },
  {
   "taxon_id": 2491676,
@@ -6297,7 +6306,7 @@
   "scientific_name": "Calcarius lapponicus",
   "vernacular_da": null,
   "vernacular_en": "Lapland Longspur",
-  "leaf_index": 338
+  "leaf_index": 339
  },
  {
   "taxon_id": 2491717,
@@ -6315,7 +6324,7 @@
   "scientific_name": "Plectrophenax nivalis",
   "vernacular_da": null,
   "vernacular_en": "Snow Bunting",
-  "leaf_index": 339
+  "leaf_index": 340
  },
  {
   "taxon_id": 2492286,
@@ -6351,7 +6360,7 @@
   "scientific_name": "Petronia petronia",
   "vernacular_da": null,
   "vernacular_en": "Rock Sparrow",
-  "leaf_index": 340
+  "leaf_index": 341
  },
  {
   "taxon_id": 2492363,
@@ -6369,7 +6378,7 @@
   "scientific_name": "Carpospiza brachydactyla",
   "vernacular_da": null,
   "vernacular_en": "Pale Rockfinch",
-  "leaf_index": 341
+  "leaf_index": 342
  },
  {
   "taxon_id": 2492365,
@@ -6387,7 +6396,7 @@
   "scientific_name": "Montifringilla nivalis",
   "vernacular_da": null,
   "vernacular_en": "White-winged Snowfinch",
-  "leaf_index": 342
+  "leaf_index": 343
  },
  {
   "taxon_id": 2492394,
@@ -6405,7 +6414,7 @@
   "scientific_name": "Thamnolaea cinnamomeiventris",
   "vernacular_da": null,
   "vernacular_en": "Mocking Cliff Chat",
-  "leaf_index": 343
+  "leaf_index": 344
  },
  {
   "taxon_id": 2492413,
@@ -6423,7 +6432,7 @@
   "scientific_name": "Dioptrornis chocolatinus",
   "vernacular_da": null,
   "vernacular_en": "Abyssinian Slaty Flycatcher",
-  "leaf_index": 344
+  "leaf_index": 345
  },
  {
   "taxon_id": 2492460,
@@ -6441,7 +6450,7 @@
   "scientific_name": "Erithacus rubecula",
   "vernacular_da": null,
   "vernacular_en": "European Robin",
-  "leaf_index": 345
+  "leaf_index": 346
  },
  {
   "taxon_id": 2492468,
@@ -6459,7 +6468,7 @@
   "scientific_name": "Cercotrichas podobe",
   "vernacular_da": null,
   "vernacular_en": "Black Scrub Robin",
-  "leaf_index": 346
+  "leaf_index": 347
  },
  {
   "taxon_id": 2492483,
@@ -6486,7 +6495,7 @@
   "scientific_name": "Tarsiger cyanurus",
   "vernacular_da": null,
   "vernacular_en": "Red-flanked Bluetail",
-  "leaf_index": 347
+  "leaf_index": 348
  },
  {
   "taxon_id": 2492516,
@@ -6504,7 +6513,7 @@
   "scientific_name": "Saxicola rubetra",
   "vernacular_da": null,
   "vernacular_en": "Whinchat",
-  "leaf_index": 348
+  "leaf_index": 349
  },
  {
   "taxon_id": 2492526,
@@ -6513,7 +6522,7 @@
   "scientific_name": "Saxicola torquatus",
   "vernacular_da": null,
   "vernacular_en": "African Stonechat",
-  "leaf_index": 349
+  "leaf_index": 350
  },
  {
   "taxon_id": 2492542,
@@ -6522,7 +6531,7 @@
   "scientific_name": "Luscinia luscinia",
   "vernacular_da": null,
   "vernacular_en": "Thrush Nightingale",
-  "leaf_index": 350
+  "leaf_index": 351
  },
  {
   "taxon_id": 2492572,
@@ -6531,7 +6540,7 @@
   "scientific_name": "Muscicapa gambagae",
   "vernacular_da": null,
   "vernacular_en": "Gambaga Flycatcher",
-  "leaf_index": 351
+  "leaf_index": 352
  },
  {
   "taxon_id": 2492576,
@@ -6540,7 +6549,7 @@
   "scientific_name": "Muscicapa striata",
   "vernacular_da": null,
   "vernacular_en": "Spotted Flycatcher",
-  "leaf_index": 352
+  "leaf_index": 353
  },
  {
   "taxon_id": 2492596,
@@ -6558,7 +6567,7 @@
   "scientific_name": "Ficedula albicollis",
   "vernacular_da": null,
   "vernacular_en": "Collared Flycatcher",
-  "leaf_index": 353
+  "leaf_index": 354
  },
  {
   "taxon_id": 2492605,
@@ -6567,7 +6576,7 @@
   "scientific_name": "Ficedula parva",
   "vernacular_da": null,
   "vernacular_en": "Red-breasted Flycatcher",
-  "leaf_index": 354
+  "leaf_index": 355
  },
  {
   "taxon_id": 2492606,
@@ -6576,7 +6585,7 @@
   "scientific_name": "Ficedula hypoleuca",
   "vernacular_da": null,
   "vernacular_en": "European Pied Flycatcher",
-  "leaf_index": 355
+  "leaf_index": 356
  },
  {
   "taxon_id": 2492608,
@@ -6585,7 +6594,7 @@
   "scientific_name": "Ficedula semitorquata",
   "vernacular_da": null,
   "vernacular_en": "Semicollared Flycatcher",
-  "leaf_index": 356
+  "leaf_index": 357
  },
  {
   "taxon_id": 2492691,
@@ -6603,7 +6612,7 @@
   "scientific_name": "Myrmecocichla aethiops",
   "vernacular_da": null,
   "vernacular_en": "Anteater Chat",
-  "leaf_index": 357
+  "leaf_index": 358
  },
  {
   "taxon_id": 2492699,
@@ -6621,7 +6630,7 @@
   "scientific_name": "Irania gutturalis",
   "vernacular_da": null,
   "vernacular_en": "White-throated Robin",
-  "leaf_index": 358
+  "leaf_index": 359
  },
  {
   "taxon_id": 2492731,
@@ -6639,7 +6648,7 @@
   "scientific_name": "Scotocerca inquieta",
   "vernacular_da": null,
   "vernacular_en": "Streaked Scrub Warbler",
-  "leaf_index": 359
+  "leaf_index": 360
  },
  {
   "taxon_id": 2492743,
@@ -6657,7 +6666,7 @@
   "scientific_name": "Prinia somalica",
   "vernacular_da": null,
   "vernacular_en": "Pale Prinia",
-  "leaf_index": 360
+  "leaf_index": 361
  },
  {
   "taxon_id": 2492748,
@@ -6666,7 +6675,7 @@
   "scientific_name": "Prinia gracilis",
   "vernacular_da": null,
   "vernacular_en": "Graceful Prinia",
-  "leaf_index": 361
+  "leaf_index": 362
  },
  {
   "taxon_id": 2492770,
@@ -6693,7 +6702,7 @@
   "scientific_name": "Cisticola juncidis",
   "vernacular_da": null,
   "vernacular_en": "Zitting Cisticola",
-  "leaf_index": 362
+  "leaf_index": 363
  },
  {
   "taxon_id": 2492854,
@@ -6702,7 +6711,7 @@
   "scientific_name": "Lanius minor",
   "vernacular_da": null,
   "vernacular_en": "Lesser Grey Shrike",
-  "leaf_index": 363
+  "leaf_index": 364
  },
  {
   "taxon_id": 2492855,
@@ -6711,7 +6720,7 @@
   "scientific_name": "Lanius nubicus",
   "vernacular_da": null,
   "vernacular_en": "Masked Shrike",
-  "leaf_index": 364
+  "leaf_index": 365
  },
  {
   "taxon_id": 2492865,
@@ -6720,7 +6729,7 @@
   "scientific_name": "Lanius isabellinus",
   "vernacular_da": null,
   "vernacular_en": "Isabelline Shrike",
-  "leaf_index": 365
+  "leaf_index": 366
  },
  {
   "taxon_id": 2492867,
@@ -6729,7 +6738,7 @@
   "scientific_name": "Lanius senator",
   "vernacular_da": null,
   "vernacular_en": "Woodchat Shrike",
-  "leaf_index": 366
+  "leaf_index": 367
  },
  {
   "taxon_id": 2492941,
@@ -6747,7 +6756,7 @@
   "scientific_name": "Sylvia borin",
   "vernacular_da": null,
   "vernacular_en": "Garden Warbler",
-  "leaf_index": 367
+  "leaf_index": 368
  },
  {
   "taxon_id": 2492943,
@@ -6756,7 +6765,7 @@
   "scientific_name": "Sylvia communis",
   "vernacular_da": null,
   "vernacular_en": "Common Whitethroat",
-  "leaf_index": 368
+  "leaf_index": 369
  },
  {
   "taxon_id": 2492944,
@@ -6765,7 +6774,7 @@
   "scientific_name": "Sylvia hortensis",
   "vernacular_da": null,
   "vernacular_en": "Western Orphean Warbler",
-  "leaf_index": 369
+  "leaf_index": 370
  },
  {
   "taxon_id": 2492949,
@@ -6774,7 +6783,7 @@
   "scientific_name": "Sylvia undata",
   "vernacular_da": null,
   "vernacular_en": "Dartford Warbler",
-  "leaf_index": 370
+  "leaf_index": 371
  },
  {
   "taxon_id": 2492951,
@@ -6783,7 +6792,7 @@
   "scientific_name": "Sylvia deserticola",
   "vernacular_da": null,
   "vernacular_en": "Tristram's Warbler",
-  "leaf_index": 371
+  "leaf_index": 372
  },
  {
   "taxon_id": 2492953,
@@ -6792,7 +6801,7 @@
   "scientific_name": "Sylvia melanothorax",
   "vernacular_da": null,
   "vernacular_en": "Cyprus Warbler",
-  "leaf_index": 372
+  "leaf_index": 373
  },
  {
   "taxon_id": 2492954,
@@ -6801,7 +6810,7 @@
   "scientific_name": "Sylvia mystacea",
   "vernacular_da": null,
   "vernacular_en": "Menetries's Warbler",
-  "leaf_index": 373
+  "leaf_index": 374
  },
  {
   "taxon_id": 2492955,
@@ -6810,7 +6819,7 @@
   "scientific_name": "Sylvia nisoria",
   "vernacular_da": null,
   "vernacular_en": "Barred Warbler",
-  "leaf_index": 374
+  "leaf_index": 375
  },
  {
   "taxon_id": 2492956,
@@ -6819,7 +6828,7 @@
   "scientific_name": "Sylvia atricapilla",
   "vernacular_da": null,
   "vernacular_en": "Eurasian Blackcap",
-  "leaf_index": 375
+  "leaf_index": 376
  },
  {
   "taxon_id": 2492959,
@@ -6828,7 +6837,7 @@
   "scientific_name": "Sylvia conspicillata",
   "vernacular_da": null,
   "vernacular_en": "Spectacled Warbler",
-  "leaf_index": 376
+  "leaf_index": 377
  },
  {
   "taxon_id": 2492960,
@@ -6837,7 +6846,7 @@
   "scientific_name": "Sylvia curruca",
   "vernacular_da": null,
   "vernacular_en": "Lesser Whitethroat",
-  "leaf_index": 377
+  "leaf_index": 378
  },
  {
   "taxon_id": 2492963,
@@ -6846,7 +6855,7 @@
   "scientific_name": "Sylvia nana",
   "vernacular_da": null,
   "vernacular_en": "Asian Desert Warbler",
-  "leaf_index": 378
+  "leaf_index": 379
  },
  {
   "taxon_id": 2492997,
@@ -6864,7 +6873,7 @@
   "scientific_name": "Cettia cetti",
   "vernacular_da": null,
   "vernacular_en": "Cetti's Warbler",
-  "leaf_index": 379
+  "leaf_index": 380
  },
  {
   "taxon_id": 2493047,
@@ -6882,7 +6891,7 @@
   "scientific_name": "Phylloscopus umbrovirens",
   "vernacular_da": null,
   "vernacular_en": "Brown Woodland Warbler",
-  "leaf_index": 380
+  "leaf_index": 381
  },
  {
   "taxon_id": 2493052,
@@ -6891,7 +6900,7 @@
   "scientific_name": "Phylloscopus trochilus",
   "vernacular_da": null,
   "vernacular_en": "Willow Warbler",
-  "leaf_index": 381
+  "leaf_index": 382
  },
  {
   "taxon_id": 2493070,
@@ -6900,7 +6909,7 @@
   "scientific_name": "Phylloscopus bonelli",
   "vernacular_da": null,
   "vernacular_en": "Western Bonelli's Warbler",
-  "leaf_index": 382
+  "leaf_index": 383
  },
  {
   "taxon_id": 2493071,
@@ -6909,7 +6918,7 @@
   "scientific_name": "Phylloscopus borealis",
   "vernacular_da": null,
   "vernacular_en": "Arctic Warbler",
-  "leaf_index": 383
+  "leaf_index": 384
  },
  {
   "taxon_id": 2493084,
@@ -6918,7 +6927,7 @@
   "scientific_name": "Phylloscopus trochiloides",
   "vernacular_da": null,
   "vernacular_en": "Greenish Warbler",
-  "leaf_index": 384
+  "leaf_index": 385
  },
  {
   "taxon_id": 2493087,
@@ -6927,7 +6936,7 @@
   "scientific_name": "Phylloscopus neglectus",
   "vernacular_da": null,
   "vernacular_en": "Plain Leaf Warbler",
-  "leaf_index": 385
+  "leaf_index": 386
  },
  {
   "taxon_id": 2493091,
@@ -6936,7 +6945,7 @@
   "scientific_name": "Phylloscopus collybita",
   "vernacular_da": null,
   "vernacular_en": "Common Chiffchaff",
-  "leaf_index": 386
+  "leaf_index": 387
  },
  {
   "taxon_id": 2493095,
@@ -6945,7 +6954,7 @@
   "scientific_name": "Phylloscopus inornatus",
   "vernacular_da": null,
   "vernacular_en": "Yellow-browed Warbler",
-  "leaf_index": 387
+  "leaf_index": 388
  },
  {
   "taxon_id": 2493112,
@@ -6963,7 +6972,7 @@
   "scientific_name": "Acrocephalus paludicola",
   "vernacular_da": null,
   "vernacular_en": "Aquatic Warbler",
-  "leaf_index": 388
+  "leaf_index": 389
  },
  {
   "taxon_id": 2493118,
@@ -6972,7 +6981,7 @@
   "scientific_name": "Acrocephalus scirpaceus",
   "vernacular_da": null,
   "vernacular_en": "Common Reed Warbler",
-  "leaf_index": 389
+  "leaf_index": 390
  },
  {
   "taxon_id": 2493123,
@@ -6981,7 +6990,7 @@
   "scientific_name": "Acrocephalus griseldis",
   "vernacular_da": null,
   "vernacular_en": "Basra Reed Warbler",
-  "leaf_index": 390
+  "leaf_index": 391
  },
  {
   "taxon_id": 2493124,
@@ -6990,7 +6999,7 @@
   "scientific_name": "Acrocephalus melanopogon",
   "vernacular_da": null,
   "vernacular_en": "Moustached Warbler",
-  "leaf_index": 391
+  "leaf_index": 392
  },
  {
   "taxon_id": 2493128,
@@ -6999,7 +7008,7 @@
   "scientific_name": "Acrocephalus arundinaceus",
   "vernacular_da": null,
   "vernacular_en": "Great Reed Warbler",
-  "leaf_index": 392
+  "leaf_index": 393
  },
  {
   "taxon_id": 2493129,
@@ -7008,7 +7017,7 @@
   "scientific_name": "Acrocephalus schoenobaenus",
   "vernacular_da": null,
   "vernacular_en": "Sedge Warbler",
-  "leaf_index": 393
+  "leaf_index": 394
  },
  {
   "taxon_id": 2493136,
@@ -7017,7 +7026,7 @@
   "scientific_name": "Acrocephalus palustris",
   "vernacular_da": null,
   "vernacular_en": "Marsh Warbler",
-  "leaf_index": 394
+  "leaf_index": 395
  },
  {
   "taxon_id": 2493145,
@@ -7026,7 +7035,7 @@
   "scientific_name": "Acrocephalus dumetorum",
   "vernacular_da": null,
   "vernacular_en": "Blyth's Reed Warbler",
-  "leaf_index": 395
+  "leaf_index": 396
  },
  {
   "taxon_id": 2493213,
@@ -7044,7 +7053,7 @@
   "scientific_name": "Hippolais polyglotta",
   "vernacular_da": null,
   "vernacular_en": "Melodious Warbler",
-  "leaf_index": 396
+  "leaf_index": 397
  },
  {
   "taxon_id": 2493217,
@@ -7053,7 +7062,7 @@
   "scientific_name": "Hippolais languida",
   "vernacular_da": null,
   "vernacular_en": "Upcher's Warbler",
-  "leaf_index": 397
+  "leaf_index": 398
  },
  {
   "taxon_id": 2493219,
@@ -7062,7 +7071,7 @@
   "scientific_name": "Hippolais olivetorum",
   "vernacular_da": null,
   "vernacular_en": "Olive-tree Warbler",
-  "leaf_index": 398
+  "leaf_index": 399
  },
  {
   "taxon_id": 2493220,
@@ -7071,7 +7080,7 @@
   "scientific_name": "Hippolais icterina",
   "vernacular_da": null,
   "vernacular_en": "Icterine Warbler",
-  "leaf_index": 399
+  "leaf_index": 400
  },
  {
   "taxon_id": 2493296,
@@ -7089,7 +7098,7 @@
   "scientific_name": "Turdoides aylmeri",
   "vernacular_da": null,
   "vernacular_en": "Scaly Chatterer",
-  "leaf_index": 400
+  "leaf_index": 401
  },
  {
   "taxon_id": 2493309,
@@ -7098,7 +7107,7 @@
   "scientific_name": "Turdoides squamiceps",
   "vernacular_da": null,
   "vernacular_en": "Arabian Babbler",
-  "leaf_index": 401
+  "leaf_index": 402
  },
  {
   "taxon_id": 2493316,
@@ -7107,7 +7116,7 @@
   "scientific_name": "Turdoides altirostris",
   "vernacular_da": null,
   "vernacular_en": "Iraq Babbler",
-  "leaf_index": 402
+  "leaf_index": 403
  },
  {
   "taxon_id": 2493366,
@@ -7125,7 +7134,7 @@
   "scientific_name": "Panurus biarmicus",
   "vernacular_da": null,
   "vernacular_en": "Bearded Reedling",
-  "leaf_index": 403
+  "leaf_index": 404
  },
  {
   "taxon_id": 2493534,
@@ -7143,7 +7152,7 @@
   "scientific_name": "Sylvietta isabellina",
   "vernacular_da": null,
   "vernacular_en": "Somali Crombec",
-  "leaf_index": 404
+  "leaf_index": 405
  },
  {
   "taxon_id": 2493547,
@@ -7161,7 +7170,7 @@
   "scientific_name": "Locustella naevia",
   "vernacular_da": null,
   "vernacular_en": "Common Grasshopper Warbler",
-  "leaf_index": 405
+  "leaf_index": 406
  },
  {
   "taxon_id": 2493549,
@@ -7170,7 +7179,7 @@
   "scientific_name": "Locustella fluviatilis",
   "vernacular_da": null,
   "vernacular_en": "River Warbler",
-  "leaf_index": 406
+  "leaf_index": 407
  },
  {
   "taxon_id": 2493551,
@@ -7179,7 +7188,7 @@
   "scientific_name": "Locustella luscinioides",
   "vernacular_da": null,
   "vernacular_en": "Savi's Warbler",
-  "leaf_index": 407
+  "leaf_index": 408
  },
  {
   "taxon_id": 2493650,
@@ -7197,7 +7206,7 @@
   "scientific_name": "Estrilda rufibarba",
   "vernacular_da": null,
   "vernacular_en": "Arabian Waxbill",
-  "leaf_index": 408
+  "leaf_index": 409
  },
  {
   "taxon_id": 2493660,
@@ -7206,7 +7215,7 @@
   "scientific_name": "Estrilda astrild",
   "vernacular_da": null,
   "vernacular_en": "Common Waxbill",
-  "leaf_index": 409
+  "leaf_index": 410
  },
  {
   "taxon_id": 2493677,
@@ -7224,7 +7233,7 @@
   "scientific_name": "Lagonosticta senegala",
   "vernacular_da": null,
   "vernacular_en": "Red-billed Firefinch",
-  "leaf_index": 410
+  "leaf_index": 411
  },
  {
   "taxon_id": 2493695,
@@ -7242,7 +7251,7 @@
   "scientific_name": "Amandava amandava",
   "vernacular_da": null,
   "vernacular_en": "Red Avadavat",
-  "leaf_index": 411
+  "leaf_index": 412
  },
  {
   "taxon_id": 2493721,
@@ -7260,7 +7269,7 @@
   "scientific_name": "Uraeginthus bengalus",
   "vernacular_da": null,
   "vernacular_en": "Red-cheeked Cordon-bleu",
-  "leaf_index": 412
+  "leaf_index": 413
  },
  {
   "taxon_id": 2493724,
@@ -7269,7 +7278,7 @@
   "scientific_name": "Uraeginthus ianthinogaster",
   "vernacular_da": null,
   "vernacular_en": "Purple Grenadier",
-  "leaf_index": 413
+  "leaf_index": 414
  },
  {
   "taxon_id": 2493899,
@@ -7296,7 +7305,7 @@
   "scientific_name": "Quelea quelea",
   "vernacular_da": null,
   "vernacular_en": "Red-billed Quelea",
-  "leaf_index": 414
+  "leaf_index": 415
  },
  {
   "taxon_id": 2493990,
@@ -7314,7 +7323,7 @@
   "scientific_name": "Dinemellia dinemelli",
   "vernacular_da": null,
   "vernacular_en": "White-headed Buffalo Weaver",
-  "leaf_index": 415
+  "leaf_index": 416
  },
  {
   "taxon_id": 2494008,
@@ -7332,7 +7341,7 @@
   "scientific_name": "Ploceus galbula",
   "vernacular_da": null,
   "vernacular_en": "R\u00fcppell's Weaver",
-  "leaf_index": 416
+  "leaf_index": 417
  },
  {
   "taxon_id": 2494036,
@@ -7341,7 +7350,7 @@
   "scientific_name": "Ploceus manyar",
   "vernacular_da": null,
   "vernacular_en": "Streaked Weaver",
-  "leaf_index": 417
+  "leaf_index": 418
  },
  {
   "taxon_id": 2494045,
@@ -7350,7 +7359,7 @@
   "scientific_name": "Ploceus luteolus",
   "vernacular_da": null,
   "vernacular_en": "Little Weaver",
-  "leaf_index": 418
+  "leaf_index": 419
  },
  {
   "taxon_id": 2494058,
@@ -7359,7 +7368,7 @@
   "scientific_name": "Ploceus cucullatus",
   "vernacular_da": null,
   "vernacular_en": "Village Weaver",
-  "leaf_index": 419
+  "leaf_index": 420
  },
  {
   "taxon_id": 2494061,
@@ -7368,7 +7377,7 @@
   "scientific_name": "Ploceus baglafecht",
   "vernacular_da": null,
   "vernacular_en": "Baglafecht Weaver",
-  "leaf_index": 420
+  "leaf_index": 421
  },
  {
   "taxon_id": 2494085,
@@ -7386,7 +7395,7 @@
   "scientific_name": "Euplectes franciscanus",
   "vernacular_da": null,
   "vernacular_en": "Northern Red Bishop",
-  "leaf_index": 421
+  "leaf_index": 422
  },
  {
   "taxon_id": 2494098,
@@ -7395,7 +7404,7 @@
   "scientific_name": "Euplectes ardens",
   "vernacular_da": null,
   "vernacular_en": "Red-collared Widowbird",
-  "leaf_index": 422
+  "leaf_index": 423
  },
  {
   "taxon_id": 2494150,
@@ -7413,7 +7422,7 @@
   "scientific_name": "Loxia pytyopsittacus",
   "vernacular_da": null,
   "vernacular_en": "Parrot Crossbill",
-  "leaf_index": 423
+  "leaf_index": 424
  },
  {
   "taxon_id": 2494200,
@@ -7422,7 +7431,7 @@
   "scientific_name": "Serinus serinus",
   "vernacular_da": null,
   "vernacular_en": "European Serin",
-  "leaf_index": 424
+  "leaf_index": 425
  },
  {
   "taxon_id": 2494303,
@@ -7431,7 +7440,7 @@
   "scientific_name": "Serinus canaria",
   "vernacular_da": null,
   "vernacular_en": "Atlantic Canary",
-  "leaf_index": 425
+  "leaf_index": 426
  },
  {
   "taxon_id": 2494310,
@@ -7449,7 +7458,7 @@
   "scientific_name": "Coccothraustes coccothraustes",
   "vernacular_da": null,
   "vernacular_en": "Hawfinch",
-  "leaf_index": 426
+  "leaf_index": 427
  },
  {
   "taxon_id": 2494393,
@@ -7467,7 +7476,7 @@
   "scientific_name": "Bucanetes githagineus",
   "vernacular_da": null,
   "vernacular_en": "Trumpeter Finch",
-  "leaf_index": 427
+  "leaf_index": 428
  },
  {
   "taxon_id": 2494421,
@@ -7485,7 +7494,7 @@
   "scientific_name": "Fringilla coelebs",
   "vernacular_da": null,
   "vernacular_en": "Eurasian Chaffinch",
-  "leaf_index": 428
+  "leaf_index": 429
  },
  {
   "taxon_id": 2494441,
@@ -7494,7 +7503,7 @@
   "scientific_name": "Fringilla montifringilla",
   "vernacular_da": null,
   "vernacular_en": "Brambling",
-  "leaf_index": 429
+  "leaf_index": 430
  },
  {
   "taxon_id": 2494445,
@@ -7512,7 +7521,7 @@
   "scientific_name": "Carpodacus erythrinus",
   "vernacular_da": null,
   "vernacular_en": "Common Rosefinch",
-  "leaf_index": 430
+  "leaf_index": 431
  },
  {
   "taxon_id": 2494495,
@@ -7521,7 +7530,7 @@
   "scientific_name": "Carpodacus synoicus",
   "vernacular_da": null,
   "vernacular_en": "Sinai Rosefinch",
-  "leaf_index": 431
+  "leaf_index": 432
  },
  {
   "taxon_id": 2494529,
@@ -7539,7 +7548,7 @@
   "scientific_name": "Pyrrhula pyrrhula",
   "vernacular_da": null,
   "vernacular_en": "Eurasian Bullfinch",
-  "leaf_index": 432
+  "leaf_index": 433
  },
  {
   "taxon_id": 2494621,
@@ -7557,7 +7566,7 @@
   "scientific_name": "Carduelis citrinella",
   "vernacular_da": null,
   "vernacular_en": "Citril Finch",
-  "leaf_index": 433
+  "leaf_index": 434
  },
  {
   "taxon_id": 2494686,
@@ -7566,7 +7575,7 @@
   "scientific_name": "Carduelis carduelis",
   "vernacular_da": null,
   "vernacular_en": "European Goldfinch",
-  "leaf_index": 434
+  "leaf_index": 435
  },
  {
   "taxon_id": 2494768,
@@ -7584,7 +7593,7 @@
   "scientific_name": "Pinicola enucleator",
   "vernacular_da": null,
   "vernacular_en": "Pine Grosbeak",
-  "leaf_index": 435
+  "leaf_index": 436
  },
  {
   "taxon_id": 2494786,
@@ -7602,7 +7611,7 @@
   "scientific_name": "Rhodospiza obsoleta",
   "vernacular_da": null,
   "vernacular_en": "Desert Finch",
-  "leaf_index": 436
+  "leaf_index": 437
  },
  {
   "taxon_id": 2495000,
@@ -7611,7 +7620,7 @@
   "scientific_name": "Aegithalos caudatus",
   "vernacular_da": null,
   "vernacular_en": "Long-tailed Tit",
-  "leaf_index": 437
+  "leaf_index": 438
  },
  {
   "taxon_id": 2495004,
@@ -7629,7 +7638,7 @@
   "scientific_name": "Hypocolius ampelinus",
   "vernacular_da": null,
   "vernacular_en": "Grey Hypocolius",
-  "leaf_index": 438
+  "leaf_index": 439
  },
  {
   "taxon_id": 2495070,
@@ -7656,7 +7665,7 @@
   "scientific_name": "Cinclus cinclus",
   "vernacular_da": null,
   "vernacular_en": "White-throated Dipper",
-  "leaf_index": 439
+  "leaf_index": 440
  },
  {
   "taxon_id": 2495148,
@@ -7674,7 +7683,7 @@
   "scientific_name": "Struthio camelus",
   "vernacular_da": null,
   "vernacular_en": "Common Ostrich",
-  "leaf_index": 440
+  "leaf_index": 441
  },
  {
   "taxon_id": 2495341,
@@ -7692,7 +7701,7 @@
   "scientific_name": "Oena capensis",
   "vernacular_da": null,
   "vernacular_en": "Namaqua Dove",
-  "leaf_index": 441
+  "leaf_index": 442
  },
  {
   "taxon_id": 2495404,
@@ -7710,7 +7719,7 @@
   "scientific_name": "Columba livia",
   "vernacular_da": null,
   "vernacular_en": "Rock Dove",
-  "leaf_index": 442
+  "leaf_index": 443
  },
  {
   "taxon_id": 2495455,
@@ -7719,7 +7728,7 @@
   "scientific_name": "Columba palumbus",
   "vernacular_da": null,
   "vernacular_en": "Common Wood Pigeon",
-  "leaf_index": 443
+  "leaf_index": 444
  },
  {
   "taxon_id": 2495471,
@@ -7728,7 +7737,7 @@
   "scientific_name": "Columba oenas",
   "vernacular_da": null,
   "vernacular_en": "Stock Dove",
-  "leaf_index": 444
+  "leaf_index": 445
  },
  {
   "taxon_id": 2495657,
@@ -7746,7 +7755,7 @@
   "scientific_name": "Streptopelia orientalis",
   "vernacular_da": null,
   "vernacular_en": "Oriental Turtle Dove",
-  "leaf_index": 445
+  "leaf_index": 446
  },
  {
   "taxon_id": 2495688,
@@ -7755,7 +7764,7 @@
   "scientific_name": "Streptopelia roseogrisea",
   "vernacular_da": null,
   "vernacular_en": "African Collared Dove",
-  "leaf_index": 446
+  "leaf_index": 447
  },
  {
   "taxon_id": 2495696,
@@ -7764,7 +7773,7 @@
   "scientific_name": "Streptopelia decaocto",
   "vernacular_da": null,
   "vernacular_en": "Eurasian Collared Dove",
-  "leaf_index": 447
+  "leaf_index": 448
  },
  {
   "taxon_id": 2495699,
@@ -7773,7 +7782,7 @@
   "scientific_name": "Streptopelia lugens",
   "vernacular_da": null,
   "vernacular_en": "Dusky Turtle Dove",
-  "leaf_index": 448
+  "leaf_index": 449
  },
  {
   "taxon_id": 2495707,
@@ -7782,7 +7791,7 @@
   "scientific_name": "Streptopelia semitorquata",
   "vernacular_da": null,
   "vernacular_en": "Red-eyed Dove",
-  "leaf_index": 449
+  "leaf_index": 450
  },
  {
   "taxon_id": 2495708,
@@ -7791,7 +7800,7 @@
   "scientific_name": "Streptopelia turtur",
   "vernacular_da": null,
   "vernacular_en": "European Turtle Dove",
-  "leaf_index": 450
+  "leaf_index": 451
  },
  {
   "taxon_id": 2495725,
@@ -7809,7 +7818,7 @@
   "scientific_name": "Treron waalia",
   "vernacular_da": null,
   "vernacular_en": "Bruce's Green Pigeon",
-  "leaf_index": 451
+  "leaf_index": 452
  },
  {
   "taxon_id": 2496346,
@@ -7827,7 +7836,7 @@
   "scientific_name": "Eudynamys scolopaceus",
   "vernacular_da": null,
   "vernacular_en": "Asian Koel",
-  "leaf_index": 452
+  "leaf_index": 453
  },
  {
   "taxon_id": 2496463,
@@ -7845,7 +7854,7 @@
   "scientific_name": "Clamator glandarius",
   "vernacular_da": null,
   "vernacular_en": "Great Spotted Cuckoo",
-  "leaf_index": 453
+  "leaf_index": 454
  },
  {
   "taxon_id": 2496468,
@@ -7854,7 +7863,7 @@
   "scientific_name": "Clamator jacobinus",
   "vernacular_da": null,
   "vernacular_en": "Jacobin Cuckoo",
-  "leaf_index": 454
+  "leaf_index": 455
  },
  {
   "taxon_id": 2496524,
@@ -7881,7 +7890,7 @@
   "scientific_name": "Caprimulgus inornatus",
   "vernacular_da": null,
   "vernacular_en": "Plain Nightjar",
-  "leaf_index": 455
+  "leaf_index": 456
  },
  {
   "taxon_id": 2496885,
@@ -7890,7 +7899,7 @@
   "scientific_name": "Caprimulgus aegyptius",
   "vernacular_da": null,
   "vernacular_en": "Egyptian Nightjar",
-  "leaf_index": 456
+  "leaf_index": 457
  },
  {
   "taxon_id": 2496949,
@@ -7899,7 +7908,7 @@
   "scientific_name": "Caprimulgus eximius",
   "vernacular_da": null,
   "vernacular_en": "Golden Nightjar",
-  "leaf_index": 457
+  "leaf_index": 458
  },
  {
   "taxon_id": 2497151,
@@ -7926,7 +7935,7 @@
   "scientific_name": "Athene noctua",
   "vernacular_da": null,
   "vernacular_en": "Little Owl",
-  "leaf_index": 458
+  "leaf_index": 459
  },
  {
   "taxon_id": 2497295,
@@ -7935,7 +7944,7 @@
   "scientific_name": "Asio flammeus",
   "vernacular_da": null,
   "vernacular_en": "Short-eared Owl",
-  "leaf_index": 459
+  "leaf_index": 460
  },
  {
   "taxon_id": 2497306,
@@ -7944,7 +7953,7 @@
   "scientific_name": "Asio otus",
   "vernacular_da": null,
   "vernacular_en": "Long-eared Owl",
-  "leaf_index": 460
+  "leaf_index": 461
  },
  {
   "taxon_id": 2497486,
@@ -7980,7 +7989,7 @@
   "scientific_name": "Otus scops",
   "vernacular_da": null,
   "vernacular_en": "Eurasian Scops Owl",
-  "leaf_index": 461
+  "leaf_index": 462
  },
  {
   "taxon_id": 2497755,
@@ -7989,7 +7998,7 @@
   "scientific_name": "Otus brucei",
   "vernacular_da": null,
   "vernacular_en": "Pallid Scops Owl",
-  "leaf_index": 462
+  "leaf_index": 463
  },
  {
   "taxon_id": 2497893,
@@ -8007,7 +8016,7 @@
   "scientific_name": "Surnia ulula",
   "vernacular_da": null,
   "vernacular_en": "Northern Hawk-Owl",
-  "leaf_index": 463
+  "leaf_index": 464
  },
  {
   "taxon_id": 2497905,
@@ -8025,7 +8034,7 @@
   "scientific_name": "Tyto alba",
   "vernacular_da": null,
   "vernacular_en": "Western Barn Owl",
-  "leaf_index": 464
+  "leaf_index": 465
  },
  {
   "taxon_id": 2498006,
@@ -8043,7 +8052,7 @@
   "scientific_name": "Tadorna tadorna",
   "vernacular_da": null,
   "vernacular_en": "Common Shelduck",
-  "leaf_index": 465
+  "leaf_index": 466
  },
  {
   "taxon_id": 2498015,
@@ -8052,7 +8061,7 @@
   "scientific_name": "Tadorna ferruginea",
   "vernacular_da": null,
   "vernacular_en": "Ruddy Shelduck",
-  "leaf_index": 466
+  "leaf_index": 467
  },
  {
   "taxon_id": 2498016,
@@ -8070,7 +8079,7 @@
   "scientific_name": "Anser albifrons",
   "vernacular_da": null,
   "vernacular_en": "Greater White-fronted Goose",
-  "leaf_index": 467
+  "leaf_index": 468
  },
  {
   "taxon_id": 2498024,
@@ -8079,7 +8088,7 @@
   "scientific_name": "Anser brachyrhynchus",
   "vernacular_da": null,
   "vernacular_en": "Pink-footed Goose",
-  "leaf_index": 468
+  "leaf_index": 469
  },
  {
   "taxon_id": 2498026,
@@ -8088,7 +8097,7 @@
   "scientific_name": "Anser erythropus",
   "vernacular_da": null,
   "vernacular_en": "Lesser White-fronted Goose",
-  "leaf_index": 469
+  "leaf_index": 470
  },
  {
   "taxon_id": 2498027,
@@ -8097,7 +8106,7 @@
   "scientific_name": "Anser fabalis",
   "vernacular_da": null,
   "vernacular_en": "Taiga Bean Goose",
-  "leaf_index": 470
+  "leaf_index": 471
  },
  {
   "taxon_id": 2498035,
@@ -8106,7 +8115,7 @@
   "scientific_name": "Anser indicus",
   "vernacular_da": null,
   "vernacular_en": "Bar-headed Goose",
-  "leaf_index": 471
+  "leaf_index": 472
  },
  {
   "taxon_id": 2498036,
@@ -8115,7 +8124,7 @@
   "scientific_name": "Anser anser",
   "vernacular_da": null,
   "vernacular_en": "Greylag Goose",
-  "leaf_index": 472
+  "leaf_index": 473
  },
  {
   "taxon_id": 2498043,
@@ -8151,7 +8160,7 @@
   "scientific_name": "Anas acuta",
   "vernacular_da": null,
   "vernacular_en": "Northern Pintail",
-  "leaf_index": 473
+  "leaf_index": 474
  },
  {
   "taxon_id": 2498163,
@@ -8160,7 +8169,7 @@
   "scientific_name": "Anser canagicus",
   "vernacular_da": null,
   "vernacular_en": "Emperor Goose",
-  "leaf_index": 474
+  "leaf_index": 475
  },
  {
   "taxon_id": 2498167,
@@ -8169,7 +8178,7 @@
   "scientific_name": "Anser caerulescens",
   "vernacular_da": null,
   "vernacular_en": "Snow Goose",
-  "leaf_index": 475
+  "leaf_index": 476
  },
  {
   "taxon_id": 2498176,
@@ -8187,7 +8196,7 @@
   "scientific_name": "Netta rufina",
   "vernacular_da": null,
   "vernacular_en": "Red-crested Pochard",
-  "leaf_index": 476
+  "leaf_index": 477
  },
  {
   "taxon_id": 2498190,
@@ -8214,7 +8223,7 @@
   "scientific_name": "Histrionicus histrionicus",
   "vernacular_da": null,
   "vernacular_en": "Harlequin Duck",
-  "leaf_index": 477
+  "leaf_index": 478
  },
  {
   "taxon_id": 2498237,
@@ -8232,7 +8241,7 @@
   "scientific_name": "Melanitta fusca",
   "vernacular_da": null,
   "vernacular_en": "Velvet Scoter",
-  "leaf_index": 478
+  "leaf_index": 479
  },
  {
   "taxon_id": 2498247,
@@ -8241,7 +8250,7 @@
   "scientific_name": "Melanitta nigra",
   "vernacular_da": null,
   "vernacular_en": "Common Scoter",
-  "leaf_index": 479
+  "leaf_index": 480
  },
  {
   "taxon_id": 2498251,
@@ -8259,7 +8268,7 @@
   "scientific_name": "Alopochen aegyptiaca",
   "vernacular_da": null,
   "vernacular_en": "Egyptian Goose",
-  "leaf_index": 480
+  "leaf_index": 481
  },
  {
   "taxon_id": 2498254,
@@ -8277,7 +8286,7 @@
   "scientific_name": "Aythya ferina",
   "vernacular_da": null,
   "vernacular_en": "Common Pochard",
-  "leaf_index": 481
+  "leaf_index": 482
  },
  {
   "taxon_id": 2498259,
@@ -8286,7 +8295,7 @@
   "scientific_name": "Aythya nyroca",
   "vernacular_da": null,
   "vernacular_en": "Ferruginous Duck",
-  "leaf_index": 482
+  "leaf_index": 483
  },
  {
   "taxon_id": 2498261,
@@ -8295,7 +8304,7 @@
   "scientific_name": "Aythya fuligula",
   "vernacular_da": null,
   "vernacular_en": "Tufted Duck",
-  "leaf_index": 483
+  "leaf_index": 484
  },
  {
   "taxon_id": 2498265,
@@ -8304,7 +8313,7 @@
   "scientific_name": "Aythya marila",
   "vernacular_da": null,
   "vernacular_en": "Greater Scaup",
-  "leaf_index": 484
+  "leaf_index": 485
  },
  {
   "taxon_id": 2498272,
@@ -8322,7 +8331,7 @@
   "scientific_name": "Clangula hyemalis",
   "vernacular_da": null,
   "vernacular_en": "Long-tailed Duck",
-  "leaf_index": 485
+  "leaf_index": 486
  },
  {
   "taxon_id": 2498284,
@@ -8340,7 +8349,7 @@
   "scientific_name": "Mergellus albellus",
   "vernacular_da": null,
   "vernacular_en": "Smew",
-  "leaf_index": 486
+  "leaf_index": 487
  },
  {
   "taxon_id": 2498314,
@@ -8367,7 +8376,7 @@
   "scientific_name": "Bucephala clangula",
   "vernacular_da": null,
   "vernacular_en": "Common Goldeneye",
-  "leaf_index": 487
+  "leaf_index": 488
  },
  {
   "taxon_id": 2498338,
@@ -8376,7 +8385,7 @@
   "scientific_name": "Cygnus columbianus",
   "vernacular_da": null,
   "vernacular_en": "Tundra Swan",
-  "leaf_index": 488
+  "leaf_index": 489
  },
  {
   "taxon_id": 2498343,
@@ -8385,7 +8394,7 @@
   "scientific_name": "Cygnus olor",
   "vernacular_da": null,
   "vernacular_en": "Mute Swan",
-  "leaf_index": 489
+  "leaf_index": 490
  },
  {
   "taxon_id": 2498344,
@@ -8394,7 +8403,7 @@
   "scientific_name": "Cygnus atratus",
   "vernacular_da": null,
   "vernacular_en": "Black Swan",
-  "leaf_index": 490
+  "leaf_index": 491
  },
  {
   "taxon_id": 2498347,
@@ -8403,7 +8412,7 @@
   "scientific_name": "Cygnus cygnus",
   "vernacular_da": null,
   "vernacular_en": "Whooper Swan",
-  "leaf_index": 491
+  "leaf_index": 492
  },
  {
   "taxon_id": 2498349,
@@ -8421,7 +8430,7 @@
   "scientific_name": "Somateria spectabilis",
   "vernacular_da": null,
   "vernacular_en": "King Eider",
-  "leaf_index": 492
+  "leaf_index": 493
  },
  {
   "taxon_id": 2498352,
@@ -8430,7 +8439,7 @@
   "scientific_name": "Somateria mollissima",
   "vernacular_da": null,
   "vernacular_en": "Common Eider",
-  "leaf_index": 493
+  "leaf_index": 494
  },
  {
   "taxon_id": 2498368,
@@ -8448,7 +8457,7 @@
   "scientific_name": "Mergus serrator",
   "vernacular_da": null,
   "vernacular_en": "Red-breasted Merganser",
-  "leaf_index": 494
+  "leaf_index": 495
  },
  {
   "taxon_id": 2498386,
@@ -8466,7 +8475,7 @@
   "scientific_name": "Aix sponsa",
   "vernacular_da": null,
   "vernacular_en": "Wood Duck",
-  "leaf_index": 495
+  "leaf_index": 496
  },
  {
   "taxon_id": 2498388,
@@ -8475,7 +8484,7 @@
   "scientific_name": "Aix galericulata",
   "vernacular_da": null,
   "vernacular_en": "Mandarin Duck",
-  "leaf_index": 496
+  "leaf_index": 497
  },
  {
   "taxon_id": 2498389,
@@ -8493,7 +8502,7 @@
   "scientific_name": "Marmaronetta angustirostris",
   "vernacular_da": null,
   "vernacular_en": "Marbled Duck",
-  "leaf_index": 497
+  "leaf_index": 498
  },
  {
   "taxon_id": 2498415,
@@ -8502,7 +8511,7 @@
   "scientific_name": "Upupa epops",
   "vernacular_da": null,
   "vernacular_en": "Eurasian Hoopoe",
-  "leaf_index": 498
+  "leaf_index": 499
  },
  {
   "taxon_id": 2498425,
@@ -8520,7 +8529,7 @@
   "scientific_name": "Rhinopomastus minor",
   "vernacular_da": null,
   "vernacular_en": "Abyssinian Scimitarbill",
-  "leaf_index": 499
+  "leaf_index": 500
  },
  {
   "taxon_id": 3240572,
@@ -8646,7 +8655,7 @@
   "scientific_name": "Myocastor coypus",
   "vernacular_da": null,
   "vernacular_en": "nutria",
-  "leaf_index": 500
+  "leaf_index": 501
  },
  {
   "taxon_id": 4287243,
@@ -8682,7 +8691,7 @@
   "scientific_name": "Phoenicopterus roseus",
   "vernacular_da": null,
   "vernacular_en": "Greater Flamingo",
-  "leaf_index": 501
+  "leaf_index": 502
  },
  {
   "taxon_id": 4352369,
@@ -8700,7 +8709,7 @@
   "scientific_name": "Roeseliana roeselii",
   "vernacular_da": null,
   "vernacular_en": "Roeseliana roeselii",
-  "leaf_index": 502
+  "leaf_index": 503
  },
  {
   "taxon_id": 4406728,
@@ -8727,7 +8736,7 @@
   "scientific_name": "Hydrobates pelagicus",
   "vernacular_da": null,
   "vernacular_en": "European Storm Petrel",
-  "leaf_index": 503
+  "leaf_index": 504
  },
  {
   "taxon_id": 4408498,
@@ -8736,7 +8745,7 @@
   "scientific_name": "Crex crex",
   "vernacular_da": null,
   "vernacular_en": "Corn Crake",
-  "leaf_index": 504
+  "leaf_index": 505
  },
  {
   "taxon_id": 4408670,
@@ -8745,7 +8754,7 @@
   "scientific_name": "Lanius phoenicuroides",
   "vernacular_da": null,
   "vernacular_en": "Red-tailed Shrike",
-  "leaf_index": 505
+  "leaf_index": 506
  },
  {
   "taxon_id": 4408732,
@@ -8754,7 +8763,7 @@
   "scientific_name": "Luscinia svecica",
   "vernacular_da": null,
   "vernacular_en": "Bluethroat",
-  "leaf_index": 506
+  "leaf_index": 507
  },
  {
   "taxon_id": 4408759,
@@ -8763,7 +8772,7 @@
   "scientific_name": "Saxicola rubicola",
   "vernacular_da": null,
   "vernacular_en": "European Stonechat",
-  "leaf_index": 507
+  "leaf_index": 508
  },
  {
   "taxon_id": 4408790,
@@ -8772,7 +8781,7 @@
   "scientific_name": "Turdus atrogularis",
   "vernacular_da": null,
   "vernacular_en": "Black-throated Thrush",
-  "leaf_index": 508
+  "leaf_index": 509
  },
  {
   "taxon_id": 4408796,
@@ -8781,7 +8790,7 @@
   "scientific_name": "Ptyonoprogne rupestris",
   "vernacular_da": null,
   "vernacular_en": "Eurasian Crag Martin",
-  "leaf_index": 509
+  "leaf_index": 510
  },
  {
   "taxon_id": 4408827,
@@ -8790,7 +8799,7 @@
   "scientific_name": "Phylloscopus orientalis",
   "vernacular_da": null,
   "vernacular_en": "Eastern Bonelli's Warbler",
-  "leaf_index": 510
+  "leaf_index": 511
  },
  {
   "taxon_id": 4409131,
@@ -8799,7 +8808,7 @@
   "scientific_name": "Castor fiber",
   "vernacular_da": null,
   "vernacular_en": "Castor fiber",
-  "leaf_index": 511
+  "leaf_index": 512
  },
  {
   "taxon_id": 4574412,
@@ -8907,7 +8916,7 @@
   "scientific_name": "Cursorius somalensis",
   "vernacular_da": null,
   "vernacular_en": "Somali Courser",
-  "leaf_index": 512
+  "leaf_index": 513
  },
  {
   "taxon_id": 4850111,
@@ -8952,7 +8961,7 @@
   "scientific_name": "Ruspolia nitidula",
   "vernacular_da": null,
   "vernacular_en": "Ruspolia nitidula",
-  "leaf_index": 513
+  "leaf_index": 514
  },
  {
   "taxon_id": 5098469,
@@ -8970,7 +8979,7 @@
   "scientific_name": "Arcyptera fusca",
   "vernacular_da": null,
   "vernacular_en": "Arcyptera fusca",
-  "leaf_index": 514
+  "leaf_index": 515
  },
  {
   "taxon_id": 5217160,
@@ -8979,7 +8988,7 @@
   "scientific_name": "Bufo bufo",
   "vernacular_da": null,
   "vernacular_en": "Bufo bufo",
-  "leaf_index": 515
+  "leaf_index": 516
  },
  {
   "taxon_id": 5218878,
@@ -8988,7 +8997,7 @@
   "scientific_name": "Martes martes",
   "vernacular_da": null,
   "vernacular_en": "Martes martes",
-  "leaf_index": 516
+  "leaf_index": 517
  },
  {
   "taxon_id": 5218887,
@@ -8997,7 +9006,7 @@
   "scientific_name": "Martes foina",
   "vernacular_da": null,
   "vernacular_en": "Martes foina",
-  "leaf_index": 517
+  "leaf_index": 518
  },
  {
   "taxon_id": 5219142,
@@ -9015,7 +9024,7 @@
   "scientific_name": "Canis aureus",
   "vernacular_da": null,
   "vernacular_en": "Golden Jackal",
-  "leaf_index": 518
+  "leaf_index": 519
  },
  {
   "taxon_id": 5219234,
@@ -9033,7 +9042,7 @@
   "scientific_name": "Vulpes vulpes",
   "vernacular_da": null,
   "vernacular_en": "Red Fox",
-  "leaf_index": 519
+  "leaf_index": 520
  },
  {
   "taxon_id": 5219303,
@@ -9042,7 +9051,7 @@
   "scientific_name": "Vulpes lagopus",
   "vernacular_da": null,
   "vernacular_en": "Arctic Fox",
-  "leaf_index": 520
+  "leaf_index": 521
  },
  {
   "taxon_id": 5219598,
@@ -9051,7 +9060,7 @@
   "scientific_name": "Procavia capensis",
   "vernacular_da": null,
   "vernacular_en": "Rock Hyrax",
-  "leaf_index": 521
+  "leaf_index": 522
  },
  {
   "taxon_id": 5219616,
@@ -9060,7 +9069,7 @@
   "scientific_name": "Erinaceus europaeus",
   "vernacular_da": null,
   "vernacular_en": "West European Hedgehog",
-  "leaf_index": 522
+  "leaf_index": 523
  },
  {
   "taxon_id": 5219681,
@@ -9069,7 +9078,7 @@
   "scientific_name": "Sciurus carolinensis",
   "vernacular_da": null,
   "vernacular_en": "eastern gray squirrel",
-  "leaf_index": 523
+  "leaf_index": 524
  },
  {
   "taxon_id": 5219857,
@@ -9087,7 +9096,7 @@
   "scientific_name": "Ondatra zibethicus",
   "vernacular_da": null,
   "vernacular_en": "muskrat",
-  "leaf_index": 524
+  "leaf_index": 525
  },
  {
   "taxon_id": 5220003,
@@ -9096,7 +9105,7 @@
   "scientific_name": "Delphinapterus leucas",
   "vernacular_da": null,
   "vernacular_en": "beluga",
-  "leaf_index": 525
+  "leaf_index": 526
  },
  {
   "taxon_id": 5220086,
@@ -9105,7 +9114,7 @@
   "scientific_name": "Megaptera novaeangliae",
   "vernacular_da": null,
   "vernacular_en": "Humpback Whale",
-  "leaf_index": 526
+  "leaf_index": 527
  },
  {
   "taxon_id": 5220114,
@@ -9114,7 +9123,7 @@
   "scientific_name": "Rangifer tarandus",
   "vernacular_da": null,
   "vernacular_en": "Caribou",
-  "leaf_index": 527
+  "leaf_index": 528
  },
  {
   "taxon_id": 5220126,
@@ -9123,7 +9132,7 @@
   "scientific_name": "Capreolus capreolus",
   "vernacular_da": null,
   "vernacular_en": "European Roe",
-  "leaf_index": 528
+  "leaf_index": 529
  },
  {
   "taxon_id": 5220136,
@@ -9132,7 +9141,7 @@
   "scientific_name": "Dama dama",
   "vernacular_da": null,
   "vernacular_en": "Dama dama",
-  "leaf_index": 529
+  "leaf_index": 530
  },
  {
   "taxon_id": 5220169,
@@ -9150,7 +9159,7 @@
   "scientific_name": "Rupicapra rupicapra",
   "vernacular_da": null,
   "vernacular_en": "Rupicapra rupicapra",
-  "leaf_index": 530
+  "leaf_index": 531
  },
  {
   "taxon_id": 5227679,
@@ -9159,7 +9168,7 @@
   "scientific_name": "Lagopus muta",
   "vernacular_da": null,
   "vernacular_en": "Rock Ptarmigan",
-  "leaf_index": 531
+  "leaf_index": 532
  },
  {
   "taxon_id": 5227810,
@@ -9177,7 +9186,7 @@
   "scientific_name": "Francolinus francolinus",
   "vernacular_da": null,
   "vernacular_en": "Black Francolin",
-  "leaf_index": 532
+  "leaf_index": 533
  },
  {
   "taxon_id": 5228006,
@@ -9186,7 +9195,7 @@
   "scientific_name": "Alectoris melanocephala",
   "vernacular_da": null,
   "vernacular_en": "Arabian Partridge",
-  "leaf_index": 533
+  "leaf_index": 534
  },
  {
   "taxon_id": 5228199,
@@ -9195,7 +9204,7 @@
   "scientific_name": "Gallinula chloropus",
   "vernacular_da": null,
   "vernacular_en": "Common Moorhen",
-  "leaf_index": 534
+  "leaf_index": 535
  },
  {
   "taxon_id": 5228227,
@@ -9213,7 +9222,7 @@
   "scientific_name": "Tetrax tetrax",
   "vernacular_da": null,
   "vernacular_en": "Little Bustard",
-  "leaf_index": 535
+  "leaf_index": 536
  },
  {
   "taxon_id": 5228229,
@@ -9222,7 +9231,7 @@
   "scientific_name": "Balearica regulorum",
   "vernacular_da": null,
   "vernacular_en": "Grey Crowned Crane",
-  "leaf_index": 536
+  "leaf_index": 537
  },
  {
   "taxon_id": 5228328,
@@ -9231,7 +9240,7 @@
   "scientific_name": "Halcyon smyrnensis",
   "vernacular_da": null,
   "vernacular_en": "White-throated Kingfisher",
-  "leaf_index": 537
+  "leaf_index": 538
  },
  {
   "taxon_id": 5228676,
@@ -9240,7 +9249,7 @@
   "scientific_name": "Apus apus",
   "vernacular_da": null,
   "vernacular_en": "Common Swift",
-  "leaf_index": 538
+  "leaf_index": 539
  },
  {
   "taxon_id": 5228694,
@@ -9249,7 +9258,7 @@
   "scientific_name": "Apus unicolor",
   "vernacular_da": null,
   "vernacular_en": "Plain Swift",
-  "leaf_index": 539
+  "leaf_index": 540
  },
  {
   "taxon_id": 5228695,
@@ -9258,7 +9267,7 @@
   "scientific_name": "Apus pallidus",
   "vernacular_da": null,
   "vernacular_en": "Pallid Swift",
-  "leaf_index": 540
+  "leaf_index": 541
  },
  {
   "taxon_id": 5229126,
@@ -9267,7 +9276,7 @@
   "scientific_name": "Himantopus himantopus",
   "vernacular_da": null,
   "vernacular_en": "Black-winged Stilt",
-  "leaf_index": 541
+  "leaf_index": 542
  },
  {
   "taxon_id": 5229131,
@@ -9276,7 +9285,7 @@
   "scientific_name": "Vanellus indicus",
   "vernacular_da": null,
   "vernacular_en": "Red-wattled Lapwing",
-  "leaf_index": 542
+  "leaf_index": 543
  },
  {
   "taxon_id": 5229138,
@@ -9285,7 +9294,7 @@
   "scientific_name": "Vanellus gregarius",
   "vernacular_da": null,
   "vernacular_en": "Sociable Lapwing",
-  "leaf_index": 543
+  "leaf_index": 544
  },
  {
   "taxon_id": 5229142,
@@ -9294,7 +9303,7 @@
   "scientific_name": "Vanellus spinosus",
   "vernacular_da": null,
   "vernacular_en": "Spur-winged Lapwing",
-  "leaf_index": 544
+  "leaf_index": 545
  },
  {
   "taxon_id": 5229147,
@@ -9303,7 +9312,7 @@
   "scientific_name": "Vanellus leucurus",
   "vernacular_da": null,
   "vernacular_en": "White-tailed Lapwing",
-  "leaf_index": 545
+  "leaf_index": 546
  },
  {
   "taxon_id": 5229154,
@@ -9312,7 +9321,7 @@
   "scientific_name": "Scopus umbretta",
   "vernacular_da": null,
   "vernacular_en": "Hamerkop",
-  "leaf_index": 546
+  "leaf_index": 547
  },
  {
   "taxon_id": 5229165,
@@ -9321,7 +9330,7 @@
   "scientific_name": "Aegypius monachus",
   "vernacular_da": null,
   "vernacular_en": "Cinereous Vulture",
-  "leaf_index": 547
+  "leaf_index": 548
  },
  {
   "taxon_id": 5229166,
@@ -9339,7 +9348,7 @@
   "scientific_name": "Milvus migrans",
   "vernacular_da": null,
   "vernacular_en": "Black Kite",
-  "leaf_index": 548
+  "leaf_index": 549
  },
  {
   "taxon_id": 5229168,
@@ -9348,7 +9357,7 @@
   "scientific_name": "Milvus milvus",
   "vernacular_da": null,
   "vernacular_en": "Red Kite",
-  "leaf_index": 549
+  "leaf_index": 550
  },
  {
   "taxon_id": 5229199,
@@ -9357,7 +9366,7 @@
   "scientific_name": "Dromas ardeola",
   "vernacular_da": null,
   "vernacular_en": "Crab-plover",
-  "leaf_index": 550
+  "leaf_index": 551
  },
  {
   "taxon_id": 5229200,
@@ -9366,7 +9375,7 @@
   "scientific_name": "Bostrychia carunculata",
   "vernacular_da": null,
   "vernacular_en": "Wattled Ibis",
-  "leaf_index": 551
+  "leaf_index": 552
  },
  {
   "taxon_id": 5229203,
@@ -9375,7 +9384,7 @@
   "scientific_name": "Bostrychia hagedash",
   "vernacular_da": null,
   "vernacular_en": "Hadada Ibis",
-  "leaf_index": 552
+  "leaf_index": 553
  },
  {
   "taxon_id": 5229230,
@@ -9384,7 +9393,7 @@
   "scientific_name": "Sterna paradisaea",
   "vernacular_da": null,
   "vernacular_en": "Arctic Tern",
-  "leaf_index": 553
+  "leaf_index": 554
  },
  {
   "taxon_id": 5229267,
@@ -9393,7 +9402,7 @@
   "scientific_name": "Sterna repressa",
   "vernacular_da": null,
   "vernacular_en": "White-cheeked Tern",
-  "leaf_index": 554
+  "leaf_index": 555
  },
  {
   "taxon_id": 5229335,
@@ -9411,7 +9420,7 @@
   "scientific_name": "Puffinus gravis",
   "vernacular_da": null,
   "vernacular_en": "Great Shearwater",
-  "leaf_index": 555
+  "leaf_index": 556
  },
  {
   "taxon_id": 5229360,
@@ -9420,7 +9429,7 @@
   "scientific_name": "Puffinus mauretanicus",
   "vernacular_da": null,
   "vernacular_en": "Balearic Shearwater",
-  "leaf_index": 556
+  "leaf_index": 557
  },
  {
   "taxon_id": 5229380,
@@ -9429,7 +9438,7 @@
   "scientific_name": "Puffinus puffinus",
   "vernacular_da": null,
   "vernacular_en": "Manx Shearwater",
-  "leaf_index": 557
+  "leaf_index": 558
  },
  {
   "taxon_id": 5229390,
@@ -9438,7 +9447,7 @@
   "scientific_name": "Phalaropus fulicarius",
   "vernacular_da": null,
   "vernacular_en": "Red Phalarope",
-  "leaf_index": 558
+  "leaf_index": 559
  },
  {
   "taxon_id": 5229419,
@@ -9447,7 +9456,7 @@
   "scientific_name": "Oceanites oceanicus",
   "vernacular_da": null,
   "vernacular_en": "Wilson's Storm Petrel",
-  "leaf_index": 559
+  "leaf_index": 560
  },
  {
   "taxon_id": 5229462,
@@ -9465,7 +9474,7 @@
   "scientific_name": "Colius striatus",
   "vernacular_da": null,
   "vernacular_en": "Speckled Mousebird",
-  "leaf_index": 560
+  "leaf_index": 561
  },
  {
   "taxon_id": 5229490,
@@ -9474,7 +9483,7 @@
   "scientific_name": "Pica pica",
   "vernacular_da": null,
   "vernacular_en": "Eurasian Magpie",
-  "leaf_index": 561
+  "leaf_index": 562
  },
  {
   "taxon_id": 5229493,
@@ -9483,7 +9492,7 @@
   "scientific_name": "Garrulus glandarius",
   "vernacular_da": null,
   "vernacular_en": "Eurasian Jay",
-  "leaf_index": 562
+  "leaf_index": 563
  },
  {
   "taxon_id": 5230037,
@@ -9492,7 +9501,7 @@
   "scientific_name": "Nectarinia tacazze",
   "vernacular_da": null,
   "vernacular_en": "Tacazze Sunbird",
-  "leaf_index": 563
+  "leaf_index": 564
  },
  {
   "taxon_id": 5230734,
@@ -9501,7 +9510,7 @@
   "scientific_name": "Onychognathus tristramii",
   "vernacular_da": null,
   "vernacular_en": "Tristram's Starling",
-  "leaf_index": 564
+  "leaf_index": 565
  },
  {
   "taxon_id": 5230750,
@@ -9510,7 +9519,7 @@
   "scientific_name": "Riparia paludicola",
   "vernacular_da": null,
   "vernacular_en": "Brown-throated Martin",
-  "leaf_index": 565
+  "leaf_index": 566
  },
  {
   "taxon_id": 5230790,
@@ -9519,7 +9528,7 @@
   "scientific_name": "Hirundo aethiopica",
   "vernacular_da": null,
   "vernacular_en": "Ethiopian Swallow",
-  "leaf_index": 566
+  "leaf_index": 567
  },
  {
   "taxon_id": 5230801,
@@ -9528,7 +9537,7 @@
   "scientific_name": "Hirundo smithii",
   "vernacular_da": null,
   "vernacular_en": "Wire-tailed Swallow",
-  "leaf_index": 567
+  "leaf_index": 568
  },
  {
   "taxon_id": 5230984,
@@ -9537,7 +9546,16 @@
   "scientific_name": "Eremophila bilopha",
   "vernacular_da": null,
   "vernacular_en": "Temminck's Lark",
-  "leaf_index": 568
+  "leaf_index": 569
+ },
+ {
+  "taxon_id": 5230990,
+  "parent_id": 2490675,
+  "rank": "species",
+  "scientific_name": "Calandrella blanfordi",
+  "vernacular_da": null,
+  "vernacular_en": "Rufous-capped Lark",
+  "leaf_index": 570
  },
  {
   "taxon_id": 5231008,
@@ -9546,7 +9564,7 @@
   "scientific_name": "Monticola rufocinereus",
   "vernacular_da": null,
   "vernacular_en": "Little Rock Thrush",
-  "leaf_index": 569
+  "leaf_index": 571
  },
  {
   "taxon_id": 5231187,
@@ -9555,7 +9573,7 @@
   "scientific_name": "Batis perkeo",
   "vernacular_da": null,
   "vernacular_en": "Pygmy Batis",
-  "leaf_index": 570
+  "leaf_index": 572
  },
  {
   "taxon_id": 5231190,
@@ -9564,7 +9582,7 @@
   "scientific_name": "Passer domesticus",
   "vernacular_da": null,
   "vernacular_en": "House Sparrow",
-  "leaf_index": 571
+  "leaf_index": 573
  },
  {
   "taxon_id": 5231193,
@@ -9573,7 +9591,7 @@
   "scientific_name": "Passer griseus",
   "vernacular_da": null,
   "vernacular_en": "Northern Grey-headed Sparrow",
-  "leaf_index": 572
+  "leaf_index": 574
  },
  {
   "taxon_id": 5231198,
@@ -9582,7 +9600,7 @@
   "scientific_name": "Passer montanus",
   "vernacular_da": null,
   "vernacular_en": "Eurasian Tree Sparrow",
-  "leaf_index": 573
+  "leaf_index": 575
  },
  {
   "taxon_id": 5231203,
@@ -9591,7 +9609,7 @@
   "scientific_name": "Passer moabiticus",
   "vernacular_da": null,
   "vernacular_en": "Dead Sea Sparrow",
-  "leaf_index": 574
+  "leaf_index": 576
  },
  {
   "taxon_id": 5231205,
@@ -9600,7 +9618,7 @@
   "scientific_name": "Passer simplex",
   "vernacular_da": null,
   "vernacular_en": "Desert Sparrow",
-  "leaf_index": 575
+  "leaf_index": 577
  },
  {
   "taxon_id": 5231207,
@@ -9609,7 +9627,7 @@
   "scientific_name": "Passer euchlorus",
   "vernacular_da": null,
   "vernacular_en": "Arabian Golden Sparrow",
-  "leaf_index": 576
+  "leaf_index": 578
  },
  {
   "taxon_id": 5231209,
@@ -9618,7 +9636,7 @@
   "scientific_name": "Passer hispaniolensis",
   "vernacular_da": null,
   "vernacular_en": "Spanish Sparrow",
-  "leaf_index": 577
+  "leaf_index": 579
  },
  {
   "taxon_id": 5231210,
@@ -9627,7 +9645,7 @@
   "scientific_name": "Passer luteus",
   "vernacular_da": null,
   "vernacular_en": "Sudan Golden Sparrow",
-  "leaf_index": 578
+  "leaf_index": 580
  },
  {
   "taxon_id": 5231212,
@@ -9636,7 +9654,7 @@
   "scientific_name": "Passer swainsonii",
   "vernacular_da": null,
   "vernacular_en": "Swainson's Sparrow",
-  "leaf_index": 579
+  "leaf_index": 581
  },
  {
   "taxon_id": 5231221,
@@ -9645,7 +9663,7 @@
   "scientific_name": "Phoenicurus moussieri",
   "vernacular_da": null,
   "vernacular_en": "Moussier's Redstart",
-  "leaf_index": 580
+  "leaf_index": 582
  },
  {
   "taxon_id": 5231233,
@@ -9654,7 +9672,7 @@
   "scientific_name": "Oenanthe pleschanka",
   "vernacular_da": null,
   "vernacular_en": "Pied Wheatear",
-  "leaf_index": 581
+  "leaf_index": 583
  },
  {
   "taxon_id": 5231234,
@@ -9663,7 +9681,7 @@
   "scientific_name": "Oenanthe cypriaca",
   "vernacular_da": null,
   "vernacular_en": "Cyprus Wheatear",
-  "leaf_index": 582
+  "leaf_index": 584
  },
  {
   "taxon_id": 5231235,
@@ -9672,7 +9690,7 @@
   "scientific_name": "Oenanthe hispanica",
   "vernacular_da": null,
   "vernacular_en": "Western Black-eared Wheatear",
-  "leaf_index": 583
+  "leaf_index": 585
  },
  {
   "taxon_id": 5231236,
@@ -9681,7 +9699,7 @@
   "scientific_name": "Oenanthe leucura",
   "vernacular_da": null,
   "vernacular_en": "Black Wheatear",
-  "leaf_index": 584
+  "leaf_index": 586
  },
  {
   "taxon_id": 5231240,
@@ -9690,7 +9708,7 @@
   "scientific_name": "Oenanthe oenanthe",
   "vernacular_da": null,
   "vernacular_en": "Northern Wheatear",
-  "leaf_index": 585
+  "leaf_index": 587
  },
  {
   "taxon_id": 5231244,
@@ -9699,7 +9717,7 @@
   "scientific_name": "Oenanthe deserti",
   "vernacular_da": null,
   "vernacular_en": "Desert Wheatear",
-  "leaf_index": 586
+  "leaf_index": 588
  },
  {
   "taxon_id": 5231245,
@@ -9708,7 +9726,7 @@
   "scientific_name": "Oenanthe isabellina",
   "vernacular_da": null,
   "vernacular_en": "Isabelline Wheatear",
-  "leaf_index": 587
+  "leaf_index": 589
  },
  {
   "taxon_id": 5231246,
@@ -9717,7 +9735,7 @@
   "scientific_name": "Oenanthe lugens",
   "vernacular_da": null,
   "vernacular_en": "Mourning Wheatear",
-  "leaf_index": 588
+  "leaf_index": 590
  },
  {
   "taxon_id": 5231247,
@@ -9726,7 +9744,7 @@
   "scientific_name": "Oenanthe moesta",
   "vernacular_da": null,
   "vernacular_en": "Red-rumped Wheatear",
-  "leaf_index": 589
+  "leaf_index": 591
  },
  {
   "taxon_id": 5231250,
@@ -9735,7 +9753,7 @@
   "scientific_name": "Oenanthe bottae",
   "vernacular_da": null,
   "vernacular_en": "Buff-breasted Wheatear",
-  "leaf_index": 590
+  "leaf_index": 592
  },
  {
   "taxon_id": 5231251,
@@ -9744,7 +9762,7 @@
   "scientific_name": "Oenanthe finschii",
   "vernacular_da": null,
   "vernacular_en": "Finsch's Wheatear",
-  "leaf_index": 591
+  "leaf_index": 593
  },
  {
   "taxon_id": 5231253,
@@ -9753,7 +9771,7 @@
   "scientific_name": "Oenanthe leucopyga",
   "vernacular_da": null,
   "vernacular_en": "White-crowned Wheatear",
-  "leaf_index": 592
+  "leaf_index": 594
  },
  {
   "taxon_id": 5231254,
@@ -9762,7 +9780,7 @@
   "scientific_name": "Oenanthe lugentoides",
   "vernacular_da": null,
   "vernacular_en": "Arabian Wheatear",
-  "leaf_index": 593
+  "leaf_index": 595
  },
  {
   "taxon_id": 5231255,
@@ -9771,7 +9789,7 @@
   "scientific_name": "Oenanthe monacha",
   "vernacular_da": null,
   "vernacular_en": "Hooded Wheatear",
-  "leaf_index": 594
+  "leaf_index": 596
  },
  {
   "taxon_id": 5231305,
@@ -9780,7 +9798,7 @@
   "scientific_name": "Sylvia boehmi",
   "vernacular_da": null,
   "vernacular_en": "Banded Parisoma",
-  "leaf_index": 595
+  "leaf_index": 597
  },
  {
   "taxon_id": 5231306,
@@ -9789,7 +9807,7 @@
   "scientific_name": "Sylvia leucomelaena",
   "vernacular_da": null,
   "vernacular_en": "Arabian Warbler",
-  "leaf_index": 596
+  "leaf_index": 598
  },
  {
   "taxon_id": 5231308,
@@ -9798,7 +9816,7 @@
   "scientific_name": "Sylvia buryi",
   "vernacular_da": null,
   "vernacular_en": "Yemen Warbler",
-  "leaf_index": 597
+  "leaf_index": 599
  },
  {
   "taxon_id": 5231333,
@@ -9807,7 +9825,7 @@
   "scientific_name": "Acrocephalus stentoreus",
   "vernacular_da": null,
   "vernacular_en": "Clamorous Reed Warbler",
-  "leaf_index": 598
+  "leaf_index": 600
  },
  {
   "taxon_id": 5231438,
@@ -9816,7 +9834,7 @@
   "scientific_name": "Troglodytes troglodytes",
   "vernacular_da": null,
   "vernacular_en": "Eurasian Wren",
-  "leaf_index": 599
+  "leaf_index": 601
  },
  {
   "taxon_id": 5231561,
@@ -9825,7 +9843,7 @@
   "scientific_name": "Serinus syriacus",
   "vernacular_da": null,
   "vernacular_en": "Syrian Serin",
-  "leaf_index": 600
+  "leaf_index": 602
  },
  {
   "taxon_id": 5231630,
@@ -9834,7 +9852,7 @@
   "scientific_name": "Acanthis flammea",
   "vernacular_da": null,
   "vernacular_en": "Redpoll",
-  "leaf_index": 601
+  "leaf_index": 603
  },
  {
   "taxon_id": 5231763,
@@ -9843,7 +9861,7 @@
   "scientific_name": "Prunella modularis",
   "vernacular_da": null,
   "vernacular_en": "Dunnock",
-  "leaf_index": 602
+  "leaf_index": 604
  },
  {
   "taxon_id": 5231770,
@@ -9852,7 +9870,7 @@
   "scientific_name": "Prunella collaris",
   "vernacular_da": null,
   "vernacular_en": "Alpine Accentor",
-  "leaf_index": 603
+  "leaf_index": 605
  },
  {
   "taxon_id": 5231786,
@@ -9870,7 +9888,7 @@
   "scientific_name": "Turtur abyssinicus",
   "vernacular_da": null,
   "vernacular_en": "Black-billed Wood Dove",
-  "leaf_index": 604
+  "leaf_index": 606
  },
  {
   "taxon_id": 5231817,
@@ -9879,7 +9897,7 @@
   "scientific_name": "Columba guinea",
   "vernacular_da": null,
   "vernacular_en": "Speckled Pigeon",
-  "leaf_index": 605
+  "leaf_index": 607
  },
  {
   "taxon_id": 5231834,
@@ -9888,7 +9906,7 @@
   "scientific_name": "Columba albitorques",
   "vernacular_da": null,
   "vernacular_en": "White-collared Pigeon",
-  "leaf_index": 606
+  "leaf_index": 608
  },
  {
   "taxon_id": 5231918,
@@ -9897,7 +9915,7 @@
   "scientific_name": "Cuculus canorus",
   "vernacular_da": null,
   "vernacular_en": "Common Cuckoo",
-  "leaf_index": 607
+  "leaf_index": 609
  },
  {
   "taxon_id": 5231960,
@@ -9906,7 +9924,7 @@
   "scientific_name": "Centropus superciliosus",
   "vernacular_da": null,
   "vernacular_en": "White-browed Coucal",
-  "leaf_index": 608
+  "leaf_index": 610
  },
  {
   "taxon_id": 5232162,
@@ -9915,7 +9933,7 @@
   "scientific_name": "Glaucidium passerinum",
   "vernacular_da": null,
   "vernacular_en": "Eurasian Pygmy Owl",
-  "leaf_index": 609
+  "leaf_index": 611
  },
  {
   "taxon_id": 5232239,
@@ -9924,7 +9942,7 @@
   "scientific_name": "Ptilopsis leucotis",
   "vernacular_da": null,
   "vernacular_en": "Northern White-faced Owl",
-  "leaf_index": 610
+  "leaf_index": 612
  },
  {
   "taxon_id": 5232431,
@@ -9933,7 +9951,7 @@
   "scientific_name": "Polysticta stelleri",
   "vernacular_da": null,
   "vernacular_en": "Steller's Eider",
-  "leaf_index": 611
+  "leaf_index": 613
  },
  {
   "taxon_id": 5232432,
@@ -9942,7 +9960,7 @@
   "scientific_name": "Cereopsis novaehollandiae",
   "vernacular_da": null,
   "vernacular_en": "Cape Barren Goose",
-  "leaf_index": 612
+  "leaf_index": 614
  },
  {
   "taxon_id": 5232437,
@@ -9951,7 +9969,7 @@
   "scientific_name": "Branta canadensis",
   "vernacular_da": null,
   "vernacular_en": "Canada Goose",
-  "leaf_index": 613
+  "leaf_index": 615
  },
  {
   "taxon_id": 5232446,
@@ -9960,7 +9978,7 @@
   "scientific_name": "Branta bernicla",
   "vernacular_da": null,
   "vernacular_en": "Brant Goose",
-  "leaf_index": 614
+  "leaf_index": 616
  },
  {
   "taxon_id": 5232451,
@@ -9969,7 +9987,7 @@
   "scientific_name": "Branta ruficollis",
   "vernacular_da": null,
   "vernacular_en": "Red-breasted Goose",
-  "leaf_index": 615
+  "leaf_index": 617
  },
  {
   "taxon_id": 5232464,
@@ -9978,7 +9996,7 @@
   "scientific_name": "Branta leucopsis",
   "vernacular_da": null,
   "vernacular_en": "Barnacle Goose",
-  "leaf_index": 616
+  "leaf_index": 618
  },
  {
   "taxon_id": 5429330,
@@ -10005,7 +10023,7 @@
   "scientific_name": "Puffinus griseus",
   "vernacular_da": null,
   "vernacular_en": "Sooty Shearwater",
-  "leaf_index": 617
+  "leaf_index": 619
  },
  {
   "taxon_id": 5739290,
@@ -10014,7 +10032,7 @@
   "scientific_name": "Phalaropus lobatus",
   "vernacular_da": null,
   "vernacular_en": "Red-necked Phalarope",
-  "leaf_index": 618
+  "leaf_index": 620
  },
  {
   "taxon_id": 5739298,
@@ -10023,7 +10041,7 @@
   "scientific_name": "Aegolius funereus",
   "vernacular_da": null,
   "vernacular_en": "Boreal Owl",
-  "leaf_index": 619
+  "leaf_index": 621
  },
  {
   "taxon_id": 5739315,
@@ -10032,7 +10050,7 @@
   "scientific_name": "Phoenicurus ochruros",
   "vernacular_da": null,
   "vernacular_en": "Black Redstart",
-  "leaf_index": 620
+  "leaf_index": 622
  },
  {
   "taxon_id": 5739317,
@@ -10041,7 +10059,7 @@
   "scientific_name": "Phoenicurus phoenicurus",
   "vernacular_da": null,
   "vernacular_en": "Common Redstart",
-  "leaf_index": 621
+  "leaf_index": 623
  },
  {
   "taxon_id": 5739355,
@@ -10050,7 +10068,7 @@
   "scientific_name": "Iduna opaca",
   "vernacular_da": null,
   "vernacular_en": "Western Olivaceous Warbler",
-  "leaf_index": 622
+  "leaf_index": 624
  },
  {
   "taxon_id": 5739357,
@@ -10059,7 +10077,7 @@
   "scientific_name": "Iduna rama",
   "vernacular_da": null,
   "vernacular_en": "Sykes's Warbler",
-  "leaf_index": 623
+  "leaf_index": 625
  },
  {
   "taxon_id": 5739359,
@@ -10068,7 +10086,7 @@
   "scientific_name": "Iduna caligata",
   "vernacular_da": null,
   "vernacular_en": "Booted Warbler",
-  "leaf_index": 624
+  "leaf_index": 626
  },
  {
   "taxon_id": 5739361,
@@ -10077,7 +10095,7 @@
   "scientific_name": "Iduna pallida",
   "vernacular_da": null,
   "vernacular_en": "Eastern Olivaceous Warbler",
-  "leaf_index": 625
+  "leaf_index": 627
  },
  {
   "taxon_id": 5788495,
@@ -10086,7 +10104,7 @@
   "scientific_name": "Micronisus gabar",
   "vernacular_da": null,
   "vernacular_en": "Gabar Goshawk",
-  "leaf_index": 626
+  "leaf_index": 628
  },
  {
   "taxon_id": 5788858,
@@ -10095,7 +10113,7 @@
   "scientific_name": "Erythropygia leucophrys",
   "vernacular_da": null,
   "vernacular_en": "White-browed Scrub Robin",
-  "leaf_index": 627
+  "leaf_index": 629
  },
  {
   "taxon_id": 5788860,
@@ -10104,7 +10122,7 @@
   "scientific_name": "Erythropygia galactotes",
   "vernacular_da": null,
   "vernacular_en": "Rufous-tailed Scrub Robin",
-  "leaf_index": 628
+  "leaf_index": 630
  },
  {
   "taxon_id": 5788867,
@@ -10113,7 +10131,7 @@
   "scientific_name": "Oenanthe albonigra",
   "vernacular_da": null,
   "vernacular_en": "Hume's Wheatear",
-  "leaf_index": 629
+  "leaf_index": 631
  },
  {
   "taxon_id": 5788868,
@@ -10122,7 +10140,7 @@
   "scientific_name": "Oenanthe chrysopygia",
   "vernacular_da": null,
   "vernacular_en": "Red-tailed Wheatear",
-  "leaf_index": 630
+  "leaf_index": 632
  },
  {
   "taxon_id": 5788885,
@@ -10131,7 +10149,16 @@
   "scientific_name": "Ficedula speculigera",
   "vernacular_da": null,
   "vernacular_en": "Atlas Pied Flycatcher",
-  "leaf_index": 631
+  "leaf_index": 633
+ },
+ {
+  "taxon_id": 5789049,
+  "parent_id": 2490869,
+  "rank": "species",
+  "scientific_name": "Psophocichla litsitsirupa",
+  "vernacular_da": null,
+  "vernacular_en": "Ethiopian Thrush",
+  "leaf_index": 634
  },
  {
   "taxon_id": 5789082,
@@ -10140,7 +10167,7 @@
   "scientific_name": "Euodice malabarica",
   "vernacular_da": null,
   "vernacular_en": "Indian Silverbill",
-  "leaf_index": 632
+  "leaf_index": 635
  },
  {
   "taxon_id": 5789279,
@@ -10149,7 +10176,7 @@
   "scientific_name": "Sternula albifrons",
   "vernacular_da": null,
   "vernacular_en": "Little Tern",
-  "leaf_index": 633
+  "leaf_index": 636
  },
  {
   "taxon_id": 5789283,
@@ -10158,7 +10185,7 @@
   "scientific_name": "Thalasseus bergii",
   "vernacular_da": null,
   "vernacular_en": "Greater Crested Tern",
-  "leaf_index": 634
+  "leaf_index": 637
  },
  {
   "taxon_id": 5789286,
@@ -10167,7 +10194,7 @@
   "scientific_name": "Onychoprion anaethetus",
   "vernacular_da": null,
   "vernacular_en": "Bridled Tern",
-  "leaf_index": 635
+  "leaf_index": 638
  },
  {
   "taxon_id": 5793241,
@@ -10176,7 +10203,7 @@
   "scientific_name": "Pernis ptilorhynchus",
   "vernacular_da": null,
   "vernacular_en": "Crested Honey Buzzard",
-  "leaf_index": 636
+  "leaf_index": 639
  },
  {
   "taxon_id": 5843955,
@@ -10185,7 +10212,7 @@
   "scientific_name": "Puffinus baroli",
   "vernacular_da": null,
   "vernacular_en": "Barolo Shearwater",
-  "leaf_index": 637
+  "leaf_index": 640
  },
  {
   "taxon_id": 5844449,
@@ -10194,7 +10221,7 @@
   "scientific_name": "Aquila fasciata",
   "vernacular_da": null,
   "vernacular_en": "Bonelli's Eagle",
-  "leaf_index": 638
+  "leaf_index": 641
  },
  {
   "taxon_id": 5844936,
@@ -10203,25 +10230,7 @@
   "scientific_name": "Cyanopica cooki",
   "vernacular_da": null,
   "vernacular_en": "Iberian Magpie",
-  "leaf_index": 639
- },
- {
-  "taxon_id": 5845302,
-  "parent_id": 2492483,
-  "rank": "species",
-  "scientific_name": "Oenanthe hispanica",
-  "vernacular_da": null,
-  "vernacular_en": "Eastern Black-eared Wheatear",
-  "leaf_index": 640
- },
- {
-  "taxon_id": 5845303,
-  "parent_id": 2492483,
-  "rank": "species",
-  "scientific_name": "Oenanthe oenanthe",
-  "vernacular_da": null,
-  "vernacular_en": "Atlas Wheatear",
-  "leaf_index": 641
+  "leaf_index": 642
  },
  {
   "taxon_id": 5845316,
@@ -10230,7 +10239,7 @@
   "scientific_name": "Pinarochroa sordida",
   "vernacular_da": null,
   "vernacular_en": "Moorland Chat",
-  "leaf_index": 642
+  "leaf_index": 643
  },
  {
   "taxon_id": 5845386,
@@ -10239,7 +10248,7 @@
   "scientific_name": "Pastor roseus",
   "vernacular_da": null,
   "vernacular_en": "Rosy Starling",
-  "leaf_index": 643
+  "leaf_index": 644
  },
  {
   "taxon_id": 5845582,
@@ -10248,7 +10257,7 @@
   "scientific_name": "Chloris chloris",
   "vernacular_da": null,
   "vernacular_en": "European Greenfinch",
-  "leaf_index": 644
+  "leaf_index": 645
  },
  {
   "taxon_id": 5846290,
@@ -10257,7 +10266,7 @@
   "scientific_name": "Saxicola maurus",
   "vernacular_da": null,
   "vernacular_en": "Siberian Stonechat",
-  "leaf_index": 645
+  "leaf_index": 646
  },
  {
   "taxon_id": 5846430,
@@ -10266,7 +10275,7 @@
   "scientific_name": "Leucophaeus pipixcan",
   "vernacular_da": null,
   "vernacular_en": "Franklin's Gull",
-  "leaf_index": 646
+  "leaf_index": 647
  },
  {
   "taxon_id": 5959091,
@@ -10284,16 +10293,16 @@
   "scientific_name": "Bubo bubo",
   "vernacular_da": null,
   "vernacular_en": "Eurasian Eagle-Owl",
-  "leaf_index": 647
+  "leaf_index": 648
  },
  {
-  "taxon_id": 5959113,
+  "taxon_id": 5959111,
   "parent_id": 5959091,
   "rank": "species",
   "scientific_name": "Bubo africanus",
   "vernacular_da": null,
   "vernacular_en": "Arabian Eagle-Owl",
-  "leaf_index": 648
+  "leaf_index": 649
  },
  {
   "taxon_id": 5959134,
@@ -10302,7 +10311,7 @@
   "scientific_name": "Bubo ascalaphus",
   "vernacular_da": null,
   "vernacular_en": "Pharaoh Eagle-Owl",
-  "leaf_index": 649
+  "leaf_index": 650
  },
  {
   "taxon_id": 6065768,
@@ -10311,7 +10320,7 @@
   "scientific_name": "Sternula saundersi",
   "vernacular_da": null,
   "vernacular_en": "Saunders's Tern",
-  "leaf_index": 650
+  "leaf_index": 651
  },
  {
   "taxon_id": 6065810,
@@ -10320,7 +10329,7 @@
   "scientific_name": "Chroicocephalus genei",
   "vernacular_da": null,
   "vernacular_en": "Slender-billed Gull",
-  "leaf_index": 651
+  "leaf_index": 652
  },
  {
   "taxon_id": 6065824,
@@ -10329,7 +10338,7 @@
   "scientific_name": "Chroicocephalus ridibundus",
   "vernacular_da": null,
   "vernacular_en": "Black-headed Gull",
-  "leaf_index": 652
+  "leaf_index": 653
  },
  {
   "taxon_id": 6065833,
@@ -10338,7 +10347,7 @@
   "scientific_name": "Thalasseus bengalensis",
   "vernacular_da": null,
   "vernacular_en": "Lesser Crested Tern",
-  "leaf_index": 653
+  "leaf_index": 654
  },
  {
   "taxon_id": 6065841,
@@ -10347,7 +10356,7 @@
   "scientific_name": "Hydrocoloeus minutus",
   "vernacular_da": null,
   "vernacular_en": "Little Gull",
-  "leaf_index": 654
+  "leaf_index": 655
  },
  {
   "taxon_id": 6065959,
@@ -10365,7 +10374,7 @@
   "scientific_name": "Microcarbo africanus",
   "vernacular_da": null,
   "vernacular_en": "Reed Cormorant",
-  "leaf_index": 655
+  "leaf_index": 656
  },
  {
   "taxon_id": 6085729,
@@ -10386,49 +10395,13 @@
   "leaf_index": null
  },
  {
-  "taxon_id": 6087562,
-  "parent_id": 2492483,
-  "rank": "species",
-  "scientific_name": "Oenanthe bottae",
-  "vernacular_da": null,
-  "vernacular_en": "Rusty-breasted Wheatear",
-  "leaf_index": 656
- },
- {
-  "taxon_id": 6087784,
-  "parent_id": 2490661,
-  "rank": "species",
-  "scientific_name": "Eremalauda dunni",
-  "vernacular_da": null,
-  "vernacular_en": "Arabian Lark",
-  "leaf_index": 657
- },
- {
-  "taxon_id": 6087895,
-  "parent_id": 2490675,
-  "rank": "species",
-  "scientific_name": "Calandrella rufescens",
-  "vernacular_da": null,
-  "vernacular_en": "Turkestan Short-toed Lark",
-  "leaf_index": 658
- },
- {
-  "taxon_id": 6088034,
-  "parent_id": 2490675,
-  "rank": "species",
-  "scientific_name": "Calandrella blanfordi",
-  "vernacular_da": null,
-  "vernacular_en": "Rufous-capped Lark",
-  "leaf_index": 659
- },
- {
   "taxon_id": 6089269,
   "parent_id": 7340979,
   "rank": "species",
   "scientific_name": "Hedydipna metallica",
   "vernacular_da": null,
   "vernacular_en": "Nile Valley Sunbird",
-  "leaf_index": 660
+  "leaf_index": 657
  },
  {
   "taxon_id": 6089275,
@@ -10437,7 +10410,7 @@
   "scientific_name": "Hedydipna platura",
   "vernacular_da": null,
   "vernacular_en": "Pygmy Sunbird",
-  "leaf_index": 661
+  "leaf_index": 658
  },
  {
   "taxon_id": 6092830,
@@ -10446,7 +10419,7 @@
   "scientific_name": "Spinus spinus",
   "vernacular_da": null,
   "vernacular_en": "Eurasian Siskin",
-  "leaf_index": 662
+  "leaf_index": 659
  },
  {
   "taxon_id": 6093527,
@@ -10455,7 +10428,7 @@
   "scientific_name": "Regulus ignicapilla",
   "vernacular_da": null,
   "vernacular_en": "Common Firecrest",
-  "leaf_index": 663
+  "leaf_index": 660
  },
  {
   "taxon_id": 6093943,
@@ -10464,7 +10437,7 @@
   "scientific_name": "Sylvia deserti",
   "vernacular_da": null,
   "vernacular_en": "African Desert Warbler",
-  "leaf_index": 664
+  "leaf_index": 661
  },
  {
   "taxon_id": 6100800,
@@ -10473,7 +10446,7 @@
   "scientific_name": "Emberiza sahari",
   "vernacular_da": null,
   "vernacular_en": "House Bunting",
-  "leaf_index": 665
+  "leaf_index": 662
  },
  {
   "taxon_id": 6100802,
@@ -10491,7 +10464,7 @@
   "scientific_name": "Ptyonoprogne obsoleta",
   "vernacular_da": null,
   "vernacular_en": "Pale Crag Martin",
-  "leaf_index": 666
+  "leaf_index": 663
  },
  {
   "taxon_id": 6100825,
@@ -10509,7 +10482,7 @@
   "scientific_name": "Oenanthe melanura",
   "vernacular_da": null,
   "vernacular_en": "Blackstart",
-  "leaf_index": 667
+  "leaf_index": 664
  },
  {
   "taxon_id": 6100855,
@@ -10518,7 +10491,7 @@
   "scientific_name": "Monticola semirufus",
   "vernacular_da": null,
   "vernacular_en": "White-winged Cliff Chat",
-  "leaf_index": 668
+  "leaf_index": 665
  },
  {
   "taxon_id": 6100868,
@@ -10545,7 +10518,7 @@
   "scientific_name": "Sylvia ruppeli",
   "vernacular_da": null,
   "vernacular_en": "R\u00fcppell's Warbler",
-  "leaf_index": 669
+  "leaf_index": 666
  },
  {
   "taxon_id": 6100952,
@@ -10554,7 +10527,7 @@
   "scientific_name": "Telophorus cruentus",
   "vernacular_da": null,
   "vernacular_en": "Rosy-patched Bushshrike",
-  "leaf_index": 670
+  "leaf_index": 667
  },
  {
   "taxon_id": 6100954,
@@ -10563,7 +10536,7 @@
   "scientific_name": "Coloeus monedula",
   "vernacular_da": null,
   "vernacular_en": "Western Jackdaw",
-  "leaf_index": 671
+  "leaf_index": 668
  },
  {
   "taxon_id": 6100963,
@@ -10581,7 +10554,7 @@
   "scientific_name": "Gymnoris dentata",
   "vernacular_da": null,
   "vernacular_en": "Sahel Bush Sparrow",
-  "leaf_index": 672
+  "leaf_index": 669
  },
  {
   "taxon_id": 6100968,
@@ -10590,7 +10563,7 @@
   "scientific_name": "Gymnoris xanthocollis",
   "vernacular_da": null,
   "vernacular_en": "Yellow-throated Sparrow",
-  "leaf_index": 673
+  "leaf_index": 670
  },
  {
   "taxon_id": 6100970,
@@ -10599,7 +10572,7 @@
   "scientific_name": "Gymnoris pyrgita",
   "vernacular_da": null,
   "vernacular_en": "Yellow-spotted Bush Sparrow",
-  "leaf_index": 674
+  "leaf_index": 671
  },
  {
   "taxon_id": 6100978,
@@ -10608,7 +10581,7 @@
   "scientific_name": "Crithagra menachensis",
   "vernacular_da": null,
   "vernacular_en": "Yemen Serin",
-  "leaf_index": 675
+  "leaf_index": 672
  },
  {
   "taxon_id": 6100986,
@@ -10617,7 +10590,7 @@
   "scientific_name": "Crithagra citrinelloides",
   "vernacular_da": null,
   "vernacular_en": "African Citril",
-  "leaf_index": 676
+  "leaf_index": 673
  },
  {
   "taxon_id": 6100990,
@@ -10626,7 +10599,7 @@
   "scientific_name": "Crithagra leucopygia",
   "vernacular_da": null,
   "vernacular_en": "White-rumped Seedeater",
-  "leaf_index": 677
+  "leaf_index": 674
  },
  {
   "taxon_id": 6101000,
@@ -10635,7 +10608,7 @@
   "scientific_name": "Crithagra tristriata",
   "vernacular_da": null,
   "vernacular_en": "Brown-rumped Seedeater",
-  "leaf_index": 678
+  "leaf_index": 675
  },
  {
   "taxon_id": 6101002,
@@ -10644,7 +10617,7 @@
   "scientific_name": "Crithagra striolata",
   "vernacular_da": null,
   "vernacular_en": "Streaky Seedeater",
-  "leaf_index": 679
+  "leaf_index": 676
  },
  {
   "taxon_id": 6101005,
@@ -10653,7 +10626,7 @@
   "scientific_name": "Crithagra rothschildi",
   "vernacular_da": null,
   "vernacular_en": "Arabian Serin",
-  "leaf_index": 680
+  "leaf_index": 677
  },
  {
   "taxon_id": 6101019,
@@ -10689,7 +10662,7 @@
   "scientific_name": "Turdoides huttoni",
   "vernacular_da": null,
   "vernacular_en": "Afghan Babbler",
-  "leaf_index": 681
+  "leaf_index": 678
  },
  {
   "taxon_id": 6101141,
@@ -10707,25 +10680,7 @@
   "scientific_name": "Spilopelia senegalensis",
   "vernacular_da": null,
   "vernacular_en": "Laughing Dove",
-  "leaf_index": 682
- },
- {
-  "taxon_id": 6176735,
-  "parent_id": 3242186,
-  "rank": "species",
-  "scientific_name": "Porphyrio porphyrio",
-  "vernacular_da": null,
-  "vernacular_en": "Grey-headed Swamphen",
-  "leaf_index": 683
- },
- {
-  "taxon_id": 6178228,
-  "parent_id": 2481517,
-  "rank": "species",
-  "scientific_name": "Calonectris diomedea",
-  "vernacular_da": null,
-  "vernacular_en": "Cory's Shearwater",
-  "leaf_index": 684
+  "leaf_index": 679
  },
  {
   "taxon_id": 6782561,
@@ -10860,7 +10815,7 @@
   "scientific_name": "Anser serrirostris",
   "vernacular_da": null,
   "vernacular_en": "Tundra Bean Goose",
-  "leaf_index": 685
+  "leaf_index": 680
  },
  {
   "taxon_id": 7340241,
@@ -10869,7 +10824,7 @@
   "scientific_name": "Turdus abyssinicus",
   "vernacular_da": null,
   "vernacular_en": "Abyssinian Thrush",
-  "leaf_index": 686
+  "leaf_index": 681
  },
  {
   "taxon_id": 7340277,
@@ -10887,7 +10842,7 @@
   "scientific_name": "Riparia diluta",
   "vernacular_da": null,
   "vernacular_en": "Pale Martin",
-  "leaf_index": 687
+  "leaf_index": 682
  },
  {
   "taxon_id": 7340334,
@@ -10905,7 +10860,7 @@
   "scientific_name": "Euodice cantans",
   "vernacular_da": null,
   "vernacular_en": "African Silverbill",
-  "leaf_index": 688
+  "leaf_index": 683
  },
  {
   "taxon_id": 7340497,
@@ -10914,7 +10869,7 @@
   "scientific_name": "Turdoides leucopygia",
   "vernacular_da": null,
   "vernacular_en": "White-rumped Babbler",
-  "leaf_index": 689
+  "leaf_index": 684
  },
  {
   "taxon_id": 7340566,
@@ -10923,7 +10878,7 @@
   "scientific_name": "Turdoides fulva",
   "vernacular_da": null,
   "vernacular_en": "Fulvous Babbler",
-  "leaf_index": 690
+  "leaf_index": 685
  },
  {
   "taxon_id": 7340608,
@@ -10932,7 +10887,7 @@
   "scientific_name": "Cinnyris asiaticus",
   "vernacular_da": null,
   "vernacular_en": "Purple Sunbird",
-  "leaf_index": 691
+  "leaf_index": 686
  },
  {
   "taxon_id": 7340636,
@@ -10941,7 +10896,7 @@
   "scientific_name": "Cinnyris venustus",
   "vernacular_da": null,
   "vernacular_en": "Variable Sunbird",
-  "leaf_index": 692
+  "leaf_index": 687
  },
  {
   "taxon_id": 7340670,
@@ -10959,7 +10914,7 @@
   "scientific_name": "Urorhipis rufifrons",
   "vernacular_da": null,
   "vernacular_en": "Red-fronted Prinia",
-  "leaf_index": 693
+  "leaf_index": 688
  },
  {
   "taxon_id": 7340679,
@@ -10968,7 +10923,7 @@
   "scientific_name": "Cinnyris osea",
   "vernacular_da": null,
   "vernacular_en": "Palestine Sunbird",
-  "leaf_index": 694
+  "leaf_index": 689
  },
  {
   "taxon_id": 7340702,
@@ -10977,7 +10932,7 @@
   "scientific_name": "Cinnyris pulchellus",
   "vernacular_da": null,
   "vernacular_en": "Beautiful Sunbird",
-  "leaf_index": 695
+  "leaf_index": 690
  },
  {
   "taxon_id": 7340809,
@@ -10986,7 +10941,7 @@
   "scientific_name": "Ammomanes cinctura",
   "vernacular_da": null,
   "vernacular_en": "Bar-tailed Lark",
-  "leaf_index": 696
+  "leaf_index": 691
  },
  {
   "taxon_id": 7340859,
@@ -11004,7 +10959,7 @@
   "scientific_name": "Chalcomitra hunteri",
   "vernacular_da": null,
   "vernacular_en": "Hunter's Sunbird",
-  "leaf_index": 697
+  "leaf_index": 692
  },
  {
   "taxon_id": 7340979,
@@ -11022,7 +10977,7 @@
   "scientific_name": "Lanius meridionalis",
   "vernacular_da": null,
   "vernacular_en": "Iberian Grey Shrike",
-  "leaf_index": 698
+  "leaf_index": 693
  },
  {
   "taxon_id": 7341522,
@@ -11031,7 +10986,7 @@
   "scientific_name": "Phylloscopus humei",
   "vernacular_da": null,
   "vernacular_en": "Hume's Leaf Warbler",
-  "leaf_index": 699
+  "leaf_index": 694
  },
  {
   "taxon_id": 7341578,
@@ -11040,7 +10995,7 @@
   "scientific_name": "Phylloscopus sindianus",
   "vernacular_da": null,
   "vernacular_en": "Mountain Chiffchaff",
-  "leaf_index": 700
+  "leaf_index": 695
  },
  {
   "taxon_id": 7341585,
@@ -11049,7 +11004,7 @@
   "scientific_name": "Phylloscopus ibericus",
   "vernacular_da": null,
   "vernacular_en": "Iberian Chiffchaff",
-  "leaf_index": 701
+  "leaf_index": 696
  },
  {
   "taxon_id": 7341593,
@@ -11058,7 +11013,7 @@
   "scientific_name": "Phylloscopus canariensis",
   "vernacular_da": null,
   "vernacular_en": "Canary Islands Chiffchaff",
-  "leaf_index": 702
+  "leaf_index": 697
  },
  {
   "taxon_id": 7341633,
@@ -11067,7 +11022,7 @@
   "scientific_name": "Zosterops poliogastrus",
   "vernacular_da": null,
   "vernacular_en": "Ethiopian White-eye",
-  "leaf_index": 703
+  "leaf_index": 698
  },
  {
   "taxon_id": 7341849,
@@ -11076,7 +11031,7 @@
   "scientific_name": "Cyanistes teneriffae",
   "vernacular_da": null,
   "vernacular_en": "African Blue Tit",
-  "leaf_index": 704
+  "leaf_index": 699
  },
  {
   "taxon_id": 7342065,
@@ -11085,7 +11040,7 @@
   "scientific_name": "Sylvia crassirostris",
   "vernacular_da": null,
   "vernacular_en": "Eastern Orphean Warbler",
-  "leaf_index": 705
+  "leaf_index": 700
  },
  {
   "taxon_id": 7406504,
@@ -11094,7 +11049,7 @@
   "scientific_name": "Ichthyaetus audouinii",
   "vernacular_da": null,
   "vernacular_en": "Audouin's Gull",
-  "leaf_index": 706
+  "leaf_index": 701
  },
  {
   "taxon_id": 7485500,
@@ -11103,7 +11058,7 @@
   "scientific_name": "Lyristes plebejus",
   "vernacular_da": null,
   "vernacular_en": "Lyristes plebejus",
-  "leaf_index": 707
+  "leaf_index": 702
  },
  {
   "taxon_id": 7537888,
@@ -11112,7 +11067,7 @@
   "scientific_name": "Calidris falcinellus",
   "vernacular_da": null,
   "vernacular_en": "Broad-billed Sandpiper",
-  "leaf_index": 708
+  "leaf_index": 703
  },
  {
   "taxon_id": 7580221,
@@ -11139,7 +11094,7 @@
   "scientific_name": "Emberiza cirlus",
   "vernacular_da": null,
   "vernacular_en": "Cirl Bunting",
-  "leaf_index": 709
+  "leaf_index": 704
  },
  {
   "taxon_id": 7634625,
@@ -11148,7 +11103,7 @@
   "scientific_name": "Emberiza calandra",
   "vernacular_da": null,
   "vernacular_en": "Corn Bunting",
-  "leaf_index": 710
+  "leaf_index": 705
  },
  {
   "taxon_id": 7660710,
@@ -11157,7 +11112,7 @@
   "scientific_name": "Luscinia megarhynchos",
   "vernacular_da": null,
   "vernacular_en": "Common Nightingale",
-  "leaf_index": 711
+  "leaf_index": 706
  },
  {
   "taxon_id": 7668711,
@@ -11166,7 +11121,7 @@
   "scientific_name": "Linaria flavirostris",
   "vernacular_da": null,
   "vernacular_en": "Twite",
-  "leaf_index": 712
+  "leaf_index": 707
  },
  {
   "taxon_id": 7705930,
@@ -11175,7 +11130,7 @@
   "scientific_name": "Sus scrofa",
   "vernacular_da": null,
   "vernacular_en": "Pig",
-  "leaf_index": 713
+  "leaf_index": 708
  },
  {
   "taxon_id": 7736104,
@@ -11193,7 +11148,7 @@
   "scientific_name": "Lanius collurio",
   "vernacular_da": null,
   "vernacular_en": "Red-backed Shrike",
-  "leaf_index": 714
+  "leaf_index": 709
  },
  {
   "taxon_id": 7785213,
@@ -11202,7 +11157,7 @@
   "scientific_name": "Ichthyaetus leucophthalmus",
   "vernacular_da": null,
   "vernacular_en": "White-eyed Gull",
-  "leaf_index": 715
+  "leaf_index": 710
  },
  {
   "taxon_id": 7788295,
@@ -11211,7 +11166,7 @@
   "scientific_name": "Haematopus ostralegus",
   "vernacular_da": null,
   "vernacular_en": "Eurasian Oystercatcher",
-  "leaf_index": 716
+  "leaf_index": 711
  },
  {
   "taxon_id": 7792296,
@@ -11220,7 +11175,7 @@
   "scientific_name": "Pseudochorthippus parallelus",
   "vernacular_da": null,
   "vernacular_en": "Pseudochorthippus parallelus",
-  "leaf_index": 717
+  "leaf_index": 712
  },
  {
   "taxon_id": 7799469,
@@ -11238,7 +11193,7 @@
   "scientific_name": "Certhia brachydactyla",
   "vernacular_da": null,
   "vernacular_en": "Short-toed Treecreeper",
-  "leaf_index": 718
+  "leaf_index": 713
  },
  {
   "taxon_id": 7816758,
@@ -11256,7 +11211,7 @@
   "scientific_name": "Turdus torquatus",
   "vernacular_da": null,
   "vernacular_en": "Ring Ouzel",
-  "leaf_index": 719
+  "leaf_index": 714
  },
  {
   "taxon_id": 7901064,
@@ -11265,7 +11220,7 @@
   "scientific_name": "Turdus philomelos",
   "vernacular_da": null,
   "vernacular_en": "Song Thrush",
-  "leaf_index": 720
+  "leaf_index": 715
  },
  {
   "taxon_id": 7918617,
@@ -11283,7 +11238,7 @@
   "scientific_name": "Charadrius dubius",
   "vernacular_da": null,
   "vernacular_en": "Little Ringed Plover",
-  "leaf_index": 721
+  "leaf_index": 716
  },
  {
   "taxon_id": 7964291,
@@ -11292,7 +11247,7 @@
   "scientific_name": "Felis silvestris",
   "vernacular_da": null,
   "vernacular_en": "Felis silvestris",
-  "leaf_index": 722
+  "leaf_index": 717
  },
  {
   "taxon_id": 7982160,
@@ -11301,7 +11256,7 @@
   "scientific_name": "Larus canus",
   "vernacular_da": null,
   "vernacular_en": "Common Gull",
-  "leaf_index": 723
+  "leaf_index": 718
  },
  {
   "taxon_id": 7988924,
@@ -11319,7 +11274,7 @@
   "scientific_name": "Mareca penelope",
   "vernacular_da": null,
   "vernacular_en": "Eurasian Wigeon",
-  "leaf_index": 724
+  "leaf_index": 719
  },
  {
   "taxon_id": 8012314,
@@ -11328,7 +11283,7 @@
   "scientific_name": "Jynx torquilla",
   "vernacular_da": null,
   "vernacular_en": "Eurasian Wryneck",
-  "leaf_index": 725
+  "leaf_index": 720
  },
  {
   "taxon_id": 8014966,
@@ -11337,7 +11292,7 @@
   "scientific_name": "Falco biarmicus",
   "vernacular_da": null,
   "vernacular_en": "Lanner Falcon",
-  "leaf_index": 726
+  "leaf_index": 721
  },
  {
   "taxon_id": 8028588,
@@ -11346,7 +11301,7 @@
   "scientific_name": "Ichthyaetus ichthyaetus",
   "vernacular_da": null,
   "vernacular_en": "Pallas's Gull",
-  "leaf_index": 727
+  "leaf_index": 722
  },
  {
   "taxon_id": 8051475,
@@ -11364,7 +11319,7 @@
   "scientific_name": "Acridotheres leucocephalus",
   "vernacular_da": null,
   "vernacular_en": "Vinous-breasted Myna",
-  "leaf_index": 728
+  "leaf_index": 723
  },
  {
   "taxon_id": 8077224,
@@ -11373,7 +11328,7 @@
   "scientific_name": "Alauda arvensis",
   "vernacular_da": null,
   "vernacular_en": "Eurasian Skylark",
-  "leaf_index": 729
+  "leaf_index": 724
  },
  {
   "taxon_id": 8095667,
@@ -11391,7 +11346,7 @@
   "scientific_name": "Linaria cannabina",
   "vernacular_da": null,
   "vernacular_en": "Common Linnet",
-  "leaf_index": 730
+  "leaf_index": 725
  },
  {
   "taxon_id": 8109681,
@@ -11400,7 +11355,7 @@
   "scientific_name": "Caprimulgus europaeus",
   "vernacular_da": null,
   "vernacular_en": "European Nightjar",
-  "leaf_index": 731
+  "leaf_index": 726
  },
  {
   "taxon_id": 8128385,
@@ -11409,7 +11364,7 @@
   "scientific_name": "Phylloscopus sibillatrix",
   "vernacular_da": null,
   "vernacular_en": "Wood Warbler",
-  "leaf_index": 732
+  "leaf_index": 727
  },
  {
   "taxon_id": 8151548,
@@ -11418,7 +11373,7 @@
   "scientific_name": "Ichthyaetus melanocephalus",
   "vernacular_da": null,
   "vernacular_en": "Mediterranean Gull",
-  "leaf_index": 733
+  "leaf_index": 728
  },
  {
   "taxon_id": 8156917,
@@ -11445,7 +11400,7 @@
   "scientific_name": "Sciurus vulgaris",
   "vernacular_da": null,
   "vernacular_en": "Sciurus vulgaris",
-  "leaf_index": 734
+  "leaf_index": 729
  },
  {
   "taxon_id": 8214667,
@@ -11454,7 +11409,7 @@
   "scientific_name": "Anas crecca",
   "vernacular_da": null,
   "vernacular_en": "Eurasian Teal",
-  "leaf_index": 735
+  "leaf_index": 730
  },
  {
   "taxon_id": 8215044,
@@ -11481,7 +11436,7 @@
   "scientific_name": "Calidris pugnax",
   "vernacular_da": null,
   "vernacular_en": "Ruff",
-  "leaf_index": 736
+  "leaf_index": 731
  },
  {
   "taxon_id": 8258263,
@@ -11490,7 +11445,7 @@
   "scientific_name": "Lophoceros hemprichii",
   "vernacular_da": null,
   "vernacular_en": "Hemprich's Hornbill",
-  "leaf_index": 737
+  "leaf_index": 732
  },
  {
   "taxon_id": 8277073,
@@ -11499,7 +11454,7 @@
   "scientific_name": "Alca torda",
   "vernacular_da": null,
   "vernacular_en": "Razorbill",
-  "leaf_index": 738
+  "leaf_index": 733
  },
  {
   "taxon_id": 8296977,
@@ -11517,7 +11472,7 @@
   "scientific_name": "Ichthyaetus hemprichii",
   "vernacular_da": null,
   "vernacular_en": "Sooty Gull",
-  "leaf_index": 739
+  "leaf_index": 734
  },
  {
   "taxon_id": 8332393,
@@ -11526,7 +11481,7 @@
   "scientific_name": "Spatula clypeata",
   "vernacular_da": null,
   "vernacular_en": "Northern Shoveler",
-  "leaf_index": 740
+  "leaf_index": 735
  },
  {
   "taxon_id": 8347376,
@@ -11535,7 +11490,7 @@
   "scientific_name": "Tettigonia cantans",
   "vernacular_da": null,
   "vernacular_en": "Tettigonia cantans",
-  "leaf_index": 741
+  "leaf_index": 736
  },
  {
   "taxon_id": 8348347,
@@ -11562,7 +11517,7 @@
   "scientific_name": "Ephippiger diurnus",
   "vernacular_da": null,
   "vernacular_en": "Ephippiger diurnus",
-  "leaf_index": 742
+  "leaf_index": 737
  },
  {
   "taxon_id": 8373955,
@@ -11607,7 +11562,7 @@
   "scientific_name": "Pseudochorthippus montanus",
   "vernacular_da": null,
   "vernacular_en": "Pseudochorthippus montanus",
-  "leaf_index": 743
+  "leaf_index": 738
  },
  {
   "taxon_id": 8426551,
@@ -11616,7 +11571,7 @@
   "scientific_name": "Passer italiae",
   "vernacular_da": null,
   "vernacular_en": "Italian Sparrow",
-  "leaf_index": 744
+  "leaf_index": 739
  },
  {
   "taxon_id": 8428249,
@@ -11625,7 +11580,7 @@
   "scientific_name": "Linaria yemenensis",
   "vernacular_da": null,
   "vernacular_en": "Yemen Linnet",
-  "leaf_index": 745
+  "leaf_index": 740
  },
  {
   "taxon_id": 8510645,
@@ -11697,7 +11652,7 @@
   "scientific_name": "Dendrocoptes medius",
   "vernacular_da": null,
   "vernacular_en": "Middle Spotted Woodpecker",
-  "leaf_index": 746
+  "leaf_index": 741
  },
  {
   "taxon_id": 8860705,
@@ -11706,7 +11661,7 @@
   "scientific_name": "Dendrocoptes dorae",
   "vernacular_da": null,
   "vernacular_en": "Arabian Woodpecker",
-  "leaf_index": 747
+  "leaf_index": 742
  },
  {
   "taxon_id": 8996942,
@@ -11724,7 +11679,7 @@
   "scientific_name": "Dryobates minor",
   "vernacular_da": null,
   "vernacular_en": "Lesser Spotted Woodpecker",
-  "leaf_index": 748
+  "leaf_index": 743
  },
  {
   "taxon_id": 9029556,
@@ -11733,16 +11688,7 @@
   "scientific_name": "Picus sharpei",
   "vernacular_da": null,
   "vernacular_en": "Iberian Green Woodpecker",
-  "leaf_index": 749
- },
- {
-  "taxon_id": 9044413,
-  "parent_id": 2490869,
-  "rank": "species",
-  "scientific_name": "Psophocichla litsitsirupa",
-  "vernacular_da": null,
-  "vernacular_en": "Ethiopian Thrush",
-  "leaf_index": 750
+  "leaf_index": 744
  },
  {
   "taxon_id": 9109074,
@@ -11769,7 +11715,7 @@
   "scientific_name": "Spatula querquedula",
   "vernacular_da": null,
   "vernacular_en": "Garganey",
-  "leaf_index": 751
+  "leaf_index": 745
  },
  {
   "taxon_id": 9282206,
@@ -11778,7 +11724,7 @@
   "scientific_name": "Strix aluco",
   "vernacular_da": null,
   "vernacular_en": "Tawny Owl",
-  "leaf_index": 752
+  "leaf_index": 746
  },
  {
   "taxon_id": 9317615,
@@ -11787,7 +11733,7 @@
   "scientific_name": "Curruca cantillans",
   "vernacular_da": null,
   "vernacular_en": "Eastern Subalpine Warbler",
-  "leaf_index": 753
+  "leaf_index": 747
  },
  {
   "taxon_id": 9330514,
@@ -11796,7 +11742,7 @@
   "scientific_name": "Galerida theklae",
   "vernacular_da": null,
   "vernacular_en": "Thekla's Lark",
-  "leaf_index": 754
+  "leaf_index": 748
  },
  {
   "taxon_id": 9362027,
@@ -11805,7 +11751,7 @@
   "scientific_name": "Mareca strepera",
   "vernacular_da": null,
   "vernacular_en": "Gadwall",
-  "leaf_index": 755
+  "leaf_index": 749
  },
  {
   "taxon_id": 9367409,
@@ -11814,7 +11760,7 @@
   "scientific_name": "Sterna hirundo",
   "vernacular_da": null,
   "vernacular_en": "Common Tern",
-  "leaf_index": 756
+  "leaf_index": 750
  },
  {
   "taxon_id": 9405810,
@@ -11832,7 +11778,7 @@
   "scientific_name": "Corvus corone",
   "vernacular_da": null,
   "vernacular_en": "Carrion Crow",
-  "leaf_index": 757
+  "leaf_index": 751
  },
  {
   "taxon_id": 9409884,
@@ -11841,7 +11787,7 @@
   "scientific_name": "Lanius humeralis",
   "vernacular_da": null,
   "vernacular_en": "Northern Fiscal",
-  "leaf_index": 758
+  "leaf_index": 752
  },
  {
   "taxon_id": 9411857,
@@ -11850,7 +11796,7 @@
   "scientific_name": "Caprimulgus ruficollis",
   "vernacular_da": null,
   "vernacular_en": "Red-necked Nightjar",
-  "leaf_index": 759
+  "leaf_index": 753
  },
  {
   "taxon_id": 9413670,
@@ -11859,7 +11805,7 @@
   "scientific_name": "Larus michahellis",
   "vernacular_da": null,
   "vernacular_en": "Yellow-legged Gull",
-  "leaf_index": 760
+  "leaf_index": 754
  },
  {
   "taxon_id": 9415596,
@@ -11868,7 +11814,7 @@
   "scientific_name": "Eremophila alpestris",
   "vernacular_da": null,
   "vernacular_en": "Horned Lark",
-  "leaf_index": 761
+  "leaf_index": 755
  },
  {
   "taxon_id": 9421513,
@@ -11877,7 +11823,7 @@
   "scientific_name": "Bufo spinosus",
   "vernacular_da": null,
   "vernacular_en": "Bufo spinosus",
-  "leaf_index": 762
+  "leaf_index": 756
  },
  {
   "taxon_id": 9444556,
@@ -11886,7 +11832,7 @@
   "scientific_name": "Lanius excubitor",
   "vernacular_da": null,
   "vernacular_en": "Great Grey Shrike",
-  "leaf_index": 763
+  "leaf_index": 757
  },
  {
   "taxon_id": 9465111,
@@ -11895,7 +11841,7 @@
   "scientific_name": "Anthus richardi",
   "vernacular_da": null,
   "vernacular_en": "Richard's Pipit",
-  "leaf_index": 764
+  "leaf_index": 758
  },
  {
   "taxon_id": 9478399,
@@ -11904,7 +11850,7 @@
   "scientific_name": "Curruca subalpina",
   "vernacular_da": null,
   "vernacular_en": "Moltoni's Warbler",
-  "leaf_index": 765
+  "leaf_index": 759
  },
  {
   "taxon_id": 9487001,
@@ -11913,7 +11859,7 @@
   "scientific_name": "Gyps africanus",
   "vernacular_da": null,
   "vernacular_en": "White-backed Vulture",
-  "leaf_index": 766
+  "leaf_index": 760
  },
  {
   "taxon_id": 9515886,
@@ -11922,7 +11868,7 @@
   "scientific_name": "Hirundo rustica",
   "vernacular_da": null,
   "vernacular_en": "Barn Swallow",
-  "leaf_index": 767
+  "leaf_index": 761
  },
  {
   "taxon_id": 9522580,
@@ -11931,7 +11877,7 @@
   "scientific_name": "Pterocles exustus",
   "vernacular_da": null,
   "vernacular_en": "Chestnut-bellied Sandgrouse",
-  "leaf_index": 768
+  "leaf_index": 762
  },
  {
   "taxon_id": 9531221,
@@ -11949,7 +11895,7 @@
   "scientific_name": "Mergus merganser",
   "vernacular_da": null,
   "vernacular_en": "Common Merganser",
-  "leaf_index": 769
+  "leaf_index": 763
  },
  {
   "taxon_id": 9549339,
@@ -11967,7 +11913,7 @@
   "scientific_name": "Zosterops abyssinicus",
   "vernacular_da": null,
   "vernacular_en": "Abyssinian White-eye",
-  "leaf_index": 770
+  "leaf_index": 764
  },
  {
   "taxon_id": 9566659,
@@ -11976,7 +11922,7 @@
   "scientific_name": "Charadrius hiaticula",
   "vernacular_da": null,
   "vernacular_en": "Common Ringed Plover",
-  "leaf_index": 771
+  "leaf_index": 765
  },
  {
   "taxon_id": 9584698,
@@ -11985,7 +11931,7 @@
   "scientific_name": "Falco naumanni",
   "vernacular_da": null,
   "vernacular_en": "Lesser Kestrel",
-  "leaf_index": 772
+  "leaf_index": 766
  },
  {
   "taxon_id": 9584952,
@@ -11994,7 +11940,7 @@
   "scientific_name": "Phylloscopus nitidus",
   "vernacular_da": null,
   "vernacular_en": "Green Warbler",
-  "leaf_index": 773
+  "leaf_index": 767
  },
  {
   "taxon_id": 9613112,
@@ -12003,7 +11949,7 @@
   "scientific_name": "Emberiza melanocephala",
   "vernacular_da": null,
   "vernacular_en": "Black-headed Bunting",
-  "leaf_index": 774
+  "leaf_index": 768
  },
  {
   "taxon_id": 9616058,
@@ -12012,7 +11958,7 @@
   "scientific_name": "Falco tinnunculus",
   "vernacular_da": null,
   "vernacular_en": "Common Kestrel",
-  "leaf_index": 775
+  "leaf_index": 769
  },
  {
   "taxon_id": 9629160,
@@ -12021,7 +11967,7 @@
   "scientific_name": "Loxia curvirostra",
   "vernacular_da": null,
   "vernacular_en": "Red Crossbill",
-  "leaf_index": 776
+  "leaf_index": 770
  },
  {
   "taxon_id": 9687165,
@@ -12030,7 +11976,7 @@
   "scientific_name": "Motacilla alba",
   "vernacular_da": null,
   "vernacular_en": "White Wagtail",
-  "leaf_index": 777
+  "leaf_index": 771
  },
  {
   "taxon_id": 9701857,
@@ -12039,7 +11985,7 @@
   "scientific_name": "Motacilla flava",
   "vernacular_da": null,
   "vernacular_en": "Western Yellow Wagtail",
-  "leaf_index": 778
+  "leaf_index": 772
  },
  {
   "taxon_id": 9705453,
@@ -12048,7 +11994,7 @@
   "scientific_name": "Parus major",
   "vernacular_da": null,
   "vernacular_en": "Great Tit",
-  "leaf_index": 779
+  "leaf_index": 773
  },
  {
   "taxon_id": 9715249,
@@ -12066,7 +12012,7 @@
   "scientific_name": "Cecropis daurica",
   "vernacular_da": null,
   "vernacular_en": "European Red-rumped Swallow",
-  "leaf_index": 780
+  "leaf_index": 774
  },
  {
   "taxon_id": 9752149,
@@ -12075,7 +12021,7 @@
   "scientific_name": "Phasianus colchicus",
   "vernacular_da": null,
   "vernacular_en": "Common Pheasant",
-  "leaf_index": 781
+  "leaf_index": 775
  },
  {
   "taxon_id": 9752617,
@@ -12084,7 +12030,7 @@
   "scientific_name": "Ardea alba",
   "vernacular_da": null,
   "vernacular_en": "Great Egret",
-  "leaf_index": 782
+  "leaf_index": 776
  },
  {
   "taxon_id": 9761484,
@@ -12093,7 +12039,7 @@
   "scientific_name": "Anas platyrhynchos",
   "vernacular_da": null,
   "vernacular_en": "Mallard",
-  "leaf_index": 783
+  "leaf_index": 777
  },
  {
   "taxon_id": 9780994,
@@ -12102,7 +12048,7 @@
   "scientific_name": "Spiloptila clamans",
   "vernacular_da": null,
   "vernacular_en": "Cricket Warbler",
-  "leaf_index": 784
+  "leaf_index": 778
  },
  {
   "taxon_id": 9797180,
@@ -12111,7 +12057,7 @@
   "scientific_name": "Ardea cinerea",
   "vernacular_da": null,
   "vernacular_en": "Grey Heron",
-  "leaf_index": 785
+  "leaf_index": 779
  },
  {
   "taxon_id": 9809229,
@@ -12120,7 +12066,7 @@
   "scientific_name": "Sturnus vulgaris",
   "vernacular_da": null,
   "vernacular_en": "Common Starling",
-  "leaf_index": 786
+  "leaf_index": 780
  },
  {
   "taxon_id": 9813242,
@@ -12129,7 +12075,7 @@
   "scientific_name": "Falco columbarius",
   "vernacular_da": null,
   "vernacular_en": "Merlin",
-  "leaf_index": 787
+  "leaf_index": 781
  },
  {
   "taxon_id": 9990095,
@@ -12138,7 +12084,7 @@
   "scientific_name": "Curruca melanocephala",
   "vernacular_da": null,
   "vernacular_en": "Sardinian Warbler",
-  "leaf_index": 788
+  "leaf_index": 782
  },
  {
   "taxon_id": 10095118,
@@ -12147,7 +12093,7 @@
   "scientific_name": "Microcarbo pygmaeus",
   "vernacular_da": null,
   "vernacular_en": "Pygmy Cormorant",
-  "leaf_index": 789
+  "leaf_index": 783
  },
  {
   "taxon_id": 10650925,
@@ -12165,7 +12111,7 @@
   "scientific_name": "Merops viridissimus",
   "vernacular_da": null,
   "vernacular_en": "African Green Bee-eater",
-  "leaf_index": 790
+  "leaf_index": 784
  },
  {
   "taxon_id": 10700636,
@@ -12174,7 +12120,7 @@
   "scientific_name": "Curruca iberiae",
   "vernacular_da": null,
   "vernacular_en": "Western Subalpine Warbler",
-  "leaf_index": 791
+  "leaf_index": 785
  },
  {
   "taxon_id": 10830463,
@@ -12183,7 +12129,7 @@
   "scientific_name": "Merops lafresnayii",
   "vernacular_da": null,
   "vernacular_en": "Ethiopian Bee-eater",
-  "leaf_index": 792
+  "leaf_index": 786
  },
  {
   "taxon_id": 10967955,
@@ -12192,7 +12138,7 @@
   "scientific_name": "Merops cyanophrys",
   "vernacular_da": null,
   "vernacular_en": "Arabian Green Bee-eater",
-  "leaf_index": 793
+  "leaf_index": 787
  },
  {
   "taxon_id": 11001932,
@@ -12201,7 +12147,7 @@
   "scientific_name": "Cinnyris hellmayri",
   "vernacular_da": null,
   "vernacular_en": "Arabian Sunbird",
-  "leaf_index": 794
+  "leaf_index": 788
  },
  {
   "taxon_id": 11104870,
@@ -12210,7 +12156,7 @@
   "scientific_name": "Cicada orni",
   "vernacular_da": null,
   "vernacular_en": "Cicada orni",
-  "leaf_index": 795
+  "leaf_index": 789
  },
  {
   "taxon_id": 11211157,
@@ -12219,7 +12165,7 @@
   "scientific_name": "Prinia lepida",
   "vernacular_da": null,
   "vernacular_en": "Delicate Prinia",
-  "leaf_index": 796
+  "leaf_index": 790
  },
  {
   "taxon_id": 11273070,
@@ -12228,7 +12174,7 @@
   "scientific_name": "Ortygornis pondicerianus",
   "vernacular_da": null,
   "vernacular_en": "Grey Francolin",
-  "leaf_index": 797
+  "leaf_index": 791
  },
  {
   "taxon_id": 11705322,
@@ -12237,7 +12183,7 @@
   "scientific_name": "Charadrius atrifrons",
   "vernacular_da": null,
   "vernacular_en": "Tibetan Sand Plover",
-  "leaf_index": 798
+  "leaf_index": 792
  },
  {
   "taxon_id": 12179086,
@@ -12246,7 +12192,7 @@
   "scientific_name": "Fringilla moreletti",
   "vernacular_da": null,
   "vernacular_en": "Azores Chaffinch",
-  "leaf_index": 799
+  "leaf_index": 793
  },
  {
   "taxon_id": 12217905,
@@ -12255,6 +12201,6 @@
   "scientific_name": "Fringilla spodiogenys",
   "vernacular_da": null,
   "vernacular_en": "African Chaffinch",
-  "leaf_index": 800
+  "leaf_index": 794
  }
 ]

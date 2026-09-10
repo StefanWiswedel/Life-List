@@ -108,6 +108,51 @@ def test_a_subspecies_is_recorded_as_its_species():
     assert found.taxa[0].scientific_name == "Motacilla alba"
 
 
+def test_a_synonym_of_a_subspecies_is_recorded_as_the_species_it_belongs_to():
+    """The rank field lies, so `speciesKey` decides.
+
+    `Oenanthe seebohmi` comes back rank SPECIES, status SYNONYM, acceptedUsageKey 5845303 —
+    and 5845303 is the *subspecies* `Oenanthe oenanthe seebohmi`. Following the accepted key
+    made a leaf keyed 5845303 and named "Oenanthe oenanthe", while the vision taxonomy already
+    had that bird as 5231240. A wheatear photographed and a wheatear heard were two entries in
+    one life list (VERIFICATION §67).
+    """
+    payload = match_payload(
+        "Oenanthe seebohmi",
+        8236049,
+        status="SYNONYM",
+        acceptedUsageKey=5845303,
+        species="Oenanthe oenanthe",
+        speciesKey=5231240,
+    )
+
+    found = resolve(labels("Oenanthe seebohmi_Atlas Wheatear"), lambda name: payload)
+
+    assert class_map(found) == {0: 5231240}
+    assert found.taxa[0].scientific_name == "Oenanthe oenanthe"
+
+
+def test_two_classes_for_one_gbif_species_share_its_leaf():
+    """Which is what BirdNET modelling a split GBIF does not must look like: one bird, one
+    entry, and `scores_to_taxa` taking the maximum of the two classes."""
+    payloads = {
+        "Oenanthe oenanthe": match_payload(
+            "Oenanthe oenanthe", 5231240, species="Oenanthe oenanthe", speciesKey=5231240
+        ),
+        "Oenanthe seebohmi": match_payload(
+            "Oenanthe seebohmi", 8236049, status="SYNONYM", acceptedUsageKey=5845303,
+            species="Oenanthe oenanthe", speciesKey=5231240,
+        ),
+    }
+
+    found = resolve(
+        labels("Oenanthe oenanthe_Northern Wheatear", "Oenanthe seebohmi_Atlas Wheatear"),
+        payloads.get,
+    )
+
+    assert class_map(found) == {0: 5231240, 1: 5231240}
+
+
 def test_every_class_names_a_leaf_of_the_tree_that_gets_built():
     """The property the artefacts are read under: a class map pointing anywhere but a leaf is
     an exception on a phone, in a field, in the middle of a session."""
