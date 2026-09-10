@@ -28,6 +28,8 @@ app/build/
 app/src/main/assets/lifelist.onnx
 # Fetched by lifelist-birdnet-model against a pinned digest, on every tagged build.
 app/src/main/assets/birdnet.onnx
+# Fetched and cut by lifelist-reference-audio on every tagged build.
+app/src/main/assets/reference-audio/
 
 # Fetched by `lifelist-reference-photos` from the committed index.
 app/src/main/assets/reference/

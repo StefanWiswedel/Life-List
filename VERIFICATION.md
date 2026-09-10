@@ -2970,6 +2970,82 @@ length had to equal a number nothing had ever compared it to. That is now the te
 
 ---
 
+## 69. The bird next to the bird — 10 Sep 2026
+
+With a xeno-canto key, **731 of 795 species have a reference recording** — against roughly 45%
+from Wikimedia Commons, which was the alternative. 716 of them are quality A, xeno-canto's own
+grade for "loud and clear".
+
+The result screen has always put a reference photograph beside its answer so you can look at
+both and disagree (§37). Sound now does the same: **"What you heard"** and **"The real thing"**,
+side by side, your five seconds against ten of a clean recording. The comparison is offered on a
+refusal too, which is the case where the doubt is the entire point.
+
+### What is chosen, and what is refused
+
+Quality first — C and below is xeno-canto saying the bird is in there somewhere behind a
+motorway — then a song rather than an alarm call, then the shorter recording, because the clip is
+cut from the start and a forty-minute dawn chorus is mostly not the bird you are looking for.
+Ties break on the xeno-canto id so a rebuild picks the same recording instead of reshuffling the
+index.
+
+**Licence is a filter, not a preference.** No-derivatives is refused outright: a ten-second clip
+is a derivative, and cutting one is precisely what that licence forbids. A recording with nobody
+to credit is refused too — every licence in the set but CC0 requires attribution and we cannot
+give one we do not have.
+
+### The number worth reading twice: 702 of 731 are NonCommercial
+
+That is not a new decision, and it is worth saying why rather than letting it pass. The
+reference *photographs* have shipped under `cc-by-nc` and `cc-by-nc-sa` since the first index —
+`reference.py`'s allow-list has always included them. So an audio policy stricter than the
+picture policy would have been a distinction without a difference.
+
+But it does retire an argument. BUILD.md §3.1 preferred BirdNET V3.0 over V2.4 partly because
+V2.4 is NonCommercial and V3.0 is not, "which removes a decision you would otherwise have to
+revisit if this ever became something you shared". **That decision was already made, in the
+other direction, by the photographs** — and it is now made 702 more times. If this ever becomes
+something shared commercially, the reference media is what has to be rebuilt, not the model.
+
+### The key
+
+It arrives in the environment, is used, and appears in no file, no log line and no artefact.
+`urllib3` logs the full request URL at DEBUG and the key is a query parameter, so `-v` printed
+the credential on all 795 lines until that logger was quietened — which is exactly the log
+somebody pastes into a bug report without reading it.
+
+**And CI needs no key at all.** Building the index takes one; a xeno-canto *download* URL is
+public, so a tagged build fetches the audio with no secret — one fewer way for a release to
+break, and one fewer secret to leak.
+
+### The clips
+
+Ten seconds, mono Opus at 24 kbit, **31.9 KB measured** on a real recording — so roughly 22 MB
+for seven hundred, the same order as the photographs already bundled, for something the app
+could not do at all.
+
+The leading silence is trimmed and only the leading silence: xeno-canto recordings often open
+with a few seconds of wind, and a ten-second clip that is eight seconds of nothing is one nobody
+plays twice — but trimming *every* silence would close the gaps between the phrases of a song,
+which is most of what makes it recognisable as that song.
+
+---
+
+## 70. Wikipedia, on the machine with the better network — 10 Sep 2026
+
+The run that died here at batch 245 of 374 (§66's proxy restart) took **336 seconds on your
+laptop**, because the stage checkpoints its cache every batch and your machine already had 6,280
+titles from earlier runs. 788 left to fetch, not 7,463.
+
+**7,111 of 7,493 nodes have an article, 95%** — up from 6,302 of 6,705. Every species only the
+microphone can reach now has its paragraph too.
+
+Worth keeping as a rule rather than an anecdote: a long job against a public API belongs on the
+machine with the stable connection, and the reason it could simply be moved there is that
+somebody made it resumable before it needed to be.
+
+---
+
 ---
 
 ## Open questions

@@ -103,6 +103,7 @@ fun RecordSheet(
     /** The clip sounding right now, if any, so one button at a time reads "Stop". */
     playingClip: String? = null,
     onPlayClip: (String) -> Unit = {},
+    referenceAudio: ReferenceAudio? = null,
     onDismiss: () -> Unit,
 ) {
     var mode by remember(record.id) { mutableStateOf(Mode.DETAILS) }
@@ -178,6 +179,7 @@ fun RecordSheet(
                 familyProgress = familyProgress,
                 playingClip = playingClip,
                 onPlayClip = onPlayClip,
+                referenceAudio = referenceAudio,
             )
         }
     }
@@ -203,6 +205,7 @@ private fun Details(
     familyProgress: Families.Progress? = null,
     playingClip: String? = null,
     onPlayClip: (String) -> Unit = {},
+    referenceAudio: ReferenceAudio? = null,
 ) {
     val context = LocalContext.current
     val node = taxonomy.nodeOrNull(record.taxonId)
@@ -225,20 +228,36 @@ private fun Details(
             Spacer(Modifier.height(16.dp))
         }
 
-        // A record made by listening keeps the five seconds that made it. Playable here for
-        // the same reason the photograph is shown here: the evidence belongs with the claim.
-        record.clipPath?.let { clip ->
-            OutlinedButton(
-                onClick = { onPlayClip(clip) },
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Icon(
-                    if (playingClip == clip) Icons.Filled.Stop else Icons.Filled.PlayArrow,
-                    contentDescription = null,
-                    modifier = Modifier.size(18.dp),
+        // A record made by listening keeps the five seconds that made it, and the app can put
+        // a clean recording of the species next to it. The evidence belongs with the claim, and
+        // two clips one after the other is how somebody decides for themselves.
+        val reference = remember(record.taxonId) { referenceAudio?.clip(record.taxonId) }
+        if (record.clipPath != null || reference != null) {
+            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                record.clipPath?.let { clip ->
+                    ClipButton(
+                        label = "What you heard",
+                        playing = playingClip == clip,
+                        onClick = { onPlayClip(clip) },
+                        modifier = Modifier.weight(1f),
+                    )
+                }
+                reference?.let { clip ->
+                    ClipButton(
+                        label = "What it should sound like",
+                        playing = playingClip == clip,
+                        onClick = { onPlayClip(clip) },
+                        modifier = Modifier.weight(1f),
+                    )
+                }
+            }
+            referenceAudio?.credit(record.taxonId)?.let { credit ->
+                Text(
+                    "Reference recording by ${credit.credit}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(top = 6.dp),
                 )
-                Spacer(Modifier.width(8.dp))
-                Text(if (playingClip == clip) "Stop" else "Play what you heard")
             }
             Spacer(Modifier.height(16.dp))
         }
@@ -540,3 +559,22 @@ private fun Detail(label: String, value: String, last: Boolean = false) {
 
 private fun stamp(millis: Long): String =
     SimpleDateFormat("d MMM yyyy 'at' HH:mm", Locale.UK).format(Date(millis))
+
+/** One of the two clip buttons. Same shape whichever recording it plays. */
+@Composable
+private fun ClipButton(
+    label: String,
+    playing: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    OutlinedButton(onClick = onClick, modifier = modifier) {
+        Icon(
+            if (playing) Icons.Filled.Stop else Icons.Filled.PlayArrow,
+            contentDescription = null,
+            modifier = Modifier.size(17.dp),
+        )
+        Spacer(Modifier.width(7.dp))
+        Text(if (playing) "Stop" else label, style = MaterialTheme.typography.labelLarge)
+    }
+}

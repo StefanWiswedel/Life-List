@@ -44,8 +44,9 @@ When trading off, trade in favour of a record being keepable at the rank the evi
 | records | editable: settle the species later, add photos, place names, camera roll (§34) |
 | common names | **fixed 18 Aug** — the taxonomy asset shipped with every vernacular null (§28) |
 | multi-photo | fused via §3.2; **four zooms per photo, most confident wins** (§29, §53, §54) |
-| species info | 6,302 of 6,705 nodes carry a bundled Wikipedia intro, 3.7 MB (§31, §50) |
+| species info | **7,111 of 7,493 nodes** carry a bundled Wikipedia intro (§31, §50, §70) |
 | reference photos | iNaturalist's curated pick — **3,462 vision leaves and 790 audio ones** (§37, §50, §66) |
+| reference sound | xeno-canto, **731 of 795 species**, ten-second Opus clips (§69) |
 | corrections | rename to any taxon, or retreat to a rank you trust; the model's answer is kept (§38, §40) |
 | coverage | **3,482 leaves, 676 Lepidoptera** at ≥20 observations (§44) — up from 2,294 and 468 |
 | rarity | Danish Red List badge, and **family progress against Denmark's totals** (§55) |

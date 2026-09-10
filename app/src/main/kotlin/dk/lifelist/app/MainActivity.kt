@@ -189,6 +189,7 @@ fun App() {
     }
     val recorder = remember { Recorder() }
     val clipPlayer = rememberClipPlayer()
+    val referenceAudio = remember { ReferenceAudio(context) }
     var listener by remember { mutableStateOf<Listener?>(null) }
 
     var photos by remember { mutableStateOf<List<Bitmap>>(emptyList()) }
@@ -631,6 +632,7 @@ fun App() {
                     ListenScreen(
                         playing = clipPlayer.playing,
                         onPlay = { clipPlayer.toggle(it) },
+                        referenceFor = { referenceAudio.clip(it) },
                         listening = listening,
                         heard = heard,
                         elapsedSeconds = listenedFor,
@@ -804,6 +806,7 @@ fun App() {
         RecordSheet(
             playingClip = clipPlayer.playing,
             onPlayClip = { clipPlayer.toggle(it) },
+            referenceAudio = referenceAudio,
             taxonomy = listTaxonomy,
             record = openRecord,
             article = wikipedia.article(openRecord.taxonId),

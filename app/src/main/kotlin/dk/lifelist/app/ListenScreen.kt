@@ -84,6 +84,8 @@ fun ListenScreen(
     /** Path of the clip currently sounding, so one button at a time reads "Stop". */
     playing: String? = null,
     onPlay: (String) -> Unit = {},
+    /** The bundled recording of a species, if this build has one. */
+    referenceFor: (Int) -> String? = { null },
     modifier: Modifier = Modifier,
 ) {
     // Its own ground, rather than the Scaffold's. The palette is ink on paper and there is no
@@ -112,11 +114,15 @@ fun ListenScreen(
             } else {
                 item { FieldLabel("Heard so far") }
                 items(heard, key = { "${it.taxonId}-${it.atSeconds}" }) { entry ->
+                    val reference = referenceFor(entry.taxonId)
                     HeardCard(
                         entry,
                         playing = playing == entry.clipPath && entry.clipPath != null,
+                        referencePlaying = reference != null && playing == reference,
+                        hasReference = reference != null,
                         onSave = { onSave(entry) },
                         onPlay = { entry.clipPath?.let(onPlay) },
+                        onPlayReference = { reference?.let(onPlay) },
                     )
                 }
             }
@@ -200,8 +206,11 @@ private fun Empty(listening: Boolean) {
 private fun HeardCard(
     entry: Heard,
     playing: Boolean,
+    referencePlaying: Boolean,
+    hasReference: Boolean,
     onSave: () -> Unit,
     onPlay: () -> Unit,
+    onPlayReference: () -> Unit,
 ) {
     Card(
         shape = MaterialTheme.shapes.large,
@@ -247,7 +256,15 @@ private fun HeardCard(
             // case where you most want to hear what it heard and decide for yourself.
             if (entry.clipPath != null) {
                 TextButton(onClick = onPlay) {
-                    Text(if (playing) "Stop" else "Play what it heard")
+                    Text(if (playing) "Stop" else "What it heard")
+                }
+            }
+            // The comparison, right where the doubt is. Hearing the two one after the other is
+            // how somebody settles a call they are not sure about — and it is offered on a
+            // refusal too, which is the case where the doubt is the whole point.
+            if (hasReference) {
+                TextButton(onClick = onPlayReference) {
+                    Text(if (referencePlaying) "Stop" else "The real thing")
                 }
             }
             if (entry.confidence != null) {

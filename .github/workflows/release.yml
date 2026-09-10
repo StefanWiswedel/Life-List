@@ -107,6 +107,17 @@ jobs:
             --out app/src/main/assets/reference -v
           du -sh app/src/main/assets/reference
 
+      # ~700 ten-second Opus clips, about 22 MB. No key: building the index needs one, a
+      # xeno-canto download URL does not, so a release is not one GitHub secret away from
+      # breaking. Every clip carries its recordist into the credits screen.
+      - name: Fetch reference recordings
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+          lifelist-reference-audio \
+            --index shared/model/reference_audio.json \
+            --out app/src/main/assets/reference-audio -v
+          du -sh app/src/main/assets/reference-audio
+
       - name: Build release APK
         run: |
           ./gradlew :app:assembleRelease --no-daemon \
