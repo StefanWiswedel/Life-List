@@ -139,10 +139,12 @@ jobs:
             key and could only be installed after uninstalling — if you are coming from one
             of those, uninstall once and this will be the last time.
 
-            **This APK is around 430 MB.** It carries the whole model: a 335 MB fp32
-            BioCLIP graph that does its own resizing, because a bilinear resize instead of
-            antialiased bicubic costs 8% of predictions and int8 quantisation costs about
-            6%. Accuracy was worth more than the megabytes.
+            **This APK is around 580 MB.** It carries two whole models, and neither is
+            quantised: a 335 MB fp32 BioCLIP graph that does its own resizing, because a
+            bilinear resize instead of antialiased bicubic costs 8% of predictions and int8
+            costs about 6%; and a 149 MB fp32 BirdNET graph, fp32 because ONNX Runtime
+            upconverts fp16 on CPU and so saves neither time nor memory. Accuracy was worth
+            more than the megabytes, twice.
 
             Signed with the Android debug key, so Android will warn on install and this
             cannot upgrade a differently-signed build. Enable installation from unknown
