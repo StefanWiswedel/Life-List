@@ -410,4 +410,82 @@ class ScreenshotTest {
             LifeListTheme { ThinkingScreen(yours, "On this phone. Nothing leaves it.") }
         }
     }
+
+    // -- listening --------------------------------------------------------------
+    //
+    // The audio path cannot be run off a phone, so what *can* be checked here is the one thing
+    // that has bitten every screen in this app: whether the layout survives its own content.
+    // A row carrying "against Willow Warbler, Wood Warbler" next to a confidence ring on a
+    // Pixel 5 is exactly the kind of line that gets truncated in a field in Denmark.
+
+    private fun heard(
+        taxonId: Int,
+        name: String,
+        rank: String,
+        confidence: Float?,
+        detected: Float,
+        at: Float,
+        against: List<String> = emptyList(),
+        saved: Boolean = false,
+    ) = Heard(taxonId, name, rank, confidence, detected, at, against, threshold = 0.82f, saved = saved)
+
+    @Test
+    fun `a listening session with three birds`() {
+        paparazzi.snapshot {
+            LifeListTheme {
+                ListenScreen(
+                    listening = true,
+                    heard = listOf(
+                        heard(2490719, "Common Blackbird", "species", 0.94f, 0.94f, 12f),
+                        heard(
+                            2493047, "Phylloscopus", "genus", 0.81f, 0.48f, 35f,
+                            against = listOf("Willow Warbler", "Wood Warbler"),
+                        ),
+                        heard(1688020, "Speckled bush-cricket", "species", 0.77f, 0.77f, 51f, saved = true),
+                    ),
+                    elapsedSeconds = 55f,
+                    permission = true,
+                    modelReady = true,
+                    note = null,
+                    onStart = {}, onStop = {}, onSave = {},
+                )
+            }
+        }
+    }
+
+    @Test
+    fun `a detection the app will not commit to`() {
+        paparazzi.snapshot {
+            LifeListTheme {
+                ListenScreen(
+                    listening = true,
+                    heard = listOf(
+                        heard(2490719, "Common Blackbird", "unknown", null, 0.31f, 8f),
+                    ),
+                    elapsedSeconds = 20f,
+                    permission = true,
+                    modelReady = true,
+                    note = null,
+                    onStart = {}, onStop = {}, onSave = {},
+                )
+            }
+        }
+    }
+
+    @Test
+    fun `listening before the microphone has been allowed`() {
+        paparazzi.snapshot {
+            LifeListTheme {
+                ListenScreen(
+                    listening = false,
+                    heard = emptyList(),
+                    elapsedSeconds = 0f,
+                    permission = false,
+                    modelReady = true,
+                    note = null,
+                    onStart = {}, onStop = {}, onSave = {},
+                )
+            }
+        }
+    }
 }

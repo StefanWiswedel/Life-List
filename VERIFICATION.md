@@ -2683,6 +2683,22 @@ bird and a frog turn up in one window, and answering both at one number would un
 §59 exists to make. The record stores the threshold it was decided at, as a photographed record
 does.
 
+### Rendered, and two things were wrong
+
+Paparazzi draws the listening screen on the JVM in a second (§33), which is the only look at it
+available short of a phone. Two bugs, both invisible in code and obvious in a picture:
+
+- **The screen had no ground of its own.** It borrowed the Scaffold's, so rendered on its own it
+  came out on layoutlib's grey. The palette is ink on paper and there is no dark paper; a screen
+  one container away from white-on-grey is a screen waiting for a refactor to break it.
+- **The cards were invisible.** `colorScheme.surface` *is* the paper in this theme, so a card
+  painted with it disappears into the page. Every other card in the app uses
+  `surfaceContainerLowest` and 1 dp of elevation; this one does now too.
+
+The render also confirms the line worth having on that screen: a *Phylloscopus* row reading
+**"BirdNET 48% · against Willow Warbler, Wood Warbler"** beside an 81% ring. Two different
+numbers, both shown, and the gap between them is the point.
+
 ### Not verified, and it cannot be from here
 
 Nothing in this section ran on Android. The microphone, the permission flow, the 149 MB model

@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -82,7 +81,10 @@ fun ListenScreen(
     onSave: (Heard) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier.fillMaxSize()) {
+    // Its own ground, rather than the Scaffold's. The palette is ink on paper and there is no
+    // dark paper (Theme.kt); a screen that borrows its background is one container away from
+    // rendering white text on grey, which is exactly what the first snapshot of it did.
+    Column(modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
         LazyColumn(
             Modifier.weight(1f),
             contentPadding = PaddingValues(horizontal = 20.dp, vertical = 12.dp),
@@ -187,8 +189,14 @@ private fun Empty(listening: Boolean) {
 @Composable
 private fun HeardCard(entry: Heard, onSave: () -> Unit) {
     Card(
-        shape = RoundedCornerShape(14.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        shape = MaterialTheme.shapes.large,
+        // `surface` is the paper itself in this theme, so a card painted with it is invisible
+        // — which is exactly what the first render of this screen showed. Same white and the
+        // same 1dp as every other card in the app.
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerLowest
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
     ) {
         Row(
             Modifier.fillMaxWidth().padding(16.dp),
