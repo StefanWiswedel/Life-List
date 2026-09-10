@@ -2918,6 +2918,58 @@ the tree were each fine and disagreed with each other.
 
 ---
 
+## 68. Opening a family, and the phantom species in the denominator — 10 Sep 2026
+
+"1 of 11 Katydids" is a score. The eleven names are a to-do list, which is what a life list is
+actually for — and the ten you have not found are the half worth reading. Tapping a family row
+now shows them: a tick against the one you have, a hollow circle against the rest, the common
+name over the binomial.
+
+A found species is tappable and opens its record. A missing one is not — there is nothing to
+open, and a row that looks tappable and does nothing is worse than one that plainly is not.
+The roster is built only for the row that is open; all of them at once is 691 subtree walks for
+a screen showing twenty.
+
+### The two denominators stop being a footnote here
+
+§55 kept them apart in words — "Tettigoniidae **in Denmark**" against "Forficulidae **this app
+can recognise**" — because they are different kinds of claim. Opening a row is where the
+difference becomes concrete: a Red List total is a *count* with no species list behind it, so a
+family counted against Denmark can only name what the model was trained on. The list ends with
+**"and 8 more Tettigoniidae in Denmark this app cannot name yet"**, because listing three and
+calling it eleven would be the more comfortable lie.
+
+### And the number was wrong, in 19 families
+
+Writing the roster produced a test that would not pass: the denominator said three Carabidae and
+only two names came back. The third was `Carabus sp.` — a **synthetic leaf**, a class the head
+can be trained on (spec §1.1a), not a beetle in a hedge.
+
+`seenIn` had always excluded those from the numerator, deliberately and with a comment saying
+why. `knownToApp` counted them in the denominator. So "1 of 3 European Earwigs" was a fraction
+with two different kinds of thing in it, and **one third of that family was permanently
+unfindable** — the fraction could never close. 19 of 691 families are affected, and they are the
+small ones, where a phantom is a third of the total rather than a rounding.
+
+This is the exact principle §55 wrote down for the Red List denominator — the numerator and the
+denominator must be the same kind of thing — broken in the other direction two lines away.
+
+**The test documented it rather than catching it.** The old assertion read:
+
+```kotlin
+assertEquals(3, progress.total, "three Carabidae leaves, including Carabus sp.")
+```
+
+Somebody wrote that message on purpose. It names the bug and calls it the intention, and it
+passed for three weeks. A test can only catch what somebody thought to doubt, and what made this
+visible was not a better test but a **second thing computed from the same data** — a roster whose
+length had to equal a number nothing had ever compared it to. That is now the test:
+`the denominator and the roster behind it are the same length`.
+
+**Checked:** 166 Kotlin tests, and the roster rendered rather than reasoned about.
+
+---
+
 ---
 
 ## Open questions

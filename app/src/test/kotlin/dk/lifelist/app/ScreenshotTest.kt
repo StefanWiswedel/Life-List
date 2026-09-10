@@ -18,6 +18,11 @@ import dk.lifelist.core.Record
 import dk.lifelist.core.RollupResult
 import dk.lifelist.core.Taxon
 import dk.lifelist.core.Taxonomy
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.unit.dp
 import org.junit.Rule
 import org.junit.Test
 
@@ -488,6 +493,48 @@ class ScreenshotTest {
                     note = null,
                     onStart = {}, onStop = {}, onSave = {},
                 )
+            }
+        }
+    }
+
+    // -- what is behind a family's number ----------------------------------------
+
+    @Test
+    fun `a family opened to show what is found and what is not`() {
+        val progress = dk.lifelist.core.Families.Progress(
+            familyId = 600,
+            scientificName = "Tettigoniidae",
+            vernacularEn = "Katydids",
+            seen = 1,
+            total = 11,
+            source = dk.lifelist.core.Families.Source.DENMARK,
+        )
+        val members = listOf(
+            dk.lifelist.core.Families.Member(
+                1688020, "Leptophyes punctatissima", "Speckled bush-cricket", seen = true
+            ),
+            dk.lifelist.core.Families.Member(
+                1692898, "Tettigonia viridissima", "Great green bush-cricket", seen = false
+            ),
+            dk.lifelist.core.Families.Member(700, "Conocephalus fuscus", null, seen = false),
+        )
+
+        paparazzi.snapshot {
+            LifeListTheme {
+                androidx.compose.foundation.layout.Box(
+                    androidx.compose.ui.Modifier
+                        .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.background)
+                        .padding(20.dp)
+                ) {
+                    FamilyProgressRow(
+                        progress = progress,
+                        compact = true,
+                        members = members,
+                        expanded = true,
+                        onToggle = {},
+                    )
+                }
             }
         }
     }

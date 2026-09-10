@@ -52,7 +52,10 @@ class FamiliesTest {
     fun `without a Danish total it falls back to what the app knows, and says so`() {
         val progress = Families.progressFor(taxonomy, listOf(record("a", 1036776)), 1036776)!!
 
-        assertEquals(3, progress.total, "three Carabidae leaves, including Carabus sp.")
+        // Two, not three: `Carabus sp.` is a class, not a species. This line used to read
+        // `assertEquals(3, ..., "three Carabidae leaves, including Carabus sp.")`, which wrote
+        // the bug down as the intention rather than catching it (§68).
+        assertEquals(2, progress.total, "two findable Carabidae; Carabus sp. is not one")
         assertEquals(Families.Source.APP, progress.source)
     }
 
@@ -64,7 +67,7 @@ class FamiliesTest {
             taxonomy, listOf(record("a", 1036776)), 1036776, mapOf("Carabidae" to 1)
         )!!
 
-        assertEquals(3, progress.total)
+        assertEquals(2, progress.total)
         assertEquals(Families.Source.APP, progress.source)
     }
 
@@ -146,5 +149,75 @@ class FamiliesTest {
 
         assertTrue(progress.complete)
         assertEquals(1f, progress.fraction)
+    }
+
+    // -- what is behind the number ----------------------------------------------
+
+    @Test
+    fun `opening a family lists every species it can name, found ones first`() {
+        val records = listOf(record("a", 1036777))  // Carabus nemoralis
+
+        val members = Families.membersOf(taxonomy, records, 5602)
+
+        assertEquals(
+            listOf("Carabus nemoralis", "Carabus granulatus"),
+            members.map { it.scientificName },
+        )
+        assertEquals(listOf(true, false), members.map { it.seen })
+    }
+
+    @Test
+    fun `the synthetic sp leaf is not a species anybody can go and find`() {
+        // `Carabus sp.` is a class the head can be trained on (§1.1a), not a bush-cricket
+        // waiting in a hedge. It is excluded here exactly as it is from the count.
+        val members = Families.membersOf(taxonomy, emptyList(), 5602)
+
+        assertTrue(members.none { it.taxonId < 0 }, "found ${members.map { it.taxonId }}")
+        assertEquals(2, members.size)
+    }
+
+    @Test
+    fun `a record kept at genus does not tick off a species`() {
+        // Consistent with `seenIn`: honest record, real sighting, but not one of the two.
+        val members = Families.membersOf(taxonomy, listOf(record("a", 1036775)), 5602)
+
+        assertTrue(members.none { it.seen })
+    }
+
+    @Test
+    fun `a Danish total the app cannot name is reported rather than quietly dropped`() {
+        // "1 of 65 Anatidae in Denmark" can name one duck. Listing one and calling it 65 —
+        // or listing one and saying nothing — are both worse than saying how many are missing.
+        val progress = Families.progressFor(taxonomy, listOf(record("a", 2498036)), 2498036, denmark)!!
+        val members = Families.membersOf(taxonomy, listOf(record("a", 2498036)), 2986)
+
+        assertEquals(65, progress.total)
+        assertEquals(1, members.size)
+        assertEquals(64, Families.unnamed(progress, members))
+    }
+
+    @Test
+    fun `a family the app knows completely has nothing unnamed`() {
+        val progress = Families.progressFor(taxonomy, listOf(record("a", 1036776)), 1036776, emptyMap())!!
+        val members = Families.membersOf(taxonomy, emptyList(), 5602)
+
+        assertEquals(0, Families.unnamed(progress, members))
+    }
+
+    @Test
+    fun `a synthetic sp leaf is not a species the denominator may count`() {
+        // Carabidae here is `Carabus sp.`, granulatus and nemoralis. `seenIn` has always
+        // excluded the first, so counting it made "1 of 3" a fraction with two different kinds
+        // of thing in it — and one third of the family impossible to ever find (§68).
+        assertEquals(2, Families.knownToApp(taxonomy, 5602))
+    }
+
+    @Test
+    fun `the denominator and the roster behind it are the same length`() {
+        // The property that was broken: whatever the number says, opening the row must be able
+        // to show that many species.
+        val progress = Families.progressFor(taxonomy, listOf(record("a", 1036776)), 1036776)!!
+
+        assertEquals(progress.total, Families.membersOf(taxonomy, emptyList(), 5602).size)
     }
 }

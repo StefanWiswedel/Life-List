@@ -48,9 +48,15 @@ object Families {
     /**
      * Species of this family the app can recognise. The floor under a Danish total, never
      * the number shown when a Danish one exists.
+     *
+     * **Synthetic `sp.` leaves do not count.** `Forficula sp.` is a class the head can be
+     * trained on (§1.1a), not a species anybody can go and find, and [seenIn] has always
+     * excluded it from the numerator — so counting it in the denominator made "1 of 3" a
+     * fraction with two different kinds of thing in it, and a third of that family
+     * permanently unfindable. 19 of 691 families were affected (VERIFICATION §68).
      */
     fun knownToApp(taxonomy: Taxonomy, familyId: Int): Int =
-        taxonomy.subtreeLeafIndices(familyId).size
+        taxonomy.subtreeLeafIndices(familyId).count { taxonomy.leafId(it) > 0 }
 
     /**
      * Distinct species you have recorded in this family.
@@ -99,6 +105,70 @@ object Families {
             source = if (danish >= known && danish > 0) Source.DENMARK else Source.APP,
         )
     }
+
+    /** One species in a family, and whether it is on your list. */
+    data class Member(
+        val taxonId: Int,
+        val scientificName: String,
+        val vernacularEn: String?,
+        val seen: Boolean,
+    )
+
+    /**
+     * Every species of a family the app can name, the ones you have first.
+     *
+     * "1 of 11 Katydids" is a number you can read and not a thing you can act on. The list
+     * behind it is: it says which bush-cricket you already have and which ten are still out
+     * there, which is the difference between a score and a to-do list.
+     *
+     * Species only, matching [seenIn] — a record kept at genus is real and honest but is not
+     * one of the eleven, and the synthetic `sp.` leaves (negative ids) are not species anybody
+     * can go and find.
+     *
+     * Found first, then alphabetically by the name actually shown. Found-first because the
+     * point of opening the row is usually "what have I got", and a stable order because a list
+     * that reshuffles when you add to it is a list you cannot keep your place in.
+     */
+    fun membersOf(
+        taxonomy: Taxonomy,
+        records: List<Record>,
+        familyId: Int,
+    ): List<Member> {
+        val seen = records
+            .asSequence()
+            .map { it.taxonId }
+            .filter { it > 0 }
+            .toSet()
+
+        return taxonomy.subtreeLeafIndices(familyId)
+            .map { taxonomy.leafId(it) }
+            .filter { it > 0 }
+            .mapNotNull { taxonomy.nodes[it] }
+            .map {
+                Member(
+                    taxonId = it.taxonId,
+                    scientificName = it.scientificName,
+                    vernacularEn = it.vernacularEn,
+                    seen = it.taxonId in seen,
+                )
+            }
+            .sortedWith(
+                compareByDescending<Member> { it.seen }
+                    .thenBy { it.vernacularEn ?: it.scientificName }
+            )
+    }
+
+    /**
+     * How many species of this family Denmark has that the app cannot name.
+     *
+     * The two denominators in [Progress] are different kinds of thing, and opening a row is
+     * where that stops being a footnote. A Red List total is a *count* with no species list
+     * behind it, so a family showing "1 of 8 Melittidae in Denmark" can name however many the
+     * model was trained on and must say plainly that the rest exist and it does not know them.
+     * Listing seven and calling it eight would be the more comfortable lie.
+     */
+    fun unnamed(progress: Progress, members: List<Member>): Int =
+        (progress.total - members.size).coerceAtLeast(0)
 
     /**
      * Every family you have a species from, fullest first.

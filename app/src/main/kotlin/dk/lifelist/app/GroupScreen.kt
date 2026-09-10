@@ -22,7 +22,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -60,6 +64,9 @@ fun GroupScreen(
     modifier: Modifier = Modifier,
     danishTotals: Map<String, Int> = emptyMap(),
 ) {
+    // Which family's species list is open, if any. Remembered by label so walking into
+    // Insects, opening Katydids, going back and returning does not lose your place.
+    var openFamily by rememberSaveable(label) { mutableStateOf<Int?>(null) }
     val sorted = remember(records) { records.sortedByDescending { it.observedAt } }
     val species = remember(records) {
         records.count { taxonomy.nodeOrNull(it.taxonId)?.isLeaf == true && it.taxonId > 0 }
@@ -99,9 +106,28 @@ fun GroupScreen(
                 }
             }
             items(families, key = { it.familyId }) { progress ->
+                // The roster is computed only for the row that is open. Every family at once
+                // is 691 subtree walks for a screen showing perhaps twenty.
+                val members = if (openFamily == progress.familyId) {
+                    remember(progress.familyId, records) {
+                        Families.membersOf(taxonomy, records, progress.familyId)
+                    }
+                } else {
+                    null
+                }
                 FamilyProgressRow(
                     progress = progress,
                     compact = true,
+                    members = members,
+                    expanded = openFamily == progress.familyId,
+                    // One open at a time: the point of the section is comparing families, and
+                    // twenty open rosters is a different screen that nobody asked for.
+                    onToggle = {
+                        openFamily = if (openFamily == progress.familyId) null else progress.familyId
+                    },
+                    onOpenTaxon = { taxonId ->
+                        records.firstOrNull { it.taxonId == taxonId }?.let(onOpenRecord)
+                    },
                     modifier = Modifier.padding(horizontal = 20.dp, vertical = 7.dp),
                 )
             }

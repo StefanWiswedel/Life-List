@@ -1,6 +1,7 @@
 package dk.lifelist.app
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,14 +10,22 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material.icons.outlined.Circle
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import dk.lifelist.core.Families
@@ -34,8 +43,17 @@ fun FamilyProgressRow(
     progress: Families.Progress,
     modifier: Modifier = Modifier,
     compact: Boolean = false,
+    /** Species of this family the app can name, or null where the row does not open. */
+    members: List<Families.Member>? = null,
+    expanded: Boolean = false,
+    onToggle: (() -> Unit)? = null,
+    onOpenTaxon: (Int) -> Unit = {},
 ) {
-    Column(modifier.fillMaxWidth()) {
+    Column(
+        modifier
+            .fillMaxWidth()
+            .then(if (onToggle != null) Modifier.clickable(onClick = onToggle) else Modifier)
+    ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 progress.vernacularEn ?: progress.scientificName,
@@ -43,6 +61,15 @@ fun FamilyProgressRow(
                 else MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.Medium,
             )
+            if (onToggle != null) {
+                Spacer(Modifier.width(4.dp))
+                Icon(
+                    if (expanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
+                    contentDescription = if (expanded) "Hide the species" else "Show the species",
+                    tint = MaterialTheme.colorScheme.outline,
+                    modifier = Modifier.size(18.dp),
+                )
+            }
             Spacer(Modifier.weight(1f))
             Text(
                 "${progress.seen} of ${progress.total}",
@@ -69,6 +96,82 @@ fun FamilyProgressRow(
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.outline,
         )
+
+        if (expanded && members != null) {
+            Spacer(Modifier.height(10.dp))
+            Roster(progress, members, onOpenTaxon)
+        }
+    }
+}
+
+/**
+ * What is behind the number.
+ *
+ * "1 of 11 Katydids" is a score. The eleven names are a to-do list, which is the thing a life
+ * list is actually for — and the ten you have not found are the half worth reading.
+ *
+ * A found species is tappable, because the obvious next thought is "which one was that". A
+ * missing one is not: there is no record to open, and a row that looks tappable and does
+ * nothing is worse than one that plainly is not.
+ */
+@Composable
+private fun Roster(
+    progress: Families.Progress,
+    members: List<Families.Member>,
+    onOpenTaxon: (Int) -> Unit,
+) {
+    val unnamed = Families.unnamed(progress, members)
+    Column(Modifier.padding(start = 2.dp)) {
+        for (member in members) {
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .then(
+                        if (member.seen) Modifier.clickable { onOpenTaxon(member.taxonId) }
+                        else Modifier
+                    )
+                    .padding(vertical = 5.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Icon(
+                    if (member.seen) Icons.Filled.Check else Icons.Outlined.Circle,
+                    contentDescription = if (member.seen) "on your list" else "not found yet",
+                    tint = if (member.seen) MaterialTheme.colorScheme.primary
+                    else MaterialTheme.colorScheme.outlineVariant,
+                    modifier = Modifier.size(15.dp),
+                )
+                Spacer(Modifier.width(9.dp))
+                Column {
+                    Text(
+                        member.vernacularEn ?: member.scientificName,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = if (member.seen) MaterialTheme.colorScheme.onSurface
+                        else MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    if (member.vernacularEn != null) {
+                        Text(
+                            member.scientificName,
+                            style = MaterialTheme.typography.labelSmall,
+                            fontStyle = FontStyle.Italic,
+                            color = MaterialTheme.colorScheme.outline,
+                        )
+                    }
+                }
+            }
+        }
+
+        // The two denominators are different kinds of thing, and this is where that stops
+        // being a footnote: a Red List total is a count with no species list behind it, so a
+        // family counted against Denmark can name only what the model was trained on. Listing
+        // seven and calling it eight would be the more comfortable lie.
+        if (unnamed > 0) {
+            Text(
+                "and $unnamed more ${progress.scientificName} in Denmark this app cannot name yet",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.outline,
+                modifier = Modifier.padding(top = 6.dp, bottom = 2.dp),
+            )
+        }
     }
 }
 
