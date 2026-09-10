@@ -24,6 +24,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material.icons.outlined.AddAPhoto
 import androidx.compose.material.icons.outlined.EditNote
 import androidx.compose.material.icons.outlined.Place
@@ -98,6 +100,9 @@ fun RecordSheet(
     suggestion: Suggestion? = null,
     onUseSuggestion: () -> Unit = {},
     onDismissSuggestion: () -> Unit = {},
+    /** The clip sounding right now, if any, so one button at a time reads "Stop". */
+    playingClip: String? = null,
+    onPlayClip: (String) -> Unit = {},
     onDismiss: () -> Unit,
 ) {
     var mode by remember(record.id) { mutableStateOf(Mode.DETAILS) }
@@ -171,6 +176,8 @@ fun RecordSheet(
                 onEdit = { mode = Mode.EDIT },
                 redListStatus = redListStatus,
                 familyProgress = familyProgress,
+                playingClip = playingClip,
+                onPlayClip = onPlayClip,
             )
         }
     }
@@ -194,6 +201,8 @@ private fun Details(
     onEdit: () -> Unit,
     redListStatus: RedList.Status? = null,
     familyProgress: Families.Progress? = null,
+    playingClip: String? = null,
+    onPlayClip: (String) -> Unit = {},
 ) {
     val context = LocalContext.current
     val node = taxonomy.nodeOrNull(record.taxonId)
@@ -213,6 +222,24 @@ private fun Details(
     ) {
         if (record.photoPaths.isNotEmpty()) {
             PhotoRow(record.photoPaths, onOpenPhoto)
+            Spacer(Modifier.height(16.dp))
+        }
+
+        // A record made by listening keeps the five seconds that made it. Playable here for
+        // the same reason the photograph is shown here: the evidence belongs with the claim.
+        record.clipPath?.let { clip ->
+            OutlinedButton(
+                onClick = { onPlayClip(clip) },
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Icon(
+                    if (playingClip == clip) Icons.Filled.Stop else Icons.Filled.PlayArrow,
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp),
+                )
+                Spacer(Modifier.width(8.dp))
+                Text(if (playingClip == clip) "Stop" else "Play what you heard")
+            }
             Spacer(Modifier.height(16.dp))
         }
 

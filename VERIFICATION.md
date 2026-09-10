@@ -2768,6 +2768,67 @@ names a leaf, and checks the two trees agree about the 272 taxa they share.
 
 ---
 
+## 65. It works in a garden, and the thresholds were the wrong ones — 10 Sep 2026
+
+v0.10.0 on the phone: it listens, it identifies, it saves. The first real report was that a
+Eurasian Magpie at BirdNET 0.77 came back **"not sure enough"**, and a magpie is not a subtle
+bird.
+
+That is not a tuning quibble. **It was a category error, and it was mine.** §63 wired audio
+through the per-group certainty table from §59, and described it as making one dial govern both
+modalities. Those thresholds were fitted on 40,595 **photographs**, against the image head's
+calibration. Birds need 0.82 there because the *vision* model is over-confident about birds —
+a fact about pixels, with nothing whatsoever to say about BirdNET. Reusing it looked like
+consistency and was nonsense; it just happened to be nonsense that compiled and read well.
+
+The magpie made it visible because §60's absent outcome means a lone detection's confidence
+**is** BirdNET's own score. So a 0.82 bird threshold silently became "BirdNET must say 0.82",
+which is a very high bar for a sigmoid that is not calibrated that way.
+
+### What it uses now, and what that is worth
+
+`Audio.UNFITTED_THRESHOLDS`, and the name is the point:
+
+| dial | needs | magpie 0.77 | blue tit 0.52 |
+|---|---|---|---|
+| 90% | 0.50 | named | named |
+| 95% | 0.70 | named | refused |
+| 98% | 0.85 | refused | refused |
+
+**These are not fitted.** They are BirdNET's own conventions, honest defaults with a
+placeholder's status, and the constant says so where somebody will read it. Fitting them needs
+labelled Danish recordings — the same gap that has kept the confusion-set margin open since
+BUILD.md §3.3 was written. Until that exists the app should not claim an audio answer is right
+95% of the time, because nobody has checked.
+
+The lesson generalises past audio: **a number is only transferable with the thing it was
+measured on.** §59 went to some trouble to record `accuracy`, `reached` and `n` beside every
+threshold precisely so a promise could not outrun its evidence — and then the threshold was
+carried into a modality none of that evidence covered.
+
+### The five seconds are kept now
+
+A record that says "Eurasian Magpie, heard at 175s" and cannot play the 175 seconds asks to be
+taken on trust, which is not what the rest of this app does. Each window that produces a
+detection is written beside the record as a WAV — 320 KB, less than one of the photographs.
+
+`wavBytes` is in `core` with tests, because it is a 44-byte header written by hand and the one
+thing that can go wrong in it is silent: scaling a sample of exactly 1.0 by 32768 wraps to
+−32768 in two's complement, putting a click in the loudest part of the recording — the part
+worth listening to. It clamps, and a test plays the boundary.
+
+**Playable whether or not the app was willing to name it.** A refusal is exactly the case where
+you most want to hear what it heard and decide for yourself.
+
+### And where
+
+Audio records now resolve a location the way photographed ones do — saved immediately, the fix
+filled in afterwards on a background thread. `DEVICE`, not `PHOTO`: the phone knows where it is,
+and for a sound heard a moment ago that is the same place. A photograph is the case where those
+two can differ by three days and a sofa.
+
+---
+
 ---
 
 ## Open questions

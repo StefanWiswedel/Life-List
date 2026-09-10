@@ -62,9 +62,11 @@ data class Heard(
     val detected: Float,
     val atSeconds: Float,
     val alsoConsidered: List<String>,
-    /** The threshold this was decided at — its group's, not a global one. Stored on the record
-     *  so it re-renders honestly later, exactly as a photographed record does (spec §4.4). */
+    /** The threshold this was decided at. Stored on the record so it re-renders honestly
+     *  later, exactly as a photographed record does (spec §4.4). */
     val threshold: Float,
+    /** The five seconds it was heard in, on disk. Playable, and kept with the record. */
+    val clipPath: String? = null,
     val saved: Boolean = false,
 )
 
@@ -79,6 +81,9 @@ fun ListenScreen(
     onStart: () -> Unit,
     onStop: () -> Unit,
     onSave: (Heard) -> Unit,
+    /** Path of the clip currently sounding, so one button at a time reads "Stop". */
+    playing: String? = null,
+    onPlay: (String) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     // Its own ground, rather than the Scaffold's. The palette is ink on paper and there is no
@@ -107,7 +112,12 @@ fun ListenScreen(
             } else {
                 item { FieldLabel("Heard so far") }
                 items(heard, key = { "${it.taxonId}-${it.atSeconds}" }) { entry ->
-                    HeardCard(entry, onSave = { onSave(entry) })
+                    HeardCard(
+                        entry,
+                        playing = playing == entry.clipPath && entry.clipPath != null,
+                        onSave = { onSave(entry) },
+                        onPlay = { entry.clipPath?.let(onPlay) },
+                    )
                 }
             }
         }
@@ -187,7 +197,12 @@ private fun Empty(listening: Boolean) {
 }
 
 @Composable
-private fun HeardCard(entry: Heard, onSave: () -> Unit) {
+private fun HeardCard(
+    entry: Heard,
+    playing: Boolean,
+    onSave: () -> Unit,
+    onPlay: () -> Unit,
+) {
     Card(
         shape = MaterialTheme.shapes.large,
         // `surface` is the paper itself in this theme, so a card painted with it is invisible
@@ -227,9 +242,18 @@ private fun HeardCard(entry: Heard, onSave: () -> Unit) {
                 diameter = 52.dp,
             )
         }
-        if (entry.confidence != null) {
-            TextButton(onClick = onSave, enabled = !entry.saved, modifier = Modifier.padding(start = 8.dp, bottom = 4.dp)) {
-                Text(if (entry.saved) "Added to your list" else "Add to my list")
+        Row(Modifier.padding(start = 8.dp, bottom = 4.dp)) {
+            // Playable whether or not the app was willing to name it. A refusal is exactly the
+            // case where you most want to hear what it heard and decide for yourself.
+            if (entry.clipPath != null) {
+                TextButton(onClick = onPlay) {
+                    Text(if (playing) "Stop" else "Play what it heard")
+                }
+            }
+            if (entry.confidence != null) {
+                TextButton(onClick = onSave, enabled = !entry.saved) {
+                    Text(if (entry.saved) "Added to your list" else "Add to my list")
+                }
             }
         }
     }
@@ -256,6 +280,7 @@ private fun percent(value: Float) = "${(value * 100).roundToInt()}%"
 fun heardFrom(
     taxonomy: Taxonomy,
     identification: dk.lifelist.core.Audio.AudioIdentification,
+    clipPath: String? = null,
 ): Heard {
     val result = identification.result
     val node = taxonomy.nodeOrNull(result.taxonId)
@@ -269,6 +294,7 @@ fun heardFrom(
         confidence = if (result.isUnidentified) null else result.probability,
         detected = identification.detection.score,
         atSeconds = identification.detection.windowStartS,
+        clipPath = clipPath,
         alsoConsidered = identification.confusionSet
             .filter { it != identification.detection.taxonId }
             .mapNotNull { taxonomy.nodeOrNull(it) }

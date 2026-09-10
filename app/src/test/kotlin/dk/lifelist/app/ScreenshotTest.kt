@@ -427,7 +427,10 @@ class ScreenshotTest {
         at: Float,
         against: List<String> = emptyList(),
         saved: Boolean = false,
-    ) = Heard(taxonId, name, rank, confidence, detected, at, against, threshold = 0.82f, saved = saved)
+    ) = Heard(
+        taxonId, name, rank, confidence, detected, at, against,
+        threshold = 0.70f, clipPath = "/clips/$taxonId.wav", saved = saved,
+    )
 
     @Test
     fun `a listening session with three birds`() {

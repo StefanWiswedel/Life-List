@@ -188,6 +188,7 @@ fun App() {
         )
     }
     val recorder = remember { Recorder() }
+    val clipPlayer = rememberClipPlayer()
     var listener by remember { mutableStateOf<Listener?>(null) }
 
     var photos by remember { mutableStateOf<List<Bitmap>>(emptyList()) }
@@ -421,12 +422,17 @@ fun App() {
                     listenedFor = window.startS + 5f
                     val found = model.listen(
                         window.samples,
-                        certainty = certaintyTable,
                         target = target,
                         windowStartS = window.startS,
                     )
                     if (found.isEmpty()) return@record
-                    val fresh = found.map { heardFrom(model.taxonomy, it) }
+                    // The window is written once and shared by every detection in it: three
+                    // birds singing at 0:35 were all in the same five seconds, and keeping three
+                    // copies of the same audio would be a megabyte to say so.
+                    val clip = runCatching {
+                        store.saveClip(window.samples, Listener.SAMPLE_RATE)
+                    }.getOrNull()
+                    val fresh = found.map { heardFrom(model.taxonomy, it, clip) }
                     heard = (heard + fresh)
                         .groupBy { it.taxonId }
                         .map { (_, rows) -> rows.maxByOrNull { it.confidence ?: it.detected }!! }
@@ -623,6 +629,8 @@ fun App() {
 
                 Screen.LISTEN -> Box(Modifier.fillMaxSize().padding(insets)) {
                     ListenScreen(
+                        playing = clipPlayer.playing,
+                        onPlay = { clipPlayer.toggle(it) },
                         listening = listening,
                         heard = heard,
                         elapsedSeconds = listenedFor,
@@ -644,10 +652,30 @@ fun App() {
                                     modelVersion = loaded?.meta?.version ?: "unknown",
                                     determinedBy = Determiner.MODEL,
                                     confidence = entry.confidence,
+                                    clipPath = entry.clipPath,
                                 )
                             )
                             heard = heard.map { if (it.taxonId == entry.taxonId) it.copy(saved = true) else it }
                             scope.launch { snackbar.showSnackbar("Added to your list") }
+                            // Where, filled in afterwards on a background thread — the same
+                            // shape the photographed path uses. A fix takes up to 2.5 s and
+                            // the record should land the instant the button is pressed.
+                            // DEVICE, not PHOTO: the phone knows where it is, and for a sound
+                            // heard a moment ago that is the same place. A photograph is the
+                            // case where those two can differ by three days and a sofa (§34).
+                            thread {
+                                val fix = Where.current(context) ?: return@thread
+                                val place = Where.describe(context, fix.latitude, fix.longitude)
+                                val stored = store.load().firstOrNull { it.id == id } ?: return@thread
+                                records = store.update(
+                                    stored.copy(
+                                        latitude = fix.latitude,
+                                        longitude = fix.longitude,
+                                        place = place,
+                                        locationSource = LocationSource.DEVICE,
+                                    )
+                                )
+                            }
                         },
                     )
                 }
@@ -774,6 +802,8 @@ fun App() {
     val openRecord = openRecordId?.let { id -> records.firstOrNull { it.id == id } }
     if (openRecord != null && listTaxonomy != null) {
         RecordSheet(
+            playingClip = clipPlayer.playing,
+            onPlayClip = { clipPlayer.toggle(it) },
             taxonomy = listTaxonomy,
             record = openRecord,
             article = wikipedia.article(openRecord.taxonId),

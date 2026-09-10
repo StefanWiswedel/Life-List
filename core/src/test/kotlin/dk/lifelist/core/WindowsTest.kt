@@ -113,4 +113,56 @@ class WindowsTest {
 
         assertEquals(3, converted.size)
     }
+
+    // -- the clip -----------------------------------------------------------------
+
+    @Test
+    fun `the wav header says what the samples actually are`() {
+        val wav = wavBytes(FloatArray(160_000), 32_000)
+
+        assertEquals(44 + 320_000, wav.size)
+        assertEquals("RIFF", String(wav, 0, 4, Charsets.US_ASCII))
+        assertEquals("WAVE", String(wav, 8, 4, Charsets.US_ASCII))
+        assertEquals("data", String(wav, 36, 4, Charsets.US_ASCII))
+        assertEquals(1, wav[22].toInt(), "one channel")
+        assertEquals(16, wav[34].toInt(), "16 bits per sample")
+        // sample rate, little-endian at offset 24
+        val rate = (wav[24].toInt() and 0xFF) or ((wav[25].toInt() and 0xFF) shl 8) or
+            ((wav[26].toInt() and 0xFF) shl 16) or ((wav[27].toInt() and 0xFF) shl 24)
+        assertEquals(32_000, rate)
+    }
+
+    @Test
+    fun `a sample at full scale does not wrap into a click`() {
+        // Scaling 1.0 by 32768 lands on -32768 in two's complement, which is a click in the
+        // loudest part of the recording — the part worth listening to.
+        val wav = wavBytes(floatArrayOf(1f, -1f), 32_000)
+
+        val first = ((wav[45].toInt() and 0xFF) shl 8) or (wav[44].toInt() and 0xFF)
+        assertEquals(32767, first.toShort().toInt())
+        val second = ((wav[47].toInt() and 0xFF) shl 8) or (wav[46].toInt() and 0xFF)
+        assertEquals(-32767, second.toShort().toInt())
+    }
+
+    @Test
+    fun `a sample beyond full scale is clamped rather than wrapped`() {
+        val wav = wavBytes(floatArrayOf(4f), 32_000)
+
+        val value = (((wav[45].toInt() and 0xFF) shl 8) or (wav[44].toInt() and 0xFF)).toShort()
+        assertEquals(32767, value.toInt())
+    }
+
+    @Test
+    fun `a round trip through pcm and back survives`() {
+        val original = shortArrayOf(0, 12_345, -12_345, 32_767)
+
+        val wav = wavBytes(pcm16ToFloat(original), 32_000)
+
+        for (i in original.indices) {
+            val value = (((wav[45 + i * 2].toInt() and 0xFF) shl 8) or
+                (wav[44 + i * 2].toInt() and 0xFF)).toShort()
+            // Within one count: the two scalings are 32768 and 32767, deliberately.
+            assertTrue(kotlin.math.abs(value - original[i]) <= 1, "${original[i]} became $value")
+        }
+    }
 }

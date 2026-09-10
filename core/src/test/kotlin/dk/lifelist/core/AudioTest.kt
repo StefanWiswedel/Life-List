@@ -185,4 +185,33 @@ class AudioTest {
         assertEquals("genus", found.first().result.rank)
         assertTrue(found.first().absent < 0.02f)
     }
+
+    // -- what a target costs in audio ---------------------------------------------
+
+    @Test
+    fun `the audio thresholds are not the ones fitted on photographs`() {
+        // Routing audio through the per-group table from §59 refused a magpie BirdNET scored
+        // 0.77 and a person could hear plainly: birds needed 0.82 there, which is a fact about
+        // how over-confident the *image* head is and says nothing about BirdNET (§65).
+        assertEquals(0.70f, Audio.thresholdFor(0.95f))
+        assertEquals(0.50f, Audio.thresholdFor(0.90f))
+        assertEquals(0.85f, Audio.thresholdFor(0.98f))
+    }
+
+    @Test
+    fun `a magpie at 0-77 is named at the middle setting and refused at the strictest`() {
+        val magpie = mapOf(chiffchaff to 0.77f)  // the taxon does not matter; the score does
+
+        val named = Audio.identifyWindow(taxonomy, magpie, threshold = Audio.thresholdFor(0.95f))
+        val refused = Audio.identifyWindow(taxonomy, magpie, threshold = Audio.thresholdFor(0.98f))
+
+        assertEquals(chiffchaff, named.first().result.taxonId)
+        assertTrue(refused.first().result.isUnidentified)
+    }
+
+    @Test
+    fun `an unfitted target resolves upward, never down`() {
+        assertEquals(0.85f, Audio.thresholdFor(0.99f))
+        assertEquals(0.50f, Audio.thresholdFor(0.80f))
+    }
 }

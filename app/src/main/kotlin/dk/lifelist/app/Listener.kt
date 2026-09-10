@@ -5,8 +5,6 @@ import ai.onnxruntime.OrtEnvironment
 import ai.onnxruntime.OrtSession
 import android.content.Context
 import dk.lifelist.core.Audio
-import dk.lifelist.core.CertaintyTable
-import dk.lifelist.core.LifeList
 import dk.lifelist.core.Taxonomy
 import java.io.File
 import java.nio.FloatBuffer
@@ -138,30 +136,23 @@ class Listener(
     /**
      * Detect, then resolve each detection to the deepest rank it can defend (spec §4A).
      *
-     * **Each detection is resolved at its own group's threshold**, from the table §59 fitted —
-     * so a bird is answered at a bird's threshold and a frog at whatever amphibians cost, in
-     * the same window, from the same recording. Answering a whole window at one number would
-     * undo the argument that per-group thresholds exist to make: the same 95% is 0.70 for an
-     * insect and 0.82 for a bird, and a soundscape is exactly where both turn up at once.
+     * The threshold comes from [Audio.thresholdFor], **not** from the per-group table §59
+     * fitted. That table was fitted on photographs and describes the image head's calibration;
+     * it says nothing about BirdNET, and routing audio through it refused a magpie at 0.77 that
+     * anybody could hear (VERIFICATION §65). Reusing it looked like consistency and was a
+     * category error.
      */
     fun listen(
         samples: FloatArray,
-        certainty: CertaintyTable,
         target: Float,
         windowStartS: Float = 0f,
         detectionThreshold: Float = Audio.DEFAULT_DETECTION_THRESHOLD,
         geo: Map<Int, Float>? = null,
     ): List<Audio.AudioIdentification> {
         val scores = score(samples)
+        val threshold = Audio.thresholdFor(target)
         return Audio.detect(scores, windowStartS, detectionThreshold).map { detection ->
-            val group = LifeList.groupOf(taxonomy, detection.taxonId)
-            Audio.identify(
-                taxonomy,
-                scores,
-                detection,
-                threshold = certainty.certaintyFor(target, group).threshold,
-                geo = geo,
-            )
+            Audio.identify(taxonomy, scores, detection, threshold = threshold, geo = geo)
         }
     }
 

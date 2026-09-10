@@ -67,9 +67,20 @@ data class Record(
      * user's account of the sighting, and nothing in the app may rewrite it.
      */
     val notes: String? = null,
+    /**
+     * The five seconds that produced an audio determination.
+     *
+     * Kept for the same reason the photographs are: a record that says "Eurasian Magpie, heard
+     * at 175s" and cannot play the 175 seconds is asking to be taken on trust, which is not
+     * what the rest of this app does. 320 KB, less than one of the photographs.
+     */
+    val clipPath: String? = null,
 ) {
     /** The photograph that stands for this record. */
     val photoPath: String? get() = photoPaths.firstOrNull()
+
+    /** True for a record made by listening rather than by looking. */
+    val heard: Boolean get() = clipPath != null
 }
 
 /** Where a record's coordinates came from. See `Record.locationSource`. */

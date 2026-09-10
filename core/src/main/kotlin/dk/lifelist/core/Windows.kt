@@ -90,3 +90,54 @@ fun pcm16ToFloat(pcm: ShortArray, count: Int = pcm.size): FloatArray {
     for (i in 0 until count) out[i] = pcm[i] / 32768f
     return out
 }
+
+
+/**
+ * The window that produced a detection, as a playable WAV.
+ *
+ * A record that says "Eurasian Magpie, heard at 175s" and cannot play the 175 seconds is asking
+ * to be taken on trust — which is the opposite of what the rest of this app does. Five seconds
+ * of 16-bit mono at 32 kHz is 320 KB, less than one of the photographs already kept beside a
+ * record.
+ *
+ * Written by hand rather than through a platform encoder: it is a 44-byte header and the samples
+ * back in the integers they arrived as, it is identical on every device, and it can be tested
+ * here rather than on a phone.
+ */
+fun wavBytes(samples: FloatArray, sampleRate: Int): ByteArray {
+    require(sampleRate > 0) { "sampleRate must be positive, got $sampleRate" }
+    val dataBytes = samples.size * 2
+    val out = ByteArray(44 + dataBytes)
+    var at = 0
+
+    fun ascii(text: String) {
+        for (character in text) out[at++] = character.code.toByte()
+    }
+
+    fun le32(value: Int) {
+        out[at++] = (value and 0xFF).toByte()
+        out[at++] = ((value ushr 8) and 0xFF).toByte()
+        out[at++] = ((value ushr 16) and 0xFF).toByte()
+        out[at++] = ((value ushr 24) and 0xFF).toByte()
+    }
+
+    fun le16(value: Int) {
+        out[at++] = (value and 0xFF).toByte()
+        out[at++] = ((value ushr 8) and 0xFF).toByte()
+    }
+
+    ascii("RIFF"); le32(36 + dataBytes); ascii("WAVE")
+    ascii("fmt "); le32(16); le16(1); le16(1)          // PCM, mono
+    le32(sampleRate); le32(sampleRate * 2); le16(2); le16(16)
+    ascii("data"); le32(dataBytes)
+
+    for (sample in samples) {
+        // Clamped before scaling: a sample at exactly 1.0 would otherwise wrap to -32768 and
+        // put a click in the loudest part of the recording — the part worth listening to.
+        val clamped = sample.coerceIn(-1f, 1f)
+        val value = (clamped * 32767f).toInt()
+        out[at++] = (value and 0xFF).toByte()
+        out[at++] = ((value shr 8) and 0xFF).toByte()
+    }
+    return out
+}

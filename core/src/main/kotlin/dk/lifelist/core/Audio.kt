@@ -25,6 +25,50 @@ import kotlin.math.pow
 object Audio {
 
     const val DEFAULT_DETECTION_THRESHOLD = 0.25f
+
+    /**
+     * What a target accuracy costs in audio — **and this table is not fitted.**
+     *
+     * The first version routed audio through the per-group table from §59. That was a category
+     * error dressed up as reuse: those thresholds were fitted on *photographs*, against the
+     * image head's calibration, and describe nothing whatsoever about BirdNET. Birds needed
+     * 0.82 there because the vision model is over-confident about birds — a fact about pixels.
+     * Applied to sound it refused a magpie BirdNET scored 0.77 and a person could hear plainly
+     * (VERIFICATION §65).
+     *
+     * These numbers come from BirdNET's own conventions instead, and they are a placeholder
+     * with a placeholder's status: honest defaults, not a promise. Fitting them properly needs
+     * labelled Danish recordings, which this project does not have — the same gap that has kept
+     * the confusion-set margin open since BUILD.md §3.3 was written. Until then the app must not
+     * claim an audio answer is right 95% of the time, because nobody has checked.
+     *
+     * What the three settings do in practice, on a lone detection — where the conditional
+     * collapses to BirdNET's own score (§4A.3), so the threshold *is* the score required:
+     *
+     * | dial | needs | a magpie at 0.77 | a blue tit at 0.52 |
+     * |---|---|---|---|
+     * | 90% | 0.50 | named | named |
+     * | 95% | 0.70 | named | refused |
+     * | 98% | 0.85 | refused | refused |
+     */
+    val UNFITTED_THRESHOLDS: Map<Float, Float> = mapOf(
+        0.90f to 0.50f,
+        0.95f to 0.70f,
+        0.98f to 0.85f,
+    )
+
+    /**
+     * The threshold for a target, or the nearest fitted one above it.
+     *
+     * Resolves upward like [CertaintyTable.resolveTarget] and for the same reason: a stored
+     * preference must never quietly become less careful than the person asked for.
+     */
+    fun thresholdFor(target: Float): Float {
+        val exact = UNFITTED_THRESHOLDS[target]
+        if (exact != null) return exact
+        val above = UNFITTED_THRESHOLDS.keys.filter { it >= target - 1e-4f }.minOrNull()
+        return UNFITTED_THRESHOLDS[above ?: UNFITTED_THRESHOLDS.keys.max()] ?: DEFAULT_THRESHOLD
+    }
     const val DEFAULT_CONFUSION_MARGIN = 0.5f
     const val DEFAULT_GEO_WEIGHT = 1.0f
 

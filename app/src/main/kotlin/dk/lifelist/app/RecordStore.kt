@@ -7,6 +7,7 @@ import dk.lifelist.core.LocationSource
 import dk.lifelist.core.Record
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.ListSerializer
+import dk.lifelist.core.wavBytes
 import kotlinx.serialization.json.Json
 import java.io.File
 import java.util.UUID
@@ -26,6 +27,7 @@ class RecordStore(private val context: Context) {
     private val json = Json { ignoreUnknownKeys = true; prettyPrint = true }
     private val file = File(context.filesDir, "life-list.json")
     private val photos = File(context.filesDir, "photos").apply { mkdirs() }
+    private val clips = File(context.filesDir, "clips").apply { mkdirs() }
 
     @Serializable
     private data class Stored(
@@ -49,6 +51,7 @@ class RecordStore(private val context: Context) {
         // is the whole reason `ignoreUnknownKeys` and defaults are not optional here.
         val locationSource: String? = null,
         val notes: String? = null,
+        val clipPath: String? = null,
     )
 
     private fun Stored.toRecord() = Record(
@@ -69,6 +72,7 @@ class RecordStore(private val context: Context) {
             runCatching { LocationSource.valueOf(it) }.getOrNull()
         },
         notes = notes,
+        clipPath = clipPath,
     )
 
     private fun Record.toStored() = Stored(
@@ -87,6 +91,7 @@ class RecordStore(private val context: Context) {
         longitude = longitude,
         locationSource = locationSource?.name,
         notes = notes,
+        clipPath = clipPath,
     )
 
     fun load(): List<Record> = runCatching {
@@ -111,6 +116,13 @@ class RecordStore(private val context: Context) {
         temporary.writeText(json.encodeToString(ListSerializer(Stored.serializer()), payload))
         temporary.renameTo(file)
     }.isSuccess
+
+    /** The five seconds behind an audio determination, beside the record like a photograph. */
+    fun saveClip(samples: FloatArray, sampleRate: Int): String {
+        val destination = File(clips, "${UUID.randomUUID()}.wav")
+        destination.writeBytes(wavBytes(samples, sampleRate))
+        return destination.absolutePath
+    }
 
     /** Photographs that failed to write are dropped, not raised — the record still lands. */
     fun savePhotos(bitmaps: List<Bitmap>): List<String> =
