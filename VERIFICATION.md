@@ -3306,6 +3306,36 @@ Two changes, since the diagnosis cannot be run:
 
 ---
 
+## 77. A diagnostic that took the release with it — 11 Sep 2026
+
+v0.11.4 produced no APK. The release workflow failed at 4m 12s against the 9 minutes its
+predecessors took, and `core`, `android` and `training` all went green on the same commit — so
+the code was fine and the failure was in a step only the release job runs.
+
+Only one of those steps changed in that commit: the reference-recordings fetch, where §76 had
+just added `--min-yield`. **The gate fired.** Which is the answer to the question §76 could not
+test — xeno-canto is not serving the release runner either, and that is why the comparison
+button has never reached the phone — and it is also a mistake, because the gate sits in front of
+the APK. One missing feature became no release at all.
+
+The check was right and its position was wrong. It now runs **last**, after the APK is built and
+the release is published, with `if: always()`. A silent archive is a red build with a reason on
+it; the release still ships; and the app itself says on the listening screen that it carries no
+reference recordings. Three ways to notice, none of which stop you installing the thing.
+
+**The general shape, worth keeping:** a check that converts a silent failure into a loud one must
+not also convert a partial success into a total one. Put it where it can shout without being able
+to block.
+
+**Not yet fixed: why the downloads fail.** Still unprovable from here — xeno-canto is unreachable
+from this container and from the sandbox on his machine, so the only place the request can be
+made is the runner. The fetcher logs the first twenty failures with their exception type, and it
+now reaches that line instead of exiting first, so the next release names the cause. Guessing at
+it in the meantime — that the archive now wants the API key on a download URL, say — would be
+exactly the kind of unmeasured guess the rest of this file exists to avoid.
+
+---
+
 ---
 
 ## Open questions

@@ -110,12 +110,24 @@ jobs:
       # ~700 ten-second Opus clips, about 22 MB. No key: building the index needs one, a
       # xeno-canto download URL does not, so a release is not one GitHub secret away from
       # breaking. Every clip carries its recordist into the credits screen.
+      #
+      # `--min-yield 0`, and the check moved to the end of the job. The check itself is
+      # right — an archive that has stopped answering must not ship as a build that quietly
+      # has no reference recordings — but a gate in front of the APK turns one missing
+      # feature into no release at all, which is what it did to v0.11.4. Loud, then, and
+      # after the release is safely published.
       - name: Fetch reference recordings
+        id: recordings
         run: |
           sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
           lifelist-reference-audio \
             --index shared/model/reference_audio.json \
-            --out app/src/main/assets/reference-audio -v
+            --out app/src/main/assets/reference-audio --min-yield 0 -v
+          got=$(ls app/src/main/assets/reference-audio/*.opus 2>/dev/null | wc -l)
+          want=$(python -c "import json,sys;print(len(json.load(open('shared/model/reference_audio.json'))))")
+          echo "got=${got}" >> "$GITHUB_OUTPUT"
+          echo "want=${want}" >> "$GITHUB_OUTPUT"
+          echo "${got} of ${want} reference recordings"
           du -sh app/src/main/assets/reference-audio
 
       - name: Build release APK
@@ -163,3 +175,23 @@ jobs:
 
             **Powered by BirdNET** — BirdNET+ V3.0 developer preview (Preview 3.1),
             CC BY-SA 4.0, Lasseck, Eibl, Klinck & Kahl 2026.
+
+      # Last, on purpose. The APK is built and the release is published by the time this
+      # runs, so a silent archive shows up as a red build with a reason rather than as a
+      # missing release — and the app itself says on screen that it has no recordings.
+      - name: The archive must actually have answered
+        if: always()
+        run: |
+          got="${{ steps.recordings.outputs.got }}"
+          want="${{ steps.recordings.outputs.want }}"
+          if [ -z "${want}" ]; then
+            echo "::error::the reference-recordings step did not run at all"
+            exit 1
+          fi
+          if [ "${got:-0}" -lt "$(( want / 2 ))" ]; then
+            echo "::error::only ${got} of ${want} reference recordings downloaded. That is \
+            xeno-canto refusing us, not a few missing birds — this build ships with no \
+            reference sound and says so on the listening screen."
+            exit 1
+          fi
+          echo "${got} of ${want} reference recordings"
