@@ -42,6 +42,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import dk.lifelist.core.Taxonomy
+import dk.lifelist.core.standing
 import kotlin.math.roundToInt
 
 /**
@@ -64,6 +65,14 @@ data class Heard(
     val rank: String,
     /** What the app is willing to claim, after §4A. Null when it will not commit at all. */
     val confidence: Float?,
+    /**
+     * What the model made of it, whether or not that clears the bar.
+     *
+     * Kept beside [confidence] rather than folded into it. The app's claim is still binary and
+     * still honest — the card says "not sure enough" — but hiding the number threw away the
+     * one thing a person standing in a field can act on: whether it was close (§75).
+     */
+    val probability: Float,
     /** BirdNET's own score for the detection that started this. */
     val detected: Float,
     val atSeconds: Float,
@@ -96,6 +105,10 @@ fun ListenScreen(
     thumbnailFor: (Int) -> Bitmap? = { null },
     /** The last ten seconds of sound. Null in a preview that has no microphone behind it. */
     spectrogram: SpectrogramState? = null,
+    /** True while a clip is sounding and nothing is being identified. */
+    muted: Boolean = false,
+    /** Whether this build carries reference recordings at all. */
+    referencesBundled: Boolean = true,
     modifier: Modifier = Modifier,
 ) {
     // Its own ground, rather than the Scaffold's. The palette is ink on paper and there is no
@@ -109,6 +122,7 @@ fun ListenScreen(
                 state = spectrogram,
                 listening = listening,
                 elapsedSeconds = elapsedSeconds,
+                muted = muted,
                 modifier = Modifier.padding(horizontal = 20.dp, vertical = 12.dp),
             )
         }
@@ -119,6 +133,21 @@ fun ListenScreen(
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             if (spectrogram == null) item { Level(listening, elapsedSeconds) }
+
+            // An absence the app can see should be an absence the app says. The reference
+            // recordings are fetched at release time and the fetcher used to exit 0 having
+            // downloaded nothing, so a build could ship with the comparison silently missing
+            // and look exactly like a build where no bird happened to have one (§76).
+            if (!referencesBundled) {
+                item {
+                    Text(
+                        "This build carries no reference recordings, so there is nothing to " +
+                            "compare what you heard against.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
 
             if (note != null) {
                 item {
@@ -282,9 +311,11 @@ private fun HeardCard(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
+            // The number always; the colour says whether the app will stand behind it. A bare
+            // dash told a magpie at 0.77 and a raven at 0.12 apart not at all.
             ConfidenceRing(
-                fraction = entry.confidence,
-                colour = MaterialTheme.colorScheme.primary,
+                fraction = entry.probability,
+                colour = Warm.standingColour(standing(entry.probability, entry.threshold)),
                 diameter = 52.dp,
             )
         }
@@ -346,6 +377,17 @@ fun heardFrom(
         name = displayed?.let { it.vernacularEn ?: it.scientificName } ?: "Unknown",
         rank = displayed?.rank ?: "unknown",
         confidence = if (result.isUnidentified) null else result.probability,
+        // For a refusal the node being *shown* is the detection, not the root the rollup
+        // retreated to, so the number beside it has to be the detection's — `result.probability`
+        // there is the root's, which is one minus the absent mass and says nothing about this
+        // bird. For a lone detection the two coincide by construction (spec §4A.3), which is
+        // why this reads as BirdNET's own score whenever there was nothing to confuse it with.
+        probability = if (result.isUnidentified) {
+            result.candidates.firstOrNull { it.taxonId == identification.detection.taxonId }
+                ?.probability ?: identification.detection.score
+        } else {
+            result.probability
+        },
         detected = identification.detection.score,
         atSeconds = identification.detection.windowStartS,
         clipPath = clipPath,

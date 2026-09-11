@@ -141,3 +141,25 @@ fun wavBytes(samples: FloatArray, sampleRate: Int): ByteArray {
     }
     return out
 }
+
+/**
+ * Does a window of audio overlap a stretch of it we have decided not to trust?
+ *
+ * Written for one specific way of being wrong, found in the field: playing a clip back through
+ * the phone's speaker while the session is still listening. The app heard itself, identified
+ * itself, and the confidence climbed with every replay — a feedback loop that looks exactly
+ * like growing certainty and is the opposite of evidence.
+ *
+ * The fix is not to stop recording. Timestamps come from a continuous count of samples, so a
+ * pause would shift every later detection, and the picture of the sound is worth keeping
+ * anyway. What is dropped is the *identification* of any window that overlaps the playback —
+ * `[fromS, toS]`, in the same seconds-since-start clock the windows use.
+ *
+ * Both ends are open when nothing is playing: a `toS` of infinity means "still playing", which
+ * is the state the screen is in while a clip sounds.
+ */
+fun windowOverlaps(windowStartS: Float, windowSeconds: Float, fromS: Float, toS: Float): Boolean {
+    require(windowSeconds >= 0f) { "windowSeconds must not be negative, got $windowSeconds" }
+    if (toS <= fromS) return false
+    return windowStartS < toS && windowStartS + windowSeconds > fromS
+}

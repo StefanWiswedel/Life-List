@@ -3230,6 +3230,82 @@ one number in here that a garden will settle and a cloud container cannot.
 
 ---
 
+## 75. Three things a field test found — 11 Sep 2026
+
+Everything below came from twenty minutes in a garden with v0.11.3, and none of it could have
+been found anywhere else.
+
+**The scroll was lumpy, because the microphone is.** Android hands over a bufferful when it has
+one — about four times a second at the sizes it picks — so five columns of spectrogram arrived
+together and the picture lurched five columns wide, four times a second. Fixed the way a
+streaming player fixes it: the columns queue and a clock hands them out at the rate they were
+recorded, plus a fractional offset so a column *slides* on rather than appearing. `ColumnPacer`
+is pure and tested against a simulated 60 Hz frame clock against a simulated bursty producer:
+the worst gap between reveals is four frames, and the queue never passes a dozen.
+
+The first pair of correction bands were 0.6x and 1.4x, and against a supply that is already the
+right rate on average they made the queue swing through the stretch band on every burst — an
+83 ms gap in a 50 ms scroll, correcting an error that was not there. A jitter buffer should
+barely move. 0.8x and 1.2x.
+
+**The counter jumped by three and then two**, because it was set from a window boundary, and
+windows land every 2.5 s. It now ticks from the sample count, four times a second.
+
+**The dial said "—" for anything the app would not commit to**, which told a magpie at 0.77 and
+a raven at 0.12 apart not at all. The number is now always shown, coloured by how it stands
+against the bar it had to clear: sage at or above, ochre within 15 points, clay below. The claim
+is unchanged — the card still says NOT SURE ENOUGH — but the number is the one thing a person
+standing in a field can act on, and hiding it behind the app's own decision was the app being
+careful with the wrong thing.
+
+The band is measured **from the threshold, not from an absolute score**, because the dial moves
+the threshold (§59). A fixed "amber above 0.6" would mean something different at every setting.
+
+**One subtlety in the number itself.** For a refusal the node being shown is the detection, not
+the root the rollup retreated to, so `result.probability` is the wrong number there — it is one
+minus the absent mass and says nothing about this bird. It comes from the candidate list
+instead. For a lone detection the two coincide by construction (spec §4A.3), which is why the
+ring reads as BirdNET's own score whenever there was nothing to confuse it with.
+
+---
+
+## 76. The app identified its own playback — 11 Sep 2026
+
+Pressing "what it heard" during a live session plays the clip through the phone's speaker, into
+the phone's open microphone. The app heard itself, identified itself, and the confidence climbed
+with every replay. **A feedback loop looks exactly like growing certainty**, which makes this
+worse than a cosmetic bug: it is the app manufacturing evidence for its own answer.
+
+Not fixed by pausing the recorder. Timestamps come from a continuous count of samples, so a
+pause would shift every later detection, and the picture of the sound is worth keeping while a
+clip plays anyway. What is dropped is the *identification* of any window overlapping the
+playback — `windowOverlaps` in `core`, four tests, including the case where a clip is still
+sounding and has no end yet. The strip says so while it lasts rather than going quietly deaf.
+
+**And a question underneath it.** He asked whether playing a reference recording instead would
+be "too bloated". It is already there and has been since §69 — 731 ten-second Opus clips, 22 MB,
+a "The real thing" button on every card. He has never seen it, which means it is not reaching
+the phone.
+
+The cause is not provable from here: xeno-canto is unreachable from this container *and* from
+the sandbox on his machine, so the download cannot be tested from either end. But the shape of
+the failure is visible in the code without testing anything. `lifelist-reference-audio` catches
+every exception per recording — correctly, one dead URL must not fail a release — and then
+returns 0 regardless. With every download failing it writes an empty `credits.json`, the app
+finds no clip for any species, and the button never appears. Indistinguishable, on screen, from
+a bird that happens to have no recording.
+
+Two changes, since the diagnosis cannot be run:
+
+1. `--min-yield`, default 0.5. Fewer clips than that and the build fails with a line saying the
+   archive is refusing us rather than missing a few recordings. The next tagged build answers
+   the question either way.
+2. The app says it: with no reference recordings bundled, the listening screen states that,
+   instead of silently dropping a button. **An absence the app can see should be an absence the
+   app says** — the same rule §36 and §71 are about.
+
+---
+
 ---
 
 ## Open questions

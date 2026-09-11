@@ -2,6 +2,7 @@ package dk.lifelist.core
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -164,5 +165,34 @@ class WindowsTest {
             // Within one count: the two scalings are 32768 and 32767, deliberately.
             assertTrue(kotlin.math.abs(value - original[i]) <= 1, "${original[i]} became $value")
         }
+    }
+}
+
+class PlaybackOverlapTest {
+
+    @Test
+    fun `a window clear of the playback is kept`() {
+        assertFalse(windowOverlaps(0f, 5f, 10f, 20f))
+        assertFalse(windowOverlaps(25f, 5f, 10f, 20f))
+    }
+
+    @Test
+    fun `a window touching the playback at either end is dropped`() {
+        // The five seconds starting at 8 runs to 13, into a clip that starts at 10.
+        assertTrue(windowOverlaps(8f, 5f, 10f, 20f))
+        // And the five seconds starting at 18 begins while the clip is still sounding.
+        assertTrue(windowOverlaps(18f, 5f, 10f, 20f))
+    }
+
+    @Test
+    fun `nothing is dropped when nothing is playing`() {
+        assertFalse(windowOverlaps(12f, 5f, 0f, 0f))
+        assertFalse(windowOverlaps(12f, 5f, 30f, 10f), "a backwards span is not a span")
+    }
+
+    @Test
+    fun `a clip still sounding has no end yet`() {
+        assertTrue(windowOverlaps(100f, 5f, 10f, Float.POSITIVE_INFINITY))
+        assertFalse(windowOverlaps(1f, 5f, 10f, Float.POSITIVE_INFINITY))
     }
 }

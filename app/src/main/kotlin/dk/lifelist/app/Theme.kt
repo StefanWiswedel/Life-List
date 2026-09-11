@@ -50,9 +50,25 @@ object Warm {
     val Amber = Color(0xFFC98A1E)
     val OchrePale = Color(0xFFF8EBCF)
     val Sage = Color(0xFF7C8471)
+
+    /**
+     * "Not close", and the only thing it is ever used for.
+     *
+     * Deliberately not Rust. Rust is every button and every link in this app, so a ring in it
+     * would read as something to press. Clay is darker, redder and used nowhere else, which is
+     * what lets three rings on one screen be read at a glance.
+     */
+    val Clay = Color(0xFFA33A2B)
     val Moss = Color(0xFF4E6151)
     val Line = Color(0xFFEDE6DA)
     val Sand = Color(0xFFF3EADC)
+
+    /** How a score stands against the bar it had to clear (§75). */
+    fun standingColour(standing: dk.lifelist.core.Standing): Color = when (standing) {
+        dk.lifelist.core.Standing.CLEARS -> Sage
+        dk.lifelist.core.Standing.NEAR -> Ochre
+        dk.lifelist.core.Standing.SHORT -> Clay
+    }
 
     /** Green when the answer is a species; amber when the app stopped short on purpose. */
     fun ringColour(kind: dk.lifelist.core.AnswerKind): Color = when (kind) {

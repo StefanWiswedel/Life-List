@@ -466,7 +466,10 @@ class ScreenshotTest {
             }
             v.toFloat()
         }
-        state.push(graph.add(samples))
+        // Offered and then drained: in the app the columns are paced out on the frame clock,
+        // and a snapshot has no frames.
+        state.offer(graph.add(samples))
+        state.drain()
         return state
     }
 
@@ -480,7 +483,11 @@ class ScreenshotTest {
         against: List<String> = emptyList(),
         saved: Boolean = false,
     ) = Heard(
-        taxonId, name, rank, confidence, detected, at, against,
+        taxonId, name, rank, confidence,
+        probability = confidence ?: detected,
+        detected = detected,
+        atSeconds = at,
+        alsoConsidered = against,
         threshold = 0.70f, clipPath = "/clips/$taxonId.wav", saved = saved,
     )
 
@@ -518,7 +525,10 @@ class ScreenshotTest {
                     listening = true,
                     heard = listOf(
                         heard(2490719, "Common Blackbird", "unknown", null, 0.31f, 8f),
+                        heard(2482443, "Eurasian Magpie", "unknown", null, 0.66f, 31f),
+                        heard(9515886, "Northern Raven", "unknown", null, 0.12f, 44f),
                     ),
+                    spectrogram = sungInto(SpectrogramState()),
                     elapsedSeconds = 20f,
                     permission = true,
                     modelReady = true,

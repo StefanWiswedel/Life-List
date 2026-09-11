@@ -73,6 +73,7 @@ import dk.lifelist.core.Presentation
 import dk.lifelist.core.Record
 import dk.lifelist.core.Rollup
 import dk.lifelist.core.Spectrograph
+import dk.lifelist.core.windowOverlaps
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -194,6 +195,10 @@ fun App() {
     // at what was there is just after you stopped.
     val spectrogram = remember { SpectrogramState() }
     val spectrograph = remember { Spectrograph(sampleRate = Listener.SAMPLE_RATE) }
+    // The stretch of the session the app has decided not to trust, because the phone was
+    // making the noise. Seconds since the session started, the same clock the windows use.
+    var mutedFromS by remember { mutableFloatStateOf(0f) }
+    var mutedToS by remember { mutableFloatStateOf(0f) }
     val clipPlayer = rememberClipPlayer()
     val referenceAudio = remember { ReferenceAudio(context) }
     val occurrences = remember { OccurrenceIndex(context) }
@@ -426,15 +431,29 @@ fun App() {
         listenNote = null
         spectrograph.reset()
         spectrogram.clear()
+        mutedFromS = 0f
+        mutedToS = 0f
         thread {
             runCatching {
+                var captured = 0L
                 recorder.record(
                     // On the microphone thread, so it has to be cheap: one 2048-point FFT per
                     // 50 ms of audio, which is about a thousandth of the budget the model
                     // spends on the same audio a moment later.
-                    onSamples = { samples -> spectrogram.push(spectrograph.add(samples)) },
+                    onSamples = { samples ->
+                        spectrogram.offer(spectrograph.add(samples))
+                        // The counter ticks from the audio, four times a second, rather than
+                        // from a window boundary every two and a half — which made it jump by
+                        // three seconds and then two.
+                        captured += samples.size
+                        listenedFor = captured.toFloat() / Listener.SAMPLE_RATE
+                    },
                 ) { window ->
-                    listenedFor = window.startS + 5f
+                    // Anything the phone's own speaker was sounding through is not evidence.
+                    // Without this the app identifies its own playback and the confidence
+                    // climbs with every replay, which looks exactly like growing certainty.
+                    if (windowOverlaps(window.startS, 5f, mutedFromS, mutedToS)) return@record
+
                     val found = model.listen(
                         window.samples,
                         target = target,
@@ -647,9 +666,24 @@ fun App() {
                 Screen.LISTEN -> Box(Modifier.fillMaxSize().padding(insets)) {
                     ListenScreen(
                         spectrogram = spectrogram,
+                        muted = listening && mutedToS > listenedFor,
                         playing = clipPlayer.playing,
-                        onPlay = { clipPlayer.toggle(it) },
+                        onPlay = { path ->
+                            // Mute first, unmute on the way out: a clip that starts sounding
+                            // before the flag is set has already leaked into a window.
+                            val at = listenedFor
+                            val sounding = clipPlayer.toggle(path) {
+                                mutedToS = listenedFor
+                            }
+                            if (sounding != null) {
+                                mutedFromS = at
+                                mutedToS = Float.POSITIVE_INFINITY
+                            } else {
+                                mutedToS = listenedFor
+                            }
+                        },
                         referenceFor = { referenceAudio.clip(it) },
+                        referencesBundled = referenceAudio.available,
                         thumbnailFor = { references.thumbnail(it) },
                         listening = listening,
                         heard = heard,

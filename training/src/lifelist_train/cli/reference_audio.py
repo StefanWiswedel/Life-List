@@ -58,6 +58,13 @@ def ffmpeg_argv(source: Path, destination: Path, seconds: int = CLIP_SECONDS) ->
     ]
 
 
+def poor_yield(fetched: int, wanted: int, minimum: float) -> bool:
+    """Is this few enough clips to mean something is wrong rather than something is missing?"""
+    if minimum <= 0 or wanted <= 0:
+        return False
+    return fetched < minimum * wanted
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--index", type=Path, default=shared_model("reference_audio.json"))
@@ -65,6 +72,15 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--workers", type=int, default=6)
     parser.add_argument("--seconds", type=int, default=CLIP_SECONDS)
     parser.add_argument("--limit", type=int, default=None)
+    parser.add_argument(
+        "--min-yield",
+        type=float,
+        default=0.5,
+        help=(
+            "fail if fewer than this fraction of the index produced a clip. "
+            "0 restores the old behaviour of always succeeding."
+        ),
+    )
     parser.add_argument("-v", "--verbose", action="store_true")
     return parser
 
@@ -135,6 +151,18 @@ def main(argv: list[str] | None = None) -> int:
     )
     for taxon_id, reason in failures[:20]:
         LOG.warning("  [%d] %s", taxon_id, reason)
+
+    # A tolerant fetcher that exits 0 having downloaded nothing is how a release ships with
+    # the whole comparison missing and nobody notices: `credits.json` is written empty, the
+    # app finds no clip for any species, and the button simply never appears. One dead
+    # recording must not fail a build; an archive that has stopped answering must.
+    if poor_yield(len(credits), len(entries), args.min_yield):
+        LOG.error(
+            "only %d of %d clips — below the %.0f%% this build requires. "
+            "The archive is refusing us, not missing a few recordings.",
+            len(credits), len(entries), args.min_yield * 100,
+        )
+        return 1
     return 0
 
 
