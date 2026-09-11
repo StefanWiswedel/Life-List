@@ -52,6 +52,7 @@ When trading off, trade in favour of a record being keepable at the rank the evi
 | rarity | Red List badge, family progress, and **Danish recording effort per species** (§55, §72) |
 | certainty | **the dial is an accuracy, not a probability** — one threshold per group (§58, §59) |
 | audio | §4A in both languages with a golden fixture; **801 BirdNET classes crossed, 795 leaves** (§60–62) |
+| listening screen | a **live spectrogram** — ours, for eyes, never the model's (§74) |
 | release workflow | tag `v*` → GitHub Release with an APK attached |
 
 ## Rules that have already earned their place

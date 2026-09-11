@@ -43,7 +43,18 @@ class Recorder(
      * timestamps stay true even when the analysis lags.
      */
     @SuppressLint("MissingPermission") // the caller holds RECORD_AUDIO; see ListenScreen
-    fun record(onWindow: (WindowBuffer.Window) -> Unit) {
+    fun record(
+        /**
+         * Every sample, as it arrives, for the display.
+         *
+         * Separate from [onWindow] on purpose: a window is five seconds long and arrives every
+         * two and a half, so a spectrogram fed from windows would be a slideshow. This is the
+         * same audio, undivided, and whatever is done with it must be quick — it runs on the
+         * thread that is reading the microphone, and a slow one here is lost audio.
+         */
+        onSamples: (FloatArray) -> Unit = {},
+        onWindow: (WindowBuffer.Window) -> Unit,
+    ) {
         val minimum = AudioRecord.getMinBufferSize(
             sampleRate,
             AudioFormat.CHANNEL_IN_MONO,
@@ -74,7 +85,9 @@ class Recorder(
                 if (read <= 0) continue
                 // Only what was actually read: the rest of `scratch` is the previous read's
                 // audio, and feeding that to the model is a stutter it will try to identify.
-                windows.add(pcm16ToFloat(scratch, read)).forEach(onWindow)
+                val samples = pcm16ToFloat(scratch, read)
+                onSamples(samples)
+                windows.add(samples).forEach(onWindow)
             }
             windows.flush()?.let(onWindow)
         } finally {

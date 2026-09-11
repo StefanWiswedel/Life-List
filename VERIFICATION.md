@@ -3179,6 +3179,57 @@ of reading the code would have shown.
 
 ---
 
+## 74. A picture of the sound — 11 Sep 2026
+
+Asked for directly, with a reference screenshot: a live spectrogram at the top of the listening
+screen. It closes a real hole. Until now the screen offered a pulsing dot and a counter, so a
+session that has heard nothing for forty seconds looked exactly like a session whose microphone
+never opened — and the one bug this app cannot afford is a silent failure in the part that
+records.
+
+**This is not the model's spectrogram and must never become it.** BirdNET V3.0 does its own
+inside the ONNX graph (§61: `has_stft_op: false`, the STFT rewritten as a Conv1d). Reimplementing
+that on the client is exactly the mistake §22 measured — a bilinear resize instead of an
+antialiased bicubic one moved 8% of image predictions. So `Spectrogram` is tuned for a person's
+eyes and has no path into `Listener`: mel-spaced rows from 100 Hz to 15 kHz, 2048-point FFT every
+50 ms, viridis.
+
+**Two moving parts, not one.** The first version had a fixed floor 55 dB below an adaptive
+ceiling, and rendering it showed why that cannot work: between song phrases the ceiling slid down
+onto the room tone and the display filled with bright speckle, brightest exactly when there was
+nothing to hear. Slowing the decay fixed the speckle and cost ten seconds of recovery after a
+passing lorry. The fix was to let the **floor** move too — it follows the *median* row of each
+column, which is the room, since a bird occupies a few rows out of sixty-four and cannot shift a
+median. Black is then "the room + 6 dB" whatever the room is, and the ceiling is free to decay
+fast. Three room-tone levels 60 dB apart now render as the same empty screen (test).
+
+**The median, not a per-row minimum.** The textbook clean-up is per-row spectral subtraction, and
+it would have been wrong here in a way that is specific to this app: a bush-cricket stridulates
+continuously for minutes, so anything that subtracts "whatever has been in this row for a while"
+erases one of the groups the audio model was chosen for (§60, insects and amphibians being the
+vision model's blind spot). There is a test named for it — *a steady singer does not fade out* —
+that runs twenty unbroken seconds of 12 kHz and asserts the last column is as bright as the
+tenth.
+
+**The fixture was wrong before the code was.** The synthetic birdsong in the Paparazzi snapshot
+was written as `sin(2 · π · f(t) · t)`, which is the obvious way to write a falling note and is
+not one: the instantaneous frequency of that expression is `f + t·df/dt`, several kilohertz below
+zero within a breath, so what rendered was the aliasing. It looked convincing. It was caught by
+reading the picture against its own axis — the 8.1 kHz seep drew where the mel scale says 8 kHz
+is, and the "cascade" did not. Fixed with a phase accumulator, and the note about it is in the
+test so the next person does not rediscover it.
+
+**Measured, not assumed.** One 2048-point FFT per 50 ms of audio, on the microphone thread —
+about a thousandth of what the model spends on the same audio a moment later. The display is
+200 columns × 64 rows of pre-coloured pixels, shifted left one column at a time: 255,000 int
+moves a second, against a 149 MB model running inference beside it.
+
+**Still unknowable from here:** whether a Pixel's microphone, with `UNPROCESSED` off on devices
+that lack it, has a noise floor low enough that a distant bird clears "room + 6 dB". That is the
+one number in here that a garden will settle and a cloud container cannot.
+
+---
+
 ---
 
 ## Open questions

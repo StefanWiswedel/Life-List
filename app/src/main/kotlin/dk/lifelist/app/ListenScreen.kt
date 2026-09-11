@@ -94,18 +94,31 @@ fun ListenScreen(
     referenceFor: (Int) -> String? = { null },
     /** A small photograph of a species, if this build has one. */
     thumbnailFor: (Int) -> Bitmap? = { null },
+    /** The last ten seconds of sound. Null in a preview that has no microphone behind it. */
+    spectrogram: SpectrogramState? = null,
     modifier: Modifier = Modifier,
 ) {
     // Its own ground, rather than the Scaffold's. The palette is ink on paper and there is no
     // dark paper (Theme.kt); a screen that borrows its background is one container away from
     // rendering white text on grey, which is exactly what the first snapshot of it did.
     Column(modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
+        // Pinned, not scrolled with the list. It is the only thing on the screen that says the
+        // microphone is actually open, and it is no use once it has scrolled away.
+        if (spectrogram != null) {
+            SpectrogramStrip(
+                state = spectrogram,
+                listening = listening,
+                elapsedSeconds = elapsedSeconds,
+                modifier = Modifier.padding(horizontal = 20.dp, vertical = 12.dp),
+            )
+        }
+
         LazyColumn(
             Modifier.weight(1f),
             contentPadding = PaddingValues(horizontal = 20.dp, vertical = 12.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-            item { Level(listening, elapsedSeconds) }
+            if (spectrogram == null) item { Level(listening, elapsedSeconds) }
 
             if (note != null) {
                 item {

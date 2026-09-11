@@ -423,6 +423,53 @@ class ScreenshotTest {
     // A row carrying "against Willow Warbler, Wood Warbler" next to a confidence ring on a
     // Pixel 5 is exactly the kind of line that gets truncated in a field in Denmark.
 
+    /**
+     * A spectrogram filled by the real thing: synthetic birdsong through the real
+     * [dk.lifelist.core.Spectrograph] and the real colour scale. A hand-painted gradient here
+     * would render beautifully and prove nothing — the question this snapshot answers is
+     * whether a song is legible at 136dp on a phone, and only real columns can answer it.
+     */
+    private fun sungInto(state: SpectrogramState): SpectrogramState {
+        val rate = 32_000
+        val graph = dk.lifelist.core.Spectrograph(sampleRate = rate)
+        val random = java.util.Random(4)
+
+        // A phase accumulator, not `sin(2 * PI * f(t) * t)`. The second is the obvious way to
+        // write a falling note and is not one: the instantaneous frequency of it is
+        // `f + t·df/dt`, which for a note falling over half a second is several kilohertz below
+        // zero within a breath, and what it draws is the aliasing rather than the bird. The
+        // first version of this fixture did exactly that and rendered a convincing picture of
+        // nothing. Caught by reading the snapshot against where the mel axis says 8 kHz is.
+        var phase = 0.0
+        val samples = FloatArray(rate * 10) { i ->
+            val t = i.toDouble() / rate
+            var v = random.nextGaussian() * 0.0006          // the afternoon
+            val phrase = t % 2.4
+
+            // A chaffinch-ish cascade: falling, twice a bar, with a second harmonic.
+            val hz = if (phrase < 0.55) 5200 - 2600 * (phrase / 0.55) else 0.0
+            phase += 2 * Math.PI * hz / rate
+            if (hz > 0) {
+                val envelope = kotlin.math.sin(Math.PI * (phrase / 0.55))
+                v += 0.30 * kotlin.math.sin(phase) * envelope
+                v += 0.08 * kotlin.math.sin(2 * phase) * envelope
+            }
+
+            // A single high seep, steady, where a goldcrest lives.
+            if (phrase > 1.2 && phrase < 1.45) {
+                v += 0.10 * kotlin.math.sin(2 * Math.PI * 8100 * t)
+            }
+
+            // A car going past: broadband, low, and nothing to do with any bird.
+            if (t > 6.0 && t < 8.5) {
+                v += random.nextGaussian() * 0.02 * kotlin.math.sin(Math.PI * (t - 6.0) / 2.5)
+            }
+            v.toFloat()
+        }
+        state.push(graph.add(samples))
+        return state
+    }
+
     private fun heard(
         taxonId: Int,
         name: String,
@@ -442,6 +489,7 @@ class ScreenshotTest {
         paparazzi.snapshot {
             LifeListTheme {
                 ListenScreen(
+                    spectrogram = sungInto(SpectrogramState()),
                     thumbnailFor = { photo(Color.rgb(96, 84, 66), Color.rgb(38, 32, 24)) },
                     listening = true,
                     heard = listOf(
@@ -486,6 +534,7 @@ class ScreenshotTest {
         paparazzi.snapshot {
             LifeListTheme {
                 ListenScreen(
+                    spectrogram = SpectrogramState(),
                     listening = false,
                     heard = emptyList(),
                     elapsedSeconds = 0f,

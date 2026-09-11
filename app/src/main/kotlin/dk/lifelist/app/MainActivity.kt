@@ -72,6 +72,7 @@ import dk.lifelist.core.LocationSource
 import dk.lifelist.core.Presentation
 import dk.lifelist.core.Record
 import dk.lifelist.core.Rollup
+import dk.lifelist.core.Spectrograph
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -188,6 +189,11 @@ fun App() {
         )
     }
     val recorder = remember { Recorder() }
+    // The picture of the sound, and the thing that fills it. Both outlive a session so the last
+    // ten seconds are still on screen after "Stop listening" — the moment you most want to look
+    // at what was there is just after you stopped.
+    val spectrogram = remember { SpectrogramState() }
+    val spectrograph = remember { Spectrograph(sampleRate = Listener.SAMPLE_RATE) }
     val clipPlayer = rememberClipPlayer()
     val referenceAudio = remember { ReferenceAudio(context) }
     val occurrences = remember { OccurrenceIndex(context) }
@@ -418,9 +424,16 @@ fun App() {
         listenedFor = 0f
         listening = true
         listenNote = null
+        spectrograph.reset()
+        spectrogram.clear()
         thread {
             runCatching {
-                recorder.record { window ->
+                recorder.record(
+                    // On the microphone thread, so it has to be cheap: one 2048-point FFT per
+                    // 50 ms of audio, which is about a thousandth of the budget the model
+                    // spends on the same audio a moment later.
+                    onSamples = { samples -> spectrogram.push(spectrograph.add(samples)) },
+                ) { window ->
                     listenedFor = window.startS + 5f
                     val found = model.listen(
                         window.samples,
@@ -633,6 +646,7 @@ fun App() {
 
                 Screen.LISTEN -> Box(Modifier.fillMaxSize().padding(insets)) {
                     ListenScreen(
+                        spectrogram = spectrogram,
                         playing = clipPlayer.playing,
                         onPlay = { clipPlayer.toggle(it) },
                         referenceFor = { referenceAudio.clip(it) },
