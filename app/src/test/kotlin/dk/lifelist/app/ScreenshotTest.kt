@@ -19,6 +19,8 @@ import dk.lifelist.core.RollupResult
 import dk.lifelist.core.Taxon
 import dk.lifelist.core.Taxonomy
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.ui.Modifier
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -88,12 +90,17 @@ class ScreenshotTest {
             RollupResult(taxonId, rank, probability, candidates, threshold = 0.70f),
         )
 
-    private fun record(id: String, taxonId: Int, at: Long, by: Determiner = Determiner.MODEL) =
-        Record(
-            id = id, taxonId = taxonId, observedAt = at, photoPaths = emptyList(),
-            threshold = 0.70f, modelVersion = "2026-08-18-full", determinedBy = by,
-            confidence = 0.91f, latitude = 55.676, longitude = 12.568,
-        )
+    private fun record(
+        id: String,
+        taxonId: Int,
+        at: Long,
+        by: Determiner = Determiner.MODEL,
+        clip: String? = null,
+    ) = Record(
+        id = id, taxonId = taxonId, observedAt = at, photoPaths = emptyList(),
+        threshold = 0.70f, modelVersion = "2026-08-18-full", determinedBy = by,
+        confidence = 0.91f, latitude = 55.676, longitude = 12.568, clipPath = clip,
+    )
 
     /** A stand-in photograph: a gradient, so cropping and scaling are visible. */
     private fun photo(from: Int, to: Int): Bitmap {
@@ -145,7 +152,58 @@ class ScreenshotTest {
         )
         paparazzi.snapshot {
             LifeListTheme {
-                HomeScreen(taxonomy, records, onOpenRecord = {}, onOpenGroup = {})
+                HomeScreen(
+                    taxonomy, records, onOpenRecord = {}, onOpenGroup = {},
+                    referencePhotoFor = { photo(Color.rgb(104, 92, 70), Color.rgb(44, 38, 28)) },
+                )
+            }
+        }
+    }
+
+    @Test
+    fun `a record you heard wears the species picture, marked as not yours`() {
+        // The blank tiles in his list: a bird identified by sound has no photograph, and the
+        // card for one was an empty square with a name under it. It now shows the species'
+        // own picture — with a waveform on it, because a reference photograph passed off as
+        // yours would quietly turn a life list into a field guide.
+        val records = listOf(
+            record("heard", 1688020, 1_755_000_000_000, clip = "/clips/1.wav"),
+            record("seen", 9761484, 1_754_000_000_000),
+        )
+        paparazzi.snapshot {
+            LifeListTheme {
+                HomeScreen(
+                    taxonomy, records, onOpenRecord = {}, onOpenGroup = {},
+                    referencePhotoFor = { photo(Color.rgb(120, 104, 74), Color.rgb(48, 42, 30)) },
+                )
+            }
+        }
+    }
+
+    @Test
+    fun `the record page of a bird you only heard`() {
+        // No photograph of yours, so the species' own — and the photographer's name under it,
+        // which is both what the licence asks for and the thing that makes it unmistakably
+        // not yours. On the tiles there is no room for a sentence, so they wear a waveform
+        // instead; here there is room, so it says so in words.
+        paparazzi.snapshot {
+            LifeListTheme {
+                // The sheet's own ground, which the ModalBottomSheet supplies in the app.
+                Box(Modifier.background(MaterialTheme.colorScheme.surfaceContainerLow)) {
+                Details(
+                    taxonomy = taxonomy,
+                    record = record("heard", 1688020, 1_755_000_000_000, clip = "/clips/1.wav"),
+                    article = null,
+                    suggestion = null,
+                    onUseSuggestion = {}, onDismissSuggestion = {},
+                    onOpenPhoto = {}, onAddPhoto = {}, onSettle = {}, onCorrect = {},
+                    onBroaden = {}, onEdit = {},
+                    referencePhotoFor = { photo(Color.rgb(120, 104, 74), Color.rgb(48, 42, 30)) },
+                    referenceCreditFor = {
+                        ReferencePhotos.Credit("Gilles San Martin", "CC BY-SA 4.0")
+                    },
+                )
+                }
             }
         }
     }

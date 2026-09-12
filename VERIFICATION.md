@@ -3336,6 +3336,42 @@ exactly the kind of unmeasured guess the rest of this file exists to avoid.
 
 ---
 
+## 78. A blank square with a name under it — 12 Sep 2026
+
+Two of the first three cards on his home screen were empty. Both were birds identified by
+sound, and a record made by listening has no photograph — you heard it, you did not see it — so
+`rememberThumbnail(record.photoPath)` returned null and the card drew nothing at all. The app
+has a curated photograph of nearly every species it can name (§37) and was not using it in the
+one place where there is certainly no other picture.
+
+**Shown, but marked.** A reference photograph presented as yours would quietly turn a life list
+into a field guide, so every borrowed picture carries something that says it is borrowed:
+
+- On a 116dp tile there is no room for a sentence, so a 21dp mark in the corner — a **waveform**
+  when the record has a clip, which says both "not your photograph" and *why* there isn't one.
+- On the record page there is room, so the photographer's name goes under it in words. That is
+  what the licence asks for anyway (§37), and it is also the least ambiguous possible marking.
+
+**Two bugs found on the way, both about caching.**
+
+`ReferencePhotos.thumbnail(taxonId, pixels)` took a size and then cached on the taxon alone, so
+the same bird wanted at 44dp in a family roster and at 116dp on a recent card got whichever size
+asked first — and which that was depended on which screen you happened to open. Keyed on both
+now. It is the same mistake the class's own comment warns about one level up, where `photo` and
+`thumbnail` are cached separately for exactly this reason.
+
+And the composable nearly shipped with a `remember` behind an `if`. A conditional `remember`
+moves in the slot table when the condition changes, which is how a card starts showing another
+record's photograph. Both calls now run every time.
+
+**The sheet rendered as a rectangle of nothing.** `ModalBottomSheet` draws into a dialog window
+Paparazzi does not capture, so the first snapshot of the record page was blank. `Details` is
+`internal` now and the snapshot renders that. Worth the widened visibility: this app's rule is
+that nothing reaches the phone unlooked-at, and a screen that cannot be rendered is a screen
+that gets shipped on reasoning.
+
+---
+
 ---
 
 ## Open questions

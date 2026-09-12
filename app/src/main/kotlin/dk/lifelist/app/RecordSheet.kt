@@ -1,5 +1,6 @@
 package dk.lifelist.app
 
+import android.graphics.Bitmap
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -104,6 +105,9 @@ fun RecordSheet(
     playingClip: String? = null,
     onPlayClip: (String) -> Unit = {},
     referenceAudio: ReferenceAudio? = null,
+    /** The species' own picture and its photographer, for a record with none of yours. */
+    referencePhotoFor: (Int) -> Bitmap? = { null },
+    referenceCreditFor: (Int) -> ReferencePhotos.Credit? = { null },
     onDismiss: () -> Unit,
 ) {
     var mode by remember(record.id) { mutableStateOf(Mode.DETAILS) }
@@ -180,6 +184,8 @@ fun RecordSheet(
                 playingClip = playingClip,
                 onPlayClip = onPlayClip,
                 referenceAudio = referenceAudio,
+                referencePhotoFor = referencePhotoFor,
+                referenceCreditFor = referenceCreditFor,
             )
         }
     }
@@ -187,8 +193,16 @@ fun RecordSheet(
 
 private enum class Mode { DETAILS, SETTLE, CORRECT, BROADER, EDIT }
 
+/**
+ * The sheet's contents, apart from the sheet.
+ *
+ * `internal` so Paparazzi can render it. A `ModalBottomSheet` draws into a dialog window that
+ * a snapshot does not capture — the first attempt at a snapshot of this screen was a
+ * rectangle of nothing — and this screen is exactly the kind that has shipped wrong before
+ * for want of a glance at it.
+ */
 @Composable
-private fun Details(
+internal fun Details(
     taxonomy: Taxonomy,
     record: Record,
     article: Wikipedia.Article?,
@@ -206,6 +220,8 @@ private fun Details(
     playingClip: String? = null,
     onPlayClip: (String) -> Unit = {},
     referenceAudio: ReferenceAudio? = null,
+    referencePhotoFor: (Int) -> Bitmap? = { null },
+    referenceCreditFor: (Int) -> ReferencePhotos.Credit? = { null },
 ) {
     val context = LocalContext.current
     val node = taxonomy.nodeOrNull(record.taxonId)
@@ -226,6 +242,31 @@ private fun Details(
         if (record.photoPaths.isNotEmpty()) {
             PhotoRow(record.photoPaths, onOpenPhoto)
             Spacer(Modifier.height(16.dp))
+        } else {
+            // Nothing of yours, so the species' own picture — with the photographer's name
+            // under it, which is both the licence's requirement and the thing that makes it
+            // unmistakably not your photograph.
+            val stock = remember(record.taxonId) { referencePhotoFor(record.taxonId) }
+            stock?.let { bitmap ->
+                Box(
+                    Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(1.5f)
+                        .clip(MaterialTheme.shapes.large)
+                        .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+                ) {
+                    Image(
+                        bitmap = bitmap.asImageBitmap(),
+                        contentDescription = "Reference photo",
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop,
+                    )
+                }
+                referenceCreditFor(record.taxonId)?.let {
+                    CreditLine(it.credit, it.licence)
+                }
+                Spacer(Modifier.height(16.dp))
+            }
         }
 
         // A record made by listening keeps the five seconds that made it, and the app can put

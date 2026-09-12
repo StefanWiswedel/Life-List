@@ -572,6 +572,9 @@ fun App() {
                             records = records,
                             onOpenRecord = { openRecordId = it.id },
                             onOpenGroup = { group = it; screen = Screen.GROUP },
+                            // A recent card is 116dp, so it asks for a bigger decode than the
+                            // 44dp roster does. The cache is keyed by size, so both are right.
+                            referencePhotoFor = { references.thumbnail(it, pixels = 360) },
                         )
                     }
                     // Two ways in, because there are two ways a sighting happens: pointing the
@@ -859,6 +862,8 @@ fun App() {
             playingClip = clipPlayer.playing,
             onPlayClip = { clipPlayer.toggle(it) },
             referenceAudio = referenceAudio,
+            referencePhotoFor = { references.photo(it) },
+            referenceCreditFor = { references.credit(it) },
             taxonomy = listTaxonomy,
             record = openRecord,
             article = wikipedia.article(openRecord.taxonId),

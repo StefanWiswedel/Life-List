@@ -29,7 +29,7 @@ class ReferencePhotos(private val context: Context) {
     }
 
     private val cache = mutableMapOf<Int, Bitmap?>()
-    private val thumbnails = mutableMapOf<Int, Bitmap?>()
+    private val thumbnails = mutableMapOf<Pair<Int, Int>, Bitmap?>()
 
     fun photo(taxonId: Int): Bitmap? = cache.getOrPut(taxonId) {
         runCatching {
@@ -48,8 +48,14 @@ class ReferencePhotos(private val context: Context) {
      * Cached apart from [photo]: the same taxon can want both — a thumbnail in the roster and
      * the full photograph on its page — and a cache holding one at the other's size would make
      * whichever came second look wrong.
+     *
+     * **Keyed by the size as well as the taxon**, for that same reason one level down. The first
+     * version keyed on taxon alone, so a bird wanted at 44dp in a roster and at 116dp on a
+     * recent card got whichever size asked first, and which that was depended on which screen
+     * you happened to open.
      */
-    fun thumbnail(taxonId: Int, pixels: Int = THUMBNAIL): Bitmap? = thumbnails.getOrPut(taxonId) {
+    fun thumbnail(taxonId: Int, pixels: Int = THUMBNAIL): Bitmap? =
+        thumbnails.getOrPut(taxonId to pixels) {
         runCatching {
             val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
             context.assets.open("reference/$taxonId.jpg").use {

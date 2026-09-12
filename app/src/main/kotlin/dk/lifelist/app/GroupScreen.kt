@@ -137,7 +137,7 @@ fun GroupScreen(
         }
 
         items(sorted, key = { it.id }) { record ->
-            GroupRow(taxonomy, record) { onOpenRecord(record) }
+            GroupRow(taxonomy, record, thumbnailFor) { onOpenRecord(record) }
         }
 
         if (sorted.isEmpty()) {
@@ -155,12 +155,17 @@ fun GroupScreen(
 }
 
 @Composable
-private fun GroupRow(taxonomy: Taxonomy, record: Record, onClick: () -> Unit) {
+private fun GroupRow(
+    taxonomy: Taxonomy,
+    record: Record,
+    referencePhotoFor: (Int) -> Bitmap?,
+    onClick: () -> Unit,
+) {
     val node = taxonomy.nodeOrNull(record.taxonId)
     val styled = remember(record.taxonId) {
         node?.let { Presentation.styleName(it.scientificName, it.rank) }.orEmpty()
     }
-    val thumbnail = rememberThumbnail(record.photoPath)
+    val picture = rememberRecordPicture(record, referencePhotoFor)
     val isSpecies = node?.isLeaf == true && record.taxonId > 0
 
     Column {
@@ -177,12 +182,18 @@ private fun GroupRow(taxonomy: Taxonomy, record: Record, onClick: () -> Unit) {
                     .clip(MaterialTheme.shapes.medium)
                     .background(MaterialTheme.colorScheme.surfaceContainerHigh)
             ) {
-                thumbnail?.let {
+                picture.bitmap?.let {
                     Image(
                         bitmap = it.asImageBitmap(),
                         contentDescription = null,
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.Crop,
+                    )
+                }
+                if (picture.isReference) {
+                    NotYoursMark(
+                        heard = record.clipPath != null,
+                        modifier = Modifier.align(Alignment.TopEnd).padding(2.dp),
                     )
                 }
             }

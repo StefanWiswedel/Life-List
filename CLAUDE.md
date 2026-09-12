@@ -45,7 +45,7 @@ When trading off, trade in favour of a record being keepable at the rank the evi
 | common names | **3,253 of 3,482 species** have one; the other 229 have none anywhere (§28, §71) |
 | multi-photo | fused via §3.2; **four zooms per photo, most confident wins** (§29, §53, §54) |
 | species info | **7,111 of 7,493 nodes** carry a bundled Wikipedia intro (§31, §50, §70) |
-| reference photos | iNaturalist's curated pick — **3,462 vision leaves and 790 audio ones** (§37, §50, §66) |
+| reference photos | iNaturalist's curated pick — **3,462 vision leaves and 790 audio ones** (§37, §50, §66); stands in for a record with no photo of yours, always marked (§78) |
 | reference sound | xeno-canto, **731 of 795 species**, ten-second Opus clips (§69) |
 | corrections | rename to any taxon, or retreat to a rank you trust; the model's answer is kept (§38, §40) |
 | coverage | **3,482 leaves, 676 Lepidoptera** at ≥20 observations (§44) — up from 2,294 and 468 |

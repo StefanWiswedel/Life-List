@@ -20,7 +20,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.GraphicEq
+import androidx.compose.material.icons.outlined.Image
 import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -64,6 +69,8 @@ fun HomeScreen(
     onOpenRecord: (Record) -> Unit,
     onOpenGroup: (String) -> Unit,
     modifier: Modifier = Modifier,
+    /** The species' own picture, for a record that has none of yours. */
+    referencePhotoFor: (Int) -> Bitmap? = { null },
 ) {
     val totals = remember(records) { LifeList.totals(taxonomy, records) }
     val tallies = remember(records) { LifeList.tally(taxonomy, records) }
@@ -88,7 +95,7 @@ fun HomeScreen(
                     horizontalArrangement = Arrangement.spacedBy(11.dp),
                 ) {
                     items(recent, key = { it.id }) { record ->
-                        RecentCard(taxonomy, record) { onOpenRecord(record) }
+                        RecentCard(taxonomy, record, referencePhotoFor) { onOpenRecord(record) }
                     }
                 }
             }
@@ -210,14 +217,19 @@ private fun SectionLabel(text: String) {
 }
 
 @Composable
-private fun RecentCard(taxonomy: Taxonomy, record: Record, onClick: () -> Unit) {
+private fun RecentCard(
+    taxonomy: Taxonomy,
+    record: Record,
+    referencePhotoFor: (Int) -> Bitmap?,
+    onClick: () -> Unit,
+) {
     // `nodeOrNull`, not `node`. A record outlives the model that made it, and a retrained
     // taxonomy that has dropped a taxon must not take the whole screen down with it.
     val node = taxonomy.nodeOrNull(record.taxonId)
     val styled = remember(record.taxonId) {
         node?.let { Presentation.styleName(it.scientificName, it.rank) }.orEmpty()
     }
-    val thumbnail = rememberThumbnail(record.photoPath)
+    val picture = rememberRecordPicture(record, referencePhotoFor)
     val isSpecies = node?.isLeaf == true && record.taxonId > 0
 
     Column(Modifier.width(116.dp).clickable(onClick = onClick)) {
@@ -228,12 +240,18 @@ private fun RecentCard(taxonomy: Taxonomy, record: Record, onClick: () -> Unit) 
             modifier = Modifier.size(116.dp),
         ) {
             Box {
-                thumbnail?.let {
+                picture.bitmap?.let {
                     Image(
                         bitmap = it.asImageBitmap(),
                         contentDescription = null,
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.Crop,
+                    )
+                }
+                if (picture.isReference) {
+                    NotYoursMark(
+                        heard = record.clipPath != null,
+                        modifier = Modifier.align(Alignment.TopEnd).padding(7.dp),
                     )
                 }
                 Surface(
@@ -269,6 +287,33 @@ private fun RecentCard(taxonomy: Taxonomy, record: Record, onClick: () -> Unit) 
                 overflow = TextOverflow.Ellipsis,
             )
         }
+    }
+}
+
+/**
+ * The mark on a picture that is not yours.
+ *
+ * Small and unmissable rather than large and explanatory: on a 116dp tile there is no room for
+ * a sentence, and a reference photograph passed off as your own would quietly turn a life list
+ * into a field guide. The waveform says why there is no photograph — you heard this one.
+ */
+@Composable
+fun NotYoursMark(heard: Boolean, modifier: Modifier = Modifier) {
+    Surface(
+        color = Warm.Card.copy(alpha = 0.92f),
+        shape = CircleShape,
+        modifier = modifier.size(21.dp),
+    ) {
+        Icon(
+            if (heard) Icons.Filled.GraphicEq else Icons.Outlined.Image,
+            contentDescription = if (heard) {
+                "Heard, not photographed — this is a reference picture"
+            } else {
+                "A reference picture, not your photograph"
+            },
+            tint = MaterialTheme.colorScheme.outline,
+            modifier = Modifier.padding(4.dp),
+        )
     }
 }
 
@@ -322,6 +367,31 @@ private fun EmptyInvitation() {
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }
+}
+
+/**
+ * What to draw for a record: your photograph, or the species' own picture.
+ *
+ * A record made by listening has no photograph — you heard the bird, you did not see it — and
+ * the card for one was a blank square with a name under it. The app has a reference photograph
+ * of nearly every species it can name, so it can put a face to the name; what it must not do is
+ * let that be mistaken for yours, hence [isReference] and the mark the cards draw from it.
+ */
+data class RecordPicture(val bitmap: Bitmap?, val isReference: Boolean)
+
+@Composable
+fun rememberRecordPicture(
+    record: Record,
+    referenceFor: (Int) -> Bitmap?,
+): RecordPicture {
+    val own = rememberThumbnail(record.photoPath)
+    // Both `remember`s run every time, in the same order. A `remember` behind an `if` moves in
+    // the slot table when the condition changes, which is how a composable starts showing
+    // another record's photograph.
+    val reference = remember(record.taxonId, own) {
+        if (own == null) referenceFor(record.taxonId) else null
+    }
+    return RecordPicture(own ?: reference, own == null && reference != null)
 }
 
 /**
