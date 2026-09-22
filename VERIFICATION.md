@@ -3447,6 +3447,79 @@ of log access.
 
 ---
 
+## 81. Denmark's checklist, and the groups that could never fill — 22 Sep 2026
+
+Asked for: make the taxonomic list central, families as the grouping, and **show the things you
+have not found**. The last clause is the one that costs something, because "not found" needs a
+list of everything, and the app has never had one. Its taxonomy is its *output space*: 3,482
+species that cleared twenty iNaturalist photographs, which measures how often people photograph
+a thing rather than what lives here.
+
+**Measured before choosing.** Against the Red List's own family totals the model can name a
+median **40%** of a Danish family — 64 of 490 weevils, 2 of 228 webcaps. An index built on the
+model's vocabulary would have shown a weevil family complete at 64 and never mentioned the
+other 426. Decided: the checklist is the denominator, and **the list you can scroll is the
+denominator** — a count from one source over a list from another gives "3 of 490" above 380
+rows, and an index whose arithmetic disagrees with its own contents is worse than a smaller
+honest world.
+
+**What it is.** GBIF's Danish occurrence facets, every species key with at least five
+independent records, resolved to a backbone record and a vernacular: **26,722 species in 2,461
+families**, 4.7 MB, of which the model can name 3,430. 12,795 have an English name; 179 are
+placed no finer than an order and are listed anyway, with no family to count towards.
+
+Three filters, each measured rather than assumed:
+
+- **Five records.** 1 gives 52,487, nearly all of the tail single records and taxonomic noise;
+  50 gives 12,505 and starts dropping real species.
+- **Accepted only.** 319 of the keys come back `DOUBTFUL` — GBIF saying it does not believe the
+  taxon. Asking somebody to go and find a name nobody stands behind is not a quest.
+- **Animals, plants and fungi.** Denmark's records hold 1,425 bacteria and 910 chromists —
+  mostly diatoms — above five records. Real organisms, really recorded, and not things anybody
+  goes out and finds. Left in they are 2,500 species of unreachable denominator making every
+  group look less complete than it is.
+
+### The bug this turned up
+
+Grouping the checklist put **4,535 species in "Other"**, which sent me to look at the group
+keys — and they are wrong in the shipped app. `Reptiles` was GBIF key 358 (Reptilia) and `Fish`
+was 204 (Actinopterygii), and **neither appears in GBIF's current backbone lineages**. Checked
+against the app's own bundled taxonomy, not the new data:
+
+    Natrix natrix   -> Other      (class Squamata, not Reptilia)
+    Vipera berus    -> Other
+    Esox lucius     -> Other      (order Esociformes hangs straight off Chordata; no class)
+    Perca fluviatilis -> Other
+
+Every Danish reptile and every fish the app knows has been landing in "Other", while the home
+screen offered "nothing yet in fish, reptiles" as categories that could never fill. Shipping
+since the groups were written.
+
+Fish is not a key any more, it is **Chordata, tested after the four vertebrate groups above
+it** — the existing first-match-wins ordering does the work, and it survives GBIF reshuffling
+its fish classes again, which it has now done twice. The cost is fifteen species of sea squirt
+filed as fish; the alternative was a dozen order keys that break on the next revision. Reptiles
+keeps **both** keys, because dropping Reptilia would make the app right about GBIF today and
+wrong about every tree that still uses it — which is exactly how this happened.
+
+Crustaceans, Worms and the corrected Fish take "Other" from 4,535 species to 865.
+
+| group | families | in Denmark | the app can name |
+|---|---|---|---|
+| Birds | 90 | 705 | 238 |
+| Insects | 456 | 10,296 | 1,561 |
+| Fungi | 543 | 7,079 | 272 |
+| Plants | 381 | 4,998 | 1,006 |
+| Fish | 121 | 312 | 44 |
+| Reptiles | 6 | 30 | 6 |
+
+**A resumable fetch that remembers its failures.** Six keys hit a transient `ConnectionError`
+and were written to the cache as error rows, which `cached_lines` then counted as done — so a
+dropped packet became a permanent hole, invisible because the species is simply not there to
+miss. One of the six was a swallow on 438,000 Danish records. Failures are no longer cached.
+
+---
+
 ---
 
 ## Open questions

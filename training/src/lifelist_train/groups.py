@@ -15,16 +15,36 @@ from __future__ import annotations
 
 from collections.abc import Iterable, Sequence
 
-#: Order matters: the first ancestor found wins, so Insecta is tested before Animalia would be.
+#: Order matters: the first ancestor found wins, so Insecta is tested before Animalia would be,
+#: and Fish is last among the chordates because it is defined as the ones left over.
+#:
+#: **[corrected 22 Sep 2026]** Reptiles was 358 (Reptilia) and Fish was 204 (Actinopterygii),
+#: and neither key appears in GBIF's current backbone lineages. Every Danish reptile and every
+#: fish the model knows was landing in "Other" — a grass snake sits under class *Squamata*, and
+#: a pike has no class at all, its order hanging straight off Chordata. The home screen has
+#: been offering "nothing yet in fish, reptiles" as categories that could never fill.
+#:
+#: So Fish is not a key any more, it is `Chordata`, placed after the four vertebrate groups
+#: that are tested before it. That survives GBIF reshuffling its fish classes again, which it
+#: has now done twice. The cost is fifteen species of sea squirt filed as fish; the alternative
+#: was a dozen order keys that break on the next revision.
+#:
+#: Reptiles keeps *both* keys. Two entries with one label are fine — the first match wins and
+#: both answer to the same name — and dropping 358 would have made the app right about GBIF
+#: today and wrong about every tree that still uses Reptilia, which is how this went wrong in
+#: the first place.
 DEFAULT_GROUPS: tuple[tuple[str, int], ...] = (
     ("Birds", 212),
     ("Mammals", 359),
+    ("Reptiles", 11592253),
     ("Reptiles", 358),
     ("Amphibians", 131),
-    ("Fish", 204),
+    ("Fish", 44),
     ("Insects", 216),
     ("Arachnids", 367),
+    ("Crustaceans", 229),
     ("Molluscs", 52),
+    ("Worms", 42),
     ("Plants", 6),
     ("Fungi", 5),
 )

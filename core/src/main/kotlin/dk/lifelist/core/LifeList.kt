@@ -96,15 +96,27 @@ enum class LocationSource {
 data class Group(val label: String, val taxonId: Int)
 
 val DEFAULT_GROUPS: List<Group> = listOf(
-    // Order matters: the first match wins, so Insecta is tested before Animalia would be.
+    // Order matters: the first match wins, so Insecta is tested before Animalia would be, and
+    // Fish is last among the chordates because it is defined as the ones left over.
+    //
+    // **[corrected 22 Sep 2026]** Reptiles was 358 and Fish was 204, and neither key appears
+    // in GBIF's current backbone lineages. Every Danish reptile and every fish the model knows
+    // was landing in "Other": a grass snake sits under class *Squamata*, and a pike has no
+    // class at all, its order hanging straight off Chordata. This screen has been offering
+    // "nothing yet in fish, reptiles" as categories that could never fill. See §81.
     Group("Birds", 212),
     Group("Mammals", 359),
+    Group("Reptiles", 11592253),
+    // Both keys, one label: the first match wins, and dropping Reptilia would make this
+    // right about GBIF today and wrong about every tree that still uses it.
     Group("Reptiles", 358),
     Group("Amphibians", 131),
-    Group("Fish", 204),
+    Group("Fish", 44),
     Group("Insects", 216),
     Group("Arachnids", 367),
+    Group("Crustaceans", 229),
     Group("Molluscs", 52),
+    Group("Worms", 42),
     Group("Plants", 6),
     Group("Fungi", 5),
 )
