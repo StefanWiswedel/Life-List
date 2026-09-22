@@ -52,6 +52,7 @@ When trading off, trade in favour of a record being keepable at the rank the evi
 | coverage | **3,482 leaves, 676 Lepidoptera** at ≥20 observations (§44) — up from 2,294 and 468 |
 | rarity | Red List badge, family progress, and **Danish recording effort per species** (§55, §72) |
 | checklist | **26,722 Danish species in 2,461 families** from GBIF — the denominator for what you have *not* found (§81) |
+| index | families fullest first, species commonest first, the unfound shown and the un-nameable marked (§82) |
 | certainty | **the dial is an accuracy, not a probability** — one threshold per group (§58, §59) |
 | audio | §4A in both languages with a golden fixture; **801 BirdNET classes crossed, 795 leaves** (§60–62) |
 | listening screen | a **live spectrogram** — ours, for eyes, never the model's (§74) |

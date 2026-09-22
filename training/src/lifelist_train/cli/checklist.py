@@ -18,6 +18,7 @@ from __future__ import annotations
 import argparse
 import json
 from concurrent.futures import ThreadPoolExecutor
+from dataclasses import replace
 from datetime import date
 from pathlib import Path
 
@@ -152,19 +153,19 @@ def main(argv: list[str] | None = None) -> int:
             kept.append(row)
     LOG.info("%d of %d resolved records belong on the checklist", len(kept), len(records))
 
+    def vernacular(key: int) -> dict:
+        try:
+            found = client.vernacular_names(key)
+        except Exception:  # noqa: BLE001
+            return {"key": key, "en": None, "da": None}
+        return {
+            "key": key,
+            "en": pick_vernacular(found, "eng"),
+            "da": pick_vernacular(found, "dan"),
+        }
+
     names: dict[int, dict] = {}
     if not args.no_vernaculars:
-        def vernacular(key: int) -> dict:
-            try:
-                found = client.vernacular_names(key)
-            except Exception:  # noqa: BLE001
-                return {"key": key, "en": None, "da": None}
-            return {
-                "key": key,
-                "en": pick_vernacular(found, "eng"),
-                "da": pick_vernacular(found, "dan"),
-            }
-
         names = fetch(
             cache_path(args.cache_dir, f"checklist_names_{args.country}.jsonl"),
             [int(row["key"]) for row in kept],
@@ -172,6 +173,24 @@ def main(argv: list[str] | None = None) -> int:
             args.workers,
             "vernaculars",
         )
+
+    # Family names too. A family is the headline of every row in the index, and "Anatidae"
+    # where "Ducks, Geese, And Swans" belongs turns a browsable list into a taxonomy dump.
+    # 544 of the 2,461 are already in the bundled taxonomy; the rest are one request each.
+    family_index = families(kept)
+    family_names: dict[int, dict] = {}
+    if not args.no_vernaculars:
+        family_names = fetch(
+            cache_path(args.cache_dir, f"checklist_family_names_{args.country}.jsonl"),
+            sorted(family_index),
+            vernacular,
+            args.workers,
+            "family names",
+        )
+    family_index = {
+        key: replace(family, vernacular_en=(family_names.get(key) or {}).get("en"))
+        for key, family in family_index.items()
+    }
 
     known = identifiable(args.taxonomy)
     species = [
@@ -189,7 +208,7 @@ def main(argv: list[str] | None = None) -> int:
 
     written = document(
         species,
-        families(kept),
+        family_index,
         known,
         country=args.country,
         min_records=args.min_records,
@@ -198,12 +217,14 @@ def main(argv: list[str] | None = None) -> int:
     write_json(args.out, written)
 
     named = sum(1 for one in species if one.vernacular_en)
+    families_named = sum(1 for f in family_index.values() if f.vernacular_en)
     LOG.info(
-        "%s: %d species, %d families, %d the model can name, %d with an English name, "
-        "%d placed no finer than an order",
+        "%s: %d species, %d families (%d named), %d the model can name, %d with an English "
+        "name, %d placed no finer than an order",
         args.out,
         len(species),
         len(written["families"]),
+        families_named,
         sum(1 for one in species if one.key in known),
         named,
         len(unplaced),

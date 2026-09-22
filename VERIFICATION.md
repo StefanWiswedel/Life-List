@@ -3520,6 +3520,46 @@ miss. One of the six was a swallow on 438,000 Danish records. Failures are no lo
 
 ---
 
+## 82. The index, and a denominator that described the screen — 22 Sep 2026
+
+The checklist made into something you can look at: a group's families, then a family's species,
+with what you have found laid over what there is. Rendered before it is wired to anything, which
+is how it gets looked at before it ships rather than after (§33).
+
+**Two levels, because ours cannot be one.** A bird guide groups 969 birds into families holding
+about eleven each and one scrolling list works. Denmark has 26,722 species in 2,461 families,
+39% of them holding a single species — one list would be a header every five rows.
+
+**Families fullest first.** Not alphabetical, and deliberately not "the ones you have started":
+an order that changes as you play makes the page you learned unlearnable. Ducks, waders and
+gulls at the top of the birds is a better first screen than Aegithalidae.
+
+**A roster is a to-do list, so it is ordered like one.** Yours first, then *commonest first* by
+Danish record count. Alphabetical would open the ducks on a vagrant nobody has seen since 1987.
+
+**The rows the camera cannot settle are the majority and are shown at full size**, with one
+quiet "by hand" mark. Hiding them, or dropping them from the count, would put the app's own
+limits back into the denominator — which is the single thing this screen exists to stop doing.
+
+### The bug the render caught
+
+Both headings computed their denominator by summing the rows on screen. With the fixture's nine
+bird families that read **"4 of 335 birds"** against a true 705, and the duck roster read
+**"4 of 16 in Denmark"** against a true 74 — while printing "the camera can name 41 of them"
+directly beside it, a sentence that cannot be true of sixteen.
+
+It is correct right up until the list is filtered or searched, at which point the headline
+silently starts describing the filter. And it is *the same mistake in miniature* that the whole
+checklist was built to fix: a denominator that describes what you happen to be holding rather
+than the world. Both now take the total as a parameter, from a `GroupLine` computed over the
+whole checklist.
+
+Worth keeping: **a number that describes the world must not be derived from the rows on screen.**
+A screen is a filter by nature. Nothing that is meant to be a fact about Denmark can be computed
+from it.
+
+---
+
 ---
 
 ## Open questions
