@@ -3372,6 +3372,44 @@ that gets shipped on reasoning.
 
 ---
 
+## 79. A fourth way onto the list, with no model in it — 22 Sep 2026
+
+Asked for: "a way to add species to my life list that I have identified outside of the app." A
+fox across a field, a bird the camera never got near, a name somebody standing next to you knew.
+Until now every route onto the list went through a model, which quietly made the app's own
+opinion a condition of keeping a record.
+
+A fourth small button by the camera opens the **same search the correction flow uses** — not a
+second one. It already knows every taxon the model knows at every rank, and a record kept at
+genus because that is all you could tell is the shape the whole app is built around. Picking a
+name saves at today and here, with the location filled in afterwards on a background thread, and
+opens the record page so the date and place can be changed. That is the audio path's shape,
+reused; the two now share one `keep()` rather than two copies of the same twenty-five lines.
+
+**`unaided`, and why it needed a name.** A hand-entered record has no confidence, no threshold it
+cleared and no model version that means anything, so the record page prints none of those rows —
+absent, not "not recorded". Printing an empty frame around machinery that never ran makes a thing
+you knew perfectly well look like a failed identification.
+
+It has to be told apart from a **corrected** record, which is also `USER` but keeps the model's
+own confidence and the rank it came from (§38, §40). The model saw that one; you disagreed. So
+the predicate is `USER && confidence == null && refinedFrom == null`, in `core` with tests, one
+of which asserts the thing that matters most: **an unaided record still counts.** Nothing in the
+tallies looks at who determined it, and a list that quietly filed a fox you watched under "not
+really" would be a worse list.
+
+**The picture comes free.** §78 landed a week ago: a record with no photograph of yours wears the
+species' reference picture with a mark saying it is not yours. A hand-entered record is exactly
+that case, so it arrives with a face already.
+
+**Rendered before shipped, including the part that is easy to skip.** Four stacked buttons is
+240dp of right-hand edge, and the kind of thing that reads fine in code and looks like a toolbar
+on a phone. The cluster is its own composable (`WaysIn`) so it could be snapshotted over a real
+home screen rather than on its own — the question was never whether the column looks right, it
+was whether it swallows the list behind it. It does not.
+
+---
+
 ---
 
 ## Open questions

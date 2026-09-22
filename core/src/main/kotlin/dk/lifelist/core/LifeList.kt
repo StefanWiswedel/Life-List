@@ -126,6 +126,21 @@ data class GroupTally(
     fun distinctTaxa(): Int = records.map { it.taxonId }.distinct().size
 }
 
+/**
+ * A record no model ever saw.
+ *
+ * Something you knew: a fox across a field, a bird the camera never got near, a name somebody
+ * told you. It is a real sighting and counts as one — the list's numbers make no distinction,
+ * and should not. What it cannot have is the machinery that comes with a determination: there
+ * is no confidence to report, no threshold it cleared, and no model version that means
+ * anything, so the record page must not print rows for them.
+ *
+ * Told apart from a **corrected** record, which is also `USER` but keeps the model's own
+ * confidence and the rank it came from (§38, §40). The model saw that one; you disagreed.
+ */
+val Record.unaided: Boolean
+    get() = determinedBy == Determiner.USER && confidence == null && refinedFrom == null
+
 object LifeList {
 
     /** Which group a taxon belongs to: the first configured ancestor found walking up. */

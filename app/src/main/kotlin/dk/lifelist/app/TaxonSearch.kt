@@ -188,6 +188,38 @@ fun BroaderSheet(
     }
 }
 
+/**
+ * Adding something you identified yourself, with no photograph and no model.
+ *
+ * A fox across a field, a bird the camera never got near, a name somebody standing next to you
+ * knew. The app's own answer is worth what it is worth, and it is not the only way a thing gets
+ * onto a life list.
+ *
+ * Deliberately the same search as the correction flow rather than a second one: it already
+ * knows every taxon the model knows, at every rank, and a record kept at genus because that is
+ * all you could tell is the shape this whole app is built around.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AddByNameSheet(taxonomy: Taxonomy, onPick: (Taxon) -> Unit, onDismiss: () -> Unit) {
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+        containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+    ) {
+        TaxonSearchContent(
+            heading = "What did you see?",
+            note = "Anything the app knows — species, genus or family. It is saved as your " +
+                "determination, dated now and placed here, and you can change all of that " +
+                "afterwards.",
+            source = { LifeList.search(taxonomy, it) },
+            emptyQueryHint = "Type at least two letters. Common names and scientific names " +
+                "both work.",
+            onPick = onPick,
+        )
+    }
+}
+
 /** The correction flow, as its own sheet, for use straight off an identification. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

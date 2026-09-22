@@ -20,6 +20,7 @@ import dk.lifelist.core.Taxon
 import dk.lifelist.core.Taxonomy
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -203,6 +204,87 @@ class ScreenshotTest {
                         ReferencePhotos.Credit("Gilles San Martin", "CC BY-SA 4.0")
                     },
                 )
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `the record page of something you simply knew`() {
+        // No model was involved, so there is no confidence, no threshold it cleared and no
+        // model version that means anything. Those rows are absent rather than empty: an
+        // empty frame around machinery that never ran makes a thing you knew perfectly well
+        // look like a failed identification.
+        paparazzi.snapshot {
+            LifeListTheme {
+                Box(Modifier.background(MaterialTheme.colorScheme.surfaceContainerLow)) {
+                    Details(
+                        taxonomy = taxonomy,
+                        record = record(
+                            "mine", 1688020, 1_755_000_000_000, by = Determiner.USER,
+                        ).copy(confidence = null, threshold = 0f),
+                        article = null,
+                        suggestion = null,
+                        onUseSuggestion = {}, onDismissSuggestion = {},
+                        onOpenPhoto = {}, onAddPhoto = {}, onSettle = {}, onCorrect = {},
+                        onBroaden = {}, onEdit = {},
+                        referencePhotoFor = {
+                            photo(Color.rgb(120, 104, 74), Color.rgb(48, 42, 30))
+                        },
+                        referenceCreditFor = {
+                            ReferencePhotos.Credit("Gilles San Martin", "CC BY-SA 4.0")
+                        },
+                    )
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `four ways onto the list, over a real screen`() {
+        // Four stacked buttons is 240dp of right-hand edge. Rendered over the home screen
+        // rather than on its own, because the question is not whether the column looks right,
+        // it is whether it swallows the list behind it.
+        val records = listOf(
+            record("a", 1688020, 1_755_000_000_000),
+            record("b", 9761484, 1_754_000_000_000),
+            record("c", 600, 1_753_000_000_000),
+        )
+        paparazzi.snapshot {
+            LifeListTheme {
+                Box(Modifier.background(MaterialTheme.colorScheme.background)) {
+                    HomeScreen(
+                        taxonomy, records, onOpenRecord = {}, onOpenGroup = {},
+                        referencePhotoFor = {
+                            photo(Color.rgb(104, 92, 70), Color.rgb(44, 38, 28))
+                        },
+                    )
+                    WaysIn(
+                        onFromPhotos = {}, onByName = {}, onListen = {}, onCamera = {},
+                        modifier = Modifier.align(Alignment.BottomEnd).padding(18.dp),
+                    )
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `adding a species by name`() {
+        // The fourth way in, and the only one with no model in it. Same search the correction
+        // flow uses, because it already knows every taxon at every rank.
+        paparazzi.snapshot {
+            LifeListTheme {
+                Box(Modifier.background(MaterialTheme.colorScheme.surfaceContainerLow)) {
+                    TaxonSearchContent(
+                        heading = "What did you see?",
+                        note = "Anything the app knows — species, genus or family. It is " +
+                            "saved as your determination, dated now and placed here, and you " +
+                            "can change all of that afterwards.",
+                        source = { dk.lifelist.core.LifeList.search(taxonomy, it) },
+                        emptyQueryHint = "Type at least two letters. Common names and " +
+                            "scientific names both work.",
+                        onPick = {},
+                    )
                 }
             }
         }

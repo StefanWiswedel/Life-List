@@ -59,6 +59,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dk.lifelist.core.Determiner
+import dk.lifelist.core.unaided
 import dk.lifelist.core.Families
 import dk.lifelist.core.LifeList
 import dk.lifelist.core.LocationSource
@@ -353,21 +354,29 @@ internal fun Details(
                 Where.openInMaps(context, record.latitude!!, record.longitude!!, record.place)
             }
         }
-        Detail(
-            "Determined by",
-            if (record.determinedBy == Determiner.USER) "you" else "the model",
-        )
-        Detail(
-            "Model said",
-            record.confidence?.let {
-                "${Math.round(it * 100)}% at ${
-                    record.refinedFrom?.let { from -> taxonomy.nodeOrNull(from)?.rank }
-                        ?: node?.rank ?: "this rank"
-                }"
-            } ?: "not recorded",
-        )
-        Detail("Committing at", "${Math.round(record.threshold * 100)}%")
-        Detail("Model", record.modelVersion, last = true)
+        // A record no model ever saw has no confidence, no threshold it cleared and no model
+        // version that means anything, so those three rows are not printed as "not recorded" —
+        // they are not printed. Printing an empty frame for machinery that was never involved
+        // is how a thing you simply knew starts looking like a failed identification.
+        if (record.unaided) {
+            Detail("Determined by", "you, without the model", last = true)
+        } else {
+            Detail(
+                "Determined by",
+                if (record.determinedBy == Determiner.USER) "you" else "the model",
+            )
+            Detail(
+                "Model said",
+                record.confidence?.let {
+                    "${Math.round(it * 100)}% at ${
+                        record.refinedFrom?.let { from -> taxonomy.nodeOrNull(from)?.rank }
+                            ?: node?.rank ?: "this rank"
+                    }"
+                } ?: "not recorded",
+            )
+            Detail("Committing at", "${Math.round(record.threshold * 100)}%")
+            Detail("Model", record.modelVersion, last = true)
+        }
 
         record.refinedFrom?.let { from ->
             val narrowed = LifeList.wasNarrowed(taxonomy, record)

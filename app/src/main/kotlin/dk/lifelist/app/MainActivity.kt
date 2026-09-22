@@ -32,6 +32,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.PhotoCamera
+import androidx.compose.material.icons.outlined.EditNote
 import androidx.compose.material.icons.outlined.GraphicEq
 import androidx.compose.material.icons.outlined.PhotoLibrary
 import androidx.compose.material.icons.outlined.Tune
@@ -72,6 +73,7 @@ import dk.lifelist.core.LocationSource
 import dk.lifelist.core.Presentation
 import dk.lifelist.core.Record
 import dk.lifelist.core.Rollup
+import dk.lifelist.core.Taxon
 import dk.lifelist.core.Spectrograph
 import dk.lifelist.core.windowOverlaps
 import kotlinx.coroutines.Dispatchers
@@ -199,6 +201,8 @@ fun App() {
     // making the noise. Seconds since the session started, the same clock the windows use.
     var mutedFromS by remember { mutableFloatStateOf(0f) }
     var mutedToS by remember { mutableFloatStateOf(0f) }
+    // Adding something you identified yourself, with no photograph and no model.
+    var addingByName by remember { mutableStateOf(false) }
     val clipPlayer = rememberClipPlayer()
     val referenceAudio = remember { ReferenceAudio(context) }
     val occurrences = remember { OccurrenceIndex(context) }
@@ -420,6 +424,52 @@ fun App() {
      * later window hears it better — a blackbird singing for two minutes is one record, not
      * twenty-four, and the best window is the one worth keeping.
      */
+    /**
+     * Put a sighting on the list, and find out where it was afterwards.
+     *
+     * The location is filled in on a background thread rather than waited for: a fix takes up
+     * to 2.5 s and the record should land the instant the button is pressed. DEVICE, not PHOTO
+     * — the phone knows where it is, and for something seen or heard a moment ago that is the
+     * same place. A photograph is the case where those two can differ by three days and a
+     * sofa (§34).
+     */
+    fun keep(
+        taxonId: Int,
+        determinedBy: Determiner,
+        confidence: Float?,
+        threshold: Float,
+        clipPath: String? = null,
+    ): String {
+        val id = store.newId()
+        records = store.add(
+            Record(
+                id = id,
+                taxonId = taxonId,
+                observedAt = System.currentTimeMillis(),
+                photoPaths = emptyList(),
+                threshold = threshold,
+                modelVersion = loaded?.meta?.version ?: "unknown",
+                determinedBy = determinedBy,
+                confidence = confidence,
+                clipPath = clipPath,
+            )
+        )
+        thread {
+            val fix = Where.current(context) ?: return@thread
+            val place = Where.describe(context, fix.latitude, fix.longitude)
+            val stored = store.load().firstOrNull { it.id == id } ?: return@thread
+            records = store.update(
+                stored.copy(
+                    latitude = fix.latitude,
+                    longitude = fix.longitude,
+                    place = place,
+                    locationSource = LocationSource.DEVICE,
+                )
+            )
+        }
+        return id
+    }
+
     fun startListening() {
         val model = listener ?: run {
             listenNote = "The audio model is not in this build."
@@ -577,75 +627,38 @@ fun App() {
                             referencePhotoFor = { references.thumbnail(it, pixels = 360) },
                         )
                     }
-                    // Two ways in, because there are two ways a sighting happens: pointing the
-                    // phone at something now, and coming back to the pictures you already
-                    // took. The second was reachable only *through* the camera, which is a
-                    // strange thing to make somebody open in order to say "not the camera".
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                    WaysIn(
                         modifier = Modifier
                             .align(Alignment.BottomEnd)
                             .safeDrawingPadding()
                             .padding(18.dp),
-                    ) {
-                        SmallFloatingActionButton(
-                            onClick = {
-                                photos = emptyList()
-                                // Ask *before* the picker, not on the way into the camera.
-                                // This button never visits the capture screen, so a photograph
-                                // chosen here used to arrive with its coordinates stripped and
-                                // the record honestly but wrongly said "from your phone" (§56).
-                                val wanted = missingLocationPermissions(context)
-                                if (wanted.isEmpty()) {
-                                    pickForNewRecord.launch(
-                                        PickVisualMediaRequest(
-                                            ActivityResultContracts.PickVisualMedia.ImageOnly
-                                        )
+                        onFromPhotos = {
+                            photos = emptyList()
+                            // Ask *before* the picker, not on the way into the camera. This
+                            // button never visits the capture screen, so a photograph chosen
+                            // here used to arrive with its coordinates stripped and the record
+                            // honestly but wrongly said "from your phone" (§56).
+                            val wanted = missingLocationPermissions(context)
+                            if (wanted.isEmpty()) {
+                                pickForNewRecord.launch(
+                                    PickVisualMediaRequest(
+                                        ActivityResultContracts.PickVisualMedia.ImageOnly
                                     )
-                                } else {
-                                    pickAfterPermissions = true
-                                    askWhere.launch(wanted)
-                                }
-                            },
-                            containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                            contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.size(52.dp),
-                        ) {
-                            Icon(
-                                Icons.Outlined.PhotoLibrary,
-                                contentDescription = "Identify from your photos",
-                                modifier = Modifier.size(23.dp),
-                            )
-                        }
-                        SmallFloatingActionButton(
-                            onClick = {
-                                screen = Screen.LISTEN
-                                if (!micGranted) askMicrophone.launch(Manifest.permission.RECORD_AUDIO)
-                            },
-                            containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                            contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.size(52.dp),
-                        ) {
-                            Icon(
-                                Icons.Outlined.GraphicEq,
-                                contentDescription = "Identify a sound",
-                                modifier = Modifier.size(23.dp),
-                            )
-                        }
-                        FloatingActionButton(
-                            onClick = { photos = emptyList(); screen = Screen.CAPTURE },
-                            containerColor = MaterialTheme.colorScheme.primary,
-                            contentColor = MaterialTheme.colorScheme.onPrimary,
-                            modifier = Modifier.size(68.dp),
-                        ) {
-                            Icon(
-                                Icons.Filled.PhotoCamera,
-                                contentDescription = "Identify something",
-                                modifier = Modifier.size(29.dp),
-                            )
-                        }
-                    }
+                                )
+                            } else {
+                                pickAfterPermissions = true
+                                askWhere.launch(wanted)
+                            }
+                        },
+                        onByName = { addingByName = true },
+                        onListen = {
+                            screen = Screen.LISTEN
+                            if (!micGranted) {
+                                askMicrophone.launch(Manifest.permission.RECORD_AUDIO)
+                            }
+                        },
+                        onCamera = { photos = emptyList(); screen = Screen.CAPTURE },
+                    )
                 }
 
                 Screen.GROUP -> Box(Modifier.fillMaxSize().padding(insets)) {
@@ -697,42 +710,17 @@ fun App() {
                         onStart = ::startListening,
                         onStop = { recorder.stop() },
                         onSave = { entry ->
-                            val paths = emptyList<String>()
-                            val id = store.newId()
-                            records = store.add(
-                                Record(
-                                    id = id,
-                                    taxonId = entry.taxonId,
-                                    observedAt = System.currentTimeMillis(),
-                                    photoPaths = paths,
-                                    threshold = entry.threshold,
-                                    modelVersion = loaded?.meta?.version ?: "unknown",
-                                    determinedBy = Determiner.MODEL,
-                                    confidence = entry.confidence,
-                                    clipPath = entry.clipPath,
-                                )
+                            keep(
+                                taxonId = entry.taxonId,
+                                determinedBy = Determiner.MODEL,
+                                confidence = entry.confidence,
+                                threshold = entry.threshold,
+                                clipPath = entry.clipPath,
                             )
-                            heard = heard.map { if (it.taxonId == entry.taxonId) it.copy(saved = true) else it }
-                            scope.launch { snackbar.showSnackbar("Added to your list") }
-                            // Where, filled in afterwards on a background thread — the same
-                            // shape the photographed path uses. A fix takes up to 2.5 s and
-                            // the record should land the instant the button is pressed.
-                            // DEVICE, not PHOTO: the phone knows where it is, and for a sound
-                            // heard a moment ago that is the same place. A photograph is the
-                            // case where those two can differ by three days and a sofa (§34).
-                            thread {
-                                val fix = Where.current(context) ?: return@thread
-                                val place = Where.describe(context, fix.latitude, fix.longitude)
-                                val stored = store.load().firstOrNull { it.id == id } ?: return@thread
-                                records = store.update(
-                                    stored.copy(
-                                        latitude = fix.latitude,
-                                        longitude = fix.longitude,
-                                        place = place,
-                                        locationSource = LocationSource.DEVICE,
-                                    )
-                                )
+                            heard = heard.map {
+                                if (it.taxonId == entry.taxonId) it.copy(saved = true) else it
                             }
+                            scope.launch { snackbar.showSnackbar("Added to your list") }
                         },
                     )
                 }
@@ -963,6 +951,26 @@ fun App() {
             onDismiss = { readingAbout = null },
             playingClip = clipPlayer.playing,
             onPlayClip = { clipPlayer.toggle(it) },
+        )
+    }
+
+    if (addingByName && listTaxonomy != null) {
+        AddByNameSheet(
+            taxonomy = listTaxonomy,
+            onPick = { taxon ->
+                addingByName = false
+                // No confidence and no threshold, because nothing was thresholded. The record
+                // page reads those two as "there was no model here" (`unaided`) and prints
+                // neither, rather than printing an empty frame around machinery that was
+                // never involved.
+                openRecordId = keep(
+                    taxonId = taxon.taxonId,
+                    determinedBy = Determiner.USER,
+                    confidence = null,
+                    threshold = 0f,
+                )
+            },
+            onDismiss = { addingByName = false },
         )
     }
 
