@@ -3410,6 +3410,43 @@ was whether it swallows the list behind it. It does not.
 
 ---
 
+## 80. The build broke without the repository changing — 22 Sep 2026
+
+v0.12.0 produced no APK. Neither did v0.12.1, tagged on the identical commit to check whether
+it was a flake: 18 seconds, exit 1, the same annotations. "Nothing should have changed" was
+exactly right about the repository and exactly wrong about the world.
+
+**Diagnosed without ever reading a log**, since GitHub requires a sign-in for Actions logs even
+on a public repo and this session has no GitHub credentials. Three pieces of evidence, none of
+which needed one:
+
+1. **A controlled comparison the repo already contained.** Three workflows ran on the same
+   commit. `android` and `release` failed; `core` passed. The only structural difference is that
+   `core` is pure Kotlin/JVM and touches no Android SDK — the shape this repo has kept since the
+   sandbox days for a completely different reason (see *Environment constraints* in CLAUDE.md),
+   which turned out to be a free control group.
+2. **Reproducibility.** The same tag on the same commit failed the same way twice.
+3. **GitHub's own Node-20 deprecation annotation**, which names each action as it runs. The last
+   good release run listed eight actions. The broken ones list three, stopping at
+   `android-actions/setup-android@v3` — so that line ran, and `gradle/actions/setup-gradle@v4`
+   immediately after it never did.
+
+The fix is to stop using the action. It was never doing much: `ubuntu-latest` ships the Android
+SDK with its licences accepted, and AGP downloads whatever platform or build-tools version the
+build asks for. The replacement step reads `ANDROID_SDK_ROOT`, writes `local.properties`, and
+**fails with a sentence** if there is no SDK there — which is the difference between this and
+the thing it replaces: when it breaks, it says what it could not find.
+
+Checked rather than assumed: `:app:assembleDebug` was run here against an SDK supplied exactly
+that way, from the environment rather than from an action, and produced an APK.
+
+**Worth keeping from this one.** A dependency that does something you could do in four lines is
+a dependency whose failure mode you have not chosen. And a test matrix that happens to contain
+one job without the suspect component is worth more on the day something breaks than any amount
+of log access.
+
+---
+
 ---
 
 ## Open questions

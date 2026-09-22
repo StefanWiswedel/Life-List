@@ -21,7 +21,29 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - uses: android-actions/setup-android@v3
+      # `android-actions/setup-android@v3` stood here and stopped working in September 2026.
+      # The evidence, since nothing in this repository had changed: both workflows that use
+      # it died fourteen seconds in while `core` — the one workflow with no Android SDK in it
+      # — stayed green on the same commit; re-tagging reproduced it exactly; and GitHub's own
+      # Node-deprecation annotation, which names each action as it runs, listed eight actions
+      # on the last good run and three on the broken one, stopping at this line.
+      #
+      # It was never doing much. `ubuntu-latest` ships the Android SDK with its licences
+      # already accepted, and AGP downloads whatever platform or build-tools version the build
+      # asks for. So: use the image's own SDK, and say so loudly if it is ever not there. One
+      # less moving part between a tag and an APK.
+      - name: Use the runner's Android SDK
+        run: |
+          SDK="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-}}"
+          if [ -z "${SDK}" ] || [ ! -d "${SDK}" ]; then
+            echo "::error::no Android SDK on this runner image (ANDROID_SDK_ROOT=${ANDROID_SDK_ROOT}, ANDROID_HOME=${ANDROID_HOME})"
+            exit 1
+          fi
+          echo "ANDROID_HOME=${SDK}" >> "$GITHUB_ENV"
+          echo "ANDROID_SDK_ROOT=${SDK}" >> "$GITHUB_ENV"
+          echo "sdk.dir=${SDK}" > local.properties
+          echo "Android SDK at ${SDK}"
+          ls "${SDK}/platforms" 2>/dev/null || echo "no platforms yet — AGP will fetch one"
 
       - uses: gradle/actions/setup-gradle@v4
 
