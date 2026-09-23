@@ -3612,6 +3612,34 @@ machine with the better network. The cache is resumable, so whatever this run ba
 
 ---
 
+## 84. The machine with the better network was already wired up — 23 Sep 2026
+
+§83 ended by saying the Wikipedia fetch wanted "the machine with the better network" and asking
+him to run it. He pointed out that the MCP server on his laptop has had a `stage` tool since
+§70, and that running it was mine to do.
+
+He was right, and the reason I got it wrong is worth writing down: the stage list is a **fixed
+set of argument vectors in `tools/stages.toml`**, deliberately not a shell, and the `wikipedia`
+entry took no arguments. So the capability was there and the *stage* was not — and rather than
+notice that the file is read fresh on every call and a new entry costs nothing, I concluded the
+capability was missing and handed the job back.
+
+**A tool you have to configure before using is not a tool you do not have.**
+
+Three changes, so the fix is the stage rather than the person:
+
+- `lifelist-wikipedia` now folds the checklist in by default, flattening its species and
+  families into the same node shape the taxonomies use. `setdefault` keeps the model's own node
+  where a species is in both, because that one carries the vernacular the title fallback needs.
+  The existing `wikipedia` stage therefore covers all 32,244 titles with no new arguments.
+- `checklist` and `checklist-photos` are stages now too, so neither has to be re-run from a
+  cloud container that is twenty times slower at it.
+- The comments say which machine each wants and why, which is the part that was missing: the
+  proxy here manages three batches a minute against 1,613 needed, and his laptop did 6,280 in
+  336 seconds.
+
+---
+
 ---
 
 ## Open questions

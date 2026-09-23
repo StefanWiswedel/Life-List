@@ -70,8 +70,33 @@ birdnet-commit = [
 # 13,899 assessments over 695 pages, about eight minutes at the API's pace.
 redlist = ["-m", "lifelist_train.cli.redlist", "-v"]
 
-# Resumable and incremental: only titles that are neither cached nor known-absent.
-wikipedia = ["-m", "lifelist_train.cli.wikipedia"]
+# Resumable and incremental: only titles that are neither cached nor known-absent. Covers the
+# checklist's 26,722 species as well as the model's own, which is 32,244 distinct titles — a
+# cloud container's proxy manages three batches a minute against the 1,613 needed, and this
+# machine did 6,280 in 336 seconds (§70, §83). That difference is the whole reason this stage
+# exists.
+wikipedia = ["-m", "lifelist_train.cli.wikipedia", "-v"]
+
+# Denmark's species checklist from GBIF's occurrence facets: 52,000 keys down to the 26,722
+# recorded at least five times, each resolved to a family and a name. Three passes, all cached
+# and resumable; about fifteen minutes cold (§81).
+checklist = [
+    "-m", "lifelist_train.cli.checklist",
+    "--taxonomy", "../shared/model/taxonomy.json",
+    "--out", "../shared/model/checklist.json",
+    "-v",
+]
+
+# A curated, licensed photograph for the checklist species the model cannot identify. Crosses
+# by name through iNaturalist's open-data taxa table — download it first, it is not in the
+# repo: curl -o cache/inat_taxa.csv.gz https://inaturalist-open-data.s3.amazonaws.com/taxa.csv.gz
+# Then 754 batched API calls rather than 22,605 (§83).
+checklist-photos = [
+    "-m", "lifelist_train.cli.checklist_photos",
+    "--checklist", "../shared/model/checklist.json",
+    "--out", "../shared/model/checklist_photos.json",
+    "-v",
+]
 
 # The 350 MB ONNX. CI does this on every tag, so running it here is for checking that it still
 # works before spending a release on finding out that it does not.

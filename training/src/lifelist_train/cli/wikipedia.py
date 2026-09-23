@@ -55,6 +55,15 @@ def build_parser() -> argparse.ArgumentParser:
             "fact about a species."
         ),
     )
+    parser.add_argument(
+        "--checklist",
+        default=None,
+        help=(
+            "Denmark's checklist, whose species also want a paragraph. Defaults to the shipped "
+            "one where it exists: an index that shows you what you have *not* found is a much "
+            "better page to land on when it can also tell you what the thing is."
+        ),
+    )
     parser.add_argument("--batch-size", type=int, default=BATCH)
     parser.add_argument(
         "--no-vernacular-fallback",
@@ -143,6 +152,34 @@ def main(argv: list[str] | None = None) -> int:
     for path in present:
         for node in json.loads(path.read_text(encoding="utf-8")):
             merged.setdefault(int(node["taxon_id"]), node)
+
+    # The checklist is not a taxonomy — it has no tree, only species and the family each sits
+    # in — so it is flattened into the same node shape rather than given its own code path.
+    # `setdefault` keeps the model's own node where a species is in both, because that one
+    # carries the vernacular the title fallback uses.
+    checklist = Path(args.checklist) if args.checklist else shared_model("checklist.json")
+    if Path(checklist).exists():
+        document = json.loads(Path(checklist).read_text(encoding="utf-8"))
+        for key, entry in document.get("species", {}).items():
+            merged.setdefault(int(key), {
+                "taxon_id": int(key),
+                "parent_id": entry.get("family"),
+                "rank": "species",
+                "scientific_name": entry["name"],
+                "vernacular_en": entry.get("vernacular_en"),
+            })
+        for key, entry in document.get("families", {}).items():
+            merged.setdefault(int(key), {
+                "taxon_id": int(key),
+                "parent_id": None,
+                "rank": "family",
+                "scientific_name": entry["name"],
+                "vernacular_en": entry.get("vernacular_en"),
+            })
+        LOG.info("checklist %s folded in", checklist)
+    elif args.checklist:
+        LOG.warning("no %s — skipping it", checklist)
+
     nodes = list(merged.values())
     titles = plan_titles(nodes)
 
