@@ -64,10 +64,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import dk.lifelist.core.Checklist
 import dk.lifelist.core.Certainties
 import dk.lifelist.core.CertaintyTable
 import dk.lifelist.core.Determiner
 import dk.lifelist.core.Families
+import dk.lifelist.core.Index
 import dk.lifelist.core.LifeList
 import dk.lifelist.core.LocationSource
 import dk.lifelist.core.Presentation
@@ -206,6 +208,15 @@ fun App() {
     val clipPlayer = rememberClipPlayer()
     val referenceAudio = remember { ReferenceAudio(context) }
     val occurrences = remember { OccurrenceIndex(context) }
+    // 4.7 MB of JSON, parsed on a background thread the first time a group is opened rather
+    // than at launch — the index is a screen you visit, and nobody pressing the camera button
+    // should pay for it.
+    val checklistAssets = remember { ChecklistAssets(context) }
+    val checklist by produceState(Checklist.EMPTY, checklistAssets) {
+        value = withContext(Dispatchers.IO) { checklistAssets.checklist }
+    }
+    /** Which family's full Danish roster is open, if any. */
+    var openChecklistFamily by remember { mutableStateOf<Int?>(null) }
     var listener by remember { mutableStateOf<Listener?>(null) }
 
     var photos by remember { mutableStateOf<List<Bitmap>>(emptyList()) }
@@ -675,6 +686,14 @@ fun App() {
                             danishTotals = redList.familyTotals,
                             onOpenTaxon = { readingAbout = it },
                             thumbnailFor = { references.thumbnail(it) },
+                            index = remember(checklist, group, records) {
+                                Index.families(checklist, group.orEmpty(), records)
+                            },
+                            standing = remember(checklist, group, records) {
+                                Index.groups(checklist, records).firstOrNull { it.label == group }
+                            },
+                            onOpenFamily = { openChecklistFamily = it },
+                            heroFor = { references.thumbnail(heroOf(checklist, it), pixels = 240) },
                         )
                     }
                 }
@@ -929,29 +948,54 @@ fun App() {
         )
     }
 
-    // Same shape: a taxon the current tree does not contain simply opens nothing.
+    // A taxon the model's tree does not contain now has somewhere else to be looked up: most
+    // of Denmark is outside the model's 3,482, and a species you tapped in the index has to
+    // open a page rather than silently do nothing.
     val aboutId = readingAbout
     val aboutNode = aboutId?.let { (listTaxonomy ?: answerTaxonomy).nodeOrNull(it) }
-    if (aboutId != null && aboutNode != null) {
+    val aboutListed = aboutId?.let { checklist.species[it] }
+    if (aboutId != null && (aboutNode != null || aboutListed != null)) {
+        val scientific = aboutNode?.scientificName ?: aboutListed!!.scientificName
+        val rank = aboutNode?.rank ?: "species"
         TaxonSheet(
             brief = TaxonBrief(
                 taxonId = aboutId,
-                name = Presentation.styleName(aboutNode.scientificName, aboutNode.rank).annotated(),
-                vernacular = aboutNode.vernacularEn,
-                rank = aboutNode.rank,
+                name = Presentation.styleName(scientific, rank).annotated(),
+                vernacular = aboutNode?.vernacularEn ?: aboutListed?.vernacularEn,
+                rank = rank,
                 photo = references.photo(aboutId),
                 credit = references.credit(aboutId),
                 article = wikipedia.article(aboutId),
                 clip = referenceAudio.clip(aboutId),
                 clipCredit = referenceAudio.credit(aboutId),
                 occurrence = occurrences.forTaxon(aboutId),
-                family = Families.familyOf(listTaxonomy ?: answerTaxonomy, aboutId)?.scientificName,
+                family = Families.familyOf(listTaxonomy ?: answerTaxonomy, aboutId)?.scientificName
+                    ?: aboutListed?.familyId?.let { checklist.families[it]?.name },
             ),
             onOpenPhoto = { bitmap, label -> viewing = Viewing.Live(bitmap, label) },
             onDismiss = { readingAbout = null },
             playingClip = clipPlayer.playing,
             onPlayClip = { clipPlayer.toggle(it) },
         )
+    }
+
+    // A family opened from the index: every Danish species in it, yours first.
+    val rosterFamily = openChecklistFamily
+    if (rosterFamily != null) {
+        val family = checklist.families[rosterFamily]
+        if (family == null) {
+            openChecklistFamily = null
+        } else {
+            ChecklistFamilySheet(
+                family = family,
+                members = remember(checklist, rosterFamily, records) {
+                    Index.members(checklist, rosterFamily, records)
+                },
+                onOpenTaxon = { readingAbout = it },
+                onDismiss = { openChecklistFamily = null },
+                thumbnailFor = { references.thumbnail(it) },
+            )
+        }
     }
 
     if (addingByName && listTaxonomy != null) {

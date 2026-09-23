@@ -129,6 +129,19 @@ jobs:
             --out app/src/main/assets/reference -v
           du -sh app/src/main/assets/reference
 
+      # Denmark's checklist: 26,722 species, the denominator for "not found yet" (§81), and a
+      # 240 px photograph for 18,957 of the ones the model cannot identify. 500 px for those
+      # would be 762 MB; 240 px is 175 MB and is more than a 64 dp row needs. The model's own
+      # 3,430 keep their 500 px plates above, because those get drawn full-width (§37).
+      - name: Fetch the checklist photos
+        run: |
+          cp shared/model/checklist.json app/src/main/assets/
+          lifelist-reference-photos \
+            --index shared/model/checklist_photos.json \
+            --out app/src/main/assets/checklist \
+            --size small -v
+          du -sh app/src/main/assets/checklist
+
       # ~700 ten-second Opus clips, about 22 MB. No key: building the index needs one, a
       # xeno-canto download URL does not, so a release is not one GitHub secret away from
       # breaking. Every clip carries its recordist into the credits screen.
@@ -184,8 +197,9 @@ jobs:
             key and could only be installed after uninstalling — if you are coming from one
             of those, uninstall once and this will be the last time.
 
-            **This APK is around 580 MB.** It carries two whole models, and neither is
-            quantised: a 335 MB fp32 BioCLIP graph that does its own resizing, because a
+            **This APK is around 790 MB.** It carries Denmark's whole species checklist —
+            26,722 species with a photograph for 22,387 of them — and two whole models,
+            neither quantised: a 335 MB fp32 BioCLIP graph that does its own resizing, because a
             bilinear resize instead of antialiased bicubic costs 8% of predictions and int8
             costs about 6%; and a 149 MB fp32 BirdNET graph, fp32 because ONNX Runtime
             upconverts fp16 on CPU and so saves neither time nor memory. Accuracy was worth

@@ -337,3 +337,37 @@ private fun Meter(fraction: Float, height: Dp = 7.dp) {
 /** Thousands separated, because "10296 insects" is a number nobody reads at a glance. */
 internal fun Int.grouped(): String =
     toString().reversed().chunked(3).joinToString(",").reversed()
+
+/**
+ * A family's full Danish roster, as a sheet.
+ *
+ * A sheet rather than a screen because it is a drill-down from the index and the index is where
+ * you want to be when you close it — the same shape `TaxonSheet` uses for the same reason.
+ */
+@OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
+@Composable
+fun ChecklistFamilySheet(
+    family: dk.lifelist.core.ChecklistFamily,
+    members: List<Index.Member>,
+    onOpenTaxon: (Int) -> Unit,
+    onDismiss: () -> Unit,
+    thumbnailFor: (Int) -> Bitmap? = { null },
+) {
+    androidx.compose.material3.ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = androidx.compose.material3.rememberModalBottomSheetState(
+            skipPartiallyExpanded = true
+        ),
+        containerColor = MaterialTheme.colorScheme.background,
+    ) {
+        FamilyRoster(
+            family = family.name,
+            latin = family.scientificName,
+            members = members,
+            total = family.species,
+            identifiable = family.identifiable,
+            onOpenTaxon = onOpenTaxon,
+            thumbnailFor = thumbnailFor,
+        )
+    }
+}

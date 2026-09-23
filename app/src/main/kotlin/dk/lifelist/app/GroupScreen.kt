@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -39,6 +40,7 @@ import androidx.compose.ui.unit.sp
 import dk.lifelist.core.LifeList
 import dk.lifelist.core.Presentation
 import dk.lifelist.core.Families
+import dk.lifelist.core.Index
 import dk.lifelist.core.Record
 import dk.lifelist.core.Taxonomy
 import java.text.SimpleDateFormat
@@ -66,7 +68,17 @@ fun GroupScreen(
     danishTotals: Map<String, Int> = emptyMap(),
     onOpenTaxon: (Int) -> Unit = {},
     thumbnailFor: (Int) -> Bitmap? = { null },
+    /** Denmark's families in this group, for the half of the screen that is not yours. */
+    index: List<Index.FamilyLine> = emptyList(),
+    standing: Index.GroupLine? = null,
+    onOpenFamily: (Int) -> Unit = {},
+    heroFor: (Int) -> Bitmap? = { null },
 ) {
+    // Yours, or everything there is. One screen with two states rather than two screens: the
+    // life list and the checklist are the same data seen from opposite sides, and a second
+    // home would undo §32's argument for having one surface.
+    var everything by rememberSaveable(label) { mutableStateOf(false) }
+
     // Which family's species list is open, if any. Remembered by label so walking into
     // Insects, opening Katydids, going back and returning does not lose your place.
     var openFamily by rememberSaveable(label) { mutableStateOf<Int?>(null) }
@@ -80,7 +92,22 @@ fun GroupScreen(
         runCatching { Families.seenFamilies(taxonomy, records, danishTotals) }.getOrDefault(emptyList())
     }
 
+    if (everything && standing != null) {
+        Column(modifier.fillMaxSize()) {
+            Sides(everything = true, available = true) { everything = false }
+            IndexScreen(
+                group = label,
+                lines = index,
+                standing = standing,
+                onOpenFamily = onOpenFamily,
+                heroFor = heroFor,
+            )
+        }
+        return
+    }
+
     LazyColumn(modifier.fillMaxSize(), contentPadding = PaddingValues(bottom = 120.dp)) {
+        item { Sides(everything = false, available = standing != null) { everything = true } }
         item {
             Column(Modifier.padding(horizontal = 20.dp).padding(top = 8.dp, bottom = 12.dp)) {
                 Text(label, style = MaterialTheme.typography.headlineMedium)
@@ -152,6 +179,45 @@ fun GroupScreen(
             }
         }
     }
+}
+
+/**
+ * Yours / Everything.
+ *
+ * Hidden entirely when there is no checklist in the build, rather than shown and dead: a
+ * control that does nothing teaches the reader that controls here might do nothing.
+ */
+@Composable
+private fun Sides(everything: Boolean, available: Boolean, onSwitch: () -> Unit) {
+    if (!available) return
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp, vertical = 10.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        Side("Yours", selected = !everything) { if (everything) onSwitch() }
+        Side("Everything", selected = everything) { if (!everything) onSwitch() }
+    }
+}
+
+@Composable
+private fun Side(label: String, selected: Boolean, onClick: () -> Unit) {
+    Text(
+        label,
+        style = MaterialTheme.typography.labelLarge,
+        fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal,
+        color = if (selected) MaterialTheme.colorScheme.onSurface
+        else MaterialTheme.colorScheme.outline,
+        modifier = Modifier
+            .clip(RoundedCornerShape(20.dp))
+            .background(
+                if (selected) MaterialTheme.colorScheme.surfaceContainerHighest
+                else androidx.compose.ui.graphics.Color.Transparent
+            )
+            .clickable(onClick = onClick)
+            .padding(horizontal = 14.dp, vertical = 7.dp),
+    )
 }
 
 @Composable

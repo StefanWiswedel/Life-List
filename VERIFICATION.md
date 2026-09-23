@@ -3560,6 +3560,58 @@ from it.
 
 ---
 
+## 83. A photograph for 22,387 of Denmark's 26,722 — 23 Sep 2026
+
+"Everything we can get photos and data for, we should." Agreed, and the arithmetic decides how.
+
+**The species page was the question that changed the answer.** Bundling 240 px for the tail and
+calling it done would have re-opened §37 — the app used to draw 240 px across a full-width hero
+and the field report was that it looked "a bit crap", which is what moved reference photos to
+500 px. Measured again here: 240 px re-encodes to **9.5 KB**, 500 px to **33 KB**, 1024 px to
+**110 KB**. 500 px for the 23,292 species the model cannot name is 762 MB; the APK is already
+600.
+
+So, two tiers and a stream:
+
+- **240 px bundled for the tail** — 18,957 photographs, 176 MB. A 64 dp row is 192 physical
+  pixels; 240 is already more than it needs, and it is there with no signal.
+- **500 px bundled, unchanged, for the 3,430 the model can name** — those are the ones drawn
+  full-width on the result screen, and identification still never touches a network.
+- **1024 px fetched and cached on the species page**, when there is signal. The bundled 240 px
+  shows immediately and is replaced if the fetch lands.
+
+That last one is the app's **first network call**, and it was put to him as a decided principle
+being changed rather than slipped in. It degrades honestly: you always see something, the fetch
+is an upgrade and never a dependency.
+
+### Crossing 26,722 species to iNaturalist without 26,722 requests
+
+`taxon_bridge.json` only covers taxa the model was trained on. The rest came from
+**iNaturalist's open-data taxa table** — one 38 MB download, no API at all — matched on exact
+scientific name: **22,605 of 26,722 (84%)**. Eight names matched two active iNaturalist species
+and were **refused rather than guessed**, which is the same rule the bridge follows and the same
+reason: *Prunella* is a plant and a bird.
+
+Photographs still need the API, because the curated per-taxon order is not in the export — but
+**batched thirty ids at a time, 754 requests instead of 22,605**, four at a time with a quarter
+second between. `reference.py` picks which one, unchanged: first in iNaturalist's curated order
+that we may redistribute and that is big enough to be a plate rather than a thumbnail.
+
+**18,957 of 22,600 crossed species have one (83%).** Licences: 13,058 CC BY-NC, 3,084 CC BY,
+1,185 CC BY-SA, 1,011 CC BY-NC-SA, 524 CC0. Every one carries its photographer.
+
+Taken on the way: iNaturalist's preferred common name for 11,181 of them, of which **354 were
+species GBIF had no English name for** — the index now names 13,149 of 26,722.
+
+### Still outstanding
+
+**Wikipedia for the checklist is fetching at about a fifth of the rate it needs.** 32,244
+distinct titles, and this container's proxy is doing roughly three batches a minute against the
+1,613 needed — eight hours. §70 hit the same wall and the answer was the same: run it on the
+machine with the better network. The cache is resumable, so whatever this run banks is kept.
+
+---
+
 ---
 
 ## Open questions
