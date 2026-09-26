@@ -3673,6 +3673,38 @@ nothing looks broken.
 
 ---
 
+## 86. Three runs of fetching that produced no file — 26 Sep 2026
+
+The Wikipedia stage is capped at 1800 seconds by the MCP server, and 32,244 titles do not fit.
+That was known and fine: the fetch is resumable, so each run banks its progress and the next
+carries on. Three runs later the cache held **23,015 resolved titles — 14,171 articles and
+8,804 confirmed to have none** — and `shared/model/wikipedia.json` had not changed at all.
+
+**The fetch was resumable and the write was not.** The bundle is assembled after the loop, so
+every run that the timeout killed threw away its own output while keeping its input. An hour and
+a half of somebody's laptop, banked perfectly and unusable.
+
+It is a nastier shape than a plain bug because each individual piece is correct. The cache
+works. The resume works. The timeout is a reasonable thing for a desktop app to impose. Nobody
+wrote a line that was wrong; the composition has a hole in it, and the hole is invisible from
+inside any one part.
+
+`--from-cache` writes the bundle from what is banked and fetches nothing, and
+`wikipedia-write` is a stage, so an interrupted run is now worth something within seconds.
+
+**The general form, which is the bit worth keeping:** *a job that can be interrupted must be
+able to produce its output at any point, not only at the end.* Resumability is about not losing
+the input. It says nothing about the output, and those are different promises.
+
+**Also measured, and it changes the plan:** the last run resolved **40 titles in ten minutes**
+against 383 a minute earlier. Wikipedia has started throttling us, and the CLI's back-off is
+correctly honouring `Retry-After` up to a minute. The remaining 9,229 are mostly obscure fungi
+and beetles with a high absent rate, so the sensible thing is to write what we have — 14,171
+articles, double the 7,111 that shipped before — and let the rest fill in over days rather than
+sit on one machine hammering an API that has asked us to stop.
+
+---
+
 ---
 
 ## Open questions

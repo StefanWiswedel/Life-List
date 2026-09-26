@@ -64,6 +64,16 @@ def build_parser() -> argparse.ArgumentParser:
             "better page to land on when it can also tell you what the thing is."
         ),
     )
+    parser.add_argument(
+        "--from-cache",
+        action="store_true",
+        help=(
+            "write the bundle from what is already cached and fetch nothing. The fetch is "
+            "resumable but the *write* only happened at the end of a completed run, so three "
+            "half-hour runs killed by a timeout banked 23,015 resolved titles and produced no "
+            "file at all. See VERIFICATION.md section 86."
+        ),
+    )
     parser.add_argument("--batch-size", type=int, default=BATCH)
     parser.add_argument(
         "--no-vernacular-fallback",
@@ -192,6 +202,13 @@ def main(argv: list[str] | None = None) -> int:
         "%d nodes, %d distinct titles — %d cached, %d known absent, %d to fetch",
         len(nodes), len(titles), len(articles), len(missing), len(todo),
     )
+
+    if todo and args.from_cache:
+        LOG.info(
+            "--from-cache: writing %d cached articles, leaving %d unfetched",
+            len(articles), len(todo),
+        )
+        todo = []
 
     if todo:
         get = make_getter(args.pause)

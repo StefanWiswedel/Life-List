@@ -77,6 +77,13 @@ redlist = ["-m", "lifelist_train.cli.redlist", "-v"]
 # exists.
 wikipedia = ["-m", "lifelist_train.cli.wikipedia", "-v"]
 
+# Write the bundle from what the fetch has already banked, and fetch nothing.
+#
+# The fetch is resumable and the *write* was not: it only ran at the end of a completed run,
+# so three half-hour runs killed by the MCP server's timeout banked 23,015 resolved titles and
+# produced no file at all (§86). Seconds, and it makes every interrupted run worth something.
+wikipedia-write = ["-m", "lifelist_train.cli.wikipedia", "--from-cache", "-v"]
+
 # Denmark's species checklist from GBIF's occurrence facets: 52,000 keys down to the 26,722
 # recorded at least five times, each resolved to a family and a name. Three passes, all cached
 # and resumable; about fifteen minutes cold (§81).
