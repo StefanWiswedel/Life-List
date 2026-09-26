@@ -45,7 +45,7 @@ When trading off, trade in favour of a record being keepable at the rank the evi
 | adding by hand | a species you identified yourself, no photo and no model — `unaided`, and it still counts (§79) |
 | common names | **3,253 of 3,482 species** have one; the other 229 have none anywhere (§28, §71) |
 | multi-photo | fused via §3.2; **four zooms per photo, most confident wins** (§29, §53, §54) |
-| species info | **7,111 of 7,493 nodes** carry a bundled Wikipedia intro (§31, §50, §70) |
+| species info | **18,345 of 32,275 nodes** carry a bundled Wikipedia intro — the checklist folded in (§31, §50, §70, §87) |
 | reference photos | iNaturalist's curated pick — **3,462 vision leaves and 790 audio ones** (§37, §50, §66); stands in for a record with no photo of yours, always marked (§78) |
 | reference sound | xeno-canto, **731 of 795 species**, ten-second Opus clips (§69) |
 | corrections | rename to any taxon, or retreat to a rank you trust; the model's answer is kept (§38, §40) |

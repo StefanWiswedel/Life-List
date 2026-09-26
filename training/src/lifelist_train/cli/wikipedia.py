@@ -7,6 +7,10 @@ Resumable: every batch is written to the cache as it lands, and re-running skips
 titles already fetched and the ones already known to have no article. That matters because
 this is a public API being asked for 4,645 pages from one address, and a run that has to
 start over after a throttle is a run that never finishes.
+
+And *publishable at any point*: the bundle is written after the binomial pass and again on
+every batch of the common-name pass, so an interrupted run leaves the best file it could
+build rather than none. `--from-cache` skips both fetches and just writes.
 """
 
 from __future__ import annotations
@@ -68,10 +72,10 @@ def build_parser() -> argparse.ArgumentParser:
         "--from-cache",
         action="store_true",
         help=(
-            "write the bundle from what is already cached and fetch nothing. The fetch is "
-            "resumable but the *write* only happened at the end of a completed run, so three "
-            "half-hour runs killed by a timeout banked 23,015 resolved titles and produced no "
-            "file at all. See VERIFICATION.md section 86."
+            "write the bundle from what is already cached and fetch nothing, in either pass. "
+            "The fetch is resumable but the *write* only happened at the end of a completed "
+            "run, so three half-hour runs killed by a timeout banked 23,015 resolved titles "
+            "and produced no file at all. See VERIFICATION.md section 86."
         ),
     )
     parser.add_argument("--batch-size", type=int, default=BATCH)
@@ -240,6 +244,20 @@ def main(argv: list[str] | None = None) -> int:
 
     index = build_index(titles, articles)
 
+    def publish(stage: str) -> None:
+        """Write the bundle. Called at every point where it is worth having, not once."""
+        write_json(Path(args.out), index)
+        LOG.info(
+            "%s — %d of %d nodes have an article (%.0f%%), wrote %s",
+            stage, len(index), len(nodes),
+            100 * len(index) / max(len(nodes), 1), args.out,
+        )
+
+    # Before the fallback pass, not only after it. The fallback is a second fetch of
+    # thousands of titles and can be killed the same way the first one was, and when it is,
+    # a bundle built from every binomial that did resolve is still the best file we have.
+    publish("binomials")
+
     # Second pass. Roughly a third of Danish species have no English article under their
     # binomial but do have one under their common name — *Aglais urticae* is a redlink,
     # "Small tortoiseshell" is not. Each candidate must name the taxon in its own text
@@ -251,6 +269,12 @@ def main(argv: list[str] | None = None) -> int:
             "%d taxa still unmatched — trying %d common names",
             len(nodes) - len(index), len(todo),
         )
+        if todo and args.from_cache:
+            # --from-cache has to stop *both* fetches. Stopping only the first one is how a
+            # flag added to make an interrupted run produce a file spent half an hour in the
+            # second pass and produced no file (§86, twice).
+            LOG.info("--from-cache: leaving %d common names unfetched", len(todo))
+            todo = []
         if todo:
             get = make_getter(args.pause)
             absent2: list[str] = []
@@ -259,7 +283,12 @@ def main(argv: list[str] | None = None) -> int:
             def progress2(done: int, total: int) -> None:
                 write_json(cache_path, articles)
                 write_json(missing_path, sorted(missing | set(absent2)))
-                LOG.info("common names, batch %d/%d", done, total)
+                # apply_fallback only fills nodes the index has no article for, so calling it
+                # every batch is monotone: the file on disk is always a valid bundle holding
+                # everything verified so far.
+                apply_fallback(nodes, index, articles)
+                write_json(Path(args.out), index)
+                LOG.info("common names, batch %d/%d — %d nodes", done, total, len(index))
                 time.sleep(args.pause)
 
             fetch_all(
@@ -273,12 +302,8 @@ def main(argv: list[str] | None = None) -> int:
             write_json(missing_path, sorted(missing))
         added = apply_fallback(nodes, index, articles)
         LOG.info("%d taxa matched by common name", added)
+        publish("with common names")
 
-    write_json(Path(args.out), index)
-    LOG.info(
-        "%d of %d nodes have an article (%.0f%%) — wrote %s",
-        len(index), len(nodes), 100 * len(index) / max(len(nodes), 1), args.out,
-    )
     return 0
 
 

@@ -3705,6 +3705,48 @@ sit on one machine hammering an API that has asked us to stop.
 
 ---
 
+## 87. `--from-cache` only stopped one of the two fetches — 26 Sep 2026
+
+`--from-cache` was added in §86 so an interrupted fetch would at least produce a bundle. The stage
+entry says "Seconds". I started it, watched it report *318 seconds elapsed*, and went looking.
+
+One `ls` settled it: `training/cache/wikipedia_articles.json` on the laptop had been written **that
+same second**. So the flag was not stopping the fetch, it was stopping *one* of the two. `main()`
+has a binomial pass and a common-name fallback pass, each with its own `todo`, its own getter and
+its own progress callback. I had zeroed the first `todo` and never read as far as the second.
+
+**What it actually cost this time: nothing.** The run finished in 350 s, exit 0, and wrote the
+bundle — the fallback pass had only 1,866 titles left, 94 batches, about three and a half minutes.
+So this is a bug caught before it bit rather than after. Worth writing down anyway, because the
+reason it did not bite is that the fallback happened to be nearly done, which is luck, not design:
+on the first run of a fresh checklist that pass is thousands of titles and the timeout would have
+eaten it with nothing written, which is §86 verbatim.
+
+**Two changes, and the second is the one that matters.**
+
+`--from-cache` now gates both passes. Necessary, boring.
+
+But the shape was wrong, not just the flag. The bundle is now written:
+
+- after the binomial pass, **before** the fallback is attempted at all; and
+- on **every batch** of the fallback pass, because `apply_fallback` only fills nodes the index has
+  no article for, so calling it repeatedly is monotone — the file on disk is at every moment a
+  valid bundle holding everything verified so far.
+
+There is now no point in the run at which being killed loses the output. §86's rule was *a job
+that can be interrupted must be able to produce its output at any point, not only at the end.* I
+implemented it as an escape hatch — a flag you have to remember to pass — when it should have been
+a property of the job. **A rule honoured by an option is not honoured.** The fix for "the write
+only happens at the end" is to move the write, not to add a way to ask for it.
+
+**And the bundle that came out.** 18,345 of 32,275 nodes carry an article, 57%, 9.8 MB — against
+the **7,111** that shipped in v0.13.0. The checklist species are most of the gain and they are
+exactly the ones a person lands on from the index without ever having found the animal, which is
+the page that most needed a paragraph. 14,833 titles are now *known* absent, which is a real
+answer rather than a gap: a Danish dandelion microspecies has no English article and never will.
+
+---
+
 ---
 
 ## Open questions
