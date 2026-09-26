@@ -16,7 +16,13 @@ import kotlinx.serialization.json.Json
 class ReferencePhotos(private val context: Context) {
 
     @Serializable
-    data class Credit(val credit: String, val licence: String)
+    data class Credit(
+        val credit: String,
+        val licence: String,
+        /** iNaturalist's photo id, so a bigger copy has a URL to come from (§85). */
+        val photo: Long? = null,
+        val ext: String? = null,
+    )
 
     private val json = Json { ignoreUnknownKeys = true }
 

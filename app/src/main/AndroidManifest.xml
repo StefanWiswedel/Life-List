@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!--
+      The app's first and only network permission, added 26 Sep 2026 (§85).
+
+      Nothing on the identification path uses it and nothing ever should: both models are
+      bundled, both taxonomies are bundled, and every screen works with the aeroplane mode on.
+      What it buys is one thing — a species page showing a 240 px photograph can fetch the
+      1024 px one and keep it. 500 px for all 18,957 checklist species would be 762 MB of APK;
+      this is 0 MB and an upgrade that never blocks anything.
+    -->
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
     <!-- Coarse only, and never required: a sighting without a location is still a sighting. -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />

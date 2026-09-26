@@ -212,6 +212,7 @@ fun App() {
     // than at launch — the index is a screen you visit, and nobody pressing the camera button
     // should pay for it.
     val checklistAssets = remember { ChecklistAssets(context) }
+    val largePhotos = remember { LargePhotos(context) }
     val checklist by produceState(Checklist.EMPTY, checklistAssets) {
         value = withContext(Dispatchers.IO) { checklistAssets.checklist }
     }
@@ -957,13 +958,28 @@ fun App() {
     if (aboutId != null && (aboutNode != null || aboutListed != null)) {
         val scientific = aboutNode?.scientificName ?: aboutListed!!.scientificName
         val rank = aboutNode?.rank ?: "species"
+
+        // The bundled photograph first, always, and a bigger one behind it if this species
+        // ships the small tier and the phone has signal. Never waited for, never spun over:
+        // the screen is already showing a photograph, so a fetch that does not land is a
+        // thing nobody needs told about (§85).
+        val aboutPhoto by produceState(references.photo(aboutId), aboutId) {
+            val bundled = references.photo(aboutId)
+            value = bundled
+            largePhotos.cached(aboutId)?.let { value = it; return@produceState }
+            val credit = references.credit(aboutId) ?: return@produceState
+            val photoId = credit.photo ?: return@produceState
+            withContext(Dispatchers.IO) {
+                largePhotos.fetch(aboutId, photoId, credit.ext ?: "jpeg")
+            }?.let { value = it }
+        }
         TaxonSheet(
             brief = TaxonBrief(
                 taxonId = aboutId,
                 name = Presentation.styleName(scientific, rank).annotated(),
                 vernacular = aboutNode?.vernacularEn ?: aboutListed?.vernacularEn,
                 rank = rank,
-                photo = references.photo(aboutId),
+                photo = aboutPhoto,
                 credit = references.credit(aboutId),
                 article = wikipedia.article(aboutId),
                 clip = referenceAudio.clip(aboutId),

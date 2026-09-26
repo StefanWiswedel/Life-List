@@ -3640,6 +3640,39 @@ Three changes, so the fix is the stage rather than the person:
 
 ---
 
+## 85. One network call, and the rule it is allowed to break — 26 Sep 2026
+
+The species page draws a photograph full-width: about 1,100 physical pixels on a Pixel. The
+18,957 checklist species ship a **240 px** copy, because 500 px for all of them is 762 MB of
+APK. 240 px blown up 4.5× is precisely what §37 was written about — "a rumour of a moth".
+
+So the app now makes **one network call**, and `INTERNET` is in the manifest for the first time.
+The terms it is allowed on, written into the manifest comment so the next change has to argue
+with them:
+
+- The bundled photograph shows **first, always**. The fetch replaces it or it does not.
+- **Nothing waits for it.** No spinner, no error, no retry button — the screen is already
+  showing a photograph, and a failed upgrade nobody asked for is not news.
+- **Kept once.** 1024 px, about 110 KB, into the cache directory, and the next visit is local.
+- **Nothing on the identification path touches it.** Both models bundled, both taxonomies
+  bundled, every identification screen works in aeroplane mode. That is not an accident to
+  preserve by care, it is an invariant: the fetch is reachable only from a species page.
+
+**Written to a temporary file and renamed.** A download cut off halfway otherwise leaves a
+truncated JPEG that decodes to grey and is then cached forever — the kind of bug that looks
+like a bad photograph rather than a bad byte count.
+
+**The photo id had to ride along.** The downloader wrote `credits.json` with a photographer and
+a licence and no way to name the image again, so the app had no URL to upgrade from. It now
+carries `photo` and `ext` too. A five-line change that the feature was impossible without, and
+which nothing about the feature made obvious until the code was being written.
+
+`LargePhotos.urlFor` has five tests against it — a wrong extension is a 404 on 18,957 species
+whose only symptom is that the page never gets sharper, which is a thing nobody reports because
+nothing looks broken.
+
+---
+
 ---
 
 ## Open questions

@@ -133,8 +133,19 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     # The credits ride with the images, so the app never has to ask the network who took one.
+    #
+    # `photo` and `ext` ride along too, and they are the only reason the app can ever fetch a
+    # bigger copy: the 240 px tier is enough for a 64 dp row and visibly soft drawn full-width
+    # (§37, §83), so the species page upgrades itself when there is signal. Without the photo
+    # id there is no URL to upgrade from, and the app would have to ask an API who took a
+    # photograph it is already showing.
     credits = {
-        str(e["taxon_id"]): {"credit": e["credit"], "licence": e["licence"]}
+        str(e["taxon_id"]): {
+            "credit": e["credit"],
+            "licence": e["licence"],
+            "photo": e["photo_id"],
+            "ext": e["extension"],
+        }
         for e in shippable
         if (args.out / f"{e['taxon_id']}.jpg").exists()
     }

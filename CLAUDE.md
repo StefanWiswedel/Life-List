@@ -54,6 +54,7 @@ When trading off, trade in favour of a record being keepable at the rank the evi
 | checklist | **26,722 Danish species in 2,461 families** from GBIF — the denominator for what you have *not* found (§81) |
 | index | families fullest first, species commonest first, the unfound shown and the un-nameable marked (§82) |
 | checklist photos | **22,387 of 26,722 species have one** — 500 px for the model's, 240 px for the rest (§83) |
+| the one network call | a species page upgrades its 240 px photo to 1024 px when online, and nothing waits for it (§85) |
 | certainty | **the dial is an accuracy, not a probability** — one threshold per group (§58, §59) |
 | audio | §4A in both languages with a golden fixture; **801 BirdNET classes crossed, 795 leaves** (§60–62) |
 | listening screen | a **live spectrogram** — ours, for eyes, never the model's (§74) |
