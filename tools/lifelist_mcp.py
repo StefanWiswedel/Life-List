@@ -306,8 +306,12 @@ def build_server():  # pragma: no cover — wiring, exercised by running it
     @mcp.tool()
     def gradle(task: str) -> str:
         """Run one of a fixed set of Gradle tasks."""
-        wrapper = "gradlew.bat" if os.name == "nt" else "./gradlew"
-        return start(f"gradle {task}", [wrapper, validated_gradle_task(task), "--no-daemon"])
+        # Absolute, not relative. `["gradlew.bat", ...]` with `cwd=REPO` fails with WinError 2
+        # on Windows, because CreateProcess resolves a bare program name against the *parent*
+        # process's directory and PATH, not against the cwd it is handed. It looked like a
+        # missing wrapper; it was a missing path.
+        wrapper = REPO / ("gradlew.bat" if os.name == "nt" else "gradlew")
+        return start(f"gradle {task}", [str(wrapper), validated_gradle_task(task), "--no-daemon"])
 
     @mcp.tool()
     def stage(name: str) -> str:
