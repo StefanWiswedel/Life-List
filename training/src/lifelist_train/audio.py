@@ -15,7 +15,15 @@ import numpy as np
 from .rollup import RollupResult, rollup
 from .taxonomy import RANK_ORDER, Taxonomy
 
-DEFAULT_DETECTION_THRESHOLD = 0.25
+#: The floor below which a class never becomes a detection — 0.03, measured, not conventional.
+#:
+#: It was 0.25, BirdNET-Analyzer's figure for batch analysis, and the two jobs are different: a
+#: batch floor decides what goes in a report, this one decides what a person in a garden is
+#: allowed to see. Measured on the shipped model, **no class of 801 clears 0.03** on white noise
+#: at −50 or −20 dBFS, on mains hum, or on digital silence; on a real robin recording the change
+#: from 0.25 to 0.03 turns two rows into four. The dial does the deciding, as it is meant to.
+#: Kotlin holds the same number and `golden_audio.json` is the check. See VERIFICATION.md §91.
+DEFAULT_DETECTION_THRESHOLD = 0.03
 DEFAULT_CONFUSION_MARGIN = 0.5
 DEFAULT_GEO_WEIGHT = 1.0
 

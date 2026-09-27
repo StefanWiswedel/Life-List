@@ -214,4 +214,23 @@ class AudioTest {
         assertEquals(0.85f, Audio.thresholdFor(0.99f))
         assertEquals(0.50f, Audio.thresholdFor(0.80f))
     }
+
+    @Test
+    fun `the floor is low enough to show a distant bird`() {
+        // "It doesn't show up with low confidence, it just doesn't show up at all." The floor
+        // was 0.25 and that was the whole of it. A robin 40 dB down in noise scores 0.06 in
+        // some windows and 0.86 in others; at 0.25 the quiet window was not refused, it was
+        // invisible, and §75's honest refusal had nothing to refuse (§91).
+        assertTrue(Audio.DEFAULT_DETECTION_THRESHOLD <= 0.05f)
+        val faint = mapOf(1 to 0.061f, 2 to 0.010f)
+        assertEquals(listOf(1), Audio.detect(faint).map { it.taxonId })
+    }
+
+    @Test
+    fun `the floor is still above what silence produces`() {
+        // Measured, not chosen: seven of 801 classes clear 0.01 on digital silence and none
+        // clear 0.03.
+        assertTrue(Audio.DEFAULT_DETECTION_THRESHOLD >= 0.02f)
+        assertEquals(emptyList<Int>(), Audio.detect(mapOf(1 to 0.011f, 2 to 0.019f)).map { it.taxonId })
+    }
 }

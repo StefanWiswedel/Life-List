@@ -62,6 +62,7 @@ When trading off, trade in favour of a record being keepable at the rank the evi
 | audio | §4A in both languages with a golden fixture; **801 BirdNET classes crossed, 795 leaves** (§60–62) |
 | listening screen | a **live spectrogram** — ours, for eyes, never the model's (§74) |
 | audio honesty | the score is shown even when refused, coloured against its bar; playback never feeds the mic (§75, §76) |
+| what reaches the dial | detection floor **0.03**, measured — 0 of 801 classes fire on silence, hum or noise. It was 0.25 and quiet birds were invisible, not refused (§91) |
 | release workflow | tag `v*` → GitHub Release with an APK attached |
 
 ## Rules that have already earned their place

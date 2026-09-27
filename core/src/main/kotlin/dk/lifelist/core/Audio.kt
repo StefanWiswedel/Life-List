@@ -24,7 +24,35 @@ import kotlin.math.pow
  */
 object Audio {
 
-    const val DEFAULT_DETECTION_THRESHOLD = 0.25f
+    /**
+     * The floor below which a class never becomes a detection at all — **0.03, measured.**
+     *
+     * It was 0.25, which is BirdNET-Analyzer's convention for batch analysis of a whole
+     * recording, and it was wrong here for a reason worth stating: a batch tool's floor decides
+     * what goes in a report nobody reads twice, and this one decides what a person standing in
+     * a garden is allowed to see. Stefan's report was exact — *"it doesn't show up with low
+     * confidence, it just doesn't show up at all"* — and 0.25 is the whole explanation. §75
+     * built the machinery to show a refused score honestly, coloured against its bar, and a
+     * constant upstream made sure there was never anything to refuse.
+     *
+     * **What 0.03 costs, measured on the shipped model rather than argued** (§91). Classes of
+     * 801 clearing each floor on five seconds of audio with no bird in it:
+     *
+     * | | >0.01 | >0.03 | >0.05 | >0.25 |
+     * |---|---|---|---|---|
+     * | white noise, −50 dBFS | 4.7 | **0** | 0 | 0 |
+     * | white noise, −20 dBFS | 6.3 | **0** | 0 | 0 |
+     * | mains hum and noise | 3.7 | **0** | 0 | 0 |
+     * | digital silence | 7.0 | **0** | 0 | 0 |
+     *
+     * Nothing fires on nothing. And on a real recording the cost of the change is two extra
+     * rows: a robin window that offered 2 classes above 0.25 offers 4 above 0.03.
+     *
+     * So the floor is set where the model stops being certain there is no bird, and the dial
+     * — which the person set, and which the screen shows its verdict against — does the
+     * deciding. That is what this app is for.
+     */
+    const val DEFAULT_DETECTION_THRESHOLD = 0.03f
 
     /**
      * What a target accuracy costs in audio — **and this table is not fitted.**

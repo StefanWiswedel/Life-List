@@ -3977,6 +3977,90 @@ country with no wildlife. That is §84's failure mode and it is cheap to make im
 
 ---
 
+## 91. Not the gain — 27 Sep 2026
+
+Stefan, after using the audio in a real garden: *"It works but it seems to struggle hearing
+things that other apps don't. It doesn't show up but with low confidence, it just doesn't show
+up at all. Could the gain be different?"*
+
+Good question, decisively no, and the second sentence is the bug.
+
+**First, the graph.** BirdNET 3.0's ONNX carries its own preprocessing — 127 nodes under
+`/preprocess`, ending in a sequence that reads, in order: `Log → Sub(ReduceMax) → ReduceMin,
+ReduceMax → Sub, Sub, Add, Div`. That is a log-magnitude spectrogram **min–max normalised
+inside the model**. A constant gain is an additive offset in the log domain, and min–max
+scaling removes an additive offset exactly. So level should cancel.
+
+**Then, measured, rather than left as an argument.** The shipped model, a Wikimedia robin
+recording, four windows, pure attenuation:
+
+| gain | | w0 | w1 | w2 | w3 |
+|---|---|---|---|---|---|
+| ×1 | 0 dB | 0.911 | 0.908 | 0.906 | 0.810 |
+| ×0.1 | −20 dB | 0.911 | 0.907 | 0.905 | 0.811 |
+| ×0.01 | −40 dB | 0.911 | 0.917 | 0.912 | 0.810 |
+| ×0.001 | −60 dB | 0.889 | 0.905 | 0.912 | 0.806 |
+| ×0.0001 | −80 dB | 0.841 | 0.915 | 0.908 | 0.749 |
+
+**Eighty decibels of attenuation moves the score by less than 0.07.** And peak-normalising each
+window before scoring — precisely what a gain fix would do — changed the numbers *not at all*,
+digit for digit, at every level. There is no gain fix to make. The recorder is already on
+`UNPROCESSED` for the right reason (§76) and that is not what is costing detections.
+
+**What does cost them is signal-to-noise, which is a different thing.** Same robin, attenuated
+into a fixed −50 dBFS noise floor:
+
+| bird, below the mix | w0 | w1 | w2 | w3 |
+|---|---|---|---|---|
+| −20 dB | 0.876 | 0.907 | 0.910 | 0.824 |
+| −30 dB | 0.808 | 0.871 | 0.888 | 0.793 |
+| **−40 dB** | **0.061** | 0.718 | 0.857 | 0.721 |
+| −50 dB | 0.010 | 0.013 | 0.010 | 0.010 |
+
+Look at the −40 dB row. A distant bird does not fade evenly; it produces **some windows at 0.86
+and some at 0.06**, depending where in the five seconds the song fell and what else was
+happening. That is the real signature of a bird at the end of the garden.
+
+**And `DEFAULT_DETECTION_THRESHOLD` was 0.25.** Every one of those quiet windows was discarded
+in `Audio.detect` before anything downstream ever saw it — before the confusion set, before the
+rollup, before the dial, before the screen. §75 built the machinery to show a score honestly
+even when it is refused, coloured against its own bar, and a constant upstream guaranteed there
+was never anything to refuse. Stefan's sentence is a precise bug report: *not shown with low
+confidence — not shown at all.*
+
+0.25 is BirdNET-Analyzer's figure, and it was inherited rather than chosen. It is a reasonable
+number for the job it was written for: batch-analysing a night of recordings into a report. It
+is the wrong number for a person standing in a garden watching a dial they set themselves.
+
+**So: what does a lower floor actually cost?** Measured on the shipped model — how many of 801
+classes clear each floor on five seconds of audio with no bird in it:
+
+| | >0.01 | >0.03 | >0.05 | >0.25 |
+|---|---|---|---|---|
+| white noise, −50 dBFS | 4.7 | **0** | 0 | 0 |
+| white noise, −20 dBFS | 6.3 | **0** | 0 | 0 |
+| mains hum and noise | 3.7 | **0** | 0 | 0 |
+| digital silence | 7.0 | **0** | 0 | 0 |
+
+Nothing fires on nothing, at 0.03, on four kinds of birdless audio. And the cost on real audio
+is two rows: a robin window offering 2 classes above 0.25 offers 4 above 0.03.
+
+**The floor is now 0.03**, in both languages, pinned by a test on each side. It is set where the
+model stops being certain there is no bird, and the dial — which the person chose, and whose
+verdict the screen already shows — does the deciding. Which is what this app is for.
+
+**The shape of the mistake, which is the part worth keeping.** Two correct components were
+composed into a broken one. A conservative floor is right for a batch analyser. An honest
+refusal display is right for a live screen. Putting the first in front of the second produces a
+screen that cannot refuse anything, because nothing reaches it. **Every constant inherited from
+a tool doing a different job is a decision you have not made yet.**
+
+Still open and unchanged: the thresholds are unfitted (§65) and the confusion-set margin has
+never been fitted either (BUILD.md §3.3). Both want labelled Danish recordings. This changes
+what reaches the dial, not what the dial means.
+
+---
+
 ---
 
 ## Open questions

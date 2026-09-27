@@ -288,3 +288,30 @@ def test_rejects_non_leaf_detection():
     det = detect(scores)[0]
     with pytest.raises(ValueError, match="is not a leaf"):
         identify(tax, scores, det, threshold=0.70)
+
+
+# -- the floor below which nothing is shown (§91) ------------------------------------
+
+
+def test_the_detection_floor_is_low_enough_to_show_a_distant_bird():
+    # Stefan, on a real garden: "it doesn't show up with low confidence, it just doesn't show
+    # up at all." The floor was 0.25 and that was the whole explanation. Measured on the
+    # shipped model, a robin attenuated 40 dB into a noise floor scores 0.06 in some windows
+    # and 0.86 in others; at 0.25 the 0.06 window is not refused, it is invisible.
+    from lifelist_train.audio import DEFAULT_DETECTION_THRESHOLD, detect
+
+    assert DEFAULT_DETECTION_THRESHOLD <= 0.05
+    faint = {1: 0.061, 2: 0.010}
+    got = detect(faint)
+    assert [d.taxon_id for d in got] == [1], "a 0.06 detection must reach the screen"
+
+
+def test_the_floor_is_still_above_what_silence_produces():
+    # And not lower than it needs to be: on five seconds of digital silence, seven of 801
+    # classes clear 0.01 and none clear 0.03. The floor sits where the model stops being
+    # certain there is no bird.
+    from lifelist_train.audio import DEFAULT_DETECTION_THRESHOLD, detect
+
+    assert DEFAULT_DETECTION_THRESHOLD >= 0.02
+    noise = {1: 0.011, 2: 0.019, 3: 0.004}
+    assert detect(noise) == []
