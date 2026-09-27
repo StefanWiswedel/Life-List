@@ -4061,6 +4061,57 @@ what reaches the dial, not what the dial means.
 
 ---
 
+## 92. A list you can check without reading it — 27 Sep 2026
+
+*"Some of the species listings still seem weird. It says raccoons. There aren't raccoons in DK
+are there? Is there no way to just sanity check the list?"*
+
+**There are raccoons in Denmark.** *Procyon lotor* is an established invasive here; GBIF holds
+88 Danish observations of free-living ones, and Denmark's own national register carries it **by
+name**, not by any inference of ours. It is on the list because the country says it is here. The
+raccoon dog, *Nyctereutes procyonoides*, is separately on the list with 1,370 records and is the
+one most people mean.
+
+So that particular answer was right. The question behind it is the better one, and the answer to
+*"is there no way to sanity check"* is not to read 14,541 rows. **It is to sort them by how far
+the rule had to stretch, and read the top.**
+
+Every species is on the list two ways at once (§90): GBIF has five or more Danish observations,
+and the national register vouches for it. The second half has three clauses and they are very
+unequal in strength:
+
+| | what it means | how many |
+|---|---|---|
+| **by name** | the register carries this exact binomial. Nothing inferred. | 13,013 |
+| **by synonym** | the register carries a name GBIF calls the same species. One step. | 365 |
+| **by genus only** | the register has never heard of this species, but knows the genus. | **1,163** |
+
+The genus clause is the one that keeps *Corvus cornix*, and it is the one that could keep a
+garden escape in a genus with a wild Danish member. So it is exactly where a wrong answer will
+be, and `lifelist-audit` writes a page with those rows first, rarest at the top — the two axes
+of doubt combined, because a species held by its genus alone *and* seen five times is the most
+questionable row the list can produce, while one held by name and seen forty thousand times is
+not worth anybody's eyes.
+
+**What it shows, which is reassuring in a specific and checkable way.** Every mammal, bird,
+reptile and amphibian on the list is vouched **by name** — not one vertebrate rests on the genus
+clause. The rarest mammals are cetaceans and seals (Eden's whale at 5 records, ringed seal at 5,
+Sowerby's beaked whale at 6); the rarest birds are genuine Danish vagrants (Hermit Thrush,
+Franklin's Gull, Blue-cheeked Bee-eater). The 1,163 genus-only rows are almost entirely insects,
+fungi and plants, which is exactly where a national register and a global backbone disagree
+about names and nothing else.
+
+**The render caught its own bug**, as it keeps doing. The first page put every *by name* row at
+the top — a negated sort rank — which is precisely the one thing a page called "where is this
+weakest" must not do. Visible in one screenshot, invisible in the code.
+
+**One thing the audit surfaced that is genuinely wrong and small:** `Anser anser x Branta
+canadensis`, a hybrid goose, is rank `SPECIES` in GBIF and carried by the register, so it passes
+both tests and sits on the bird list with 17 records. A hybrid is not a species you tick. Left
+alone rather than special-cased, and now written down.
+
+---
+
 ---
 
 ## Open questions

@@ -112,3 +112,33 @@ def test_a_short_row_is_skipped_rather_than_crashing_the_run():
 def test_an_empty_name_vouches_for_nothing():
     dk = read_archive([_row("   "), _row("Natrix natrix")])
     assert "" not in dk.genera
+
+
+# -- the audit's ordering (§92) ----------------------------------------------------
+
+
+def test_the_weakest_clause_sorts_first():
+    # The render caught this the first time: negating the rank put every by-name row at the
+    # top, which is the one thing a page called "where is this weakest" must not do.
+    from lifelist_train.audit import Row, weakest_first
+
+    def row(name, clause, records):
+        return Row(1, name, None, None, "Insects", records, clause, False, False)
+
+    got = weakest_first([
+        row("Common by name", "name", 40_000),
+        row("Rare by genus", "genus", 5),
+        row("Common by genus", "genus", 9_000),
+        row("Rare by synonym", "synonym", 6),
+    ])
+    assert [r.scientific_name for r in got] == [
+        "Rare by genus", "Common by genus", "Rare by synonym", "Common by name",
+    ]
+
+
+def test_a_species_nothing_vouches_for_is_named_rather_than_hidden():
+    from lifelist_train.audit import clause_for
+    from lifelist_train.register import Register
+
+    empty = Register(names=frozenset(), genera=frozenset())
+    assert clause_for(empty, "Bos taurus") is None

@@ -91,6 +91,15 @@ wikipedia-write = ["-m", "lifelist_train.cli.wikipedia", "--from-cache", "-v"]
 # genera the checklist filter needs. Seconds, and it is what tells cattle from a crow (§90).
 register = ["-m", "lifelist_train.cli.register", "-v"]
 
+# Where the checklist is weakest, as a page: species Denmark's register knows only by
+# genus, rarest first. Not a list to read — a list sorted so the questionable part is a
+# few hundred rows instead of fourteen thousand (§92).
+audit = [
+    "-m", "lifelist_train.cli.audit",
+    "--out", "../checklist-audit.html",
+    "-v",
+]
+
 checklist = [
     "-m", "lifelist_train.cli.checklist",
     "--taxonomy", "../shared/model/taxonomy.json",

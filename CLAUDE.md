@@ -53,6 +53,7 @@ When trading off, trade in favour of a record being keepable at the rank the evi
 | rarity | Red List badge, family progress, and **Danish recording effort per species** (§55, §72) |
 | checklist | **14,541 Danish species in 1,591 families** — seen in GBIF *and* vouched for by Denmark's national register (§81, §89, §90) |
 | what counts as Danish | two sources, no list: GBIF says what was seen, arter.dk says what lives here. Name, genus, synonym — three clauses (§90) |
+| sanity-checking it | `lifelist-audit` → a page of the weakest rows first: genus-only, rarest at the top. Every vertebrate is vouched by name (§92) |
 | index | families fullest first, species commonest first, the unfound shown and the un-nameable marked (§82) |
 | home | **every group, with Denmark's number on it** — `0 of 18 · Amphibians`, gaps sorted smallest first (§88) |
 | which build | the version sits next to the title, because sideloading makes that unknowable otherwise (§88) |
