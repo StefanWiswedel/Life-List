@@ -3894,6 +3894,89 @@ covers it — and **a job whose real input is a cache must run where the cache i
 
 ---
 
+## 90. Two sources, no list — 27 Sep 2026
+
+Stefan, on the livestock §89 left behind: *stick to rules that get us as close as possible to
+reality. We don't want to have to manually go through each family and decide.*
+
+Right, and the rule exists. **Denmark keeps a national species register** — Taxonbasen, the
+taxonomic backbone of arter.dk — published on GBIF and downloadable as a 3 MB Darwin Core
+archive of 60,554 name usages. Its own metadata states its scope: taxa native to Denmark, plus
+non-natives established at least locally. So:
+
+> GBIF says what was **seen** here. Denmark's register says what **counts as living** here.
+
+Two sources, one intersection, nobody going through families deciding.
+
+**Checked before building anything.** *Bos taurus*: absent. *Ovis aries*, *Capra hircus*,
+*Felis catus*, *Equus caballus*, *Syrmaticus reevesii*: absent. *Natrix natrix*, *Esox lucius*,
+*Amanita muscaria*, *Parus major*: present. The register makes exactly the distinction that was
+wanted and it makes it for 41,327 species at once.
+
+**The naive version is wrong, and measuring it is what produced the real rule.** Matching our
+names against the register's keeps 12,998 of 14,876 and throws away 1,878 — including *Corvus
+cornix*, Denmark's commonest crow, at 636,849 records. A national register and a global
+backbone never agree on names, and they disagree in three distinct ways that need three
+distinct clauses:
+
+| clause | fixes | recovers |
+|---|---|---|
+| the binomial, either side's spelling | nothing; it is the base case | 13,013 |
+| **the genus** | *splits and lumps* — the register files the hooded crow as *Corvus corone cornix* and GBIF gives *Corvus cornix* its own key. Those keys never match. The genus does. | 1,163 |
+| **GBIF's synonymy** | *recombination* — ours *Rabelera holostea*, Denmark's *Stellaria holostea*; *Maculinea arion* against *Phengaris arion*; *Calvatia gigantea* against *Langermannia gigantea*. This is where the botany and mycology live. | 365 |
+
+Each clause alone is a bad rule, and I measured all three rather than reasoning about them.
+Name alone loses 1,878. **Genus alone loses 700**, and its losses are not the farmyard — they
+are the greater stitchwort at 23,172 records, the giant puffball, the Large Blue — because
+plant and fungal genera churn constantly. Together: **14,541 of 14,876 kept, 98%.**
+
+The synonym clause is also the expensive one, so it runs last and only on what the first two
+could not vouch for: **700 requests, not 14,876, and not the 42,305 that resolving the register
+from the other direction would have cost.** I tried that direction first. It was still running
+after ten minutes at a tenth done, which is its own small lesson — *ask the question about the
+smaller set*.
+
+**What comes out.**
+
+| | v0.15 | v0.16 |
+|---|---|---|
+| Insects | 5,430 | 5,409 |
+| Fungi | 4,410 | 4,406 |
+| Plants | 2,827 | **2,593** |
+| Birds | 520 | **495** |
+| Mammals | 93 | **83** |
+| Reptiles | 6 | **5** |
+| Amphibians | 16 | 16 |
+| **total** | **14,876** | **14,541** |
+
+Denmark has **five** native reptiles. The list says five. It said thirty two days ago.
+
+**Bovidae is now absent from the checklist entirely**, which is the correct answer: Denmark has
+no wild native bovid. The family that started this — thirteen rows of aurochs, anoa and African
+buffalo — is not a family you can fail to complete, because it is not here.
+
+**What it drops, in order of how much it deserved to go.** All ten mammals: the domestic cat,
+cow, sheep, goat, horse, *Homo sapiens*, the Bornholm bison enclosure, an escaped muntjac. All
+twenty-five birds bar a few: Muscovy duck, peafowl, budgerigar, cockatiel, rose-ringed parakeet,
+Reeves's pheasant, flamingo, African sacred ibis, bearded vulture — a pet shop and a zoo. The
+234 plants are wheat, walnut, borage, hollyhock, rhubarb, sweet chestnut, Douglas fir: the
+register excludes cultivated plants and so now do we.
+
+**And what it gets wrong, because a rule that is 98% right is 2% wrong and that should be
+written down rather than discovered.** Roughly twenty to thirty of the 335 are real: *Hippophae
+rhamnoides*, sea buckthorn, genuinely wild on Danish coasts, at 9,148 records; *Lenzites
+betulinus*, a common bracket fungus; *Lycopsis arvensis*, which is *Anchusa arvensis* under a
+name GBIF's synonymy does not carry. Each is a name the register spells differently in a way
+none of the three clauses bridges. That is the price, it is about 0.2% of the list, and it is
+the right trade against 300 budgerigars — but it is a price, not a rounding error.
+
+**One guard.** `Register.usable` refuses a register carrying under 10,000 names, and the
+checklist exits rather than filtering against it. A half-finished download vouches for nothing,
+passes zero species, and produces a log line that reads exactly like a correct run against a
+country with no wildlife. That is §84's failure mode and it is cheap to make impossible.
+
+---
+
 ---
 
 ## Open questions

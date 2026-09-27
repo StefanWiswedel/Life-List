@@ -87,6 +87,10 @@ wikipedia-write = ["-m", "lifelist_train.cli.wikipedia", "--from-cache", "-v"]
 # Denmark's species checklist from GBIF's occurrence facets: 52,000 keys down to the 26,722
 # recorded at least five times, each resolved to a family and a name. Three passes, all cached
 # and resumable; about fifteen minutes cold (§81).
+# Denmark's national species register (arter.dk Taxonbasen), 3 MB, reduced to the names and
+# genera the checklist filter needs. Seconds, and it is what tells cattle from a crow (§90).
+register = ["-m", "lifelist_train.cli.register", "-v"]
+
 checklist = [
     "-m", "lifelist_train.cli.checklist",
     "--taxonomy", "../shared/model/taxonomy.json",

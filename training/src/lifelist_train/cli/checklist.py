@@ -24,6 +24,7 @@ from pathlib import Path
 
 from ..checklist import Species, document, families, family_key, wanted
 from ..gbif import GbifClient, parse_backbone_record, pick_vernacular
+from ..register import Register
 from ._common import LOG, cache_path, setup_logging, shared_model, write_json
 
 
@@ -50,6 +51,21 @@ def build_parser() -> argparse.ArgumentParser:
             "occurrence 'in Denmark'. 7,006 of the 26,722 species it produced had never been "
             "seen alive here at all. See VERIFICATION.md section 89."
         ),
+    )
+    parser.add_argument(
+        "--register",
+        type=Path,
+        default=Path("cache/danish_register.json"),
+        help=(
+            "Denmark's national species register, from `lifelist-register`. GBIF says what "
+            "was seen here; this says what counts as living here, which is how the cattle, "
+            "the budgerigars and the peafowl leave without anyone curating a list (§90)."
+        ),
+    )
+    parser.add_argument(
+        "--no-register",
+        action="store_true",
+        help="keep every observed species, register or not",
     )
     parser.add_argument("--taxonomy", type=Path, default=shared_model("taxonomy.json"))
     parser.add_argument("--out", type=Path, default=shared_model("checklist.json"))
@@ -113,6 +129,68 @@ def fetch(path: Path, keys: list[int], work, workers: int, label: str) -> dict[i
     return have
 
 
+def vouched_for(kept: list[dict], args, client: GbifClient) -> list[dict]:
+    """Keep the species Denmark's own register knows, under any name.
+
+    Three clauses, cheapest first, and only the ones still unvouched after the first two cost
+    a request — 700 of 14,876 rather than one per name in a 60,000-name register.
+    """
+    if args.no_register:
+        LOG.warning("--no-register: livestock and escaped cage birds stay on the list")
+        return kept
+    if not args.register.exists():
+        LOG.error(
+            "no %s — run `lifelist-register` first, or pass --no-register on purpose",
+            args.register,
+        )
+        raise SystemExit(2)
+
+    register = Register.from_document(json.loads(args.register.read_text(encoding="utf-8")))
+    if not register.usable:
+        LOG.error("%s vouches for almost nothing — refusing to filter Denmark away", args.register)
+        raise SystemExit(2)
+
+    unsure = [row for row in kept if register.needs_synonyms(row["scientific_name"])]
+    LOG.info(
+        "register: %d names, %d genera — %d species want a synonym lookup",
+        len(register.names), len(register.genera), len(unsure),
+    )
+
+    def synonyms_of(key: int) -> dict:
+        try:
+            names = [s.get("scientificName", "") for s in client.synonyms(key)]
+        except Exception as exc:  # noqa: BLE001 — one bad key must not end the run
+            return {"key": key, "error": f"{type(exc).__name__}"}
+        return {"key": key, "synonyms": names}
+
+    rows = fetch(
+        cache_path(args.cache_dir, f"checklist_synonyms_{args.country}.jsonl"),
+        sorted(row["key"] for row in unsure),
+        synonyms_of,
+        args.workers,
+        "synonyms",
+    )
+
+    out = []
+    for row in kept:
+        names = rows.get(row["key"], {}).get("synonyms", ())
+        if register.vouches(row["scientific_name"], names):
+            out.append(row)
+    LOG.info(
+        "%d of %d species are in Denmark's national register; %d are not",
+        len(out), len(kept), len(kept) - len(out),
+    )
+    # The commonest few, named in the log. A filter that removes 300 species silently is a
+    # filter nobody checks; one that says it dropped the domestic cat is one you can argue with.
+    survived = {r["key"] for r in out}
+    dropped = sorted(
+        (r for r in kept if r["key"] not in survived), key=lambda r: -r["records"]
+    )[:10]
+    for row in dropped:
+        LOG.info("  not in the register: %s (%d records)", row["scientific_name"], row["records"])
+    return out
+
+
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     setup_logging(args.verbose)
@@ -169,6 +247,8 @@ def main(argv: list[str] | None = None) -> int:
         if wanted(row, args.min_records):
             kept.append(row)
     LOG.info("%d of %d resolved records belong on the checklist", len(kept), len(records))
+
+    kept = vouched_for(kept, args, client)
 
     def vernacular(key: int) -> dict:
         try:
