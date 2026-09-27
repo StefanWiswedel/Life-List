@@ -118,6 +118,16 @@ fun ListenScreen(
      * numbers do.
      */
     nearest: List<Nearest> = emptyList(),
+    /**
+     * Keep the last minute of microphone as a file.
+     *
+     * Every wrong explanation for "I can hear it and the app cannot" was ruled out on somebody
+     * else's recording. A blue tit scores 0.93 on clean audio through this exact model and
+     * class map, so whatever is wrong is between this microphone and that graph — and the only
+     * way to see it is to run the samples the model was actually handed (§94).
+     */
+    onKeepSample: (() -> Unit)? = null,
+    canKeepSample: Boolean = false,
     modifier: Modifier = Modifier,
 ) {
     // Its own ground, rather than the Scaffold's. The palette is ink on paper and there is no
@@ -173,6 +183,23 @@ fun ListenScreen(
                 if (nearest.isNotEmpty()) {
                     item { FieldLabel("Closest it came") }
                     item { Nearly(nearest) }
+                }
+                if (onKeepSample != null) {
+                    item {
+                        Column {
+                            TextButton(onClick = onKeepSample, enabled = canKeepSample) {
+                                Text("Keep the last minute")
+                            }
+                            Text(
+                                "Saves what the microphone actually delivered, so the same " +
+                                    "samples the model was given can be run somewhere they " +
+                                    "can be looked at.",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.outline,
+                                modifier = Modifier.padding(start = 12.dp, end = 8.dp),
+                            )
+                        }
+                    }
                 }
             } else {
                 item { FieldLabel("Heard so far") }

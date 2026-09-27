@@ -4188,6 +4188,79 @@ tell was in his own words the first time and I read past it: *clearly hear*. A c
 
 ---
 
+## 94. Blue tit — 27 Sep 2026
+
+The species, at last, and it makes the rest of this much sharper: **blue tit**. *Cyanistes
+caeruleus*, 448,099 Danish records, one of the commonest birds in the country.
+
+**It is in the model.** BirdNET class 275, crossed correctly to GBIF 2487879, present in the
+audio taxonomy with its English name. So §93's coverage finding, real as it is, is not this.
+
+**And the model is very good at it.** Three xeno-canto recordings through the shipped ONNX and
+our own class map, five-second windows, 2.5-second hop:
+
+| recording | windows | blue tit |
+|---|---|---|
+| XC538220 | 3 | 0.885 – 0.930 |
+| XC539315 | 6 | 0.804 – 0.885 |
+| XC541761 | 28 | 0.861 – **0.953** |
+
+Top class in every one of the 37 windows, by a wide margin. So the model, the class map, the
+taxonomy and the rollup are all fine, and **whatever is wrong is between his microphone and
+that graph.**
+
+**Two things measured about that gap.**
+
+*A sample-rate mismatch is catastrophic, not degrading.* The same window, resampled as though
+the phone had captured at one rate and we had read it as another:
+
+| | blue tit |
+|---|---|
+| correct, 32 kHz | **0.930** |
+| 48 kHz read as 32 kHz | **0.001** |
+| 44.1 kHz read as 32 kHz | 0.002 |
+| 16 kHz read as 32 kHz | 0.001 |
+| 24 kHz read as 32 kHz | 0.177 |
+
+**0.930 to 0.001.** That is not a low score, it is an absence, at any threshold anyone could
+choose — and it is exactly the reported symptom. It does not prove the phone is doing this; it
+proves the symptom has at least one cause that would look precisely like this, and that we have
+no check anywhere that would catch it. `Recorder.supportsUnprocessed()` is a *version* check
+wearing a capability check's name: it asks whether the SDK is 24 or later and never asks the
+device whether `UNPROCESSED` works, or at what rate.
+
+*A very short call dilutes, but only at the end.* The loudest half-second of a blue tit dropped
+into five seconds of quiet background:
+
+| call fills | blue tit |
+|---|---|
+| 100% | 0.859 |
+| 50% | 0.887 |
+| 20% | 0.903 |
+| 10% | 0.894 |
+| **5%** | **0.106** |
+
+Flat until a quarter of a second in five, then a cliff. A single brief scold can land at 0.1 —
+invisible at the old 0.25 floor, visible at 0.03.
+
+**What was ruled out on the way, each by measurement**: the model, the class map, coverage,
+input gain (§91), inference starving the microphone (146 ms against a 2.5 s hop), the geo prior
+(never passed), the mute latch (reset on every start), PCM scaling (`/32768f`, correct),
+`WindowBuffer` (read and correct), and the render path (`heardFrom` never drops a detection).
+
+**And the thing that actually matters, which is that I cannot finish this from here.** Every
+explanation above was tested on *somebody else's recording*. The one recording that would settle
+it — what the microphone on his phone actually delivered while he could hear a blue tit and the
+app said nothing — does not exist, because the app only saves a clip when there is a detection
+to attach it to, and the entire complaint is that there was no detection.
+
+So the listening screen now keeps the last minute of microphone and will write it to a file on
+request. Not to identify — to send. **A diagnostic that only fires on success is not a
+diagnostic**, and this app had exactly one, for six releases, while the failure it needed to
+explain was by definition the case where nothing happened.
+
+---
+
 ---
 
 ## Open questions

@@ -748,6 +748,8 @@ class ScreenshotTest {
                     permission = true,
                     modelReady = true,
                     note = null,
+                    onKeepSample = {},
+                    canKeepSample = true,
                     onStart = {}, onStop = {}, onSave = {},
                 )
             }

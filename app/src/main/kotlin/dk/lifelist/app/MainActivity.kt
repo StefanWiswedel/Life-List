@@ -155,6 +155,9 @@ data class Shot(
     val fromCamera: Boolean = false,
 )
 
+/** How much of the microphone to keep, in seconds, for saving a sample (§94). */
+private const val TAPE_SECONDS = 60
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun App() {
@@ -208,6 +211,18 @@ fun App() {
     var mutedToS by remember { mutableFloatStateOf(0f) }
     /** The best classes that never cleared the detection floor, for when nothing does. */
     var nearest by remember { mutableStateOf<List<Listener.Scored>>(emptyList()) }
+    /**
+     * The last minute of everything the microphone delivered, kept so it can be saved.
+     *
+     * Not for identifying — for *sending to somebody*. When the app hears nothing and you can
+     * hear a blue tit, the only way to find out which of a dozen things went wrong is to run
+     * the exact samples the model was given through the same graph off the phone. Every
+     * explanation this session ruled out was ruled out on somebody else's recording; this is
+     * the one that ends the guessing (§94).
+     */
+    val tape = remember { java.util.ArrayDeque<FloatArray>() }
+    var taped by remember { mutableIntStateOf(0) }
+    var savedTape by remember { mutableStateOf<String?>(null) }
     // Adding something you identified yourself, with no photograph and no model.
     var addingByName by remember { mutableStateOf(false) }
     val clipPlayer = rememberClipPlayer()
@@ -501,6 +516,9 @@ fun App() {
         mutedFromS = 0f
         mutedToS = 0f
         nearest = emptyList()
+        tape.clear()
+        taped = 0
+        savedTape = null
         thread {
             runCatching {
                 var captured = 0L
@@ -510,6 +528,18 @@ fun App() {
                     // spends on the same audio a moment later.
                     onSamples = { samples ->
                         spectrogram.offer(spectrograph.add(samples))
+                        // A minute of tape, oldest chunk dropped. Held as the chunks arrived
+                        // rather than one growing array: this runs on the microphone thread and
+                        // a copy of a growing sixty-second buffer every 50 ms is how you turn a
+                        // recorder into a stutter.
+                        synchronized(tape) {
+                            tape.addLast(samples)
+                            var held = taped + samples.size
+                            while (held > Listener.SAMPLE_RATE * TAPE_SECONDS) {
+                                held -= (tape.pollFirst() ?: break).size
+                            }
+                            taped = held
+                        }
                         // The counter ticks from the audio, four times a second, rather than
                         // from a window boundary every two and a half — which made it jump by
                         // three seconds and then two.
@@ -759,6 +789,24 @@ fun App() {
                         // The audio taxonomy, not the camera's: BirdNET's classes live in
                         // their own tree and a near miss looked up in the vision taxonomy is
                         // a number with no name on it.
+                        onKeepSample = {
+                            savedTape = runCatching {
+                                val whole = synchronized(tape) {
+                                    val parts = tape.toList()
+                                    FloatArray(parts.sumOf { it.size }).also { out ->
+                                        var at = 0
+                                        parts.forEach { it.copyInto(out, at); at += it.size }
+                                    }
+                                }
+                                store.saveClip(whole, Listener.SAMPLE_RATE)
+                            }.getOrNull()
+                            savedTape?.let { path ->
+                                scope.launch {
+                                    snackbar.showSnackbar("Saved ${'$'}{taped / Listener.SAMPLE_RATE}s to ${'$'}path")
+                                }
+                            }
+                        },
+                        canKeepSample = taped > Listener.SAMPLE_RATE,
                         nearest = remember(nearest, listener) {
                             val tree = listener?.taxonomy
                             nearest.map { scored ->

@@ -63,6 +63,7 @@ When trading off, trade in favour of a record being keepable at the rank the evi
 | audio | §4A in both languages with a golden fixture; **801 BirdNET classes crossed, 795 leaves** (§60–62) |
 | what audio can name | **397 of 495 Danish birds**, 21 of 83 mammals, 8 of 16 amphibians, **24 of 5,409 insects** — measured, and not what this file used to claim (§93) |
 | when nothing appears | the screen names the best classes below the floor, with three decimals — so "not sure" and "no class for it" stop looking the same (§93) |
+| getting a recording out | **keep the last minute** on the listening screen. The app only ever saved a clip when it succeeded, and the bug to explain is the case where nothing happened (§94) |
 | listening screen | a **live spectrogram** — ours, for eyes, never the model's (§74) |
 | audio honesty | the score is shown even when refused, coloured against its bar; playback never feeds the mic (§75, §76) |
 | what reaches the dial | detection floor **0.03**, measured — 0 of 801 classes fire on silence, hum or noise. It was 0.25 and quiet birds were invisible, not refused (§91) |
