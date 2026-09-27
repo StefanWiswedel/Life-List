@@ -47,6 +47,9 @@ class Listener(
          */
         const val HOP_SAMPLES = WINDOW_SAMPLES / 2
 
+        /** How many near misses are worth reporting. More is a wall of noise. */
+        const val NEAREST = 5
+
         sealed interface Outcome {
             data class Ready(val listener: Listener) : Outcome
             data object NotBundled : Outcome
@@ -148,13 +151,43 @@ class Listener(
         windowStartS: Float = 0f,
         detectionThreshold: Float = Audio.DEFAULT_DETECTION_THRESHOLD,
         geo: Map<Int, Float>? = null,
-    ): List<Audio.AudioIdentification> {
+    ): Listened {
         val scores = score(samples)
         val threshold = Audio.thresholdFor(target)
-        return Audio.detect(scores, windowStartS, detectionThreshold).map { detection ->
+        val found = Audio.detect(scores, windowStartS, detectionThreshold).map { detection ->
             Audio.identify(taxonomy, scores, detection, threshold = threshold, geo = geo)
         }
+        return Listened(found, nearest(scores, detectionThreshold))
     }
+
+    /**
+     * The best few classes this window produced that did **not** clear the floor.
+     *
+     * Because "nothing appeared" is two completely different facts wearing one face, and the
+     * app was unable to tell them apart. A bird the model scored 0.04 is a threshold question.
+     * A bird whose species BirdNET has no class for — 98 of Denmark's 495 birds, and 5,385 of
+     * its 5,409 insects — will never appear at any threshold, and no amount of standing in the
+     * garden will reveal which of those two you are looking at.
+     *
+     * So a window that finds nothing still says what it nearly heard, with the number. That is
+     * the same promise §75 makes about a refused detection, extended to the case where there
+     * was not even a detection to refuse.
+     */
+    fun nearest(scores: Map<Int, Float>, floor: Float, limit: Int = NEAREST): List<Scored> =
+        scores.entries
+            .filter { it.value < floor }
+            .sortedWith(compareByDescending<Map.Entry<Int, Float>> { it.value }.thenBy { it.key })
+            .take(limit)
+            .map { Scored(it.key, it.value) }
+
+    /** One class and what the model gave it, with no judgement attached. */
+    data class Scored(val taxonId: Int, val score: Float)
+
+    /** What one window produced: what cleared the floor, and what came closest to it. */
+    data class Listened(
+        val identifications: List<Audio.AudioIdentification>,
+        val nearest: List<Scored>,
+    )
 
     override fun close() = session.close()
 }

@@ -725,6 +725,36 @@ class ScreenshotTest {
     }
 
     @Test
+    fun `nothing cleared the floor, so it says what it nearly heard`() {
+        // "Something I can clearly hear, and other apps get, and nothing pops up at all."
+        // "Nothing yet" was two different facts wearing one face: the model heard something and
+        // was not sure enough, or the species is not one of the 801 classes it carries — 98 of
+        // Denmark's 495 birds are not, and 5,385 of its 5,409 insects. A person in a garden
+        // cannot tell those apart. Three decimals can.
+        paparazzi.snapshot {
+            LifeListTheme {
+                ListenScreen(
+                    listening = true,
+                    heard = emptyList(),
+                    nearest = listOf(
+                        Nearest("Common Chiffchaff", "species", 0.021f),
+                        Nearest("Willow Warbler", "species", 0.014f),
+                        Nearest("Eurasian Blackcap", "species", 0.009f),
+                        Nearest("European Robin", "species", 0.004f),
+                        Nearest("Dunnock", "species", 0.002f),
+                    ),
+                    spectrogram = sungInto(SpectrogramState()),
+                    elapsedSeconds = 48f,
+                    permission = true,
+                    modelReady = true,
+                    note = null,
+                    onStart = {}, onStop = {}, onSave = {},
+                )
+            }
+        }
+    }
+
+    @Test
     fun `listening before the microphone has been allowed`() {
         paparazzi.snapshot {
             LifeListTheme {

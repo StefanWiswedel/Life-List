@@ -4112,6 +4112,82 @@ alone rather than special-cased, and now written down.
 
 ---
 
+## 93. "Isn't that something different?" — 27 Sep 2026
+
+Yes. Stefan, after §91 shipped: *"It currently shows low confidence identifications, but it only
+allows you to add them above a certain threshold. What I am talking about is something that I can
+clearly hear (and so can other apps) but nothing pops up on my app."*
+
+He is right and I filed his report under the fix I had already made. §91 is a real bug and its
+measurements hold, but it explains a bird at 0.06. A bird you can plainly hear scores 0.7 or
+better — nowhere near either floor. Those are different failures and I merged them because one
+of them was already in my hands.
+
+**What was ruled out, each by measurement rather than reading.**
+
+*Inference starving the microphone.* `onWindow` runs the model on the same thread that calls
+`AudioRecord.read`, so a slow model would make the app deaf between windows — audio lost, not
+merely unanalysed. Timed on the shipped ONNX: **146 ms at two threads, 213 at one, 349 at four**,
+against a 2.5-second hop. A 10% duty cycle. Not it, and worth knowing.
+
+*The geo prior crushing a score.* It multiplies by a likelihood floored at 1e-6, so a species
+missing from the occurrence index would effectively vanish — except the phone never passes one.
+`geo` is null on every call. Not it.
+
+*The mute latch.* Playing a reference clip sets `mutedToS` to `POSITIVE_INFINITY` and only the
+completion callback brings it back, which would silence every subsequent window. But it is reset
+to zero each time listening starts. Not it.
+
+*PCM scaling and the render path.* `pcm[i] / 32768f` is correct, and `heardFrom` always produces
+a row — once a detection exists nothing downstream can drop it silently.
+
+**What was found instead, and it is not a threshold at all.** BirdNET's western-palearctic model
+has 801 classes. Against Denmark's own list:
+
+| | on the list | BirdNET can name |
+|---|---|---|
+| Birds | 495 | **397** |
+| Mammals | 83 | 21 |
+| Amphibians | 16 | 8 |
+| **Insects** | **5,409** | **24** |
+
+**CLAUDE.md has said since the model was chosen that BirdNET "covers insects and amphibians —
+the vision model's blind spot."** That was the stated reason for choosing it. It is wrong, it was
+never checked, and it has now been corrected in place rather than quietly deleted. Twenty-four
+insects.
+
+I checked whether the full model rescues it: 11,560 classes, 557 MB fp32 or 279 MB fp16 against
+the 149 MB we ship. Birds go **397 → 467**. Insects go **24 → 39**. BirdNET is a bird model with
+a handful of extras, whatever its documentation implies, and that is a decision to make on birds
+alone.
+
+**But the real defect is that the app could not tell Stefan which of these he was looking at**,
+and neither could I. "Nothing yet" is two completely different facts wearing one face:
+
+- the model heard something and was not sure enough — a threshold question, now a 0.03 one; and
+- the species is not one of the 801 — which no threshold will ever fix.
+
+A person standing in a garden has no way to separate those, and the app that is built entirely
+around saying how sure it is was saying nothing at all.
+
+**So a window that finds nothing now says what it nearly heard**, with the number, to three
+decimals — because the difference between 0.041 and 0.001 is the difference between "lower the
+floor" and "this bird is not in the model", and at two decimals both read as 0.0. Below the
+floor, labelled as no kind of answer, and carrying the sentence that closes the loop: *if the
+bird you can hear is not here at all, the model has no class for it.*
+
+That is §75's promise — show the score even when refusing — extended to the case where there was
+not even a detection to refuse. It is also the instrument that ends this particular argument:
+next time, the screen reports rather than me guessing.
+
+**The lesson, and it is about me rather than the code.** A user report that resembles a bug you
+have just fixed is the easiest thing in the world to file under that bug. Stefan had to say
+*isn't that something different* to get it looked at properly, and he should not have had to. The
+tell was in his own words the first time and I read past it: *clearly hear*. A clear bird is a
+0.7 bird. The number was in the report.
+
+---
+
 ---
 
 ## Open questions

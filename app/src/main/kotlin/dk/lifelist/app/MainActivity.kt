@@ -206,6 +206,8 @@ fun App() {
     // making the noise. Seconds since the session started, the same clock the windows use.
     var mutedFromS by remember { mutableFloatStateOf(0f) }
     var mutedToS by remember { mutableFloatStateOf(0f) }
+    /** The best classes that never cleared the detection floor, for when nothing does. */
+    var nearest by remember { mutableStateOf<List<Listener.Scored>>(emptyList()) }
     // Adding something you identified yourself, with no photograph and no model.
     var addingByName by remember { mutableStateOf(false) }
     val clipPlayer = rememberClipPlayer()
@@ -498,6 +500,7 @@ fun App() {
         spectrogram.clear()
         mutedFromS = 0f
         mutedToS = 0f
+        nearest = emptyList()
         thread {
             runCatching {
                 var captured = 0L
@@ -519,11 +522,20 @@ fun App() {
                     // climbs with every replay, which looks exactly like growing certainty.
                     if (windowOverlaps(window.startS, 5f, mutedFromS, mutedToS)) return@record
 
-                    val found = model.listen(
+                    val listened = model.listen(
                         window.samples,
                         target = target,
                         windowStartS = window.startS,
                     )
+                    // Kept whether or not anything cleared the floor, and merged across
+                    // windows by taxon keeping the best — so five minutes in a garden that
+                    // produced nothing can still say what the model kept almost hearing.
+                    nearest = (nearest + listened.nearest)
+                        .groupBy { it.taxonId }
+                        .map { (_, rows) -> rows.maxBy { it.score } }
+                        .sortedByDescending { it.score }
+                        .take(Listener.NEAREST)
+                    val found = listened.identifications
                     if (found.isEmpty()) return@record
                     // The window is written once and shared by every detection in it: three
                     // birds singing at 0:35 were all in the same five seconds, and keeping three
@@ -744,6 +756,21 @@ fun App() {
                         listening = listening,
                         heard = heard,
                         elapsedSeconds = listenedFor,
+                        // The audio taxonomy, not the camera's: BirdNET's classes live in
+                        // their own tree and a near miss looked up in the vision taxonomy is
+                        // a number with no name on it.
+                        nearest = remember(nearest, listener) {
+                            val tree = listener?.taxonomy
+                            nearest.map { scored ->
+                                val node = tree?.nodeOrNull(scored.taxonId)
+                                Nearest(
+                                    name = node?.let { it.vernacularEn ?: it.scientificName }
+                                        ?: "taxon ${scored.taxonId}",
+                                    rank = node?.rank ?: "unknown",
+                                    score = scored.score,
+                                )
+                            }
+                        },
                         permission = micGranted,
                         modelReady = listener != null,
                         note = listenNote,

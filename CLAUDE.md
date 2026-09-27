@@ -61,6 +61,8 @@ When trading off, trade in favour of a record being keepable at the rank the evi
 | the one network call | a species page upgrades its 240 px photo to 1024 px when online, and nothing waits for it (§85) |
 | certainty | **the dial is an accuracy, not a probability** — one threshold per group (§58, §59) |
 | audio | §4A in both languages with a golden fixture; **801 BirdNET classes crossed, 795 leaves** (§60–62) |
+| what audio can name | **397 of 495 Danish birds**, 21 of 83 mammals, 8 of 16 amphibians, **24 of 5,409 insects** — measured, and not what this file used to claim (§93) |
+| when nothing appears | the screen names the best classes below the floor, with three decimals — so "not sure" and "no class for it" stop looking the same (§93) |
 | listening screen | a **live spectrogram** — ours, for eyes, never the model's (§74) |
 | audio honesty | the score is shown even when refused, coloured against its bar; playback never feeds the mic (§75, §76) |
 | what reaches the dial | detection floor **0.03**, measured — 0 of 801 classes fire on silence, hum or noise. It was 0.25 and quiet birds were invisible, not refused (§91) |
@@ -131,8 +133,12 @@ better there, since free Colab disconnects near 90 minutes and it takes 30–90.
 
 - Backbone: BioCLIP v1 ViT-B/16 default, **benchmark ViT-L/14 on the Pixel 9a** before committing.
   Report mean returned rank alongside top-1 — depth is what a better backbone buys.
-- Audio: **BirdNET V3.0, pinned**. ONNX (one runtime), CC BY-SA, covers insects and amphibians —
-  the vision model's blind spot.
+- Audio: **BirdNET V3.0, pinned**. ONNX (one runtime), CC BY-SA.
+  **[corrected 27 Sep 2026]** This line used to say it "covers insects and amphibians — the
+  vision model's blind spot", which was the stated reason for choosing it and was never
+  checked. Measured against the Danish list: the western-palearctic model can name **397 of
+  495 birds, 21 of 83 mammals, 8 of 16 amphibians and 24 of 5,409 insects**. The full
+  11,560-class model takes insects to 39. It is a bird model. See §93.
 - Inference: **CPU execution provider**, tuned threads. NNAPI is deprecated as of Android 15.
 - Preprocessing lives **inside the ONNX graph**, never reimplemented on the client: a bilinear
   resize instead of antialiased bicubic costs 8% of predictions (§22).

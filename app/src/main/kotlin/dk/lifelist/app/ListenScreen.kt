@@ -109,6 +109,15 @@ fun ListenScreen(
     muted: Boolean = false,
     /** Whether this build carries reference recordings at all. */
     referencesBundled: Boolean = true,
+    /**
+     * The best classes that never cleared the detection floor.
+     *
+     * Shown only when nothing did. "Nothing yet" is two different facts wearing one face —
+     * *the model heard something and was not sure enough*, and *this species is not one of the
+     * 801 it can name* — and a person standing in a garden has no way to tell them apart. The
+     * numbers do.
+     */
+    nearest: List<Nearest> = emptyList(),
     modifier: Modifier = Modifier,
 ) {
     // Its own ground, rather than the Scaffold's. The palette is ink on paper and there is no
@@ -161,6 +170,10 @@ fun ListenScreen(
 
             if (heard.isEmpty()) {
                 item { Empty(listening) }
+                if (nearest.isNotEmpty()) {
+                    item { FieldLabel("Closest it came") }
+                    item { Nearly(nearest) }
+                }
             } else {
                 item { FieldLabel("Heard so far") }
                 items(heard, key = { "${it.taxonId}-${it.atSeconds}" }) { entry ->
@@ -229,6 +242,53 @@ private fun Level(listening: Boolean, elapsedSeconds: Float) {
             if (listening) "Listening · ${elapsedSeconds.roundToInt()}s" else "Not listening",
             style = MaterialTheme.typography.titleMedium,
         )
+    }
+}
+
+/** One class the model scored but did not offer, with the number it actually gave it. */
+data class Nearest(val name: String, val rank: String, val score: Float)
+
+/**
+ * What the model nearly heard, when it offered nothing.
+ *
+ * Deliberately not a list of candidates — these are below the floor and none of them is a
+ * claim. It is an instrument reading. Three decimals because the difference between 0.041 and
+ * 0.001 is the difference between "raise the floor" and "this bird is not in the model", and
+ * at two decimals both read as 0.0.
+ */
+@Composable
+private fun Nearly(rows: List<Nearest>) {
+    Column {
+        Text(
+            "Below the floor, so none of these is an answer. If the bird you can hear is not " +
+                "here at all, the model has no class for it.",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.outline,
+            modifier = Modifier.padding(bottom = 8.dp),
+        )
+        rows.forEach { row ->
+            Row(
+                Modifier.fillMaxWidth().padding(vertical = 3.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    row.name,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontStyle = if (row.rank == "species" || row.rank == "genus") {
+                        FontStyle.Italic
+                    } else {
+                        FontStyle.Normal
+                    },
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.weight(1f),
+                )
+                Text(
+                    "%.3f".format(row.score),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.outline,
+                )
+            }
+        }
     }
 }
 
