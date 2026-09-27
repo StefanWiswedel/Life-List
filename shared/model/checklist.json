@@ -43,7 +43,7 @@
         7441141,
         1985
       ],
-      "species": 2,
+      "species": 1,
       "model": 0
     },
     "1994": {
@@ -92,19 +92,6 @@
         214,
         810,
         2064
-      ],
-      "species": 1,
-      "model": 0
-    },
-    "2070": {
-      "name": "Oreasteridae",
-      "vernacular_en": "Cushion Stars and Allies",
-      "lineage": [
-        1,
-        50,
-        214,
-        810,
-        2070
       ],
       "species": 1,
       "model": 0
@@ -239,19 +226,6 @@
       "species": 1,
       "model": 0
     },
-    "2195": {
-      "name": "Dasyatidae",
-      "vernacular_en": "sting rays",
-      "lineage": [
-        1,
-        44,
-        121,
-        8214029,
-        2195
-      ],
-      "species": 1,
-      "model": 0
-    },
     "2203": {
       "name": "Alopiidae",
       "vernacular_en": "thresher sharks",
@@ -301,7 +275,7 @@
         887,
         2211
       ],
-      "species": 3,
+      "species": 1,
       "model": 0
     },
     "2212": {
@@ -547,7 +521,7 @@
         392,
         2373
       ],
-      "species": 14,
+      "species": 13,
       "model": 3
     },
     "2374": {
@@ -599,21 +573,8 @@
         691,
         2384
       ],
-      "species": 2,
-      "model": 2
-    },
-    "2385": {
-      "name": "Actinidiaceae",
-      "vernacular_en": "kiwi-fruit family",
-      "lineage": [
-        6,
-        7707728,
-        220,
-        1353,
-        2385
-      ],
       "species": 1,
-      "model": 0
+      "model": 1
     },
     "2386": {
       "name": "Menyanthaceae",
@@ -628,19 +589,6 @@
       "species": 2,
       "model": 2
     },
-    "2387": {
-      "name": "Hydrophyllaceae",
-      "vernacular_en": "Waterleaf Family",
-      "lineage": [
-        6,
-        7707728,
-        220,
-        7226464,
-        2387
-      ],
-      "species": 4,
-      "model": 1
-    },
     "2389": {
       "name": "Convolvulaceae",
       "vernacular_en": "bindweed family",
@@ -651,7 +599,7 @@
         1176,
         2389
       ],
-      "species": 9,
+      "species": 8,
       "model": 3
     },
     "2390": {
@@ -664,7 +612,7 @@
         408,
         2390
       ],
-      "species": 15,
+      "species": 14,
       "model": 9
     },
     "2391": {
@@ -679,45 +627,6 @@
       ],
       "species": 7,
       "model": 1
-    },
-    "2393": {
-      "name": "Acanthaceae",
-      "vernacular_en": "black mangrove",
-      "lineage": [
-        6,
-        7707728,
-        220,
-        408,
-        2393
-      ],
-      "species": 2,
-      "model": 0
-    },
-    "2395": {
-      "name": "Simaroubaceae",
-      "vernacular_en": "Ailanthus Family",
-      "lineage": [
-        6,
-        7707728,
-        220,
-        933,
-        2395
-      ],
-      "species": 1,
-      "model": 1
-    },
-    "2398": {
-      "name": "Anacardiaceae",
-      "vernacular_en": "Sumac Family",
-      "lineage": [
-        6,
-        7707728,
-        220,
-        933,
-        2398
-      ],
-      "species": 2,
-      "model": 2
     },
     "2399": {
       "name": "Viscaceae",
@@ -742,8 +651,8 @@
         7219248,
         2402
       ],
-      "species": 13,
-      "model": 5
+      "species": 7,
+      "model": 4
     },
     "2403": {
       "name": "Grossulariaceae",
@@ -784,19 +693,6 @@
       "species": 2,
       "model": 2
     },
-    "2408": {
-      "name": "Elaeagnaceae",
-      "vernacular_en": "Oleaster Family",
-      "lineage": [
-        6,
-        7707728,
-        220,
-        691,
-        2408
-      ],
-      "species": 3,
-      "model": 1
-    },
     "2410": {
       "name": "Ranunculaceae",
       "vernacular_en": "buttercup family",
@@ -807,21 +703,8 @@
         399,
         2410
       ],
-      "species": 66,
-      "model": 32
-    },
-    "2412": {
-      "name": "Lardizabalaceae",
-      "vernacular_en": "Zabala Family",
-      "lineage": [
-        6,
-        7707728,
-        220,
-        399,
-        2412
-      ],
-      "species": 1,
-      "model": 0
+      "species": 60,
+      "model": 30
     },
     "2416": {
       "name": "Polygonaceae",
@@ -833,8 +716,8 @@
         422,
         2416
       ],
-      "species": 51,
-      "model": 18
+      "species": 46,
+      "model": 16
     },
     "2417": {
       "name": "Polygalaceae",
@@ -859,7 +742,7 @@
         422,
         2419
       ],
-      "species": 5,
+      "species": 4,
       "model": 2
     },
     "2420": {
@@ -872,21 +755,8 @@
         408,
         2420
       ],
-      "species": 52,
-      "model": 31
-    },
-    "2421": {
-      "name": "Saururaceae",
-      "vernacular_en": "Lizard's-tail Family",
-      "lineage": [
-        6,
-        7707728,
-        220,
-        404,
-        2421
-      ],
-      "species": 1,
-      "model": 0
+      "species": 50,
+      "model": 30
     },
     "2422": {
       "name": "Papaveraceae",
@@ -898,8 +768,8 @@
         399,
         2422
       ],
-      "species": 23,
-      "model": 16
+      "species": 21,
+      "model": 14
     },
     "2423": {
       "name": "Nymphaeaceae",
@@ -963,7 +833,7 @@
         690,
         2430
       ],
-      "species": 29,
+      "species": 27,
       "model": 6
     },
     "2432": {
@@ -1078,7 +948,7 @@
         408,
         2497
       ],
-      "species": 74,
+      "species": 69,
       "model": 29
     },
     "2498": {
@@ -1091,34 +961,8 @@
         7226464,
         2498
       ],
-      "species": 35,
-      "model": 19
-    },
-    "2499": {
-      "name": "Juglandaceae",
-      "vernacular_en": "walnut family",
-      "lineage": [
-        6,
-        7707728,
-        220,
-        1354,
-        2499
-      ],
-      "species": 3,
-      "model": 2
-    },
-    "2501": {
-      "name": "Cercidiphyllaceae",
-      "vernacular_en": "Katsura Family",
-      "lineage": [
-        6,
-        7707728,
-        220,
-        7219248,
-        2501
-      ],
-      "species": 1,
-      "model": 1
+      "species": 33,
+      "model": 18
     },
     "2503": {
       "name": "Gentianaceae",
@@ -1143,7 +987,7 @@
         1353,
         2505
       ],
-      "species": 25,
+      "species": 24,
       "model": 14
     },
     "2516": {
@@ -1169,8 +1013,8 @@
         422,
         2518
       ],
-      "species": 81,
-      "model": 40
+      "species": 74,
+      "model": 38
     },
     "2617": {
       "name": "Valloniidae",
@@ -1301,19 +1145,6 @@
       ],
       "species": 3,
       "model": 1
-    },
-    "2655": {
-      "name": "Actinocyclidae",
-      "vernacular_en": null,
-      "lineage": [
-        1,
-        52,
-        225,
-        980,
-        2655
-      ],
-      "species": 1,
-      "model": 0
     },
     "2658": {
       "name": "Neritidae",
@@ -1482,19 +1313,6 @@
       "species": 1,
       "model": 0
     },
-    "2796": {
-      "name": "Anisolabididae",
-      "vernacular_en": null,
-      "lineage": [
-        1,
-        54,
-        216,
-        1224,
-        2796
-      ],
-      "species": 1,
-      "model": 0
-    },
     "2810": {
       "name": "Phytoptidae",
       "vernacular_en": null,
@@ -1631,7 +1449,7 @@
         7191147,
         2877
       ],
-      "species": 28,
+      "species": 26,
       "model": 11
     },
     "2947": {
@@ -1668,7 +1486,7 @@
         10802062,
         2982
       ],
-      "species": 12,
+      "species": 11,
       "model": 0
     },
     "2983": {
@@ -1720,8 +1538,8 @@
         1108,
         2986
       ],
-      "species": 67,
-      "model": 40
+      "species": 63,
+      "model": 39
     },
     "2990": {
       "name": "Brachystomellidae",
@@ -1863,7 +1681,7 @@
         422,
         3064
       ],
-      "species": 44,
+      "species": 41,
       "model": 13
     },
     "3065": {
@@ -1876,8 +1694,8 @@
         414,
         3065
       ],
-      "species": 243,
-      "model": 98
+      "species": 218,
+      "model": 94
     },
     "3066": {
       "name": "Aristolochiaceae",
@@ -1889,21 +1707,8 @@
         404,
         3066
       ],
-      "species": 2,
-      "model": 1
-    },
-    "3070": {
-      "name": "Ginkgoaceae",
-      "vernacular_en": "ginkgo family",
-      "lineage": [
-        6,
-        7707728,
-        244,
-        418,
-        3070
-      ],
       "species": 1,
-      "model": 0
+      "model": 1
     },
     "3073": {
       "name": "Poaceae",
@@ -1915,21 +1720,8 @@
         1369,
         3073
       ],
-      "species": 161,
-      "model": 39
-    },
-    "3074": {
-      "name": "Isoetaceae",
-      "vernacular_en": "Quillwort Family",
-      "lineage": [
-        6,
-        7707728,
-        245,
-        951,
-        3074
-      ],
-      "species": 2,
-      "model": 0
+      "species": 146,
+      "model": 38
     },
     "3077": {
       "name": "Bombinatoridae",
@@ -1993,8 +1785,8 @@
         7225535,
         3112
       ],
-      "species": 86,
-      "model": 35
+      "species": 80,
+      "model": 34
     },
     "3218": {
       "name": "Ophiuridae",
@@ -2278,7 +2070,7 @@
         1145,
         3286
       ],
-      "species": 42,
+      "species": 41,
       "model": 11
     },
     "3287": {
@@ -2705,7 +2497,7 @@
         9310756,
         3445
       ],
-      "species": 10,
+      "species": 8,
       "model": 3
     },
     "3448": {
@@ -2899,7 +2691,7 @@
         811,
         3520
       ],
-      "species": 27,
+      "species": 26,
       "model": 8
     },
     "3522": {
@@ -3055,7 +2847,7 @@
         797,
         3556
       ],
-      "species": 6,
+      "species": 5,
       "model": 5
     },
     "3559": {
@@ -3429,19 +3221,6 @@
       "species": 3,
       "model": 1
     },
-    "3731": {
-      "name": "Pontederiaceae",
-      "vernacular_en": "pickerelweed family",
-      "lineage": [
-        6,
-        7707728,
-        196,
-        553,
-        3731
-      ],
-      "species": 1,
-      "model": 0
-    },
     "3734": {
       "name": "Nartheciaceae",
       "vernacular_en": "Bog-asphodel Family",
@@ -3701,19 +3480,6 @@
       "species": 3,
       "model": 0
     },
-    "3894": {
-      "name": "Geodiidae",
-      "vernacular_en": null,
-      "lineage": [
-        1,
-        105,
-        199,
-        7544483,
-        3894
-      ],
-      "species": 1,
-      "model": 0
-    },
     "3909": {
       "name": "Chalinidae",
       "vernacular_en": null,
@@ -3737,8 +3503,8 @@
         640,
         3925
       ],
-      "species": 25,
-      "model": 6
+      "species": 23,
+      "model": 5
     },
     "3933": {
       "name": "Alcyoniidae",
@@ -4829,7 +4595,7 @@
         1470,
         4207
       ],
-      "species": 49,
+      "species": 47,
       "model": 2
     },
     "4208": {
@@ -4906,7 +4672,7 @@
         1470,
         4238
       ],
-      "species": 13,
+      "species": 12,
       "model": 0
     },
     "4239": {
@@ -4919,7 +4685,7 @@
         1470,
         4239
       ],
-      "species": 252,
+      "species": 251,
       "model": 64
     },
     "4240": {
@@ -5254,7 +5020,7 @@
         1457,
         4342
       ],
-      "species": 32,
+      "species": 29,
       "model": 8
     },
     "4343": {
@@ -6111,21 +5877,8 @@
         1354,
         4689
       ],
-      "species": 8,
-      "model": 5
-    },
-    "4690": {
-      "name": "Magnoliaceae",
-      "vernacular_en": "magnolia family",
-      "lineage": [
-        6,
-        7707728,
-        220,
-        718,
-        4690
-      ],
-      "species": 1,
-      "model": 0
+      "species": 7,
+      "model": 4
     },
     "4691": {
       "name": "Euphorbiaceae",
@@ -7034,8 +6787,8 @@
         691,
         5015
       ],
-      "species": 193,
-      "model": 59
+      "species": 175,
+      "model": 53
     },
     "5024": {
       "name": "Viperidae",
@@ -7058,19 +6811,6 @@
         203,
         692,
         5030
-      ],
-      "species": 1,
-      "model": 0
-    },
-    "5039": {
-      "name": "Corycaeidae",
-      "vernacular_en": null,
-      "lineage": [
-        1,
-        54,
-        11545536,
-        687,
-        5039
       ],
       "species": 1,
       "model": 0
@@ -7199,7 +6939,7 @@
         705,
         5141
       ],
-      "species": 2,
+      "species": 1,
       "model": 0
     },
     "5153": {
@@ -7239,32 +6979,6 @@
       "species": 1,
       "model": 0
     },
-    "5198": {
-      "name": "Cytheruridae",
-      "vernacular_en": null,
-      "lineage": [
-        1,
-        54,
-        353,
-        1438,
-        5198
-      ],
-      "species": 2,
-      "model": 0
-    },
-    "5199": {
-      "name": "Hemicytheridae",
-      "vernacular_en": null,
-      "lineage": [
-        1,
-        54,
-        353,
-        1438,
-        5199
-      ],
-      "species": 1,
-      "model": 0
-    },
     "5201": {
       "name": "Lacertidae",
       "vernacular_en": "Lacertid Lizards",
@@ -7274,8 +6988,8 @@
         11592253,
         5201
       ],
-      "species": 3,
-      "model": 3
+      "species": 2,
+      "model": 2
     },
     "5204": {
       "name": "Coniopterygidae",
@@ -7390,7 +7104,7 @@
         729,
         5235
       ],
-      "species": 9,
+      "species": 8,
       "model": 7
     },
     "5238": {
@@ -7484,19 +7198,6 @@
       "species": 14,
       "model": 6
     },
-    "5260": {
-      "name": "Numididae",
-      "vernacular_en": "Guineafowl",
-      "lineage": [
-        1,
-        44,
-        212,
-        723,
-        5260
-      ],
-      "species": 1,
-      "model": 0
-    },
     "5263": {
       "name": "Parulidae",
       "vernacular_en": "New World Warblers",
@@ -7535,19 +7236,6 @@
       ],
       "species": 3,
       "model": 1
-    },
-    "5269": {
-      "name": "Phoenicopteridae",
-      "vernacular_en": "Flamingos",
-      "lineage": [
-        1,
-        44,
-        212,
-        7191426,
-        5269
-      ],
-      "species": 3,
-      "model": 0
     },
     "5273": {
       "name": "Prunellidae",
@@ -7637,7 +7325,7 @@
         7190953,
         5288
       ],
-      "species": 5,
+      "species": 4,
       "model": 2
     },
     "5290": {
@@ -7701,7 +7389,7 @@
         731,
         5298
       ],
-      "species": 6,
+      "species": 5,
       "model": 5
     },
     "5302": {
@@ -7818,7 +7506,7 @@
         797,
         5336
       ],
-      "species": 62,
+      "species": 61,
       "model": 19
     },
     "5338": {
@@ -7909,8 +7597,8 @@
         1370,
         5386
       ],
-      "species": 93,
-      "model": 53
+      "species": 82,
+      "model": 50
     },
     "5388": {
       "name": "Platyarthridae",
@@ -7990,30 +7678,6 @@
       "species": 1,
       "model": 0
     },
-    "5463": {
-      "name": "Geoemydidae",
-      "vernacular_en": "Geoemydid turtles",
-      "lineage": [
-        1,
-        44,
-        11418114,
-        5463
-      ],
-      "species": 1,
-      "model": 0
-    },
-    "5465": {
-      "name": "Emydidae",
-      "vernacular_en": "Pond And Box Turtles",
-      "lineage": [
-        1,
-        44,
-        11418114,
-        5465
-      ],
-      "species": 3,
-      "model": 1
-    },
     "5471": {
       "name": "Myrmeleontidae",
       "vernacular_en": "ant-lions",
@@ -8053,19 +7717,6 @@
       "species": 2,
       "model": 1
     },
-    "5479": {
-      "name": "Equidae",
-      "vernacular_en": "Horses",
-      "lineage": [
-        1,
-        44,
-        359,
-        795,
-        5479
-      ],
-      "species": 1,
-      "model": 0
-    },
     "5481": {
       "name": "Pieridae",
       "vernacular_en": "Whites And Yellows",
@@ -8078,19 +7729,6 @@
       ],
       "species": 13,
       "model": 7
-    },
-    "5483": {
-      "name": "Hominidae",
-      "vernacular_en": "Great Apes",
-      "lineage": [
-        1,
-        44,
-        359,
-        798,
-        5483
-      ],
-      "species": 1,
-      "model": 0
     },
     "5487": {
       "name": "Gracillariidae",
@@ -8182,19 +7820,6 @@
       ],
       "species": 1,
       "model": 1
-    },
-    "5541": {
-      "name": "Echinasteridae",
-      "vernacular_en": "Echinasterid Sea Stars",
-      "lineage": [
-        1,
-        50,
-        214,
-        1463,
-        5541
-      ],
-      "species": 1,
-      "model": 0
     },
     "5547": {
       "name": "Drosophilidae",
@@ -8518,7 +8143,7 @@
         1496,
         5644
       ],
-      "species": 37,
+      "species": 36,
       "model": 12
     },
     "5647": {
@@ -8725,19 +8350,6 @@
       "species": 1,
       "model": 0
     },
-    "5779": {
-      "name": "Ophidiasteridae",
-      "vernacular_en": null,
-      "lineage": [
-        1,
-        50,
-        214,
-        810,
-        5779
-      ],
-      "species": 1,
-      "model": 0
-    },
     "5797": {
       "name": "Calloporidae",
       "vernacular_en": null,
@@ -8826,7 +8438,7 @@
         1470,
         5840
       ],
-      "species": 63,
+      "species": 62,
       "model": 20
     },
     "5842": {
@@ -8906,19 +8518,6 @@
       ],
       "species": 6,
       "model": 2
-    },
-    "5888": {
-      "name": "Lamnidae",
-      "vernacular_en": "mackerel sharks",
-      "lineage": [
-        1,
-        44,
-        121,
-        885,
-        5888
-      ],
-      "species": 1,
-      "model": 0
     },
     "5889": {
       "name": "Cetorhinidae",
@@ -9333,19 +8932,6 @@
       "species": 1,
       "model": 1
     },
-    "6176": {
-      "name": "Icteridae",
-      "vernacular_en": "New World Blackbirds And Orioles",
-      "lineage": [
-        1,
-        44,
-        212,
-        729,
-        6176
-      ],
-      "species": 1,
-      "model": 0
-    },
     "6180": {
       "name": "Sisyridae",
       "vernacular_en": "Spongeflies",
@@ -9584,7 +9170,7 @@
         1456,
         6537
       ],
-      "species": 5,
+      "species": 4,
       "model": 3
     },
     "6540": {
@@ -9715,19 +9301,6 @@
       "species": 5,
       "model": 2
     },
-    "6629": {
-      "name": "Salviniaceae",
-      "vernacular_en": "floating-fern family",
-      "lineage": [
-        6,
-        7707728,
-        7228684,
-        7229405,
-        6629
-      ],
-      "species": 1,
-      "model": 0
-    },
     "6631": {
       "name": "Violaceae",
       "vernacular_en": "violet family",
@@ -9751,7 +9324,7 @@
         7224005,
         6634
       ],
-      "species": 8,
+      "species": 3,
       "model": 1
     },
     "6635": {
@@ -9777,7 +9350,7 @@
         691,
         6639
       ],
-      "species": 8,
+      "species": 7,
       "model": 2
     },
     "6640": {
@@ -9790,7 +9363,7 @@
         691,
         6640
       ],
-      "species": 3,
+      "species": 1,
       "model": 0
     },
     "6644": {
@@ -9816,8 +9389,8 @@
         1353,
         6648
       ],
-      "species": 5,
-      "model": 2
+      "species": 1,
+      "model": 1
     },
     "6651": {
       "name": "Orobanchaceae",
@@ -9829,7 +9402,7 @@
         408,
         6651
       ],
-      "species": 29,
+      "species": 28,
       "model": 14
     },
     "6652": {
@@ -9842,34 +9415,8 @@
         408,
         6652
       ],
-      "species": 10,
+      "species": 7,
       "model": 3
-    },
-    "6655": {
-      "name": "Bignoniaceae",
-      "vernacular_en": "bignonia family",
-      "lineage": [
-        6,
-        7707728,
-        220,
-        408,
-        6655
-      ],
-      "species": 1,
-      "model": 0
-    },
-    "6656": {
-      "name": "Staphyleaceae",
-      "vernacular_en": "bladdernut family",
-      "lineage": [
-        6,
-        7707728,
-        220,
-        7222036,
-        6656
-      ],
-      "species": 1,
-      "model": 0
     },
     "6657": {
       "name": "Sapindaceae",
@@ -9881,7 +9428,7 @@
         933,
         6657
       ],
-      "species": 10,
+      "species": 9,
       "model": 5
     },
     "6664": {
@@ -9897,32 +9444,6 @@
       "species": 43,
       "model": 10
     },
-    "6667": {
-      "name": "Hydrangeaceae",
-      "vernacular_en": "Hydrangea Family",
-      "lineage": [
-        6,
-        7707728,
-        220,
-        949,
-        6667
-      ],
-      "species": 3,
-      "model": 1
-    },
-    "6672": {
-      "name": "Vitaceae",
-      "vernacular_en": "Grape Family",
-      "lineage": [
-        6,
-        7707728,
-        220,
-        7222050,
-        6672
-      ],
-      "species": 4,
-      "model": 0
-    },
     "6673": {
       "name": "Berberidaceae",
       "vernacular_en": "barberry family",
@@ -9933,7 +9454,7 @@
         399,
         6673
       ],
-      "species": 8,
+      "species": 7,
       "model": 2
     },
     "6674": {
@@ -9946,21 +9467,8 @@
         1353,
         6674
       ],
-      "species": 21,
+      "species": 20,
       "model": 15
-    },
-    "6681": {
-      "name": "Cabombaceae",
-      "vernacular_en": "Fanwort Family",
-      "lineage": [
-        6,
-        7707728,
-        220,
-        636,
-        6681
-      ],
-      "species": 1,
-      "model": 0
     },
     "6684": {
       "name": "Lythraceae",
@@ -9985,8 +9493,8 @@
         941,
         6685
       ],
-      "species": 18,
-      "model": 10
+      "species": 13,
+      "model": 8
     },
     "6689": {
       "name": "Verbenaceae",
@@ -10001,19 +9509,6 @@
       "species": 3,
       "model": 2
     },
-    "6693": {
-      "name": "Platanaceae",
-      "vernacular_en": "Plane-tree Family",
-      "lineage": [
-        6,
-        7707728,
-        220,
-        400,
-        6693
-      ],
-      "species": 1,
-      "model": 0
-    },
     "6694": {
       "name": "Haloragaceae",
       "vernacular_en": "Water Milfoil Family",
@@ -10025,32 +9520,6 @@
         6694
       ],
       "species": 4,
-      "model": 1
-    },
-    "6695": {
-      "name": "Gunneraceae",
-      "vernacular_en": "Chilean rhubarb family",
-      "lineage": [
-        6,
-        7707728,
-        220,
-        7219294,
-        6695
-      ],
-      "species": 2,
-      "model": 0
-    },
-    "6696": {
-      "name": "Tropaeolaceae",
-      "vernacular_en": "nasturtium family",
-      "lineage": [
-        6,
-        7707728,
-        220,
-        7225535,
-        6696
-      ],
-      "species": 1,
       "model": 1
     },
     "6697": {
@@ -10089,21 +9558,8 @@
         412,
         6701
       ],
-      "species": 4,
+      "species": 3,
       "model": 3
-    },
-    "6703": {
-      "name": "Buxaceae",
-      "vernacular_en": "Boxwood Family",
-      "lineage": [
-        6,
-        7707728,
-        220,
-        5939628,
-        6703
-      ],
-      "species": 2,
-      "model": 0
     },
     "6710": {
       "name": "Caprifoliaceae",
@@ -10115,34 +9571,8 @@
         946,
         6710
       ],
-      "species": 32,
-      "model": 16
-    },
-    "6711": {
-      "name": "Paeoniaceae",
-      "vernacular_en": "peony family",
-      "lineage": [
-        6,
-        7707728,
-        220,
-        7219248,
-        6711
-      ],
-      "species": 2,
-      "model": 0
-    },
-    "6712": {
-      "name": "Nyssaceae",
-      "vernacular_en": "Tupelo Family",
-      "lineage": [
-        6,
-        7707728,
-        220,
-        949,
-        6712
-      ],
-      "species": 1,
-      "model": 0
+      "species": 29,
+      "model": 15
     },
     "6713": {
       "name": "Cornaceae",
@@ -10167,7 +9597,7 @@
         950,
         6715
       ],
-      "species": 6,
+      "species": 5,
       "model": 1
     },
     "6716": {
@@ -10196,19 +9626,6 @@
       "species": 1,
       "model": 1
     },
-    "6718": {
-      "name": "Nyctaginaceae",
-      "vernacular_en": "Four O'clock Family",
-      "lineage": [
-        6,
-        7707728,
-        220,
-        422,
-        6718
-      ],
-      "species": 1,
-      "model": 0
-    },
     "6720": {
       "name": "Apiaceae",
       "vernacular_en": "Umbellifer",
@@ -10219,8 +9636,8 @@
         1351,
         6720
       ],
-      "species": 66,
-      "model": 27
+      "species": 58,
+      "model": 24
     },
     "6721": {
       "name": "Potamogetonaceae",
@@ -10258,8 +9675,8 @@
         421,
         6725
       ],
-      "species": 6,
-      "model": 4
+      "species": 5,
+      "model": 3
     },
     "6727": {
       "name": "Bufonidae",
@@ -10335,19 +9752,6 @@
         132,
         957,
         6751
-      ],
-      "species": 1,
-      "model": 0
-    },
-    "6752": {
-      "name": "Aizoaceae",
-      "vernacular_en": "Dewplant family",
-      "lineage": [
-        6,
-        7707728,
-        220,
-        422,
-        6752
       ],
       "species": 1,
       "model": 0
@@ -10632,7 +10036,7 @@
         998,
         6896
       ],
-      "species": 4,
+      "species": 3,
       "model": 0
     },
     "6910": {
@@ -10904,7 +10308,7 @@
         551,
         6979
       ],
-      "species": 11,
+      "species": 10,
       "model": 8
     },
     "6980": {
@@ -11047,7 +10451,7 @@
         1057,
         7006
       ],
-      "species": 19,
+      "species": 18,
       "model": 2
     },
     "7007": {
@@ -11099,8 +10503,8 @@
         797,
         7015
       ],
-      "species": 339,
-      "model": 165
+      "species": 336,
+      "model": 164
     },
     "7016": {
       "name": "Notodontidae",
@@ -11343,18 +10747,6 @@
       "species": 1,
       "model": 0
     },
-    "7178": {
-      "name": "Alepisauridae",
-      "vernacular_en": "lancetfishes",
-      "lineage": [
-        1,
-        44,
-        497,
-        7178
-      ],
-      "species": 1,
-      "model": 0
-    },
     "7190": {
       "name": "Belonidae",
       "vernacular_en": "needlefishes",
@@ -11455,7 +10847,7 @@
         10730025,
         7220
       ],
-      "species": 3,
+      "species": 2,
       "model": 0
     },
     "7268": {
@@ -11507,7 +10899,7 @@
         811,
         7275
       ],
-      "species": 23,
+      "species": 22,
       "model": 14
     },
     "7276": {
@@ -12180,7 +11572,7 @@
         1145,
         7619
       ],
-      "species": 11,
+      "species": 10,
       "model": 2
     },
     "7631": {
@@ -12319,7 +11711,7 @@
         1169,
         7682
       ],
-      "species": 25,
+      "species": 24,
       "model": 12
     },
     "7683": {
@@ -12332,8 +11724,8 @@
         1169,
         7683
       ],
-      "species": 33,
-      "model": 18
+      "species": 30,
+      "model": 17
     },
     "7689": {
       "name": "Orchidaceae",
@@ -12371,7 +11763,7 @@
         1169,
         7698
       ],
-      "species": 20,
+      "species": 19,
       "model": 3
     },
     "7699": {
@@ -12423,7 +11815,7 @@
         1176,
         7717
       ],
-      "species": 24,
+      "species": 20,
       "model": 9
     },
     "7768": {
@@ -12800,7 +12192,7 @@
         1470,
         7857
       ],
-      "species": 23,
+      "species": 22,
       "model": 8
     },
     "7858": {
@@ -13762,7 +13154,7 @@
         640,
         8144
       ],
-      "species": 8,
+      "species": 1,
       "model": 1
     },
     "8168": {
@@ -13776,18 +13168,6 @@
         8168
       ],
       "species": 5,
-      "model": 0
-    },
-    "8173": {
-      "name": "Cerianthidae",
-      "vernacular_en": "Tube-dwelling anemones",
-      "lineage": [
-        1,
-        43,
-        206,
-        8173
-      ],
-      "species": 1,
       "model": 0
     },
     "8182": {
@@ -15247,7 +14627,7 @@
         587,
         8596
       ],
-      "species": 6,
+      "species": 5,
       "model": 1
     },
     "8598": {
@@ -15768,7 +15148,7 @@
         412,
         8798
       ],
-      "species": 20,
+      "species": 18,
       "model": 9
     },
     "8800": {
@@ -15794,7 +15174,7 @@
         414,
         8801
       ],
-      "species": 18,
+      "species": 17,
       "model": 10
     },
     "8838": {
@@ -15846,7 +15226,7 @@
         797,
         8841
       ],
-      "species": 97,
+      "species": 96,
       "model": 45
     },
     "8844": {
@@ -16239,19 +15619,6 @@
       "species": 1,
       "model": 0
     },
-    "9044": {
-      "name": "Metridinidae",
-      "vernacular_en": null,
-      "lineage": [
-        1,
-        54,
-        11545536,
-        679,
-        9044
-      ],
-      "species": 1,
-      "model": 0
-    },
     "9046": {
       "name": "Paracalanidae",
       "vernacular_en": null,
@@ -16263,45 +15630,6 @@
         9046
       ],
       "species": 1,
-      "model": 0
-    },
-    "9057": {
-      "name": "Tortanidae",
-      "vernacular_en": null,
-      "lineage": [
-        1,
-        54,
-        11545536,
-        679,
-        9057
-      ],
-      "species": 1,
-      "model": 0
-    },
-    "9096": {
-      "name": "Ectinosomatidae",
-      "vernacular_en": null,
-      "lineage": [
-        1,
-        54,
-        11545536,
-        1415,
-        9096
-      ],
-      "species": 1,
-      "model": 0
-    },
-    "9140": {
-      "name": "Lichomolgidae",
-      "vernacular_en": null,
-      "lineage": [
-        1,
-        54,
-        11545536,
-        687,
-        9140
-      ],
-      "species": 2,
       "model": 0
     },
     "9152": {
@@ -16433,19 +15761,6 @@
       "species": 1,
       "model": 0
     },
-    "9261": {
-      "name": "Cytherideidae",
-      "vernacular_en": null,
-      "lineage": [
-        1,
-        54,
-        353,
-        1438,
-        9261
-      ],
-      "species": 1,
-      "model": 0
-    },
     "9264": {
       "name": "Leptocytheridae",
       "vernacular_en": null,
@@ -16472,19 +15787,6 @@
       "species": 11,
       "model": 2
     },
-    "9274": {
-      "name": "Trachyleberididae",
-      "vernacular_en": null,
-      "lineage": [
-        1,
-        54,
-        353,
-        1438,
-        9274
-      ],
-      "species": 1,
-      "model": 0
-    },
     "9280": {
       "name": "Ascidiidae",
       "vernacular_en": null,
@@ -16507,19 +15809,6 @@
         356,
         9515881,
         9281
-      ],
-      "species": 1,
-      "model": 0
-    },
-    "9285": {
-      "name": "Cardinalidae",
-      "vernacular_en": "Cardinals And Allies",
-      "lineage": [
-        1,
-        44,
-        212,
-        729,
-        9285
       ],
       "species": 1,
       "model": 0
@@ -16703,8 +15992,8 @@
         723,
         9331
       ],
-      "species": 10,
-      "model": 4
+      "species": 4,
+      "model": 2
     },
     "9333": {
       "name": "Picidae",
@@ -16755,7 +16044,7 @@
         1445,
         9340
       ],
-      "species": 6,
+      "species": 1,
       "model": 0
     },
     "9342": {
@@ -17446,19 +16735,6 @@
       "species": 1,
       "model": 0
     },
-    "9614": {
-      "name": "Bovidae",
-      "vernacular_en": "bovids",
-      "lineage": [
-        1,
-        44,
-        359,
-        731,
-        9614
-      ],
-      "species": 6,
-      "model": 1
-    },
     "9630": {
       "name": "Helcomyzidae",
       "vernacular_en": null,
@@ -17559,8 +16835,8 @@
         809,
         9650
       ],
-      "species": 28,
-      "model": 21
+      "species": 26,
+      "model": 20
     },
     "9651": {
       "name": "Piesmatidae",
@@ -17625,18 +16901,6 @@
         9665
       ],
       "species": 19,
-      "model": 0
-    },
-    "9670": {
-      "name": "Istiophoridae",
-      "vernacular_en": "billfishes",
-      "lineage": [
-        1,
-        44,
-        587,
-        9670
-      ],
-      "species": 2,
       "model": 0
     },
     "9674": {
@@ -17742,19 +17006,6 @@
       ],
       "species": 4,
       "model": 3
-    },
-    "9703": {
-      "name": "Felidae",
-      "vernacular_en": "cats",
-      "lineage": [
-        1,
-        44,
-        359,
-        732,
-        9703
-      ],
-      "species": 1,
-      "model": 0
     },
     "9706": {
       "name": "Hybotidae",
@@ -17937,19 +17188,6 @@
       ],
       "species": 13,
       "model": 6
-    },
-    "2763195": {
-      "name": "Commelinaceae",
-      "vernacular_en": "Spiderworts",
-      "lineage": [
-        6,
-        7707728,
-        196,
-        553,
-        2763195
-      ],
-      "species": 1,
-      "model": 0
     },
     "3229275": {
       "name": "Onocleaceae",
@@ -19198,19 +18436,6 @@
       "species": 1,
       "model": 1
     },
-    "4259209": {
-      "name": "Asphodelaceae",
-      "vernacular_en": "Asphodel Family",
-      "lineage": [
-        6,
-        7707728,
-        196,
-        1169,
-        4259209
-      ],
-      "species": 2,
-      "model": 1
-    },
     "4279985": {
       "name": "Helodiaceae",
       "vernacular_en": null,
@@ -19613,19 +18838,6 @@
       "species": 1,
       "model": 0
     },
-    "4641173": {
-      "name": "Tanaididae",
-      "vernacular_en": null,
-      "lineage": [
-        1,
-        54,
-        229,
-        1378,
-        4641173
-      ],
-      "species": 1,
-      "model": 0
-    },
     "4642622": {
       "name": "Cheirocratidae",
       "vernacular_en": null,
@@ -19688,7 +18900,7 @@
         800,
         4802341
       ],
-      "species": 4,
+      "species": 3,
       "model": 2
     },
     "4876684": {
@@ -19717,19 +18929,6 @@
       "species": 5,
       "model": 0
     },
-    "4896863": {
-      "name": "Paulowniaceae",
-      "vernacular_en": "Foxglove Tree Family",
-      "lineage": [
-        6,
-        7707728,
-        220,
-        408,
-        4896863
-      ],
-      "species": 1,
-      "model": 0
-    },
     "4898338": {
       "name": "Montiaceae",
       "vernacular_en": "Water Chickweed Family",
@@ -19755,19 +18954,6 @@
       ],
       "species": 10,
       "model": 5
-    },
-    "4908143": {
-      "name": "Bathycoccaceae",
-      "vernacular_en": null,
-      "lineage": [
-        6,
-        36,
-        8176772,
-        1376,
-        4908143
-      ],
-      "species": 1,
-      "model": 0
     },
     "4922264": {
       "name": "Athyriaceae",
@@ -19922,7 +19108,7 @@
         637,
         5968394
       ],
-      "species": 3,
+      "species": 2,
       "model": 1
     },
     "6096596": {
@@ -20531,7 +19717,7 @@
         1145,
         9651083
       ],
-      "species": 3,
+      "species": 2,
       "model": 0
     },
     "9689757": {
@@ -21555,13 +20741,6 @@
       "records": 8,
       "model": false
     },
-    "3152614": {
-      "name": "Abutilon theophrasti",
-      "vernacular_en": "Velvetleaf",
-      "family": 6685,
-      "records": 48,
-      "model": false
-    },
     "4544242": {
       "name": "Acalitus brevitarsus",
       "vernacular_en": "Alder erineum mite",
@@ -21743,20 +20922,6 @@
       "family": 4303,
       "records": 1645,
       "model": true
-    },
-    "8116963": {
-      "name": "Acanthus hungaricus",
-      "vernacular_en": "Hungarian Bear’s-Breeches",
-      "family": 2393,
-      "records": 12,
-      "model": false
-    },
-    "5415455": {
-      "name": "Acanthus mollis",
-      "vernacular_en": "Bear's-breech",
-      "family": 2393,
-      "records": 22,
-      "model": false
     },
     "7250044": {
       "name": "Acarospora fuscata",
@@ -22093,13 +21258,6 @@
       "family": 7294,
       "records": 470,
       "model": true
-    },
-    "4142326": {
-      "name": "Achnatherum calamagrostis",
-      "vernacular_en": null,
-      "family": 3073,
-      "records": 23,
-      "model": false
     },
     "1870988": {
       "name": "Achroia grisella",
@@ -22717,32 +21875,11 @@
       "records": 15,
       "model": false
     },
-    "3189694": {
-      "name": "Actinidia chinensis",
-      "vernacular_en": "Chinese soft-hair kiwi",
-      "family": 2385,
-      "records": 5,
-      "model": false
-    },
     "2587711": {
       "name": "Actinocladium rhodosporum",
       "vernacular_en": null,
       "family": null,
       "records": 10,
-      "model": false
-    },
-    "9762031": {
-      "name": "Actinocyclus octonarius",
-      "vernacular_en": null,
-      "family": 2655,
-      "records": 36,
-      "model": false
-    },
-    "8353414": {
-      "name": "Actinocythereis dunelmensis",
-      "vernacular_en": null,
-      "family": 9274,
-      "records": 8,
       "model": false
     },
     "1792292": {
@@ -22906,13 +22043,6 @@
       "records": 13,
       "model": false
     },
-    "5371709": {
-      "name": "Adonis annua",
-      "vernacular_en": "Pheasant's-eye",
-      "family": 2410,
-      "records": 11,
-      "model": false
-    },
     "2888794": {
       "name": "Adoxa moschatellina",
       "vernacular_en": "Moschatel",
@@ -23038,13 +22168,6 @@
       "family": 6720,
       "records": 23079,
       "model": true
-    },
-    "5229165": {
-      "name": "Aegypius monachus",
-      "vernacular_en": "Cinereous Vulture",
-      "family": 2877,
-      "records": 662,
-      "model": false
     },
     "2079123": {
       "name": "Aelia acuminata",
@@ -23625,20 +22748,6 @@
       "vernacular_en": "Yellow Stainer",
       "family": 4170,
       "records": 1273,
-      "model": false
-    },
-    "2926406": {
-      "name": "Agastache foeniculum",
-      "vernacular_en": "blue giant-hyssop",
-      "family": 2497,
-      "records": 5,
-      "model": false
-    },
-    "7307327": {
-      "name": "Agastache rugosa",
-      "vernacular_en": "Korean giant-hyssop",
-      "family": 2497,
-      "records": 20,
       "model": false
     },
     "5874632": {
@@ -24306,13 +23415,6 @@
       "records": 8,
       "model": false
     },
-    "3085368": {
-      "name": "Agrostemma githago",
-      "vernacular_en": "cockle",
-      "family": 2518,
-      "records": 871,
-      "model": true
-    },
     "2706465": {
       "name": "Agrostis canina",
       "vernacular_en": "Velvet Bent",
@@ -24516,13 +23618,6 @@
       "records": 8,
       "model": false
     },
-    "3190653": {
-      "name": "Ailanthus altissima",
-      "vernacular_en": "Tree of heaven",
-      "family": 2395,
-      "records": 281,
-      "model": true
-    },
     "1713317": {
       "name": "Aiolopus thalassinus",
       "vernacular_en": "Slender Green-winged Grasshopper",
@@ -24578,13 +23673,6 @@
       "family": 2497,
       "records": 11006,
       "model": true
-    },
-    "3033965": {
-      "name": "Akebia quinata",
-      "vernacular_en": "Five-leaf Akebia",
-      "family": 2412,
-      "records": 13,
-      "model": false
     },
     "2297306": {
       "name": "Akera bullata",
@@ -24647,13 +23735,6 @@
       "vernacular_en": "Razorbill",
       "family": 2985,
       "records": 58067,
-      "model": true
-    },
-    "5406789": {
-      "name": "Alcea rosea",
-      "vernacular_en": "Hollyhock",
-      "family": 6685,
-      "records": 811,
       "model": true
     },
     "2475532": {
@@ -24733,13 +23814,6 @@
       "records": 2315,
       "model": true
     },
-    "1010587": {
-      "name": "Alcyonidioides mytili",
-      "vernacular_en": null,
-      "family": 6896,
-      "records": 5,
-      "model": false
-    },
     "4985503": {
       "name": "Alcyonidium diaphanum",
       "vernacular_en": "sea chervil",
@@ -24775,33 +23849,12 @@
       "records": 26,
       "model": false
     },
-    "2474029": {
-      "name": "Alectoris chukar",
-      "vernacular_en": "Chukar",
-      "family": 9331,
-      "records": 11,
-      "model": false
-    },
-    "2474051": {
-      "name": "Alectoris rufa",
-      "vernacular_en": "Red-legged Partridge",
-      "family": 9331,
-      "records": 143,
-      "model": false
-    },
     "1746440": {
       "name": "Aleimma loeflingiana",
       "vernacular_en": "Yellow Oak Button",
       "family": 5343,
       "records": 182,
       "model": true
-    },
-    "2401692": {
-      "name": "Alepisaurus ferox",
-      "vernacular_en": "Long Snouted Lancetfish",
-      "family": 7178,
-      "records": 19,
-      "model": false
     },
     "5258678": {
       "name": "Aleuria aurantia",
@@ -25790,13 +24843,6 @@
       "records": 5,
       "model": false
     },
-    "8014163": {
-      "name": "Ambigolimax valentianus",
-      "vernacular_en": "Iberian Threeband Slug",
-      "family": 6537,
-      "records": 25,
-      "model": false
-    },
     "1294357": {
       "name": "Amblyjoppa fuscipennis",
       "vernacular_en": null,
@@ -25928,13 +24974,6 @@
       "vernacular_en": "Rove beetle",
       "family": 7854,
       "records": 5,
-      "model": false
-    },
-    "3034182": {
-      "name": "Ammi majus",
-      "vernacular_en": "Bullwort",
-      "family": 6720,
-      "records": 12,
       "model": false
     },
     "5772269": {
@@ -27295,13 +26334,6 @@
       "records": 8,
       "model": false
     },
-    "3034646": {
-      "name": "Anethum graveolens",
-      "vernacular_en": "Dill",
-      "family": 6720,
-      "records": 227,
-      "model": false
-    },
     "4491149": {
       "name": "Aneugmenus padi",
       "vernacular_en": "Common Fern-sawfly",
@@ -28149,13 +27181,6 @@
       "records": 6,
       "model": false
     },
-    "3172001": {
-      "name": "Antirrhinum majus",
-      "vernacular_en": "Snapdragon",
-      "family": 2420,
-      "records": 243,
-      "model": true
-    },
     "2142065": {
       "name": "Antistea elegans",
       "vernacular_en": "Marsh Combtail Spider",
@@ -28946,13 +27971,6 @@
       "family": 3343,
       "records": 8,
       "model": false
-    },
-    "4533202": {
-      "name": "Apterogenum ypsillon",
-      "vernacular_en": "Dingy Shears",
-      "family": 7015,
-      "records": 20,
-      "model": true
     },
     "1588713": {
       "name": "Apteromyia claviventris",
@@ -29766,13 +28784,6 @@
       "records": 124,
       "model": true
     },
-    "8411755": {
-      "name": "Aria edulis",
-      "vernacular_en": "whitebeam",
-      "family": 5015,
-      "records": 106,
-      "model": false
-    },
     "9415196": {
       "name": "Aria rupicola",
       "vernacular_en": "Rock Whitebeam",
@@ -29877,13 +28888,6 @@
       "family": 2629,
       "records": 457,
       "model": true
-    },
-    "2873991": {
-      "name": "Aristolochia clematitis",
-      "vernacular_en": "birthwort",
-      "family": 3066,
-      "records": 26,
-      "model": false
     },
     "5122113": {
       "name": "Aristotelia brizella",
@@ -30354,13 +29358,6 @@
       "records": 872,
       "model": true
     },
-    "5362136": {
-      "name": "Aruncus dioicus",
-      "vernacular_en": "Buck's-beard",
-      "family": 5015,
-      "records": 197,
-      "model": true
-    },
     "4265185": {
       "name": "Arvicola amphibius",
       "vernacular_en": "Eurasian Water Vole",
@@ -30401,13 +29398,6 @@
       "vernacular_en": "dirty sea-squirt",
       "family": 9280,
       "records": 48,
-      "model": false
-    },
-    "3170247": {
-      "name": "Asclepias syriaca",
-      "vernacular_en": "Common Milkweed",
-      "family": 6701,
-      "records": 8,
       "model": false
     },
     "2595641": {
@@ -30597,13 +29587,6 @@
       "vernacular_en": "German madwort",
       "family": 2498,
       "records": 162,
-      "model": false
-    },
-    "2916975": {
-      "name": "Asperula taurina",
-      "vernacular_en": "Pink Woodruff",
-      "family": 8798,
-      "records": 6,
       "model": false
     },
     "1592764": {
@@ -30830,13 +29813,6 @@
       "records": 39,
       "model": false
     },
-    "12176639": {
-      "name": "Astilbe rosea",
-      "vernacular_en": null,
-      "family": 2402,
-      "records": 17,
-      "model": false
-    },
     "5342838": {
       "name": "Astragalus danicus",
       "vernacular_en": "Purple Milk-vetch",
@@ -30849,13 +29825,6 @@
       "vernacular_en": "Wild Liquorice",
       "family": 5386,
       "records": 3079,
-      "model": true
-    },
-    "3034915": {
-      "name": "Astrantia major",
-      "vernacular_en": "great masterwort",
-      "family": 6720,
-      "records": 162,
       "model": true
     },
     "8236696": {
@@ -31362,20 +30331,6 @@
       "records": 136,
       "model": true
     },
-    "3690373": {
-      "name": "Aubrieta cultorum",
-      "vernacular_en": "aubretia",
-      "family": 3112,
-      "records": 19,
-      "model": false
-    },
-    "3054117": {
-      "name": "Aubrieta deltoidea",
-      "vernacular_en": "Aubretia",
-      "family": 3112,
-      "records": 6,
-      "model": false
-    },
     "4428149": {
       "name": "Augyles hispidulus",
       "vernacular_en": null,
@@ -31493,13 +30448,6 @@
       "vernacular_en": "Tripe Fungus",
       "family": 8788,
       "records": 155,
-      "model": false
-    },
-    "5377778": {
-      "name": "Aurinia saxatilis",
-      "vernacular_en": "basket-of-gold",
-      "family": 3112,
-      "records": 5,
       "model": false
     },
     "5248458": {
@@ -31647,13 +30595,6 @@
       "vernacular_en": "Ferruginous Duck",
       "family": 2986,
       "records": 2472,
-      "model": false
-    },
-    "2650107": {
-      "name": "Azolla filiculoides",
-      "vernacular_en": "Pacific azolla",
-      "family": 6629,
-      "records": 18,
       "model": false
     },
     "1536559": {
@@ -31873,13 +30814,6 @@
       "records": 29,
       "model": false
     },
-    "1220073": {
-      "name": "Balanobius salicivorus",
-      "vernacular_en": null,
-      "family": 4239,
-      "records": 8,
-      "model": false
-    },
     "2115719": {
       "name": "Balanus balanus",
       "vernacular_en": "rough barnacle",
@@ -32067,13 +31001,6 @@
       "vernacular_en": null,
       "family": 6163,
       "records": 24,
-      "model": false
-    },
-    "2688072": {
-      "name": "Bathycoccus prasinos",
-      "vernacular_en": null,
-      "family": 4908143,
-      "records": 132,
       "model": false
     },
     "8028368": {
@@ -32426,13 +31353,6 @@
       "records": 5,
       "model": false
     },
-    "5567694": {
-      "name": "Bergenia crassifolia",
-      "vernacular_en": "Elephant-ears",
-      "family": 2402,
-      "records": 180,
-      "model": true
-    },
     "1580608": {
       "name": "Beris chalybata",
       "vernacular_en": "Murky-legged Black Legionnaire",
@@ -32650,13 +31570,6 @@
       "records": 9,
       "model": false
     },
-    "2441184": {
-      "name": "Bison bonasus",
-      "vernacular_en": "European Bison",
-      "family": 9614,
-      "records": 75,
-      "model": true
-    },
     "12188405": {
       "name": "Bispora pallescens",
       "vernacular_en": null,
@@ -32767,13 +31680,6 @@
       "vernacular_en": "Darkling beetle",
       "family": 7857,
       "records": 20,
-      "model": false
-    },
-    "7588138": {
-      "name": "Blapstinus metallicus",
-      "vernacular_en": null,
-      "family": 7857,
-      "records": 12,
       "model": false
     },
     "2688661": {
@@ -33294,13 +32200,6 @@
       "records": 26,
       "model": false
     },
-    "2926110": {
-      "name": "Borago officinalis",
-      "vernacular_en": "Borage",
-      "family": 2498,
-      "records": 1193,
-      "model": true
-    },
     "4421212": {
       "name": "Boreus hyemalis",
       "vernacular_en": "Snow Flea",
@@ -33335,13 +32234,6 @@
       "family": 9689,
       "records": 29,
       "model": true
-    },
-    "2441022": {
-      "name": "Bos taurus",
-      "vernacular_en": "Aurochs",
-      "family": 9614,
-      "records": 23,
-      "model": false
     },
     "2234705": {
       "name": "Bosmina coregoni",
@@ -34596,13 +33488,6 @@
       "records": 367,
       "model": false
     },
-    "2543301": {
-      "name": "Buglossoporus quercinus",
-      "vernacular_en": "Oak Polypore",
-      "family": 7619,
-      "records": 127,
-      "model": false
-    },
     "2544313": {
       "name": "Bulbillomyces farinosus",
       "vernacular_en": "Couscous Crust",
@@ -34736,13 +33621,6 @@
       "records": 873,
       "model": true
     },
-    "2984671": {
-      "name": "Buxus sempervirens",
-      "vernacular_en": "Box",
-      "family": 6703,
-      "records": 77,
-      "model": false
-    },
     "1164351": {
       "name": "Byctiscus betulae",
       "vernacular_en": "Hazel Leaf Roller",
@@ -34841,13 +33719,6 @@
       "records": 3686,
       "model": true
     },
-    "2882443": {
-      "name": "Cabomba caroliniana",
-      "vernacular_en": "Carolina Water-shield",
-      "family": 6681,
-      "records": 9,
-      "model": false
-    },
     "8094357": {
       "name": "Cacoecimorpha pronubana",
       "vernacular_en": "Carnation Tortrix",
@@ -34910,13 +33781,6 @@
       "family": 7854,
       "records": 14,
       "model": false
-    },
-    "9751099": {
-      "name": "Cairina moschata",
-      "vernacular_en": "Muscovy Duck",
-      "family": 2986,
-      "records": 2629,
-      "model": true
     },
     "3048831": {
       "name": "Cakile maritima",
@@ -35064,20 +33928,6 @@
       "family": null,
       "records": 745,
       "model": false
-    },
-    "9182765": {
-      "name": "Calendula arvensis",
-      "vernacular_en": "Field Marigold",
-      "family": 3065,
-      "records": 6,
-      "model": false
-    },
-    "5391480": {
-      "name": "Calendula officinalis",
-      "vernacular_en": "Scotch-marigold",
-      "family": 3065,
-      "records": 836,
-      "model": true
     },
     "4504921": {
       "name": "Caliadurgus fasciatellus",
@@ -35386,13 +34236,6 @@
       "family": 4532185,
       "records": 1480,
       "model": true
-    },
-    "3092946": {
-      "name": "Callistephus chinensis",
-      "vernacular_en": "China Aster",
-      "family": 3065,
-      "records": 16,
-      "model": false
     },
     "2532096": {
       "name": "Callistosporium pinicola",
@@ -36416,13 +35259,6 @@
       "records": 29,
       "model": false
     },
-    "3172549": {
-      "name": "Campsis radicans",
-      "vernacular_en": "American Trumpet Vine",
-      "family": 6655,
-      "records": 6,
-      "model": false
-    },
     "4524376": {
       "name": "Camptogramma bilineata",
       "vernacular_en": "Yellow Shell",
@@ -36626,13 +35462,6 @@
       "records": 652,
       "model": true
     },
-    "5361880": {
-      "name": "Cannabis sativa",
-      "vernacular_en": "hemp",
-      "family": 2384,
-      "records": 262,
-      "model": true
-    },
     "2532395": {
       "name": "Cantharellula umbonata",
       "vernacular_en": "The Humpback",
@@ -36806,13 +35635,6 @@
       "vernacular_en": null,
       "family": 3295205,
       "records": 10,
-      "model": false
-    },
-    "2441056": {
-      "name": "Capra hircus",
-      "vernacular_en": "Goat",
-      "family": 9614,
-      "records": 9,
       "model": false
     },
     "4514051": {
@@ -37025,13 +35847,6 @@
       "records": 319,
       "model": false
     },
-    "2943190": {
-      "name": "Caragana arborescens",
-      "vernacular_en": "Siberian Pea-tree",
-      "family": 5386,
-      "records": 166,
-      "model": true
-    },
     "4286942": {
       "name": "Carassius auratus",
       "vernacular_en": "Goldfish",
@@ -37045,20 +35860,6 @@
       "family": 7336,
       "records": 858,
       "model": true
-    },
-    "2418095": {
-      "name": "Carcharhinus falciformis",
-      "vernacular_en": "Silky Shark",
-      "family": 2211,
-      "records": 10,
-      "model": false
-    },
-    "2418052": {
-      "name": "Carcharhinus longimanus",
-      "vernacular_en": "oceanic whitetip shark",
-      "family": 2211,
-      "records": 22,
-      "model": false
     },
     "1841261": {
       "name": "Carcina quercana",
@@ -37732,13 +36533,6 @@
       "records": 1002,
       "model": false
     },
-    "3138327": {
-      "name": "Carthamus tinctorius",
-      "vernacular_en": "Safflower",
-      "family": 3065,
-      "records": 23,
-      "model": false
-    },
     "4451122": {
       "name": "Cartodere bifasciata",
       "vernacular_en": "plaster beetle",
@@ -37893,13 +36687,6 @@
       "records": 62,
       "model": true
     },
-    "5333294": {
-      "name": "Castanea sativa",
-      "vernacular_en": "European chestnut",
-      "family": 4689,
-      "records": 791,
-      "model": true
-    },
     "4409131": {
       "name": "Castor fiber",
       "vernacular_en": "Eurasian Beaver",
@@ -37933,13 +36720,6 @@
       "vernacular_en": null,
       "family": 4207,
       "records": 14,
-      "model": false
-    },
-    "2705228": {
-      "name": "Catapodium rigidum",
-      "vernacular_en": "Fern-grass",
-      "family": 3073,
-      "records": 12,
       "model": false
     },
     "1964195": {
@@ -38165,13 +36945,6 @@
       "family": 5473,
       "records": 12133,
       "model": true
-    },
-    "3169169": {
-      "name": "Celastrus orbiculatus",
-      "vernacular_en": "Staff-vine",
-      "family": 6715,
-      "records": 14,
-      "model": false
     },
     "1005933": {
       "name": "Celleporella hyalina",
@@ -38459,13 +37232,6 @@
       "family": 7689,
       "records": 216,
       "model": true
-    },
-    "2888797": {
-      "name": "Cephalaria gigantea",
-      "vernacular_en": "Giant Scabious",
-      "family": 6710,
-      "records": 16,
-      "model": false
     },
     "4492374": {
       "name": "Cephalcia abietis",
@@ -38824,13 +37590,6 @@
       "records": 13,
       "model": false
     },
-    "1626096": {
-      "name": "Ceratitis capitata",
-      "vernacular_en": "Mediterranean fruit fly",
-      "family": 3520,
-      "records": 10,
-      "model": false
-    },
     "2555133": {
       "name": "Ceratobasidium ramicola",
       "vernacular_en": null,
@@ -38929,13 +37688,6 @@
       "records": 48,
       "model": false
     },
-    "8060423": {
-      "name": "Cercidiphyllum japonicum",
-      "vernacular_en": "Katsura",
-      "family": 2501,
-      "records": 47,
-      "model": true
-    },
     "2626342": {
       "name": "Cercidospora epipolytropa",
       "vernacular_en": "cercidospora lichen",
@@ -38969,20 +37721,6 @@
       "vernacular_en": null,
       "family": 7830,
       "records": 14,
-      "model": false
-    },
-    "5184341": {
-      "name": "Cereus pedunculatus",
-      "vernacular_en": "daisy anemone",
-      "family": 5141,
-      "records": 14,
-      "model": false
-    },
-    "2258575": {
-      "name": "Cerianthus lloydii",
-      "vernacular_en": "North Sea cerianthid",
-      "family": 8173,
-      "records": 26,
       "model": false
     },
     "11433255": {
@@ -39286,33 +38024,12 @@
       "records": 134,
       "model": true
     },
-    "3000610": {
-      "name": "Chaenomeles japonica",
-      "vernacular_en": "Japanese Quince",
-      "family": 5015,
-      "records": 54,
-      "model": false
-    },
-    "3000679": {
-      "name": "Chaenomeles speciosa",
-      "vernacular_en": "Chinese Quince",
-      "family": 5015,
-      "records": 11,
-      "model": false
-    },
     "3171669": {
       "name": "Chaenorhinum minus",
       "vernacular_en": "Small Toadflax",
       "family": 2420,
       "records": 942,
       "model": true
-    },
-    "5561475": {
-      "name": "Chaenostoma cordatum",
-      "vernacular_en": "Forest Skunkbush",
-      "family": 2390,
-      "records": 6,
-      "model": false
     },
     "5261510": {
       "name": "Chaenotheca brachypoda",
@@ -39543,13 +38260,6 @@
       "vernacular_en": null,
       "family": 6920,
       "records": 60,
-      "model": false
-    },
-    "2683866": {
-      "name": "Chamaecyparis lawsoniana",
-      "vernacular_en": "Lawson's Cypress",
-      "family": 8144,
-      "records": 265,
       "model": false
     },
     "2536600": {
@@ -40392,13 +39102,6 @@
       "records": 232,
       "model": false
     },
-    "5232428": {
-      "name": "Chloephaga picta",
-      "vernacular_en": "Upland Goose",
-      "family": 2986,
-      "records": 28,
-      "model": false
-    },
     "9762399": {
       "name": "Chloridium caesium",
       "vernacular_en": null,
@@ -40860,13 +39563,6 @@
       "family": 7780,
       "records": 30,
       "model": true
-    },
-    "5228034": {
-      "name": "Chrysolophus pictus",
-      "vernacular_en": "Golden Pheasant",
-      "family": 9331,
-      "records": 35,
-      "model": false
     },
     "4459733": {
       "name": "Chrysomela collaris",
@@ -41533,13 +40229,6 @@
       "records": 64,
       "model": true
     },
-    "2874621": {
-      "name": "Citrullus lanatus",
-      "vernacular_en": "Water Melon",
-      "family": 6634,
-      "records": 15,
-      "model": false
-    },
     "2059300": {
       "name": "Cixius nervosus",
       "vernacular_en": "Common Lacehopper",
@@ -42049,20 +40738,6 @@
       "vernacular_en": null,
       "family": 3263207,
       "records": 16,
-      "model": false
-    },
-    "5420978": {
-      "name": "Clarkia amoena",
-      "vernacular_en": "Godetia",
-      "family": 2430,
-      "records": 27,
-      "model": false
-    },
-    "5420957": {
-      "name": "Clarkia unguiculata",
-      "vernacular_en": "Clarkia",
-      "family": 2430,
-      "records": 10,
       "model": false
     },
     "5239483": {
@@ -43836,20 +42511,6 @@
       "records": 24,
       "model": false
     },
-    "7844167": {
-      "name": "Colutea arborescens",
-      "vernacular_en": "Bladder-senna",
-      "family": 5386,
-      "records": 61,
-      "model": false
-    },
-    "2956441": {
-      "name": "Colutea media",
-      "vernacular_en": "orange bladder-senna",
-      "family": 5386,
-      "records": 10,
-      "model": false
-    },
     "4989378": {
       "name": "Colymbetes fuscus",
       "vernacular_en": "large-grooved diving beetle",
@@ -45250,32 +43911,11 @@
       "records": 138,
       "model": true
     },
-    "3133950": {
-      "name": "Coreopsis tinctoria",
-      "vernacular_en": "Garden Tickseed",
-      "family": 3065,
-      "records": 24,
-      "model": false
-    },
-    "3133887": {
-      "name": "Coreopsis verticillata",
-      "vernacular_en": "Whorled Tickseed",
-      "family": 3065,
-      "records": 5,
-      "model": false
-    },
     "4388646": {
       "name": "Coreus marginatus",
       "vernacular_en": "Dock Bug",
       "family": 9649,
       "records": 1810,
-      "model": true
-    },
-    "3034871": {
-      "name": "Coriandrum sativum",
-      "vernacular_en": "Coriander",
-      "family": 6720,
-      "records": 75,
       "model": true
     },
     "2166838": {
@@ -45304,13 +43944,6 @@
       "vernacular_en": null,
       "family": 9649,
       "records": 12,
-      "model": false
-    },
-    "3759655": {
-      "name": "Corispermum intermedium",
-      "vernacular_en": "Bugseed",
-      "family": 3064,
-      "records": 18,
       "model": false
     },
     "5156065": {
@@ -46965,13 +45598,6 @@
       "records": 2412,
       "model": true
     },
-    "3098912": {
-      "name": "Cosmos bipinnatus",
-      "vernacular_en": "Mexican Aster",
-      "family": 3065,
-      "records": 275,
-      "model": true
-    },
     "7440397": {
       "name": "Cosmospora arxii",
       "vernacular_en": null,
@@ -47005,13 +45631,6 @@
       "vernacular_en": "yellow chamomile",
       "family": 3065,
       "records": 1344,
-      "model": true
-    },
-    "3190522": {
-      "name": "Cotinus coggygria",
-      "vernacular_en": "European smoketree",
-      "family": 2398,
-      "records": 41,
       "model": true
     },
     "3025770": {
@@ -47714,13 +46333,6 @@
       "records": 5,
       "model": false
     },
-    "2747939": {
-      "name": "Crocosmia crocosmiiflora",
-      "vernacular_en": "montbretia",
-      "family": 7698,
-      "records": 34,
-      "model": false
-    },
     "1427721": {
       "name": "Crocothemis erythraea",
       "vernacular_en": "Broad Scarlet",
@@ -48085,13 +46697,6 @@
       "records": 16,
       "model": false
     },
-    "5284237": {
-      "name": "Cryptomeria japonica",
-      "vernacular_en": "Japanese Red-cedar",
-      "family": 8144,
-      "records": 34,
-      "model": false
-    },
     "2075747": {
       "name": "Cryptomyzus korschelti",
       "vernacular_en": null,
@@ -48344,34 +46949,6 @@
       "records": 167632,
       "model": true
     },
-    "2874570": {
-      "name": "Cucumis melo",
-      "vernacular_en": "Melon",
-      "family": 6634,
-      "records": 7,
-      "model": false
-    },
-    "2874569": {
-      "name": "Cucumis sativus",
-      "vernacular_en": "Cucumber",
-      "family": 6634,
-      "records": 8,
-      "model": false
-    },
-    "2874515": {
-      "name": "Cucurbita maxima",
-      "vernacular_en": "Pumkin",
-      "family": 6634,
-      "records": 8,
-      "model": false
-    },
-    "2874508": {
-      "name": "Cucurbita pepo",
-      "vernacular_en": "Marrow",
-      "family": 6634,
-      "records": 55,
-      "model": false
-    },
     "2615580": {
       "name": "Cucurbitaria spartii",
       "vernacular_en": null,
@@ -48426,13 +47003,6 @@
       "vernacular_en": null,
       "family": 10735323,
       "records": 9,
-      "model": false
-    },
-    "5187244": {
-      "name": "Culcita novaeguineae",
-      "vernacular_en": "cushion star",
-      "family": 2070,
-      "records": 10,
       "model": false
     },
     "1653695": {
@@ -48771,20 +47341,6 @@
       "records": 5,
       "model": false
     },
-    "4463417": {
-      "name": "Cyanapion gyllenhalii",
-      "vernacular_en": null,
-      "family": 4207,
-      "records": 15,
-      "model": false
-    },
-    "4463424": {
-      "name": "Cyanapion spencii",
-      "vernacular_en": null,
-      "family": 4207,
-      "records": 28,
-      "model": false
-    },
     "2264478": {
       "name": "Cyanea capillata",
       "vernacular_en": "Lion's Mane Jellyfish",
@@ -48818,13 +47374,6 @@
       "vernacular_en": "Inkstain Bolete",
       "family": 8789,
       "records": 457,
-      "model": false
-    },
-    "5844936": {
-      "name": "Cyanopica cooki",
-      "vernacular_en": "Iberian Azure-winged Magpie",
-      "family": 5235,
-      "records": 10,
       "model": false
     },
     "10789873": {
@@ -48931,20 +47480,6 @@
       "family": 3792,
       "records": 181,
       "model": true
-    },
-    "3141890": {
-      "name": "Cyclachaena xanthiifolia",
-      "vernacular_en": "False Ragweed",
-      "family": 3065,
-      "records": 11,
-      "model": false
-    },
-    "7127810": {
-      "name": "Cyclamen hederifolium",
-      "vernacular_en": "Ivy-leaved Cyclamen",
-      "family": 6674,
-      "records": 19,
-      "model": false
     },
     "7426017": {
       "name": "Cyclaneusma minus",
@@ -49121,13 +47656,6 @@
       "records": 6,
       "model": false
     },
-    "5362215": {
-      "name": "Cydonia oblonga",
-      "vernacular_en": "Quince",
-      "family": 5015,
-      "records": 32,
-      "model": false
-    },
     "2498338": {
       "name": "Cygnus columbianus",
       "vernacular_en": "Tundra Swan",
@@ -49296,13 +47824,6 @@
       "records": 106,
       "model": false
     },
-    "3112364": {
-      "name": "Cynara cardunculus",
-      "vernacular_en": "Cardoon",
-      "family": 3065,
-      "records": 5,
-      "model": false
-    },
     "4452265": {
       "name": "Cynegetis impunctata",
       "vernacular_en": null,
@@ -49462,13 +47983,6 @@
       "vernacular_en": null,
       "family": null,
       "records": 5,
-      "model": false
-    },
-    "2650827": {
-      "name": "Cyrtomium fortunei",
-      "vernacular_en": "Asian netvein hollyfern",
-      "family": 2373,
-      "records": 8,
       "model": false
     },
     "1660466": {
@@ -49651,20 +48165,6 @@
       "vernacular_en": "Brittle Bladder-fern",
       "family": 4021011,
       "records": 109,
-      "model": false
-    },
-    "1029755": {
-      "name": "Cytheropteron dimlingtonense",
-      "vernacular_en": null,
-      "family": 5198,
-      "records": 5,
-      "model": false
-    },
-    "1029709": {
-      "name": "Cytheropteron pseudomontrosiense",
-      "vernacular_en": null,
-      "family": 5198,
-      "records": 7,
       "model": false
     },
     "4427844": {
@@ -50015,13 +48515,6 @@
       "vernacular_en": "Oleander Hawk-moth",
       "family": 8868,
       "records": 5,
-      "model": false
-    },
-    "3032611": {
-      "name": "Darmera peltata",
-      "vernacular_en": "Indian Rhubarb",
-      "family": 2402,
-      "records": 18,
       "model": false
     },
     "5744968": {
@@ -50423,13 +48916,6 @@
       "records": 5,
       "model": false
     },
-    "5370380": {
-      "name": "Dasiphora fruticosa",
-      "vernacular_en": "shrubby cinquefoil",
-      "family": 5015,
-      "records": 292,
-      "model": true
-    },
     "10136379": {
       "name": "Dasyphora cyanella",
       "vernacular_en": null,
@@ -50555,13 +49041,6 @@
       "family": 6720,
       "records": 17871,
       "model": true
-    },
-    "7322122": {
-      "name": "Davidia involucrata",
-      "vernacular_en": "Dove-tree",
-      "family": 6712,
-      "records": 12,
-      "model": false
     },
     "7989053": {
       "name": "Deconica coprophila",
@@ -50701,20 +49180,6 @@
       "vernacular_en": "Beluga",
       "family": 5445,
       "records": 26,
-      "model": false
-    },
-    "3033833": {
-      "name": "Delphinium ajacis",
-      "vernacular_en": "Rocket Larkspur",
-      "family": 2410,
-      "records": 26,
-      "model": false
-    },
-    "3033836": {
-      "name": "Delphinium consolida",
-      "vernacular_en": "royal larkspur",
-      "family": 2410,
-      "records": 63,
       "model": false
     },
     "8324617": {
@@ -51249,13 +49714,6 @@
       "records": 5,
       "model": false
     },
-    "9538309": {
-      "name": "Deuteraphorura cebennaria",
-      "vernacular_en": null,
-      "family": 2982,
-      "records": 5,
-      "model": false
-    },
     "4538183": {
       "name": "Deuteraphorura inermis",
       "vernacular_en": null,
@@ -51268,13 +49726,6 @@
       "vernacular_en": null,
       "family": 2991,
       "records": 9,
-      "model": false
-    },
-    "2985963": {
-      "name": "Deutzia crenata",
-      "vernacular_en": "Crenate pride-of-Rochester",
-      "family": 6667,
-      "records": 5,
       "model": false
     },
     "4515025": {
@@ -51772,13 +50223,6 @@
       "vernacular_en": "Juniper Webber",
       "family": 3553,
       "records": 48,
-      "model": false
-    },
-    "1775152": {
-      "name": "Dichonia aprilina",
-      "vernacular_en": null,
-      "family": 7015,
-      "records": 741,
       "model": false
     },
     "4487661": {
@@ -52866,13 +51310,6 @@
       "records": 16,
       "model": false
     },
-    "4324594": {
-      "name": "Ditrichocorycaeus anglicus",
-      "vernacular_en": null,
-      "family": 5039,
-      "records": 5,
-      "model": false
-    },
     "5282385": {
       "name": "Ditrichum heteromallum",
       "vernacular_en": "Curve-leaved Ditrichum",
@@ -53818,13 +52255,6 @@
       "records": 38,
       "model": false
     },
-    "5568339": {
-      "name": "Dysphania pumilio",
-      "vernacular_en": "clammy goosefoot",
-      "family": 3064,
-      "records": 34,
-      "model": false
-    },
     "1962516": {
       "name": "Dysstroma citrata",
       "vernacular_en": "Dark Marbled Carpet",
@@ -53948,20 +52378,6 @@
       "name": "Eccopisa effractella",
       "vernacular_en": "Royal Knot-horn",
       "family": 5336,
-      "records": 8,
-      "model": false
-    },
-    "3150935": {
-      "name": "Echinacea purpurea",
-      "vernacular_en": "Purple Coneflower",
-      "family": 3065,
-      "records": 6,
-      "model": false
-    },
-    "2273656": {
-      "name": "Echinaster luzonicus",
-      "vernacular_en": "Luzon seastar",
-      "family": 5541,
       "records": 8,
       "model": false
     },
@@ -54448,20 +52864,6 @@
       "records": 6,
       "model": false
     },
-    "3039274": {
-      "name": "Elaeagnus commutata",
-      "vernacular_en": "wolf-willow",
-      "family": 2408,
-      "records": 38,
-      "model": false
-    },
-    "3039267": {
-      "name": "Elaeagnus umbellata",
-      "vernacular_en": "Autumn olive",
-      "family": 2408,
-      "records": 14,
-      "model": false
-    },
     "2480372": {
       "name": "Elanus caeruleus",
       "vernacular_en": "Black-shouldered Kite",
@@ -54749,13 +53151,6 @@
       "records": 35,
       "model": false
     },
-    "1030251": {
-      "name": "Elofsonella concinna",
-      "vernacular_en": null,
-      "family": 5199,
-      "records": 11,
-      "model": false
-    },
     "5884851": {
       "name": "Elophila nymphaeata",
       "vernacular_en": "Brown China-mark",
@@ -54978,13 +53373,6 @@
       "vernacular_en": "Pride of Kent Rove Beetle",
       "family": 7854,
       "records": 76,
-      "model": false
-    },
-    "8909809": {
-      "name": "Emys orbicularis",
-      "vernacular_en": "European Pond Terrapin",
-      "family": 5465,
-      "records": 18,
       "model": false
     },
     "5051273": {
@@ -56583,13 +54971,6 @@
       "records": 4186,
       "model": true
     },
-    "1878134": {
-      "name": "Epidauria transversariella",
-      "vernacular_en": null,
-      "family": 5336,
-      "records": 7,
-      "model": false
-    },
     "1787064": {
       "name": "Epilecta linogrisea",
       "vernacular_en": null,
@@ -57227,13 +55608,6 @@
       "records": 70,
       "model": false
     },
-    "2440886": {
-      "name": "Equus caballus",
-      "vernacular_en": "Horse",
-      "family": 5479,
-      "records": 26,
-      "model": false
-    },
     "2705449": {
       "name": "Eragrostis minor",
       "vernacular_en": "Small Love-grass",
@@ -57449,13 +55823,6 @@
       "vernacular_en": "Alder wooly sawfly",
       "family": 7918,
       "records": 90,
-      "model": true
-    },
-    "9677963": {
-      "name": "Eriocapitella hupehensis",
-      "vernacular_en": "Hubei Anemone",
-      "family": 2410,
-      "records": 105,
       "model": true
     },
     "2225776": {
@@ -57778,13 +56145,6 @@
       "vernacular_en": null,
       "family": 9647,
       "records": 15,
-      "model": false
-    },
-    "5375920": {
-      "name": "Eruca vesicaria",
-      "vernacular_en": "Garden Rocket",
-      "family": 3112,
-      "records": 27,
       "model": false
     },
     "5375547": {
@@ -58207,13 +56567,6 @@
       "records": 7,
       "model": false
     },
-    "2888380": {
-      "name": "Eschscholzia californica",
-      "vernacular_en": "Californian Poppy",
-      "family": 2422,
-      "records": 443,
-      "model": true
-    },
     "2346633": {
       "name": "Esox lucius",
       "vernacular_en": "Northern pike",
@@ -58331,13 +56684,6 @@
       "vernacular_en": "Beautiful Marbled",
       "family": 7015,
       "records": 11,
-      "model": false
-    },
-    "7495356": {
-      "name": "Euborellia arcanum",
-      "vernacular_en": null,
-      "family": 2796,
-      "records": 5,
       "model": false
     },
     "2235262": {
@@ -58541,13 +56887,6 @@
       "vernacular_en": "Diamond-back Marble",
       "family": 5343,
       "records": 45,
-      "model": false
-    },
-    "3814157": {
-      "name": "Eudianthe coeli-rosa",
-      "vernacular_en": null,
-      "family": 2518,
-      "records": 5,
       "model": false
     },
     "1879731": {
@@ -59733,13 +58072,6 @@
       "records": 36,
       "model": false
     },
-    "4463408": {
-      "name": "Eutrichapion punctiger",
-      "vernacular_en": null,
-      "family": 4238,
-      "records": 6,
-      "model": false
-    },
     "4463401": {
       "name": "Eutrichapion viciae",
       "vernacular_en": null,
@@ -59759,13 +58091,6 @@
       "vernacular_en": "Grey Gurnard",
       "family": 8635,
       "records": 231,
-      "model": false
-    },
-    "3138192": {
-      "name": "Eutrochium purpureum",
-      "vernacular_en": "Purple Joe Pye Weed",
-      "family": 3065,
-      "records": 9,
       "model": false
     },
     "2575558": {
@@ -60321,20 +58646,6 @@
       "records": 62,
       "model": false
     },
-    "2889373": {
-      "name": "Fagopyrum esculentum",
-      "vernacular_en": "Buckwheat",
-      "family": 2416,
-      "records": 628,
-      "model": true
-    },
-    "2889378": {
-      "name": "Fagopyrum tataricum",
-      "vernacular_en": "Green Buckwheat",
-      "family": 2416,
-      "records": 11,
-      "model": false
-    },
     "2882316": {
       "name": "Fagus sylvatica",
       "vernacular_en": "Beech",
@@ -60355,13 +58666,6 @@
       "family": 6720,
       "records": 281,
       "model": true
-    },
-    "2288989": {
-      "name": "Falcidens crossotus",
-      "vernacular_en": "glistenworm",
-      "family": 1985,
-      "records": 9,
-      "model": false
     },
     "2481034": {
       "name": "Falco cherrug",
@@ -60475,20 +58779,6 @@
       "records": 15,
       "model": false
     },
-    "5676092": {
-      "name": "Fargesia murielae",
-      "vernacular_en": "Umbrella Bamboo",
-      "family": 3073,
-      "records": 12,
-      "model": false
-    },
-    "5676003": {
-      "name": "Fargesia spathacea",
-      "vernacular_en": "Chinese Fountain-bamboo",
-      "family": 3073,
-      "records": 42,
-      "model": false
-    },
     "12232135": {
       "name": "Farkasiella gelatinosa",
       "vernacular_en": null,
@@ -60515,13 +58805,6 @@
       "vernacular_en": "Slender Navel",
       "family": 8787,
       "records": 11,
-      "model": false
-    },
-    "2435035": {
-      "name": "Felis catus",
-      "vernacular_en": "Domestic Cat",
-      "family": 9703,
-      "records": 2597,
       "model": false
     },
     "2607315": {
@@ -60683,13 +58966,6 @@
       "vernacular_en": "Red-breasted Flycatcher",
       "family": 9322,
       "records": 7823,
-      "model": false
-    },
-    "5361909": {
-      "name": "Ficus carica",
-      "vernacular_en": "Fig",
-      "family": 6640,
-      "records": 33,
       "model": false
     },
     "3115875": {
@@ -61000,13 +59276,6 @@
       "records": 91,
       "model": true
     },
-    "3034922": {
-      "name": "Foeniculum vulgare",
-      "vernacular_en": "Venkel",
-      "family": 6720,
-      "records": 157,
-      "model": true
-    },
     "2120383": {
       "name": "Folsomia candida",
       "vernacular_en": "Springtail",
@@ -61215,20 +59484,6 @@
       "vernacular_en": "Shining Guest Ant",
       "family": 4342,
       "records": 36,
-      "model": false
-    },
-    "5415054": {
-      "name": "Forsythia intermedia",
-      "vernacular_en": "border forsythia",
-      "family": 6652,
-      "records": 147,
-      "model": false
-    },
-    "5415056": {
-      "name": "Forsythia suspensa",
-      "vernacular_en": "Golden-bell",
-      "family": 6652,
-      "records": 9,
       "model": false
     },
     "4277547": {
@@ -61670,20 +59925,6 @@
       "vernacular_en": "Hairy Star of Bethlehem",
       "family": 7699,
       "records": 110,
-      "model": false
-    },
-    "5387817": {
-      "name": "Gaillardia grandiflora",
-      "vernacular_en": "blanket-flower",
-      "family": 3065,
-      "records": 6,
-      "model": false
-    },
-    "5387821": {
-      "name": "Gaillardia pulchella",
-      "vernacular_en": "Firewheel Blanketflower",
-      "family": 3065,
-      "records": 7,
       "model": false
     },
     "2855398": {
@@ -62211,13 +60452,6 @@
       "records": 7,
       "model": false
     },
-    "9326020": {
-      "name": "Gallus gallus",
-      "vernacular_en": "Red Junglefowl",
-      "family": 9331,
-      "records": 33,
-      "model": true
-    },
     "2219867": {
       "name": "Gammarus lacustris",
       "vernacular_en": "Lacustrine Scud",
@@ -62251,13 +60485,6 @@
       "vernacular_en": null,
       "family": 4434,
       "records": 6,
-      "model": false
-    },
-    "3103082": {
-      "name": "Gamochaeta pensylvanica",
-      "vernacular_en": "Pennsylvania everlasting",
-      "family": 3065,
-      "records": 7,
       "model": false
     },
     "4486868": {
@@ -62419,13 +60646,6 @@
       "vernacular_en": null,
       "family": 7078,
       "records": 8,
-      "model": false
-    },
-    "2882758": {
-      "name": "Gaultheria shallon",
-      "vernacular_en": "Shallon",
-      "family": 2505,
-      "records": 5,
       "model": false
     },
     "2481957": {
@@ -63156,20 +61376,6 @@
       "records": 129,
       "model": false
     },
-    "5341540": {
-      "name": "Gilia achilleifolia",
-      "vernacular_en": "California Gilla",
-      "family": 6648,
-      "records": 11,
-      "model": false
-    },
-    "5341558": {
-      "name": "Gilia tricolor",
-      "vernacular_en": "Bird's-eyes",
-      "family": 6648,
-      "records": 13,
-      "model": false
-    },
     "4536483": {
       "name": "Gillmeria ochrodactyla",
       "vernacular_en": "Tansy Plume",
@@ -63189,13 +61395,6 @@
       "vernacular_en": "Pale Pine Combhorn",
       "family": 7907,
       "records": 6,
-      "model": false
-    },
-    "2687885": {
-      "name": "Ginkgo biloba",
-      "vernacular_en": "Maidenhair-tree",
-      "family": 3070,
-      "records": 8,
       "model": false
     },
     "4521823": {
@@ -63302,13 +61501,6 @@
       "family": 2497,
       "records": 26718,
       "model": true
-    },
-    "2959443": {
-      "name": "Gleditsia triacanthos",
-      "vernacular_en": "honey-locust",
-      "family": 5386,
-      "records": 23,
-      "model": false
     },
     "8097905": {
       "name": "Gliophorus irrigatus",
@@ -64318,13 +62510,6 @@
       "records": 2180,
       "model": true
     },
-    "9228211": {
-      "name": "Graptemys pseudogeographica",
-      "vernacular_en": "False Map Turtle",
-      "family": 5465,
-      "records": 6,
-      "model": false
-    },
     "4470170": {
       "name": "Graptodytes bilineatus",
       "vernacular_en": null,
@@ -64498,27 +62683,6 @@
       "vernacular_en": null,
       "family": 7605,
       "records": 7,
-      "model": false
-    },
-    "8584304": {
-      "name": "Guizotia abyssinica",
-      "vernacular_en": "Niger",
-      "family": 3065,
-      "records": 18,
-      "model": false
-    },
-    "8078925": {
-      "name": "Gunnera manicata",
-      "vernacular_en": "Brazilian Giant Rhubarb",
-      "family": 6695,
-      "records": 11,
-      "model": false
-    },
-    "2984306": {
-      "name": "Gunnera tinctoria",
-      "vernacular_en": "Chilean rhubarb",
-      "family": 6695,
-      "records": 11,
       "model": false
     },
     "8200022": {
@@ -64815,13 +62979,6 @@
       "records": 5,
       "model": false
     },
-    "2480649": {
-      "name": "Gypaetus barbatus",
-      "vernacular_en": "Bearded Vulture",
-      "family": 2877,
-      "records": 122,
-      "model": false
-    },
     "2480389": {
       "name": "Gyps fulvus",
       "vernacular_en": "Griffon Vulture",
@@ -64870,20 +63027,6 @@
       "family": 5343,
       "records": 86,
       "model": false
-    },
-    "5384466": {
-      "name": "Gypsophila elegans",
-      "vernacular_en": "Annual Baby's-breath",
-      "family": 2518,
-      "records": 33,
-      "model": false
-    },
-    "8091998": {
-      "name": "Gypsophila vaccaria",
-      "vernacular_en": "Cowcockle",
-      "family": 2518,
-      "records": 41,
-      "model": true
     },
     "4562206": {
       "name": "Gyraulus albus",
@@ -65109,13 +63252,6 @@
       "records": 26,
       "model": false
     },
-    "5883881": {
-      "name": "Hadula trifolii",
-      "vernacular_en": null,
-      "family": 7015,
-      "records": 26,
-      "model": false
-    },
     "10994157": {
       "name": "Haematomma ochroleucum",
       "vernacular_en": "yellow bloodstain lichen",
@@ -65197,13 +63333,6 @@
       "name": "Halecium halecinum",
       "vernacular_en": "herringbone hydroid",
       "family": 3973,
-      "records": 5,
-      "model": false
-    },
-    "5165954": {
-      "name": "Halectinosoma herdmani",
-      "vernacular_en": null,
-      "family": 9096,
       "records": 5,
       "model": false
     },
@@ -65436,13 +63565,6 @@
       "vernacular_en": "Fleahopper",
       "family": 4319,
       "records": 6,
-      "model": false
-    },
-    "4485843": {
-      "name": "Halyomorpha halys",
-      "vernacular_en": "Brown Marmorated Stink Bug",
-      "family": 9650,
-      "records": 11,
       "model": false
     },
     "4452254": {
@@ -66012,25 +64134,11 @@
       "records": 47,
       "model": false
     },
-    "9251540": {
-      "name": "Hedlundia austriaca",
-      "vernacular_en": "Austrian Whitebeam",
-      "family": 5015,
-      "records": 60,
-      "model": false
-    },
     "9245228": {
       "name": "Hedlundia hybrida",
       "vernacular_en": "Finnish Whitebeam",
       "family": 5015,
       "records": 72,
-      "model": false
-    },
-    "9312105": {
-      "name": "Hedlundia mougeotii",
-      "vernacular_en": "Mougeot's Whitebeam",
-      "family": 5015,
-      "records": 59,
       "model": false
     },
     "12239754": {
@@ -66208,13 +64316,6 @@
       "records": 10396,
       "model": false
     },
-    "7890013": {
-      "name": "Helictotrichon pratense",
-      "vernacular_en": "Meadow Oat-grass",
-      "family": 3073,
-      "records": 53,
-      "model": false
-    },
     "5069084": {
       "name": "Helina evecta",
       "vernacular_en": "Muscid fly",
@@ -66249,13 +64350,6 @@
       "family": 5644,
       "records": 90,
       "model": true
-    },
-    "5396474": {
-      "name": "Heliopsis helianthoides",
-      "vernacular_en": "Rough Oxeye",
-      "family": 3065,
-      "records": 23,
-      "model": false
     },
     "1886084": {
       "name": "Heliothela wulfeniana",
@@ -66647,20 +64741,6 @@
       "vernacular_en": "Brown Pine Lacewing",
       "family": 3532,
       "records": 18,
-      "model": false
-    },
-    "2781074": {
-      "name": "Hemerocallis fulva",
-      "vernacular_en": "Orange Day-lily",
-      "family": 4259209,
-      "records": 78,
-      "model": true
-    },
-    "2781103": {
-      "name": "Hemerocallis lilioasphodelus",
-      "vernacular_en": "Yellow Day-lily",
-      "family": 4259209,
-      "records": 17,
       "model": false
     },
     "6097065": {
@@ -67258,13 +65338,6 @@
       "records": 136,
       "model": true
     },
-    "3032653": {
-      "name": "Heuchera sanguinea",
-      "vernacular_en": "Coralbells",
-      "family": 2402,
-      "records": 8,
-      "model": false
-    },
     "5255915": {
       "name": "Heyderia cucullata",
       "vernacular_en": null,
@@ -67277,20 +65350,6 @@
       "vernacular_en": "Wrinkled Rock Borer",
       "family": 6882,
       "records": 16,
-      "model": false
-    },
-    "3152583": {
-      "name": "Hibiscus syriacus",
-      "vernacular_en": "Syrian Ketmia",
-      "family": 6685,
-      "records": 104,
-      "model": true
-    },
-    "3152560": {
-      "name": "Hibiscus trionum",
-      "vernacular_en": "Bladder Ketmia",
-      "family": 6685,
-      "records": 11,
       "model": false
     },
     "2480685": {
@@ -67482,13 +65541,6 @@
       "records": 12,
       "model": false
     },
-    "3039285": {
-      "name": "Hippophae rhamnoides",
-      "vernacular_en": "sallowthorn",
-      "family": 2408,
-      "records": 9148,
-      "model": true
-    },
     "4462685": {
       "name": "Hippuriphila modeeri",
       "vernacular_en": "Horsetail Flea Beetle",
@@ -67643,13 +65695,6 @@
       "records": 48,
       "model": false
     },
-    "12256841": {
-      "name": "Holcoponera striatula",
-      "vernacular_en": null,
-      "family": 4342,
-      "records": 11,
-      "model": false
-    },
     "6096794": {
       "name": "Holcostethus strictus",
       "vernacular_en": null,
@@ -67697,13 +65742,6 @@
       "vernacular_en": "marbled cellar spider",
       "family": 5638,
       "records": 17,
-      "model": false
-    },
-    "2987780": {
-      "name": "Holodiscus discolor",
-      "vernacular_en": "Oceanspray",
-      "family": 5015,
-      "records": 5,
       "model": false
     },
     "3085349": {
@@ -67768,13 +65806,6 @@
       "family": 4523,
       "records": 34,
       "model": true
-    },
-    "2436436": {
-      "name": "Homo sapiens",
-      "vernacular_en": "Human",
-      "family": 5483,
-      "records": 10,
-      "model": false
     },
     "5125960": {
       "name": "Homoeosoma nebulella",
@@ -67972,33 +66003,12 @@
       "records": 743,
       "model": false
     },
-    "4008563": {
-      "name": "Hosta lancifolia",
-      "vernacular_en": "Narrow-leaved Plantain-lily",
-      "family": 7683,
-      "records": 18,
-      "model": false
-    },
-    "5303933": {
-      "name": "Hosta sieboldiana",
-      "vernacular_en": "Siebold's Plantain Lily",
-      "family": 7683,
-      "records": 14,
-      "model": false
-    },
     "4006551": {
       "name": "Hottonia palustris",
       "vernacular_en": "Water-violet",
       "family": 6674,
       "records": 6671,
       "model": true
-    },
-    "5384931": {
-      "name": "Houttuynia cordata",
-      "vernacular_en": "Chameleon",
-      "family": 2421,
-      "records": 19,
-      "model": false
     },
     "5258860": {
       "name": "Humaria hemisphaerica",
@@ -68054,13 +66064,6 @@
       "vernacular_en": "Bluebell",
       "family": 7683,
       "records": 210,
-      "model": true
-    },
-    "2772666": {
-      "name": "Hyacinthus orientalis",
-      "vernacular_en": "Hyacinth",
-      "family": 7683,
-      "records": 305,
       "model": true
     },
     "5725388": {
@@ -68467,13 +66470,6 @@
       "vernacular_en": "sickle hydroid",
       "family": 7325,
       "records": 10,
-      "model": false
-    },
-    "2985995": {
-      "name": "Hydrangea paniculata",
-      "vernacular_en": "panicled hydrangea",
-      "family": 6667,
-      "records": 5,
       "model": false
     },
     "5146379": {
@@ -70254,13 +68250,6 @@
       "records": 10,
       "model": false
     },
-    "7605771": {
-      "name": "Hypochoeris radicata",
-      "vernacular_en": null,
-      "family": 3065,
-      "records": 186,
-      "model": false
-    },
     "5165419": {
       "name": "Hypochrysa elegans",
       "vernacular_en": null,
@@ -70616,13 +68605,6 @@
       "vernacular_en": null,
       "family": 4741,
       "records": 8,
-      "model": false
-    },
-    "5341387": {
-      "name": "Hyssopus officinalis",
-      "vernacular_en": "Hyssop",
-      "family": 2497,
-      "records": 19,
       "model": false
     },
     "2525888": {
@@ -72039,13 +70021,6 @@
       "records": 14,
       "model": false
     },
-    "2859597": {
-      "name": "Ipheion uniflorum",
-      "vernacular_en": "spring starflower",
-      "family": 7682,
-      "records": 5,
-      "model": false
-    },
     "5177421": {
       "name": "Iphinoe trispinosa",
       "vernacular_en": null,
@@ -72065,13 +70040,6 @@
       "vernacular_en": "Olive",
       "family": 7015,
       "records": 519,
-      "model": false
-    },
-    "2928576": {
-      "name": "Ipomoea purpurea",
-      "vernacular_en": "Common Morning-glory",
-      "family": 2389,
-      "records": 21,
       "model": false
     },
     "5018723": {
@@ -72270,20 +70238,6 @@
       "records": 9,
       "model": false
     },
-    "4926451": {
-      "name": "Isoetes echinospora",
-      "vernacular_en": "Spring Quillwort",
-      "family": 3074,
-      "records": 34,
-      "model": false
-    },
-    "2688270": {
-      "name": "Isoetes lacustris",
-      "vernacular_en": "Common Quillwort",
-      "family": 3074,
-      "records": 102,
-      "model": false
-    },
     "2713142": {
       "name": "Isolepis fluitans",
       "vernacular_en": "Floating Club-rush",
@@ -72331,13 +70285,6 @@
       "vernacular_en": "White-border Neb",
       "family": 3553,
       "records": 13,
-      "model": false
-    },
-    "5615962": {
-      "name": "Isopyrum thalictroides",
-      "vernacular_en": "Isopyrum",
-      "family": 2410,
-      "records": 7,
       "model": false
     },
     "2679735": {
@@ -72429,13 +70376,6 @@
       "vernacular_en": "Common issid planthopper",
       "family": 4494,
       "records": 25,
-      "model": false
-    },
-    "5216248": {
-      "name": "Isurus oxyrinchus",
-      "vernacular_en": "Shortfin mako",
-      "family": 5888,
-      "records": 22,
       "model": false
     },
     "1592474": {
@@ -72641,13 +70581,6 @@
       "records": 26909,
       "model": true
     },
-    "3172266": {
-      "name": "Jasminum nudiflorum",
-      "vernacular_en": "Winter Jasmine",
-      "family": 6652,
-      "records": 10,
-      "model": false
-    },
     "2045728": {
       "name": "Jassargus distinguendus",
       "vernacular_en": "Leafhopper",
@@ -72717,20 +70650,6 @@
       "family": 9739638,
       "records": 19,
       "model": false
-    },
-    "3054357": {
-      "name": "Juglans nigra",
-      "vernacular_en": "Black Walnut",
-      "family": 2499,
-      "records": 17,
-      "model": false
-    },
-    "3054368": {
-      "name": "Juglans regia",
-      "vernacular_en": "English walnut",
-      "family": 2499,
-      "records": 1223,
-      "model": true
     },
     "10851528": {
       "name": "Juncorrhiza aschersoniana",
@@ -72970,13 +70889,6 @@
       "records": 7,
       "model": false
     },
-    "2397938": {
-      "name": "Kajikia audax",
-      "vernacular_en": "Striped Marlin",
-      "family": 9670,
-      "records": 25,
-      "model": false
-    },
     "4463703": {
       "name": "Kalcapion pallipes",
       "vernacular_en": "Dogs-mercury Seed Weevil",
@@ -72989,13 +70901,6 @@
       "vernacular_en": "Fine-leaved Marsh Feather-moss",
       "family": 4650,
       "records": 76,
-      "model": false
-    },
-    "9306058": {
-      "name": "Karpatiosorbus latifolia",
-      "vernacular_en": "Broad-leaved Whitebeam",
-      "family": 5015,
-      "records": 6,
       "model": false
     },
     "7643661": {
@@ -73026,13 +70931,6 @@
       "records": 1410,
       "model": true
     },
-    "2374191": {
-      "name": "Katsuwonus pelamis",
-      "vernacular_en": "Arctic bonito",
-      "family": 8596,
-      "records": 5,
-      "model": false
-    },
     "2521466": {
       "name": "Kavinia alboviridis",
       "vernacular_en": null,
@@ -73046,13 +70944,6 @@
       "family": 3880,
       "records": 34,
       "model": false
-    },
-    "5371450": {
-      "name": "Kerria japonica",
-      "vernacular_en": "Japanese rose",
-      "family": 5015,
-      "records": 66,
-      "model": true
     },
     "3170819": {
       "name": "Kickxia elatine",
@@ -73138,13 +71029,6 @@
       "records": 541,
       "model": false
     },
-    "5421180": {
-      "name": "Koelreuteria paniculata",
-      "vernacular_en": "Pride-of-India",
-      "family": 6657,
-      "records": 6,
-      "model": false
-    },
     "9020499": {
       "name": "Koenigia alpina",
       "vernacular_en": "Alpine Knotweed",
@@ -73157,13 +71041,6 @@
       "vernacular_en": "Finnish knotweed",
       "family": 2416,
       "records": 56,
-      "model": false
-    },
-    "8848208": {
-      "name": "Koenigia polystachya",
-      "vernacular_en": "Himalayan knotweed",
-      "family": 2416,
-      "records": 19,
       "model": false
     },
     "8811572": {
@@ -73179,13 +71056,6 @@
       "family": 7931,
       "records": 18,
       "model": false
-    },
-    "2888706": {
-      "name": "Kolkwitzia amabilis",
-      "vernacular_en": "Beauty-bush",
-      "family": 6710,
-      "records": 86,
-      "model": true
     },
     "7448174": {
       "name": "Korscheltellus fusconebulosus",
@@ -73367,27 +71237,6 @@
       "vernacular_en": null,
       "family": 3415,
       "records": 33,
-      "model": false
-    },
-    "5356343": {
-      "name": "Laburnum alpinum",
-      "vernacular_en": "Scottish Laburnum",
-      "family": 5386,
-      "records": 17,
-      "model": false
-    },
-    "5356345": {
-      "name": "Laburnum anagyroides",
-      "vernacular_en": "Golden chain tree",
-      "family": 5386,
-      "records": 351,
-      "model": true
-    },
-    "5356351": {
-      "name": "Laburnum watereri",
-      "vernacular_en": "golden-chaintree",
-      "family": 5386,
-      "records": 9,
       "model": false
     },
     "1759055": {
@@ -74328,13 +72177,6 @@
       "records": 265,
       "model": true
     },
-    "5290177": {
-      "name": "Lagurus ovatus",
-      "vernacular_en": "Hare's-tail",
-      "family": 3073,
-      "records": 15,
-      "model": false
-    },
     "1309174": {
       "name": "Lagynodes pallidus",
       "vernacular_en": null,
@@ -74426,13 +72268,6 @@
       "records": 1853,
       "model": false
     },
-    "2888564": {
-      "name": "Lamprocapnos spectabilis",
-      "vernacular_en": "Asian Bleeding-heart",
-      "family": 2422,
-      "records": 48,
-      "model": true
-    },
     "1860628": {
       "name": "Lampronia oehlmaniella",
       "vernacular_en": null,
@@ -74516,13 +72351,6 @@
       "family": 4737,
       "records": 119,
       "model": true
-    },
-    "5090155": {
-      "name": "Lamyra marginata",
-      "vernacular_en": null,
-      "family": 7275,
-      "records": 9,
-      "model": false
     },
     "2325106": {
       "name": "Lanice conchilega",
@@ -75868,13 +73696,6 @@
       "records": 18,
       "model": false
     },
-    "5465199": {
-      "name": "Lenzites betulinus",
-      "vernacular_en": "Birch Mazegill",
-      "family": 3286,
-      "records": 1232,
-      "model": false
-    },
     "8058115": {
       "name": "Leontodon autumnalis",
       "vernacular_en": null,
@@ -76391,13 +74212,6 @@
       "vernacular_en": "Wood White",
       "family": 5481,
       "records": 461,
-      "model": false
-    },
-    "3097504": {
-      "name": "Leptinella squalida",
-      "vernacular_en": "New Zealand brass-buttons",
-      "family": 3065,
-      "records": 13,
       "model": false
     },
     "1047536": {
@@ -77156,13 +74970,6 @@
       "records": 26,
       "model": false
     },
-    "5371772": {
-      "name": "Levisticum officinale",
-      "vernacular_en": "Lovage",
-      "family": 6720,
-      "records": 236,
-      "model": false
-    },
     "10055902": {
       "name": "Lewinskya affinis",
       "vernacular_en": "Wood Bristle-moss",
@@ -77772,13 +75579,6 @@
       "records": 21575,
       "model": true
     },
-    "5187093": {
-      "name": "Linckia laevigata",
-      "vernacular_en": "azure sea star",
-      "family": 5779,
-      "records": 7,
-      "model": false
-    },
     "2552425": {
       "name": "Lindtneria chordulata",
       "vernacular_en": null,
@@ -77883,13 +75683,6 @@
       "family": 5968394,
       "records": 204,
       "model": true
-    },
-    "4307250": {
-      "name": "Liocarcinus marmoreus",
-      "vernacular_en": "Marbled Swimming Crab",
-      "family": 5968394,
-      "records": 7,
-      "model": false
     },
     "5759055": {
       "name": "Liocoris tripustulatus",
@@ -78001,13 +75794,6 @@
       "vernacular_en": null,
       "family": 5844,
       "records": 14,
-      "model": false
-    },
-    "3152861": {
-      "name": "Liriodendron tulipifera",
-      "vernacular_en": "tulip-poplar",
-      "family": 4690,
-      "records": 46,
       "model": false
     },
     "2579903": {
@@ -78246,13 +76032,6 @@
       "vernacular_en": "Seraphim",
       "family": 6950,
       "records": 415,
-      "model": true
-    },
-    "5373358": {
-      "name": "Lobularia maritima",
-      "vernacular_en": "Sweet Alison",
-      "family": 3112,
-      "records": 167,
       "model": true
     },
     "4461358": {
@@ -78722,13 +76501,6 @@
       "vernacular_en": null,
       "family": 8281,
       "records": 16,
-      "model": false
-    },
-    "2498408": {
-      "name": "Lophodytes cucullatus",
-      "vernacular_en": "Hooded Merganser",
-      "family": 2986,
-      "records": 973,
       "model": false
     },
     "2138856": {
@@ -79431,13 +77203,6 @@
       "records": 2014,
       "model": true
     },
-    "5341197": {
-      "name": "Lycopsis arvensis",
-      "vernacular_en": "Bugloss",
-      "family": 2498,
-      "records": 2651,
-      "model": false
-    },
     "5341478": {
       "name": "Lycopus europaeus",
       "vernacular_en": "Gypsywort",
@@ -79815,13 +77580,6 @@
       "family": 7275,
       "records": 547,
       "model": true
-    },
-    "2984580": {
-      "name": "Maclura pomifera",
-      "vernacular_en": "Osage-orange",
-      "family": 6640,
-      "records": 6,
-      "model": false
     },
     "2286995": {
       "name": "Macoma balthica",
@@ -80208,13 +77966,6 @@
       "records": 8922,
       "model": true
     },
-    "2397867": {
-      "name": "Makaira mazara",
-      "vernacular_en": "Indo-Pacific blue marlin",
-      "family": 9670,
-      "records": 17,
-      "model": false
-    },
     "4449367": {
       "name": "Malachius aeneus",
       "vernacular_en": "Scarlet Malachite Beetle",
@@ -80318,13 +78069,6 @@
       "vernacular_en": null,
       "family": 7078,
       "records": 6,
-      "model": false
-    },
-    "3935421": {
-      "name": "Malope trifida",
-      "vernacular_en": "Mallow-wort",
-      "family": 6685,
-      "records": 9,
       "model": false
     },
     "4430299": {
@@ -80698,13 +78442,6 @@
       "records": 10,
       "model": false
     },
-    "2498390": {
-      "name": "Marmaronetta angustirostris",
-      "vernacular_en": "Marbled Duck",
-      "family": 2986,
-      "records": 235,
-      "model": false
-    },
     "1235857": {
       "name": "Marmaropus besseri",
       "vernacular_en": null,
@@ -80837,20 +78574,6 @@
       "family": 3229275,
       "records": 1324,
       "model": true
-    },
-    "5377395": {
-      "name": "Matthiola longipetala",
-      "vernacular_en": "Night-scented Stock",
-      "family": 3112,
-      "records": 8,
-      "model": false
-    },
-    "2443597": {
-      "name": "Mauremys reevesii",
-      "vernacular_en": "Chinese Pond Turtle",
-      "family": 5463,
-      "records": 6,
-      "model": false
     },
     "2347501": {
       "name": "Maurolicus muelleri",
@@ -82014,13 +79737,6 @@
       "records": 30,
       "model": false
     },
-    "2479798": {
-      "name": "Melopsittacus undulatus",
-      "vernacular_en": "Budgerigar",
-      "family": 9340,
-      "records": 358,
-      "model": false
-    },
     "1007770": {
       "name": "Membranipora membranacea",
       "vernacular_en": "Sea Mat",
@@ -82518,13 +80234,6 @@
       "records": 12,
       "model": false
     },
-    "5284231": {
-      "name": "Metasequoia glyptostroboides",
-      "vernacular_en": "Dawn Redwood",
-      "family": 8144,
-      "records": 40,
-      "model": false
-    },
     "4486878": {
       "name": "Metatropis rufescens",
       "vernacular_en": "enchanter's stiltbug",
@@ -82588,13 +80297,6 @@
       "records": 9,
       "model": false
     },
-    "2114824": {
-      "name": "Metridia longa",
-      "vernacular_en": null,
-      "family": 9044,
-      "records": 8,
-      "model": false
-    },
     "5711863": {
       "name": "Metridium dianthus",
       "vernacular_en": "Plumose anemone",
@@ -82656,13 +80358,6 @@
       "vernacular_en": null,
       "family": 3553,
       "records": 7,
-      "model": false
-    },
-    "6026490": {
-      "name": "Meum athamanticum",
-      "vernacular_en": "Spignel",
-      "family": 6720,
-      "records": 11,
       "model": false
     },
     "4469002": {
@@ -83358,13 +81053,6 @@
       "records": 30,
       "model": false
     },
-    "3086240": {
-      "name": "Mirabilis jalapa",
-      "vernacular_en": "beauty-of-the-night",
-      "family": 6718,
-      "records": 17,
-      "model": false
-    },
     "2606714": {
       "name": "Miriquidica deusta",
       "vernacular_en": "miriquidica lichen",
@@ -83378,13 +81066,6 @@
       "family": 4319,
       "records": 177,
       "model": true
-    },
-    "2706026": {
-      "name": "Miscanthus sinensis",
-      "vernacular_en": "Chinese silvergrass",
-      "family": 3073,
-      "records": 85,
-      "model": false
     },
     "2367936": {
       "name": "Misgurnus fossilis",
@@ -84086,13 +81767,6 @@
       "records": 15,
       "model": false
     },
-    "2888859": {
-      "name": "Muehlenbeckia complexa",
-      "vernacular_en": "Wireplant",
-      "family": 2416,
-      "records": 9,
-      "model": false
-    },
     "2056867": {
       "name": "Muellerianella extrusa",
       "vernacular_en": null,
@@ -84119,13 +81793,6 @@
       "vernacular_en": "White Green-algae Coral",
       "family": 8460,
       "records": 42,
-      "model": false
-    },
-    "2440946": {
-      "name": "Muntiacus reevesi",
-      "vernacular_en": "Chinese Muntjac",
-      "family": 5298,
-      "records": 11,
       "model": false
     },
     "7429082": {
@@ -85086,13 +82753,6 @@
       "family": 5336,
       "records": 1211,
       "model": true
-    },
-    "2479407": {
-      "name": "Myiopsitta monachus",
-      "vernacular_en": "Monk Parakeet",
-      "family": 9340,
-      "records": 13,
-      "model": false
     },
     "5837638": {
       "name": "Mylia anomala",
@@ -86081,13 +83741,6 @@
       "records": 8,
       "model": false
     },
-    "3853033": {
-      "name": "Neillia incisa",
-      "vernacular_en": "Laceshrub",
-      "family": 5015,
-      "records": 13,
-      "model": false
-    },
     "4553348": {
       "name": "Nelima gothica",
       "vernacular_en": null,
@@ -86281,20 +83934,6 @@
       "name": "Nematus salicis",
       "vernacular_en": "Tenthredid wasp",
       "family": 7918,
-      "records": 13,
-      "model": false
-    },
-    "2928034": {
-      "name": "Nemophila maculata",
-      "vernacular_en": "Fivespot",
-      "family": 2387,
-      "records": 7,
-      "model": false
-    },
-    "2928026": {
-      "name": "Nemophila menziesii",
-      "vernacular_en": "Baby's-blue-eyes",
-      "family": 2387,
       "records": 13,
       "model": false
     },
@@ -87187,27 +84826,6 @@
       "records": 574,
       "model": true
     },
-    "2928775": {
-      "name": "Nicotiana rustica",
-      "vernacular_en": "Aztec tobacco",
-      "family": 7717,
-      "records": 7,
-      "model": false
-    },
-    "2928767": {
-      "name": "Nicotiana sylvestris",
-      "vernacular_en": "South American tobacco",
-      "family": 7717,
-      "records": 9,
-      "model": false
-    },
-    "2928774": {
-      "name": "Nicotiana tabacum",
-      "vernacular_en": "Tobacco",
-      "family": 7717,
-      "records": 14,
-      "model": false
-    },
     "1039003": {
       "name": "Nicrophorus humator",
       "vernacular_en": "Black Sexton Beetle",
@@ -87263,13 +84881,6 @@
       "family": 8420,
       "records": 12,
       "model": false
-    },
-    "5371702": {
-      "name": "Nigella damascena",
-      "vernacular_en": "Love-in-a-mist",
-      "family": 2410,
-      "records": 149,
-      "model": true
     },
     "2144994": {
       "name": "Nigma walckenaeri",
@@ -88013,13 +85624,6 @@
       "records": 52186,
       "model": true
     },
-    "2473341": {
-      "name": "Numida meleagris",
-      "vernacular_en": "Helmeted Guineafowl",
-      "family": 5260,
-      "records": 11,
-      "model": false
-    },
     "7551339": {
       "name": "Nuphar lutea",
       "vernacular_en": "Yellow Water-Lily",
@@ -88144,13 +85748,6 @@
       "vernacular_en": "Scarce Tortoiseshell",
       "family": 7017,
       "records": 283,
-      "model": false
-    },
-    "2479977": {
-      "name": "Nymphicus hollandicus",
-      "vernacular_en": "Cockatiel",
-      "family": 9340,
-      "records": 158,
       "model": false
     },
     "8810827": {
@@ -90876,27 +88473,6 @@
       "records": 2297,
       "model": true
     },
-    "2441122": {
-      "name": "Ovis ammon",
-      "vernacular_en": "Argali",
-      "family": 9614,
-      "records": 16,
-      "model": false
-    },
-    "2441110": {
-      "name": "Ovis aries",
-      "vernacular_en": "Red Sheep",
-      "family": 9614,
-      "records": 39,
-      "model": false
-    },
-    "9542814": {
-      "name": "Ovis gmelini",
-      "vernacular_en": "mouflon",
-      "family": 9614,
-      "records": 7,
-      "model": false
-    },
     "5199345": {
       "name": "Owenia fusiformis",
       "vernacular_en": "tubeworm",
@@ -91184,13 +88760,6 @@
       "records": 8,
       "model": false
     },
-    "1077130": {
-      "name": "Oxythyrea funesta",
-      "vernacular_en": "Mediterranean Spotted Chafer",
-      "family": 5840,
-      "records": 6,
-      "model": false
-    },
     "2498305": {
       "name": "Oxyura jamaicensis",
       "vernacular_en": "Ruddy Duck",
@@ -91317,13 +88886,6 @@
       "records": 38,
       "model": false
     },
-    "5182610": {
-      "name": "Pachymatisma johnstonia",
-      "vernacular_en": "elephant ear sponge",
-      "family": 3894,
-      "records": 9,
-      "model": false
-    },
     "2601618": {
       "name": "Pachyphiale carneola",
       "vernacular_en": null,
@@ -91358,13 +88920,6 @@
       "family": 4239,
       "records": 48,
       "model": true
-    },
-    "2984676": {
-      "name": "Pachysandra terminalis",
-      "vernacular_en": "Carpet Box",
-      "family": 6703,
-      "records": 30,
-      "model": false
     },
     "5122293": {
       "name": "Pachythelia villosella",
@@ -91406,20 +88961,6 @@
       "vernacular_en": null,
       "family": 7854,
       "records": 44,
-      "model": false
-    },
-    "3083486": {
-      "name": "Paeonia lactiflora",
-      "vernacular_en": "Chinese Peony",
-      "family": 6711,
-      "records": 7,
-      "model": false
-    },
-    "3083488": {
-      "name": "Paeonia officinalis",
-      "vernacular_en": "Common Peony",
-      "family": 6711,
-      "records": 18,
       "model": false
     },
     "2481202": {
@@ -91812,20 +89353,6 @@
       "vernacular_en": "Small Yellow Underwing",
       "family": 7015,
       "records": 235,
-      "model": false
-    },
-    "2705162": {
-      "name": "Panicum capillare",
-      "vernacular_en": "Witch-grass",
-      "family": 3073,
-      "records": 35,
-      "model": false
-    },
-    "2705090": {
-      "name": "Panicum miliaceum",
-      "vernacular_en": "Common Millet",
-      "family": 3073,
-      "records": 140,
       "model": false
     },
     "1793877": {
@@ -92738,27 +90265,6 @@
       "records": 5,
       "model": false
     },
-    "3039203": {
-      "name": "Parthenocissus inserta",
-      "vernacular_en": "False Virginia-creeper",
-      "family": 6672,
-      "records": 58,
-      "model": false
-    },
-    "3039194": {
-      "name": "Parthenocissus quinquefolia",
-      "vernacular_en": "Virginia-creeper",
-      "family": 6672,
-      "records": 32,
-      "model": false
-    },
-    "3039209": {
-      "name": "Parthenocissus tricuspidata",
-      "vernacular_en": "Boston ivy",
-      "family": 6672,
-      "records": 20,
-      "model": false
-    },
     "9705453": {
       "name": "Parus major",
       "vernacular_en": "Great Tit",
@@ -92822,13 +90328,6 @@
       "records": 217812,
       "model": true
     },
-    "2490327": {
-      "name": "Passerina cyanea",
-      "vernacular_en": "Indigo Bunting",
-      "family": 9285,
-      "records": 305,
-      "model": false
-    },
     "8262702": {
       "name": "Pastinaca sativa",
       "vernacular_en": "wild parsnip",
@@ -92863,20 +90362,6 @@
       "family": 3792,
       "records": 14,
       "model": false
-    },
-    "3170823": {
-      "name": "Paulownia tomentosa",
-      "vernacular_en": "Foxglove-tree",
-      "family": 4896863,
-      "records": 26,
-      "model": false
-    },
-    "9451184": {
-      "name": "Pavo cristatus",
-      "vernacular_en": "Indian Peafowl",
-      "family": 9331,
-      "records": 1028,
-      "model": true
     },
     "5240008": {
       "name": "Paxillus ammoniavirescens",
@@ -92918,13 +90403,6 @@
       "vernacular_en": "Alder Rollrim",
       "family": 4195,
       "records": 479,
-      "model": false
-    },
-    "8069437": {
-      "name": "Paxina queletii",
-      "vernacular_en": null,
-      "family": 7006,
-      "records": 31,
       "model": false
     },
     "1555205": {
@@ -94131,13 +91609,6 @@
       "records": 202,
       "model": false
     },
-    "2928859": {
-      "name": "Petunia atkinsiana",
-      "vernacular_en": "common garden petunia",
-      "family": 7717,
-      "records": 9,
-      "model": false
-    },
     "1846604": {
       "name": "Pexicopia malvella",
       "vernacular_en": "Hollyhock Seed Moth",
@@ -94263,20 +91734,6 @@
       "family": 3298457,
       "records": 5,
       "model": false
-    },
-    "2928238": {
-      "name": "Phacelia campanularia",
-      "vernacular_en": "California-bluebell",
-      "family": 2387,
-      "records": 10,
-      "model": false
-    },
-    "2928226": {
-      "name": "Phacelia tanacetifolia",
-      "vernacular_en": "Scorpion Weed",
-      "family": 2387,
-      "records": 2505,
-      "model": true
     },
     "7440379": {
       "name": "Phacidium lauri",
@@ -94691,25 +92148,11 @@
       "records": 5,
       "model": false
     },
-    "5769272": {
-      "name": "Pharmacis fusconebulosa",
-      "vernacular_en": null,
-      "family": 3556,
-      "records": 555,
-      "model": false
-    },
     "2509463": {
       "name": "Phascolion strombus",
       "vernacular_en": "peanut worm",
       "family": 7340,
       "records": 6,
-      "model": false
-    },
-    "5350452": {
-      "name": "Phaseolus vulgaris",
-      "vernacular_en": "French Bean",
-      "family": 5386,
-      "records": 7,
       "model": false
     },
     "1464726": {
@@ -94774,13 +92217,6 @@
       "family": 6618,
       "records": 600,
       "model": true
-    },
-    "8245539": {
-      "name": "Phelipanche purpurea",
-      "vernacular_en": "purple broomrape",
-      "family": 6651,
-      "records": 114,
-      "model": false
     },
     "7624816": {
       "name": "Phellinopsis conchata",
@@ -94936,26 +92372,12 @@
       "records": 597,
       "model": true
     },
-    "2986045": {
-      "name": "Philadelphus coronarius",
-      "vernacular_en": "European mock-orange",
-      "family": 6667,
-      "records": 98,
-      "model": true
-    },
     "2016038": {
       "name": "Philaenus spumarius",
       "vernacular_en": "Cuckoo-spit Insect",
       "family": 3764,
       "records": 93,
       "model": true
-    },
-    "2176858": {
-      "name": "Philaeus chrysops",
-      "vernacular_en": "Red-bellied Jumping Spider",
-      "family": 5644,
-      "records": 10,
-      "model": false
     },
     "5760758": {
       "name": "Philanthus triangulum",
@@ -95545,27 +92967,6 @@
       "records": 6,
       "model": false
     },
-    "3886505": {
-      "name": "Phlomis russeliana",
-      "vernacular_en": "Turkish Sage",
-      "family": 2497,
-      "records": 16,
-      "model": false
-    },
-    "2927744": {
-      "name": "Phlox paniculata",
-      "vernacular_en": "garden phlox",
-      "family": 6648,
-      "records": 71,
-      "model": true
-    },
-    "2927727": {
-      "name": "Phlox subulata",
-      "vernacular_en": "Moss Phlox",
-      "family": 6648,
-      "records": 14,
-      "model": false
-    },
     "5260916": {
       "name": "Phlyctis agelaea",
       "vernacular_en": "blemished lichen",
@@ -95599,27 +93000,6 @@
       "vernacular_en": null,
       "family": 4319,
       "records": 6,
-      "model": false
-    },
-    "2481104": {
-      "name": "Phoeniconaias minor",
-      "vernacular_en": "Lesser Flamingo",
-      "family": 5269,
-      "records": 41,
-      "model": false
-    },
-    "2481110": {
-      "name": "Phoenicopterus chilensis",
-      "vernacular_en": "Chilean Flamingo",
-      "family": 5269,
-      "records": 5,
-      "model": false
-    },
-    "4352332": {
-      "name": "Phoenicopterus roseus",
-      "vernacular_en": "Greater Flamingo",
-      "family": 5269,
-      "records": 136,
       "model": false
     },
     "5739315": {
@@ -96089,13 +93469,6 @@
       "vernacular_en": "Plain Conch",
       "family": 5343,
       "records": 148,
-      "model": false
-    },
-    "7671397": {
-      "name": "Phuopsis stylosa",
-      "vernacular_en": null,
-      "family": 8798,
-      "records": 7,
       "model": false
     },
     "5214919": {
@@ -96825,13 +94198,6 @@
       "family": 3287,
       "records": 61,
       "model": false
-    },
-    "2988354": {
-      "name": "Physocarpus opulifolius",
-      "vernacular_en": "Eastern Ninebark",
-      "family": 5015,
-      "records": 140,
-      "model": true
     },
     "1568963": {
       "name": "Physocephala rufipes",
@@ -97729,13 +95095,6 @@
       "records": 31,
       "model": false
     },
-    "1320787": {
-      "name": "Plagiolepis alluaudi",
-      "vernacular_en": "Alluaud's Little Yellow Ant",
-      "family": 4342,
-      "records": 8,
-      "model": false
-    },
     "8227677": {
       "name": "Plagiomnium affine",
       "vernacular_en": "Many-fruited Thyme-moss",
@@ -98023,13 +95382,6 @@
       "records": 708,
       "model": false
     },
-    "7434815": {
-      "name": "Planuncus tingitanus",
-      "vernacular_en": "Variable Cockroach",
-      "family": 4802341,
-      "records": 6,
-      "model": false
-    },
     "2480800": {
       "name": "Platalea alba",
       "vernacular_en": "African Spoonbill",
@@ -98064,13 +95416,6 @@
       "family": 7689,
       "records": 2093,
       "model": true
-    },
-    "7400250": {
-      "name": "Platanus hispanica",
-      "vernacular_en": "London plane-tree",
-      "family": 6693,
-      "records": 59,
-      "model": false
     },
     "5752110": {
       "name": "Plateumaris braccata",
@@ -98260,13 +95605,6 @@
       "family": 9402,
       "records": 174,
       "model": true
-    },
-    "3164340": {
-      "name": "Platycodon grandiflorus",
-      "vernacular_en": "Chinese-bellflower",
-      "family": 8801,
-      "records": 6,
-      "model": false
     },
     "4455263": {
       "name": "Platydema violaceum",
@@ -98562,13 +95900,6 @@
       "records": 894,
       "model": true
     },
-    "1879252": {
-      "name": "Pleuroptya ruralis",
-      "vernacular_en": "Mother of Pearl",
-      "family": 8841,
-      "records": 50,
-      "model": false
-    },
     "2603769": {
       "name": "Pleurosticta acetabulum",
       "vernacular_en": null,
@@ -98666,13 +95997,6 @@
       "family": 5336,
       "records": 157,
       "model": true
-    },
-    "3082283": {
-      "name": "Plumbago auriculata",
-      "vernacular_en": "Quaker",
-      "family": 2419,
-      "records": 6,
-      "model": false
     },
     "1772179": {
       "name": "Plusia festucae",
@@ -99121,13 +96445,6 @@
       "family": 4352,
       "records": 31,
       "model": false
-    },
-    "2469188": {
-      "name": "Podarcis muralis",
-      "vernacular_en": "Common Wall Lizard",
-      "family": 5201,
-      "records": 78,
-      "model": true
     },
     "2482059": {
       "name": "Podiceps auritus",
@@ -99666,13 +96983,6 @@
       "vernacular_en": "Vagabund Clusterfly",
       "family": 10789192,
       "records": 11,
-      "model": false
-    },
-    "3085381": {
-      "name": "Polycarpon tetraphyllum",
-      "vernacular_en": "Four-leaved Allseed",
-      "family": 2518,
-      "records": 27,
       "model": false
     },
     "7487512": {
@@ -100324,13 +97634,6 @@
       "vernacular_en": "Danube Crayfish",
       "family": 8022,
       "records": 41,
-      "model": false
-    },
-    "2766030": {
-      "name": "Pontederia cordata",
-      "vernacular_en": "Pickerelweed",
-      "family": 3731,
-      "records": 6,
       "model": false
     },
     "1920258": {
@@ -101852,13 +99155,6 @@
       "records": 66,
       "model": false
     },
-    "3085257": {
-      "name": "Psammophiliella muralis",
-      "vernacular_en": "low baby's-breath",
-      "family": 2518,
-      "records": 12,
-      "model": false
-    },
     "2043322": {
       "name": "Psammotettix confinis",
       "vernacular_en": null,
@@ -102214,13 +99510,6 @@
       "vernacular_en": "Pale Footed Black Wasp",
       "family": 7906,
       "records": 7,
-      "model": false
-    },
-    "3137829": {
-      "name": "Psephellus dealbatus",
-      "vernacular_en": "Persian Cornflower",
-      "family": 3065,
-      "records": 12,
       "model": false
     },
     "4537598": {
@@ -102615,13 +99904,6 @@
       "records": 78,
       "model": false
     },
-    "7952471": {
-      "name": "Pseudosasa japonica",
-      "vernacular_en": "Arrow Bamboo",
-      "family": 3073,
-      "records": 9,
-      "model": false
-    },
     "8508587": {
       "name": "Pseudoschismatomma rufescens",
       "vernacular_en": null,
@@ -102699,13 +99981,6 @@
       "records": 14,
       "model": false
     },
-    "12186480": {
-      "name": "Pseudospongipellis delectans",
-      "vernacular_en": null,
-      "family": 9651083,
-      "records": 39,
-      "model": false
-    },
     "4463544": {
       "name": "Pseudostenapion simum",
       "vernacular_en": null,
@@ -102754,13 +100029,6 @@
       "family": 8787,
       "records": 97,
       "model": false
-    },
-    "2685796": {
-      "name": "Pseudotsuga menziesii",
-      "vernacular_en": "Douglas-fir",
-      "family": 3925,
-      "records": 1699,
-      "model": true
     },
     "4458867": {
       "name": "Pseudovadonia livida",
@@ -102902,20 +100170,6 @@
       "records": 8,
       "model": false
     },
-    "5229055": {
-      "name": "Psittacula eupatria",
-      "vernacular_en": "Alexandrine Parakeet",
-      "family": 9340,
-      "records": 54,
-      "model": false
-    },
-    "2479226": {
-      "name": "Psittacula krameri",
-      "vernacular_en": "Rose-ringed Parakeet",
-      "family": 9340,
-      "records": 65,
-      "model": false
-    },
     "1854202": {
       "name": "Psyche casta",
       "vernacular_en": "Common Bagworm Moth",
@@ -102993,13 +100247,6 @@
       "records": 7049,
       "model": true
     },
-    "8288647": {
-      "name": "Pterocarya fraxinifolia",
-      "vernacular_en": "Caucasian Wingnut",
-      "family": 2499,
-      "records": 65,
-      "model": true
-    },
     "2074228": {
       "name": "Pterocomma salicis",
       "vernacular_en": "Black Willow Bark Aphid",
@@ -103034,13 +100281,6 @@
       "family": 8863,
       "records": 371,
       "model": true
-    },
-    "2419426": {
-      "name": "Pteroplatytrygon violacea",
-      "vernacular_en": "Pelagic Stingray",
-      "family": 2195,
-      "records": 11,
-      "model": false
     },
     "8423772": {
       "name": "Pterostichus anthracinus",
@@ -104008,13 +101248,6 @@
       "records": 6,
       "model": false
     },
-    "8563195": {
-      "name": "Pygmarrhopalites principalis",
-      "vernacular_en": null,
-      "family": 7220,
-      "records": 6,
-      "model": false
-    },
     "2321271": {
       "name": "Pygospio elegans",
       "vernacular_en": "pygospio worm",
@@ -104034,20 +101267,6 @@
       "vernacular_en": "many-flowered pylaisia",
       "family": 10011601,
       "records": 68,
-      "model": false
-    },
-    "2988188": {
-      "name": "Pyracantha coccinea",
-      "vernacular_en": "Firethorn",
-      "family": 5015,
-      "records": 159,
-      "model": true
-    },
-    "2988172": {
-      "name": "Pyracantha crenulata",
-      "vernacular_en": "Nepalese Firethorn",
-      "family": 5015,
-      "records": 20,
       "model": false
     },
     "10787705": {
@@ -104504,13 +101723,6 @@
       "family": 5473,
       "records": 3733,
       "model": true
-    },
-    "9476062": {
-      "name": "Quiscalus mexicanus",
-      "vernacular_en": "Great-tailed Grackle",
-      "family": 6176,
-      "records": 49,
-      "model": false
     },
     "1601120": {
       "name": "Rabdophaga iteobia",
@@ -105583,20 +102795,6 @@
       "records": 77,
       "model": false
     },
-    "5758736": {
-      "name": "Rhaphigaster nebulosa",
-      "vernacular_en": "Mottled Shield Bug",
-      "family": 9650,
-      "records": 38,
-      "model": true
-    },
-    "2888867": {
-      "name": "Rheum rhabarbarum",
-      "vernacular_en": "rhubarb",
-      "family": 2416,
-      "records": 708,
-      "model": true
-    },
     "1976993": {
       "name": "Rheumaptera cervinalis",
       "vernacular_en": "Scarce Tissue",
@@ -106038,13 +103236,6 @@
       "records": 14,
       "model": false
     },
-    "3032442": {
-      "name": "Rhodotypos scandens",
-      "vernacular_en": "black jetbead",
-      "family": 5015,
-      "records": 6,
-      "model": false
-    },
     "4490360": {
       "name": "Rhogogaster chlorosoma",
       "vernacular_en": "Narrow-striped Rhogogaster",
@@ -106177,13 +103368,6 @@
       "family": null,
       "records": 355,
       "model": false
-    },
-    "3190538": {
-      "name": "Rhus typhina",
-      "vernacular_en": "Stag's-horn Sumach",
-      "family": 2398,
-      "records": 450,
-      "model": true
     },
     "1790625": {
       "name": "Rhyacia simulans",
@@ -106694,27 +103878,6 @@
       "vernacular_en": null,
       "family": 9583,
       "records": 5,
-      "model": false
-    },
-    "5352251": {
-      "name": "Robinia pseudoacacia",
-      "vernacular_en": "False-acacia",
-      "family": 5386,
-      "records": 546,
-      "model": true
-    },
-    "7339484": {
-      "name": "Rodgersia pinnata",
-      "vernacular_en": "featherleaf rodgersia",
-      "family": 2402,
-      "records": 6,
-      "model": false
-    },
-    "3754587": {
-      "name": "Rodgersia podophylla",
-      "vernacular_en": "Japanese rodgersia",
-      "family": 2402,
-      "records": 21,
       "model": false
     },
     "5531435": {
@@ -107359,13 +104522,6 @@
       "vernacular_en": "Coneflower",
       "family": 3065,
       "records": 66,
-      "model": false
-    },
-    "4372686": {
-      "name": "Ruditapes philippinarum",
-      "vernacular_en": "Manila Clam",
-      "family": 3445,
-      "records": 5,
       "model": false
     },
     "2158040": {
@@ -108411,13 +105567,6 @@
       "records": 53,
       "model": false
     },
-    "5586962": {
-      "name": "Sabulina tenuifolia",
-      "vernacular_en": "Fine-leaved Sandwort",
-      "family": 2518,
-      "records": 13,
-      "model": false
-    },
     "5586946": {
       "name": "Sabulina viscosa",
       "vernacular_en": "Sticky Sandwort",
@@ -108992,13 +106141,6 @@
       "records": 901,
       "model": false
     },
-    "3029627": {
-      "name": "Sanguisorba officinalis",
-      "vernacular_en": "burnet bloodwort",
-      "family": 5015,
-      "records": 144,
-      "model": true
-    },
     "6027128": {
       "name": "Sanicula europaea",
       "vernacular_en": "European sanicle",
@@ -109193,34 +106335,6 @@
       "vernacular_en": "clapper hydroid",
       "family": 8182,
       "records": 7,
-      "model": false
-    },
-    "1029477": {
-      "name": "Sarsicytheridea punctillata",
-      "vernacular_en": null,
-      "family": 9261,
-      "records": 5,
-      "model": false
-    },
-    "8362005": {
-      "name": "Sasa palmata",
-      "vernacular_en": "Broad-leaved Bamboo",
-      "family": 3073,
-      "records": 7,
-      "model": false
-    },
-    "4128359": {
-      "name": "Sasa veitchii",
-      "vernacular_en": "Veitch's Bamboo",
-      "family": 3073,
-      "records": 5,
-      "model": false
-    },
-    "2926885": {
-      "name": "Satureja hortensis",
-      "vernacular_en": "Summer Savory",
-      "family": 2497,
-      "records": 10,
       "model": false
     },
     "1867820": {
@@ -111407,13 +108521,6 @@
       "records": 8,
       "model": false
     },
-    "3000723": {
-      "name": "Sibbaldianthe bifurca",
-      "vernacular_en": "Fork-leaved Cinquefoil",
-      "family": 5015,
-      "records": 5,
-      "model": false
-    },
     "2176684": {
       "name": "Sibianor larae",
       "vernacular_en": null,
@@ -111736,13 +108843,6 @@
       "records": 72,
       "model": false
     },
-    "3145214": {
-      "name": "Silybum marianum",
-      "vernacular_en": "Milk Thistle",
-      "family": 3065,
-      "records": 144,
-      "model": true
-    },
     "2157547": {
       "name": "Simitidion simile",
       "vernacular_en": null,
@@ -111813,13 +108913,6 @@
       "records": 1211,
       "model": false
     },
-    "3115131": {
-      "name": "Sinacalia tangutica",
-      "vernacular_en": "Chinese Ragwort",
-      "family": 3065,
-      "records": 11,
-      "model": false
-    },
     "3047621": {
       "name": "Sinapis alba",
       "vernacular_en": "White Mustard",
@@ -111832,13 +108925,6 @@
       "vernacular_en": "Charlock",
       "family": 3112,
       "records": 2412,
-      "model": false
-    },
-    "7547256": {
-      "name": "Sinelobus vanhaareni",
-      "vernacular_en": null,
-      "family": 4641173,
-      "records": 7,
       "model": false
     },
     "2159393": {
@@ -112343,13 +109429,6 @@
       "vernacular_en": "Sole",
       "family": 8612,
       "records": 107,
-      "model": false
-    },
-    "2984366": {
-      "name": "Soleirolia soleirolii",
-      "vernacular_en": "Mind-your-own-business",
-      "family": 6639,
-      "records": 21,
       "model": false
     },
     "5710187": {
@@ -113346,26 +110425,12 @@
       "records": 194,
       "model": true
     },
-    "3083647": {
-      "name": "Spinacia oleracea",
-      "vernacular_en": "Spinach",
-      "family": 3064,
-      "records": 45,
-      "model": false
-    },
     "2558273": {
       "name": "Spinellus fusiger",
       "vernacular_en": "Bonnet Mould",
       "family": 8277,
       "records": 208,
       "model": false
-    },
-    "3992189": {
-      "name": "Spinulum annotinum",
-      "vernacular_en": "Stiff Clubmoss",
-      "family": 6725,
-      "records": 1925,
-      "model": true
     },
     "6092830": {
       "name": "Spinus spinus",
@@ -113640,13 +110705,6 @@
       "records": 274,
       "model": true
     },
-    "9393876": {
-      "name": "Sporobolus townsendii",
-      "vernacular_en": "Townsend's cordgrass",
-      "family": 3073,
-      "records": 11,
-      "model": false
-    },
     "10855905": {
       "name": "Sporocadus rosarum",
       "vernacular_en": null,
@@ -113820,13 +110878,6 @@
       "vernacular_en": null,
       "family": null,
       "records": 5,
-      "model": false
-    },
-    "3686235": {
-      "name": "Staphylea pinnata",
-      "vernacular_en": "Bladdernut",
-      "family": 6656,
-      "records": 19,
       "model": false
     },
     "4437438": {
@@ -114072,20 +111123,6 @@
       "vernacular_en": "Marsh Stitchwort",
       "family": 2518,
       "records": 12683,
-      "model": false
-    },
-    "4323723": {
-      "name": "Stellicola oreastriphilus",
-      "vernacular_en": null,
-      "family": 9140,
-      "records": 15,
-      "model": false
-    },
-    "4323746": {
-      "name": "Stellicola parvulipes",
-      "vernacular_en": null,
-      "family": 9140,
-      "records": 5,
       "model": false
     },
     "2138457": {
@@ -116195,13 +113232,6 @@
       "records": 713,
       "model": true
     },
-    "2473477": {
-      "name": "Syrmaticus reevesii",
-      "vernacular_en": "Reeves's Pheasant",
-      "family": 9331,
-      "records": 284,
-      "model": false
-    },
     "4388663": {
       "name": "Syromastus rhombeus",
       "vernacular_en": "Rhombic Leatherbug",
@@ -116467,13 +113497,6 @@
       "family": 2994,
       "records": 22,
       "model": true
-    },
-    "3088488": {
-      "name": "Tagetes erecta",
-      "vernacular_en": "Aztec marigold",
-      "family": 3065,
-      "records": 64,
-      "model": false
     },
     "2173545": {
       "name": "Talavera aequipes",
@@ -116958,26 +113981,12 @@
       "records": 8,
       "model": false
     },
-    "2684191": {
-      "name": "Taxodium distichum",
-      "vernacular_en": "Bald Cypress",
-      "family": 8144,
-      "records": 11,
-      "model": false
-    },
     "5284517": {
       "name": "Taxus baccata",
       "vernacular_en": "Common Yew",
       "family": 4863,
       "records": 1211,
       "model": true
-    },
-    "7664179": {
-      "name": "Technomyrmex vitiensis",
-      "vernacular_en": "Ant",
-      "family": 4342,
-      "records": 7,
-      "model": false
     },
     "3054168": {
       "name": "Teesdalia nudicaulis",
@@ -117565,13 +114574,6 @@
       "vernacular_en": null,
       "family": 2151272,
       "records": 17,
-      "model": false
-    },
-    "5554574": {
-      "name": "Tetragonia tetragonoides",
-      "vernacular_en": "New Zealand-spinach",
-      "family": 6752,
-      "records": 6,
       "model": false
     },
     "2518499": {
@@ -118302,13 +115304,6 @@
       "records": 50,
       "model": false
     },
-    "8069977": {
-      "name": "Thermopsis montana",
-      "vernacular_en": "mountain golden-banner",
-      "family": 5386,
-      "records": 5,
-      "model": false
-    },
     "2307911": {
       "name": "Theromyzon tessulatum",
       "vernacular_en": "Duck Leech",
@@ -118421,13 +115416,6 @@
       "records": 9,
       "model": false
     },
-    "2480764": {
-      "name": "Threskiornis aethiopicus",
-      "vernacular_en": "African Sacred Ibis",
-      "family": 5288,
-      "records": 120,
-      "model": false
-    },
     "1532736": {
       "name": "Thricops diaphanus",
       "vernacular_en": null,
@@ -118483,20 +115471,6 @@
       "family": 4659,
       "records": 928,
       "model": true
-    },
-    "2684178": {
-      "name": "Thuja occidentalis",
-      "vernacular_en": "arborvitae",
-      "family": 8144,
-      "records": 129,
-      "model": false
-    },
-    "2684171": {
-      "name": "Thuja plicata",
-      "vernacular_en": "Western Red-cedar",
-      "family": 8144,
-      "records": 154,
-      "model": false
     },
     "7874258": {
       "name": "Thumatha senex",
@@ -119156,13 +116130,6 @@
       "records": 148,
       "model": false
     },
-    "2115556": {
-      "name": "Tortanus discaudatus",
-      "vernacular_en": null,
-      "family": 9057,
-      "records": 5,
-      "model": false
-    },
     "2671336": {
       "name": "Tortella flavovirens",
       "vernacular_en": "Arisaig Crisp-moss",
@@ -119282,13 +116249,6 @@
       "records": 24,
       "model": true
     },
-    "2443002": {
-      "name": "Trachemys scripta",
-      "vernacular_en": "Pond Slider",
-      "family": 5465,
-      "records": 331,
-      "model": true
-    },
     "2386475": {
       "name": "Trachinus draco",
       "vernacular_en": "Greater Weever",
@@ -119350,13 +116310,6 @@
       "vernacular_en": "Yellow-legged Zipper Spider",
       "family": 7370,
       "records": 45,
-      "model": false
-    },
-    "2765272": {
-      "name": "Tradescantia virginiana",
-      "vernacular_en": "Spiderwort",
-      "family": 2763195,
-      "records": 61,
       "model": false
     },
     "6443709": {
@@ -120675,13 +117628,6 @@
       "records": 11,
       "model": false
     },
-    "5360475": {
-      "name": "Trigonella foenum-graecum",
-      "vernacular_en": "Fenugreek",
-      "family": 5386,
-      "records": 15,
-      "model": false
-    },
     "4514156": {
       "name": "Trigonometopus frontalis",
       "vernacular_en": null,
@@ -120927,13 +117873,6 @@
       "records": 225,
       "model": false
     },
-    "7795888": {
-      "name": "Triticum aestivum",
-      "vernacular_en": "Common wheat",
-      "family": 3073,
-      "records": 2488,
-      "model": true
-    },
     "5748555": {
       "name": "Tritoma bipustulata",
       "vernacular_en": null,
@@ -121109,20 +118048,6 @@
       "records": 9,
       "model": false
     },
-    "5387328": {
-      "name": "Trommsdorffia maculata",
-      "vernacular_en": null,
-      "family": 3065,
-      "records": 1637,
-      "model": false
-    },
-    "2889934": {
-      "name": "Tropaeolum majus",
-      "vernacular_en": "Nasturtium",
-      "family": 6696,
-      "records": 229,
-      "model": true
-    },
     "1542175": {
       "name": "Tropidia scita",
       "vernacular_en": "Tooth-thighed Hoverfly",
@@ -121226,13 +118151,6 @@
       "vernacular_en": "Club Horned Wood Borer Wasp",
       "family": 7906,
       "records": 13,
-      "model": false
-    },
-    "2687210": {
-      "name": "Tsuga heterophylla",
-      "vernacular_en": "Western Hemlock",
-      "family": 3925,
-      "records": 187,
       "model": false
     },
     "5240910": {
@@ -121591,13 +118509,6 @@
       "family": 5290,
       "records": 106436,
       "model": true
-    },
-    "3034778": {
-      "name": "Turgenia latifolia",
-      "vernacular_en": "Greater Bur-parsley",
-      "family": 6720,
-      "records": 7,
-      "model": false
     },
     "10898749": {
       "name": "Turritellinella tricarinata",
@@ -122670,13 +119581,6 @@
       "records": 158,
       "model": false
     },
-    "5371716": {
-      "name": "Vancouveria hexandra",
-      "vernacular_en": "northern inside-out flower",
-      "family": 6673,
-      "records": 5,
-      "model": false
-    },
     "2549204": {
       "name": "Vanderbylia fraxinea",
       "vernacular_en": null,
@@ -122850,13 +119754,6 @@
       "vernacular_en": null,
       "family": 10856974,
       "records": 18,
-      "model": false
-    },
-    "4372673": {
-      "name": "Venus casina",
-      "vernacular_en": null,
-      "family": 3445,
-      "records": 16,
       "model": false
     },
     "5147827": {
@@ -123095,13 +119992,6 @@
       "vernacular_en": "Spring Speedwell",
       "family": 2420,
       "records": 188,
-      "model": false
-    },
-    "3172206": {
-      "name": "Veronicastrum virginicum",
-      "vernacular_en": "Culver's root",
-      "family": 2420,
-      "records": 6,
       "model": false
     },
     "5259057": {
@@ -123678,13 +120568,6 @@
       "records": 974,
       "model": true
     },
-    "5372392": {
-      "name": "Vitis vinifera",
-      "vernacular_en": "Grape-vine",
-      "family": 6672,
-      "records": 45,
-      "model": false
-    },
     "4562692": {
       "name": "Vitrea crystallina",
       "vernacular_en": "Crystal Snail",
@@ -124028,13 +120911,6 @@
       "records": 1583,
       "model": true
     },
-    "2888730": {
-      "name": "Weigela florida",
-      "vernacular_en": "Weigelia",
-      "family": 6710,
-      "records": 17,
-      "model": false
-    },
     "5280861": {
       "name": "Weissia brachycarpa",
       "vernacular_en": "Small-mouthed Beardless-moss",
@@ -124112,13 +120988,6 @@
       "records": 99,
       "model": false
     },
-    "5330085": {
-      "name": "Wolffia columbiana",
-      "vernacular_en": "Columbia watermeal",
-      "family": 6979,
-      "records": 6,
-      "model": false
-    },
     "1431624": {
       "name": "Wormaldia occipitalis",
       "vernacular_en": null,
@@ -124167,20 +121036,6 @@
       "family": 7015,
       "records": 1755,
       "model": true
-    },
-    "3089154": {
-      "name": "Xanthium strumarium",
-      "vernacular_en": "California-bur",
-      "family": 3065,
-      "records": 18,
-      "model": false
-    },
-    "2683894": {
-      "name": "Xanthocyparis nootkatensis",
-      "vernacular_en": "Nootka Cypress",
-      "family": 8144,
-      "records": 5,
-      "model": false
     },
     "10259316": {
       "name": "Xantholinus linearis",
@@ -125148,13 +122003,6 @@
       "records": 5,
       "model": false
     },
-    "5290052": {
-      "name": "Zea mays",
-      "vernacular_en": "Maize",
-      "family": 3073,
-      "records": 476,
-      "model": false
-    },
     "1743710": {
       "name": "Zeiraphera isertana",
       "vernacular_en": "Cock's-head Bell",
@@ -125266,13 +122114,6 @@
       "family": 7359,
       "records": 11,
       "model": false
-    },
-    "3111754": {
-      "name": "Zinnia elegans",
-      "vernacular_en": "Youth-and-age",
-      "family": 3065,
-      "records": 44,
-      "model": true
     },
     "2288788": {
       "name": "Zirfaea crispata",

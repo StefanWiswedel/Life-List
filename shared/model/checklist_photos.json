@@ -70,16 +70,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 1010587,
-    "inat_taxon_id": 1190917,
-    "photo_id": 111875016,
-    "extension": "jpg",
-    "licence": "CC BY",
-    "credit": "Bernard Picton",
-    "vernacular_en": null,
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 1014383,
     "inat_taxon_id": 133831,
     "photo_id": 246883108,
@@ -1290,16 +1280,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 1077130,
-    "inat_taxon_id": 68328,
-    "photo_id": 409992902,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "Ryszard",
-    "vernacular_en": "Mediterranean Spotted Chafer",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 1079588,
     "inat_taxon_id": 108020,
     "photo_id": 573852806,
@@ -2156,16 +2136,6 @@
     "extension": "jpg",
     "licence": "CC BY",
     "credit": "Stanislav Snäll",
-    "vernacular_en": null,
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 1220073,
-    "inat_taxon_id": 1579401,
-    "photo_id": 1723259,
-    "extension": "png",
-    "licence": "CC BY-SA",
-    "credit": "Udo Schmidt",
     "vernacular_en": null,
     "source": "inaturalist-curated"
   },
@@ -3327,16 +3297,6 @@
     "licence": "CC0",
     "credit": "Philipp Hoenle",
     "vernacular_en": "Scabrous Ant",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 1320787,
-    "inat_taxon_id": 69494,
-    "photo_id": 265175571,
-    "extension": "jpeg",
-    "licence": "CC BY",
-    "credit": "Jonghyun Park",
-    "vernacular_en": "Little Yellow Ant",
     "source": "inaturalist-curated"
   },
   {
@@ -9157,16 +9117,6 @@
     "licence": "CC BY-NC-SA",
     "credit": "Marcello Consolo",
     "vernacular_en": "Eyed Hawkweed Fly",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 1626096,
-    "inat_taxon_id": 199404,
-    "photo_id": 112208840,
-    "extension": "jpg",
-    "licence": "CC0",
-    "credit": "Jesse Rorabaugh",
-    "vernacular_en": "Mediterranean Fruit Fly",
     "source": "inaturalist-curated"
   },
   {
@@ -17280,26 +17230,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 2114824,
-    "inat_taxon_id": 1488690,
-    "photo_id": 244014325,
-    "extension": "png",
-    "licence": "CC BY",
-    "credit": "Leïla Brunner",
-    "vernacular_en": null,
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 2115556,
-    "inat_taxon_id": 567473,
-    "photo_id": 128947508,
-    "extension": "jpg",
-    "licence": "CC BY-NC-SA",
-    "credit": "smithsonian_marinegeo",
-    "vernacular_en": null,
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 2115659,
     "inat_taxon_id": 358184,
     "photo_id": 241199765,
@@ -20290,16 +20220,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 2176858,
-    "inat_taxon_id": 146721,
-    "photo_id": 429223,
-    "extension": "jpg",
-    "licence": "CC BY-NC-SA",
-    "credit": "Valter Jacinto | Portugal",
-    "vernacular_en": "Red-bellied Jumping Spider",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 2178745,
     "inat_taxon_id": 606105,
     "photo_id": 31040144,
@@ -21097,16 +21017,6 @@
     "licence": "CC BY-NC-SA",
     "credit": "National Museums Northern Ireland and its licensors",
     "vernacular_en": "Rose Sun Star",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 2273656,
-    "inat_taxon_id": 136699,
-    "photo_id": 18817932,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "David R",
-    "vernacular_en": "Luzon Sea Star",
     "source": "inaturalist-curated"
   },
   {
@@ -22720,16 +22630,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 2374191,
-    "inat_taxon_id": 56943,
-    "photo_id": 31259311,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "Clinton Duffy",
-    "vernacular_en": "Skipjack Tuna",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 2379289,
     "inat_taxon_id": 342287,
     "photo_id": 270828602,
@@ -22877,26 +22777,6 @@
     "licence": "CC BY-NC",
     "credit": "Rinaldi Gotama",
     "vernacular_en": "Broadbill Swordfish",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 2397938,
-    "inat_taxon_id": 187572,
-    "photo_id": 33570742,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "Fernando Olea",
-    "vernacular_en": "Striped Marlin",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 2401692,
-    "inat_taxon_id": 93644,
-    "photo_id": 541148969,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "Nick Ramsey",
-    "vernacular_en": "Longnose Lancetfish",
     "source": "inaturalist-curated"
   },
   {
@@ -23210,26 +23090,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 2418052,
-    "inat_taxon_id": 96760,
-    "photo_id": 247871325,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "Luis P. B.",
-    "vernacular_en": "Oceanic Whitetip Shark",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 2418095,
-    "inat_taxon_id": 96754,
-    "photo_id": 13304894,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "Amanda Flannery",
-    "vernacular_en": "Silky Shark",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 2418315,
     "inat_taxon_id": 106253,
     "photo_id": 9364596,
@@ -23247,16 +23107,6 @@
     "licence": "CC BY-NC",
     "credit": "Luis P. B.",
     "vernacular_en": "Small-spotted Catshark",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 2419426,
-    "inat_taxon_id": 111212,
-    "photo_id": 89516509,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "Albert Kang",
-    "vernacular_en": "Pelagic Stingray",
     "source": "inaturalist-curated"
   },
   {
@@ -23410,26 +23260,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 2435035,
-    "inat_taxon_id": 118552,
-    "photo_id": 129658776,
-    "extension": "jpg",
-    "licence": "CC BY-SA",
-    "credit": "Von.grzanka",
-    "vernacular_en": "Domestic Cat",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 2436436,
-    "inat_taxon_id": 43584,
-    "photo_id": 80550183,
-    "extension": "jpg",
-    "licence": "CC0",
-    "credit": "Abhas Misraraj",
-    "vernacular_en": "Human",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 2437761,
     "inat_taxon_id": 45568,
     "photo_id": 2348976,
@@ -23560,96 +23390,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 2440886,
-    "inat_taxon_id": 209233,
-    "photo_id": 23672580,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "copper",
-    "vernacular_en": "Domestic Horse",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 2440946,
-    "inat_taxon_id": 42187,
-    "photo_id": 130968788,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "instead",
-    "vernacular_en": "Reeves's Muntjac",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 2441022,
-    "inat_taxon_id": 74113,
-    "photo_id": 408007934,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "jwillardz",
-    "vernacular_en": "Domestic Cattle",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 2441056,
-    "inat_taxon_id": 123070,
-    "photo_id": 6035700,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "Jakob Fahr",
-    "vernacular_en": "Domestic Goat",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 2441110,
-    "inat_taxon_id": 121578,
-    "photo_id": 632127459,
-    "extension": "jpg",
-    "licence": "CC BY-SA",
-    "credit": "Christopher Stephens",
-    "vernacular_en": "Domestic Sheep",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 2441122,
-    "inat_taxon_id": 42392,
-    "photo_id": 124168515,
-    "extension": "jpeg",
-    "licence": "CC BY",
-    "credit": "Fábio Olmos",
-    "vernacular_en": "Argali",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 2443597,
-    "inat_taxon_id": 39913,
-    "photo_id": 208919672,
-    "extension": "jpg",
-    "licence": "CC BY-NC-SA",
-    "credit": "Kim",
-    "vernacular_en": "Chinese Pond Turtle",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 2473341,
-    "inat_taxon_id": 1428,
-    "photo_id": 199644869,
-    "extension": "jpg",
-    "licence": "CC BY-NC-SA",
-    "credit": "Tarique Sani",
-    "vernacular_en": "Helmeted Guineafowl",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 2473477,
-    "inat_taxon_id": 1154,
-    "photo_id": 356970587,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "Hedwig.cz",
-    "vernacular_en": "Reeves's Pheasant",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 2473682,
     "inat_taxon_id": 1289697,
     "photo_id": 61329120,
@@ -23657,26 +23397,6 @@
     "licence": "CC BY-NC",
     "credit": "Tatyana Zarubo",
     "vernacular_en": "Black Grouse",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 2474029,
-    "inat_taxon_id": 846,
-    "photo_id": 225378787,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "rickhowie",
-    "vernacular_en": "Chukar",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 2474051,
-    "inat_taxon_id": 867,
-    "photo_id": 200447159,
-    "extension": "jpeg",
-    "licence": "CC BY",
-    "credit": "Jerry Lanfear",
-    "vernacular_en": "Red-legged Partridge",
     "source": "inaturalist-curated"
   },
   {
@@ -23747,46 +23467,6 @@
     "licence": "CC BY-NC",
     "credit": "Leonid",
     "vernacular_en": "Eurasian Three-toed Woodpecker",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 2479226,
-    "inat_taxon_id": 18911,
-    "photo_id": 2035460,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "Mousam Ray",
-    "vernacular_en": "Rose-ringed Parakeet",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 2479407,
-    "inat_taxon_id": 19349,
-    "photo_id": 101224790,
-    "extension": "jpg",
-    "licence": "CC BY-SA",
-    "credit": "Juan Emilio",
-    "vernacular_en": "Monk Parakeet",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 2479798,
-    "inat_taxon_id": 19339,
-    "photo_id": 66388650,
-    "extension": "jpg",
-    "licence": "CC BY-NC-SA",
-    "credit": "Joseph j7uy5",
-    "vernacular_en": "Budgerigar",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 2479977,
-    "inat_taxon_id": 116993,
-    "photo_id": 260517157,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "Steve Murray",
-    "vernacular_en": "Cockatiel",
     "source": "inaturalist-curated"
   },
   {
@@ -23910,16 +23590,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 2480649,
-    "inat_taxon_id": 5379,
-    "photo_id": 277408147,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "petermcintyre",
-    "vernacular_en": "Bearded Vulture",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 2480666,
     "inat_taxon_id": 5242,
     "photo_id": 40950147,
@@ -23977,16 +23647,6 @@
     "licence": "CC BY-NC",
     "credit": "Yuwaraj Gurjar",
     "vernacular_en": "Oriental Pratincole",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 2480764,
-    "inat_taxon_id": 3739,
-    "photo_id": 385585788,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "CI Jay",
-    "vernacular_en": "African Sacred Ibis",
     "source": "inaturalist-curated"
   },
   {
@@ -24067,26 +23727,6 @@
     "licence": "CC BY-NC",
     "credit": "Rino Di Noto",
     "vernacular_en": "Saker Falcon",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 2481104,
-    "inat_taxon_id": 4259,
-    "photo_id": 89723844,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "Uday Agashe",
-    "vernacular_en": "Lesser Flamingo",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 2481110,
-    "inat_taxon_id": 4258,
-    "photo_id": 134157343,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "Sebastián Lescano",
-    "vernacular_en": "Chilean Flamingo",
     "source": "inaturalist-curated"
   },
   {
@@ -24577,16 +24217,6 @@
     "licence": "CC BY",
     "credit": "egorbirder",
     "vernacular_en": "Citrine Wagtail",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 2490327,
-    "inat_taxon_id": 10227,
-    "photo_id": 168808461,
-    "extension": "jpeg",
-    "licence": "CC BY-SA",
-    "credit": "Gareth Rasberry",
-    "vernacular_en": "Indigo Bunting",
     "source": "inaturalist-curated"
   },
   {
@@ -25267,26 +24897,6 @@
     "licence": "CC BY-NC",
     "credit": "Kent Ross",
     "vernacular_en": "Wood Duck",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 2498390,
-    "inat_taxon_id": 7139,
-    "photo_id": 174739586,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "jjulio2000",
-    "vernacular_en": "Marbled Duck",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 2498408,
-    "inat_taxon_id": 7109,
-    "photo_id": 604065377,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "kitsun3",
-    "vernacular_en": "Hooded Merganser",
     "source": "inaturalist-curated"
   },
   {
@@ -40900,16 +40510,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 2650107,
-    "inat_taxon_id": 58754,
-    "photo_id": 107323237,
-    "extension": "jpg",
-    "licence": "CC BY",
-    "credit": "Kevin Thiele",
-    "vernacular_en": "water fern",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 2650180,
     "inat_taxon_id": 75852,
     "photo_id": 155908,
@@ -40937,16 +40537,6 @@
     "licence": "CC BY-NC",
     "credit": "Muriel Bendel",
     "vernacular_en": "brittle bladderfern",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 2650827,
-    "inat_taxon_id": 161570,
-    "photo_id": 27653653,
-    "extension": "jpeg",
-    "licence": "CC BY",
-    "credit": "Yoshihiro Tokue",
-    "vernacular_en": "Fortune's Holly-fern",
     "source": "inaturalist-curated"
   },
   {
@@ -42210,46 +41800,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 2683866,
-    "inat_taxon_id": 76237,
-    "photo_id": 65390504,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "Elio Giacone",
-    "vernacular_en": "Lawson's cypress",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 2684171,
-    "inat_taxon_id": 48252,
-    "photo_id": 7846522,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "Nicholas Sly",
-    "vernacular_en": "western redcedar",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 2684178,
-    "inat_taxon_id": 54037,
-    "photo_id": 4684247,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "Donna Pomeroy",
-    "vernacular_en": "northern whitecedar",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 2684191,
-    "inat_taxon_id": 49666,
-    "photo_id": 2795370,
-    "extension": "jpg",
-    "licence": "CC BY",
-    "credit": "Annika Lindqvist",
-    "vernacular_en": "baldcypress",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 2685308,
     "inat_taxon_id": 75242,
     "photo_id": 50497092,
@@ -42307,26 +41857,6 @@
     "licence": "CC BY",
     "credit": "Marco Mussita",
     "vernacular_en": "Japanese larch",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 2687210,
-    "inat_taxon_id": 48254,
-    "photo_id": 45391159,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "Jason Headley",
-    "vernacular_en": "western hemlock",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 2687885,
-    "inat_taxon_id": 64350,
-    "photo_id": 397250612,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "鐦鍆錒/锎钔锕（Man Hoimoon）",
-    "vernacular_en": "ginkgo",
     "source": "inaturalist-curated"
   },
   {
@@ -43200,26 +42730,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 2705090,
-    "inat_taxon_id": 78340,
-    "photo_id": 436906957,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "nastusha",
-    "vernacular_en": "Proso Millet",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 2705162,
-    "inat_taxon_id": 78337,
-    "photo_id": 297637091,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "Calvin Siméon",
-    "vernacular_en": "witch grass",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 2705181,
     "inat_taxon_id": 58389,
     "photo_id": 55135120,
@@ -43237,16 +42747,6 @@
     "licence": "CC BY",
     "credit": "Harry Rose",
     "vernacular_en": "Johnson grass",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 2705228,
-    "inat_taxon_id": 288259,
-    "photo_id": 169223977,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "Юрій Бенгус",
-    "vernacular_en": "Fern-grass",
     "source": "inaturalist-curated"
   },
   {
@@ -43367,16 +42867,6 @@
     "licence": "CC BY-NC-SA",
     "credit": "Wildlife in a  Dorset garden",
     "vernacular_en": "Smaller Cat's-tail",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 2706026,
-    "inat_taxon_id": 165474,
-    "photo_id": 113871134,
-    "extension": "jpeg",
-    "licence": "CC0",
-    "credit": "葉子",
-    "vernacular_en": "Chinese silver grass",
     "source": "inaturalist-curated"
   },
   {
@@ -44100,26 +43590,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 2765272,
-    "inat_taxon_id": 130991,
-    "photo_id": 198713059,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "cricketgreen",
-    "vernacular_en": "Virginia spiderwort",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 2766030,
-    "inat_taxon_id": 52599,
-    "photo_id": 313455342,
-    "extension": "jpeg",
-    "licence": "CC BY",
-    "credit": "Michael J. Papay",
-    "vernacular_en": "pickerelweed",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 2767229,
     "inat_taxon_id": 371533,
     "photo_id": 1134205,
@@ -44197,16 +43667,6 @@
     "licence": "CC BY-NC",
     "credit": "Norbert Sauberer",
     "vernacular_en": "Branched St Bernard's Lily",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 2781103,
-    "inat_taxon_id": 163663,
-    "photo_id": 9011873,
-    "extension": "jpeg",
-    "licence": "CC BY-NC-SA",
-    "credit": "Karl Bard",
-    "vernacular_en": "yellow daylily",
     "source": "inaturalist-curated"
   },
   {
@@ -44430,16 +43890,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 2859597,
-    "inat_taxon_id": 77493,
-    "photo_id": 311648464,
-    "extension": "jpeg",
-    "licence": "CC BY",
-    "credit": "Felipe Horton",
-    "vernacular_en": "Spring starflower",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 2863938,
     "inat_taxon_id": 1613714,
     "photo_id": 475247599,
@@ -44550,16 +44000,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 2873991,
-    "inat_taxon_id": 62771,
-    "photo_id": 398842486,
-    "extension": "jpg",
-    "licence": "CC BY-SA",
-    "credit": "Gilles San Martin",
-    "vernacular_en": "Birthwort",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 2874497,
     "inat_taxon_id": 159507,
     "photo_id": 44554165,
@@ -44567,56 +44007,6 @@
     "licence": "CC BY-NC",
     "credit": "Eduard Garin",
     "vernacular_en": "Eastern White-bryony",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 2874508,
-    "inat_taxon_id": 76541,
-    "photo_id": 101476279,
-    "extension": "png",
-    "licence": "CC BY-NC",
-    "credit": "psullivan22",
-    "vernacular_en": "American pumpkin",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 2874515,
-    "inat_taxon_id": 122866,
-    "photo_id": 99968013,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "Jake David MacLennan",
-    "vernacular_en": "winter squash",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 2874569,
-    "inat_taxon_id": 54919,
-    "photo_id": 346972380,
-    "extension": "jpg",
-    "licence": "CC BY-SA",
-    "credit": "Bff",
-    "vernacular_en": "Cucumber",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 2874570,
-    "inat_taxon_id": 76538,
-    "photo_id": 232583670,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "PRSonnen",
-    "vernacular_en": "Muskmelon",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 2874621,
-    "inat_taxon_id": 70054,
-    "photo_id": 490493,
-    "extension": "jpg",
-    "licence": "CC BY-NC-SA",
-    "credit": "Ahmad Fuad Morad",
-    "vernacular_en": "Watermelon",
     "source": "inaturalist-curated"
   },
   {
@@ -44647,26 +44037,6 @@
     "licence": "CC BY-SA",
     "credit": "Grzegorz Grzejszczak",
     "vernacular_en": "Soft Hornwort",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 2882443,
-    "inat_taxon_id": 75921,
-    "photo_id": 275479080,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "Jan Ho",
-    "vernacular_en": "Carolina Fanwort",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 2882758,
-    "inat_taxon_id": 48441,
-    "photo_id": 271254015,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "maxillarynode",
-    "vernacular_en": "salal",
     "source": "inaturalist-curated"
   },
   {
@@ -44790,16 +44160,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 2888730,
-    "inat_taxon_id": 170303,
-    "photo_id": 119710285,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "José Ferreira",
-    "vernacular_en": "Old Fashioned Weigela",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 2888789,
     "inat_taxon_id": 84338,
     "photo_id": 526023608,
@@ -44807,16 +44167,6 @@
     "licence": "CC BY-NC",
     "credit": "Вадим",
     "vernacular_en": "Narrow-fruited Cornsalad",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 2888797,
-    "inat_taxon_id": 160302,
-    "photo_id": 991404,
-    "extension": "jpg",
-    "licence": "CC BY-NC-SA",
-    "credit": "Sunchild57 Photography",
-    "vernacular_en": "Giant Scabious",
     "source": "inaturalist-curated"
   },
   {
@@ -44837,16 +44187,6 @@
     "licence": "CC BY-NC",
     "credit": "Lily Rice",
     "vernacular_en": "cutleaf teasel",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 2888859,
-    "inat_taxon_id": 78126,
-    "photo_id": 1179353,
-    "extension": "jpg",
-    "licence": "CC BY",
-    "credit": "Jon Sullivan",
-    "vernacular_en": "Scrambling pohuehue",
     "source": "inaturalist-curated"
   },
   {
@@ -44907,16 +44247,6 @@
     "licence": "CC BY-NC",
     "credit": "trowbric",
     "vernacular_en": "alpine bistort",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 2889378,
-    "inat_taxon_id": 162931,
-    "photo_id": 300336289,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "Саранчин Евгений",
-    "vernacular_en": "Tartarian Buckwheat",
     "source": "inaturalist-curated"
   },
   {
@@ -45030,16 +44360,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 2916975,
-    "inat_taxon_id": 361270,
-    "photo_id": 112424607,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "elenasuslova",
-    "vernacular_en": "Pink Woodruff",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 2925527,
     "inat_taxon_id": 60251,
     "photo_id": 49720020,
@@ -45100,16 +44420,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 2926406,
-    "inat_taxon_id": 158076,
-    "photo_id": 417901162,
-    "extension": "jpeg",
-    "licence": "CC BY",
-    "credit": "Alan Prather",
-    "vernacular_en": "anise hyssop",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 2926615,
     "inat_taxon_id": 165925,
     "photo_id": 63737491,
@@ -45127,16 +44437,6 @@
     "licence": "CC BY-NC",
     "credit": "Kim Falck",
     "vernacular_en": "Northern Dead-nettle",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 2926885,
-    "inat_taxon_id": 58460,
-    "photo_id": 11345886,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "Thomas Bütikofer",
-    "vernacular_en": "Summer Savory",
     "source": "inaturalist-curated"
   },
   {
@@ -45270,56 +44570,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 2927727,
-    "inat_taxon_id": 68884,
-    "photo_id": 36087958,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "biscuitsadventures",
-    "vernacular_en": "moss phlox",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 2928026,
-    "inat_taxon_id": 50648,
-    "photo_id": 486978334,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "Nathan J Taylor",
-    "vernacular_en": "Menzies' baby blue eyes",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 2928034,
-    "inat_taxon_id": 59936,
-    "photo_id": 123750427,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "Laura L",
-    "vernacular_en": "fivespot",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 2928238,
-    "inat_taxon_id": 50171,
-    "photo_id": 14617260,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "Chris Rohrer",
-    "vernacular_en": "desert bluebells",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 2928576,
-    "inat_taxon_id": 52344,
-    "photo_id": 509186871,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "jaguarundi_2025",
-    "vernacular_en": "common morning-glory",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 2928755,
     "inat_taxon_id": 161639,
     "photo_id": 325514308,
@@ -45327,36 +44577,6 @@
     "licence": "CC BY-NC",
     "credit": "Věra Kafková",
     "vernacular_en": "downy thorn-apple",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 2928767,
-    "inat_taxon_id": 78221,
-    "photo_id": 34188,
-    "extension": "jpg",
-    "licence": "CC BY",
-    "credit": "Scott Zona",
-    "vernacular_en": "Woodland Tobacco",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 2928774,
-    "inat_taxon_id": 873768,
-    "photo_id": 29279055,
-    "extension": "jpeg",
-    "licence": "CC0",
-    "credit": "葉子",
-    "vernacular_en": "Cultivated tobacco",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 2928775,
-    "inat_taxon_id": 165707,
-    "photo_id": 71836479,
-    "extension": "jpeg",
-    "licence": "CC BY-NC-SA",
-    "credit": "Ana Mireya Guerrero G.",
-    "vernacular_en": "Aztec Tobacco",
     "source": "inaturalist-curated"
   },
   {
@@ -45397,16 +44617,6 @@
     "licence": "CC BY",
     "credit": "Murray NZ",
     "vernacular_en": "kangaroo-apple",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 2959443,
-    "inat_taxon_id": 54797,
-    "photo_id": 144686942,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "dd_ruff",
-    "vernacular_en": "honey locust",
     "source": "inaturalist-curated"
   },
   {
@@ -45520,56 +44730,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 2984306,
-    "inat_taxon_id": 77310,
-    "photo_id": 14549029,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "Oliver Barker",
-    "vernacular_en": "Chilean rhubarb",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 2984366,
-    "inat_taxon_id": 79147,
-    "photo_id": 327854855,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "Neil Shepherd",
-    "vernacular_en": "Baby's tears",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 2984580,
-    "inat_taxon_id": 58205,
-    "photo_id": 52688312,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "hilliri",
-    "vernacular_en": "Osage-orange",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 2984671,
-    "inat_taxon_id": 133397,
-    "photo_id": 349731317,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "Elaina Pecher",
-    "vernacular_en": "common box",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 2984676,
-    "inat_taxon_id": 142928,
-    "photo_id": 111375239,
-    "extension": "jpeg",
-    "licence": "CC BY-SA",
-    "credit": "Algirdas",
-    "vernacular_en": "Japanese pachysandra",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 2985863,
     "inat_taxon_id": 163908,
     "photo_id": 97153450,
@@ -45590,26 +44750,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 2985963,
-    "inat_taxon_id": 337821,
-    "photo_id": 68419212,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "tbcl",
-    "vernacular_en": null,
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 2985995,
-    "inat_taxon_id": 133390,
-    "photo_id": 56235268,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "空猫",
-    "vernacular_en": "Panicle Hydrangea",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 2986111,
     "inat_taxon_id": 55544,
     "photo_id": 497524076,
@@ -45627,26 +44767,6 @@
     "licence": "CC BY-NC",
     "credit": "Саранчин Евгений",
     "vernacular_en": "Downy Currant",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 2987780,
-    "inat_taxon_id": 53414,
-    "photo_id": 297815731,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "Mark Gorman",
-    "vernacular_en": "Ocean spray",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 2988172,
-    "inat_taxon_id": 78790,
-    "photo_id": 180145215,
-    "extension": "jpeg",
-    "licence": "CC BY",
-    "credit": "Leon Xu",
-    "vernacular_en": "Himalayan firethorn",
     "source": "inaturalist-curated"
   },
   {
@@ -45757,26 +44877,6 @@
     "licence": "CC BY-NC",
     "credit": "David Earl",
     "vernacular_en": "Lindeberg's Bramble",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 3000610,
-    "inat_taxon_id": 61236,
-    "photo_id": 45557810,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "Denys Davydov",
-    "vernacular_en": "Japanese Quince",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 3000679,
-    "inat_taxon_id": 160369,
-    "photo_id": 1089240,
-    "extension": "jpg",
-    "licence": "CC BY-NC-SA",
-    "credit": "rachelgreenbelt",
-    "vernacular_en": "Chinese quince",
     "source": "inaturalist-curated"
   },
   {
@@ -46140,36 +45240,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 3032442,
-    "inat_taxon_id": 127609,
-    "photo_id": 261823485,
-    "extension": "jpg",
-    "licence": "CC BY-SA",
-    "credit": "Douglas Goldman",
-    "vernacular_en": "jetbead",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 3032611,
-    "inat_taxon_id": 67696,
-    "photo_id": 323382416,
-    "extension": "jpeg",
-    "licence": "CC BY",
-    "credit": "Matt Berger",
-    "vernacular_en": "Umbrella Plant",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 3032653,
-    "inat_taxon_id": 48384,
-    "photo_id": 24971,
-    "extension": "jpg",
-    "licence": "CC BY-NC-SA",
-    "credit": "Jerry Oldenettel",
-    "vernacular_en": "coralbells",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 3032698,
     "inat_taxon_id": 51655,
     "photo_id": 143999155,
@@ -46310,26 +45380,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 3033833,
-    "inat_taxon_id": 401314,
-    "photo_id": 41131894,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "mario bianco prevot",
-    "vernacular_en": "doubtful knight's-spur",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 3033836,
-    "inat_taxon_id": 1445438,
-    "photo_id": 276209,
-    "extension": "jpg",
-    "licence": "CC BY",
-    "credit": "Radio Tonreg",
-    "vernacular_en": "Forking Larkspur",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 3033894,
     "inat_taxon_id": 75758,
     "photo_id": 449374,
@@ -46337,26 +45387,6 @@
     "licence": "CC BY-NC",
     "credit": "Werner Witte",
     "vernacular_en": "European barberry",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 3033965,
-    "inat_taxon_id": 126249,
-    "photo_id": 36881287,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "plantyplant",
-    "vernacular_en": "Five-leaf akebia",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 3034182,
-    "inat_taxon_id": 75417,
-    "photo_id": 122426114,
-    "extension": "jpeg",
-    "licence": "CC BY",
-    "credit": "Eleftherios Katsillis",
-    "vernacular_en": "Bullwort",
     "source": "inaturalist-curated"
   },
   {
@@ -46380,16 +45410,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 3034646,
-    "inat_taxon_id": 75445,
-    "photo_id": 400755541,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "Олександр Гриб",
-    "vernacular_en": "Dill",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 3034653,
     "inat_taxon_id": 54898,
     "photo_id": 204398609,
@@ -46407,16 +45427,6 @@
     "licence": "CC BY-NC",
     "credit": "Регина",
     "vernacular_en": "Caraway",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 3034778,
-    "inat_taxon_id": 170053,
-    "photo_id": 154118558,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "François-Xavier Taxil",
-    "vernacular_en": "Greater Bur-parsley",
     "source": "inaturalist-curated"
   },
   {
@@ -46457,56 +45467,6 @@
     "licence": "CC BY-NC",
     "credit": "krs10ellington",
     "vernacular_en": "Japanese angelica tree",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 3039194,
-    "inat_taxon_id": 50278,
-    "photo_id": 428768,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "Suzanne Cadwell",
-    "vernacular_en": "Virginia creeper",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 3039203,
-    "inat_taxon_id": 181927,
-    "photo_id": 44974996,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "Ken Potter",
-    "vernacular_en": "thicket creeper",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 3039209,
-    "inat_taxon_id": 166162,
-    "photo_id": 27506811,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "Susan J. Hewitt",
-    "vernacular_en": "Japanese creeper",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 3039267,
-    "inat_taxon_id": 64697,
-    "photo_id": 575611447,
-    "extension": "jpg",
-    "licence": "CC0",
-    "credit": "Shawn",
-    "vernacular_en": "autumn olive",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 3039274,
-    "inat_taxon_id": 162212,
-    "photo_id": 87234217,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "there_be_dragons",
-    "vernacular_en": "Silverberry",
     "source": "inaturalist-curated"
   },
   {
@@ -46660,26 +45620,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 3054117,
-    "inat_taxon_id": 75721,
-    "photo_id": 451995113,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "lindernia-w",
-    "vernacular_en": "purple rock cress",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 3054357,
-    "inat_taxon_id": 54504,
-    "photo_id": 38351837,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "George Afghan",
-    "vernacular_en": "eastern black walnut",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 3062975,
     "inat_taxon_id": 68838,
     "photo_id": 61971667,
@@ -46800,46 +45740,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 3082283,
-    "inat_taxon_id": 78631,
-    "photo_id": 170645472,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "Σάββας Ζαφειρίου (Savvas Zafeiriou)",
-    "vernacular_en": "blue plumbago",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 3083486,
-    "inat_taxon_id": 127857,
-    "photo_id": 113190686,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "Светлана Нестерова",
-    "vernacular_en": "Chinese peony",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 3083488,
-    "inat_taxon_id": 128167,
-    "photo_id": 887114,
-    "extension": "jpg",
-    "licence": "CC BY-NC-SA",
-    "credit": "Xavier Béjar",
-    "vernacular_en": "common peony",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 3083647,
-    "inat_taxon_id": 84092,
-    "photo_id": 11075367,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "Juan Sebastian Zabala Moreno",
-    "vernacular_en": "Spinach",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 3083761,
     "inat_taxon_id": 62340,
     "photo_id": 423447347,
@@ -46900,16 +45800,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 3085257,
-    "inat_taxon_id": 1092837,
-    "photo_id": 80002331,
-    "extension": "jpg",
-    "licence": "CC BY",
-    "credit": "Вячеслав Юсупов",
-    "vernacular_en": "Low Baby's-breath",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 3085349,
     "inat_taxon_id": 77429,
     "photo_id": 84761326,
@@ -46927,16 +45817,6 @@
     "licence": "CC BY-NC",
     "credit": "Wolfgang Bacher",
     "vernacular_en": "Rock Soapwort",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 3085381,
-    "inat_taxon_id": 58876,
-    "photo_id": 130192283,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "Matt Ritter",
-    "vernacular_en": "fourleaf manyseed",
     "source": "inaturalist-curated"
   },
   {
@@ -47020,16 +45900,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 3086240,
-    "inat_taxon_id": 50616,
-    "photo_id": 226608079,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "miguel-de-escamps",
-    "vernacular_en": "marvel of Peru",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 3087403,
     "inat_taxon_id": 158696,
     "photo_id": 164592079,
@@ -47050,26 +45920,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 3088488,
-    "inat_taxon_id": 79312,
-    "photo_id": 446036067,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "sofiadanielaperezsan01",
-    "vernacular_en": "Mexican Marigold",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 3089154,
-    "inat_taxon_id": 57920,
-    "photo_id": 184297299,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "Troos van der Merwe",
-    "vernacular_en": "rough cocklebur",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 3090783,
     "inat_taxon_id": 130694,
     "photo_id": 11267380,
@@ -47077,16 +45927,6 @@
     "licence": "CC BY-NC-SA",
     "credit": "Nicolas Zwahlen",
     "vernacular_en": "purple lettuce",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 3092946,
-    "inat_taxon_id": 159684,
-    "photo_id": 50369077,
-    "extension": "jpg",
-    "licence": "CC BY-SA",
-    "credit": "Emőke Dénes",
-    "vernacular_en": "Chinese Aster",
     "source": "inaturalist-curated"
   },
   {
@@ -47100,16 +45940,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 3097504,
-    "inat_taxon_id": 336362,
-    "photo_id": 1546972,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "Shirley Kerr",
-    "vernacular_en": "Leptinella",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 3102781,
     "inat_taxon_id": 52838,
     "photo_id": 677216115,
@@ -47117,16 +45947,6 @@
     "licence": "CC BY",
     "credit": "arthur_haendler",
     "vernacular_en": "Corn Chamomile",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 3103082,
-    "inat_taxon_id": 77221,
-    "photo_id": 268661419,
-    "extension": "jpeg",
-    "licence": "CC BY-NC-SA",
-    "credit": "Kuan-Chieh (Chuck) Hung",
-    "vernacular_en": "Pennsylvania Cudweed",
     "source": "inaturalist-curated"
   },
   {
@@ -47167,16 +45987,6 @@
     "licence": "CC0",
     "credit": "Stephen James McWilliam",
     "vernacular_en": "Oxford Ragwort",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 3112364,
-    "inat_taxon_id": 57563,
-    "photo_id": 272651068,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "José Antonio Domínguez Llovería",
-    "vernacular_en": "Artichoke Thistle",
     "source": "inaturalist-curated"
   },
   {
@@ -47370,26 +46180,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 3133887,
-    "inat_taxon_id": 129322,
-    "photo_id": 209771732,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "gilbertblythe",
-    "vernacular_en": "Whorled Coreopsis",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 3133950,
-    "inat_taxon_id": 76445,
-    "photo_id": 384754031,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "jcmattson",
-    "vernacular_en": "plains coreopsis",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 3135064,
     "inat_taxon_id": 163787,
     "photo_id": 408113234,
@@ -47427,36 +46217,6 @@
     "licence": "CC BY",
     "credit": "Wolfgang Jauch",
     "vernacular_en": "Rough Hawkbit",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 3137829,
-    "inat_taxon_id": 522029,
-    "photo_id": 117250260,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "Шильников Дмитрий Сергеевич",
-    "vernacular_en": "Persian knapweed",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 3138192,
-    "inat_taxon_id": 85378,
-    "photo_id": 85646014,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "Mark Kluge",
-    "vernacular_en": "sweet Joe-Pye-weed",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 3138327,
-    "inat_taxon_id": 76135,
-    "photo_id": 135048787,
-    "extension": "jpeg",
-    "licence": "CC0",
-    "credit": "葉子",
-    "vernacular_en": "Safflower",
     "source": "inaturalist-curated"
   },
   {
@@ -47530,16 +46290,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 3150935,
-    "inat_taxon_id": 48627,
-    "photo_id": 563980339,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "Isaac Krauss",
-    "vernacular_en": "purple coneflower",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 3151558,
     "inat_taxon_id": 169474,
     "photo_id": 710143886,
@@ -47570,46 +46320,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 3152560,
-    "inat_taxon_id": 77411,
-    "photo_id": 132746536,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "Ramon(Ray) Evans",
-    "vernacular_en": "flower-of-an-hour",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 3152614,
-    "inat_taxon_id": 60214,
-    "photo_id": 222832154,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "Christian Gaisberger",
-    "vernacular_en": "velvetleaf",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 3152861,
-    "inat_taxon_id": 53582,
-    "photo_id": 867903,
-    "extension": "jpg",
-    "licence": "CC BY-NC-SA",
-    "credit": "Kew on Flickr",
-    "vernacular_en": "American tuliptree",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 3164340,
-    "inat_taxon_id": 141623,
-    "photo_id": 31305123,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "safechrislaurie",
-    "vernacular_en": "balloon flower",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 3169120,
     "inat_taxon_id": 117433,
     "photo_id": 70163421,
@@ -47630,16 +46340,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 3169169,
-    "inat_taxon_id": 64540,
-    "photo_id": 59337841,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "Jeff Skrentny",
-    "vernacular_en": "Asian bittersweet",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 3169391,
     "inat_taxon_id": 62441,
     "photo_id": 83474552,
@@ -47650,16 +46350,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 3170247,
-    "inat_taxon_id": 47911,
-    "photo_id": 99923276,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "csozanne",
-    "vernacular_en": "common milkweed",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 3170819,
     "inat_taxon_id": 64332,
     "photo_id": 8816411,
@@ -47667,16 +46357,6 @@
     "licence": "CC BY-NC",
     "credit": "Christian Schwarz",
     "vernacular_en": "Sharp-leaved Fluellen",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 3170823,
-    "inat_taxon_id": 119792,
-    "photo_id": 118596314,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "Alvin Diamond",
-    "vernacular_en": "princess tree",
     "source": "inaturalist-curated"
   },
   {
@@ -47800,16 +46480,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 3172206,
-    "inat_taxon_id": 141767,
-    "photo_id": 2173863,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "Amy Beth Workman",
-    "vernacular_en": "Culver's root",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 3172211,
     "inat_taxon_id": 59016,
     "photo_id": 417604393,
@@ -47817,16 +46487,6 @@
     "licence": "CC BY",
     "credit": "Jamie O'Neill",
     "vernacular_en": "water mudwort",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 3172266,
-    "inat_taxon_id": 164232,
-    "photo_id": 361222488,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "viviancui",
-    "vernacular_en": "Winter jasmine",
     "source": "inaturalist-curated"
   },
   {
@@ -47877,16 +46537,6 @@
     "licence": "CC BY-NC",
     "credit": "Альберт",
     "vernacular_en": "Greater Bladderwort",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 3172549,
-    "inat_taxon_id": 75995,
-    "photo_id": 7300976,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "Gary House",
-    "vernacular_en": "American trumpet vine",
     "source": "inaturalist-curated"
   },
   {
@@ -47987,16 +46637,6 @@
     "licence": "CC BY-NC",
     "credit": "Klaus Dühr",
     "vernacular_en": "Trailing St John's-wort",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 3189694,
-    "inat_taxon_id": 55149,
-    "photo_id": 574625191,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "Chuangzao",
-    "vernacular_en": "Chinese gooseberry",
     "source": "inaturalist-curated"
   },
   {
@@ -50600,16 +49240,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 3686235,
-    "inat_taxon_id": 336396,
-    "photo_id": 511530274,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "brunodovere",
-    "vernacular_en": "European bladdernut",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 3690997,
     "inat_taxon_id": 545305,
     "photo_id": 226429622,
@@ -50660,16 +49290,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 3754587,
-    "inat_taxon_id": 336127,
-    "photo_id": 80872649,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "空猫",
-    "vernacular_en": "Japanese rodgersia",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 3756077,
     "inat_taxon_id": 208769,
     "photo_id": 1363689,
@@ -50690,16 +49310,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 3759655,
-    "inat_taxon_id": 451486,
-    "photo_id": 1678051,
-    "extension": "jpg",
-    "licence": "CC BY-NC-SA",
-    "credit": "Bas Kers (NL)",
-    "vernacular_en": "Bugseed",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 3807718,
     "inat_taxon_id": 1143640,
     "photo_id": 365994283,
@@ -50710,26 +49320,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 3814157,
-    "inat_taxon_id": 204315,
-    "photo_id": 543229205,
-    "extension": "jpg",
-    "licence": "CC BY",
-    "credit": "Joey Bom",
-    "vernacular_en": "Rose silene",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 3853033,
-    "inat_taxon_id": 1367313,
-    "photo_id": 172226102,
-    "extension": "jpg",
-    "licence": "CC BY",
-    "credit": "Timur Kalininsky",
-    "vernacular_en": "Laceshrub",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 3883959,
     "inat_taxon_id": 493015,
     "photo_id": 35464572,
@@ -50737,16 +49327,6 @@
     "licence": "CC BY-NC",
     "credit": "Papageorgiou Nikolaos",
     "vernacular_en": "Annual Clary",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 3886505,
-    "inat_taxon_id": 404821,
-    "photo_id": 220454683,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "kleedham",
-    "vernacular_en": "Turkish Sage",
     "source": "inaturalist-curated"
   },
   {
@@ -50800,16 +49380,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 3935421,
-    "inat_taxon_id": 403718,
-    "photo_id": 134529843,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "Alexander Knarberg",
-    "vernacular_en": "Mallow-wort",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 3940423,
     "inat_taxon_id": 775554,
     "photo_id": 140650371,
@@ -50827,16 +49397,6 @@
     "licence": "CC0",
     "credit": null,
     "vernacular_en": "wintergreen barberry",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 4008563,
-    "inat_taxon_id": 163833,
-    "photo_id": 58930666,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "andrey_belechov",
-    "vernacular_en": "Narrow-leaved Plantain-lily",
     "source": "inaturalist-curated"
   },
   {
@@ -50980,16 +49540,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 4128359,
-    "inat_taxon_id": 424048,
-    "photo_id": 1462415,
-    "extension": "jpg",
-    "licence": "CC BY-SA",
-    "credit": "harum.koh",
-    "vernacular_en": "Veitch's Bamboo",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 4128839,
     "inat_taxon_id": 140060,
     "photo_id": 32082687,
@@ -51037,16 +49587,6 @@
     "licence": "CC BY-NC",
     "credit": "Norbert Sauberer",
     "vernacular_en": "Purple-stem Cat's-tail",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 4142326,
-    "inat_taxon_id": 985294,
-    "photo_id": 175894540,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "Giovanni Perico",
-    "vernacular_en": null,
     "source": "inaturalist-curated"
   },
   {
@@ -51530,16 +50070,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 4324594,
-    "inat_taxon_id": 1196579,
-    "photo_id": 128956276,
-    "extension": "jpg",
-    "licence": "CC BY-NC-SA",
-    "credit": "smithsonian_marinegeo",
-    "vernacular_en": null,
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 4339882,
     "inat_taxon_id": 494401,
     "photo_id": 434240568,
@@ -51547,16 +50077,6 @@
     "licence": "CC BY-NC",
     "credit": "Glenn McGregor",
     "vernacular_en": null,
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 4352332,
-    "inat_taxon_id": 73222,
-    "photo_id": 187242272,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "cog2022",
-    "vernacular_en": "Greater Flamingo",
     "source": "inaturalist-curated"
   },
   {
@@ -51637,26 +50157,6 @@
     "licence": "CC BY-NC",
     "credit": "cccrll",
     "vernacular_en": "poorly-ribbed cockle",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 4372673,
-    "inat_taxon_id": 483065,
-    "photo_id": 348216316,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "lizard--o_o",
-    "vernacular_en": "Pale Venus",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 4372686,
-    "inat_taxon_id": 343269,
-    "photo_id": 186722213,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "Max Willems",
-    "vernacular_en": "Japanese Littleneck",
     "source": "inaturalist-curated"
   },
   {
@@ -54610,32 +53110,12 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 4463408,
-    "inat_taxon_id": 1049361,
-    "photo_id": 499745124,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "Tamási Gergő",
-    "vernacular_en": null,
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 4463413,
     "inat_taxon_id": 547600,
     "photo_id": 154614109,
     "extension": "jpg",
     "licence": "CC BY-NC",
     "credit": "Hjalte Kjærby",
-    "vernacular_en": null,
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 4463417,
-    "inat_taxon_id": 624428,
-    "photo_id": 47268672,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "Mathias Fløe Holm",
     "vernacular_en": null,
     "source": "inaturalist-curated"
   },
@@ -56597,16 +55077,6 @@
     "licence": "CC BY-NC-SA",
     "credit": "Sarah Gregg",
     "vernacular_en": null,
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 4485843,
-    "inat_taxon_id": 81923,
-    "photo_id": 325725647,
-    "extension": "jpg",
-    "licence": "CC BY",
-    "credit": "Kimberly",
-    "vernacular_en": "Brown Marmorated Stink Bug",
     "source": "inaturalist-curated"
   },
   {
@@ -60370,16 +58840,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 4926451,
-    "inat_taxon_id": 77513,
-    "photo_id": 9424329,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "Joe Walewski",
-    "vernacular_en": "spiny-spored quillwort",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 4938434,
     "inat_taxon_id": 953935,
     "photo_id": 709978333,
@@ -63830,16 +62290,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 5182610,
-    "inat_taxon_id": 337982,
-    "photo_id": 6880429,
-    "extension": "jpg",
-    "licence": "CC BY",
-    "credit": "Bernard Picton",
-    "vernacular_en": "Elephant's Hide Sponge",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 5183631,
     "inat_taxon_id": 117715,
     "photo_id": 98525597,
@@ -63857,16 +62307,6 @@
     "licence": "CC BY",
     "credit": "Bernard Picton",
     "vernacular_en": null,
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 5184341,
-    "inat_taxon_id": 481214,
-    "photo_id": 60314909,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "Bernat Garrigós",
-    "vernacular_en": "Daisy Anemone",
     "source": "inaturalist-curated"
   },
   {
@@ -63947,26 +62387,6 @@
     "licence": "CC BY-NC-SA",
     "credit": "Pierre Corbrion",
     "vernacular_en": "garland hydroid",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 5187093,
-    "inat_taxon_id": 57745,
-    "photo_id": 3056400,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "Wendy Feltham",
-    "vernacular_en": "Blue Linckia",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 5187244,
-    "inat_taxon_id": 50406,
-    "photo_id": 38261246,
-    "extension": "jpg",
-    "licence": "CC BY",
-    "credit": "Joi Ito",
-    "vernacular_en": "Pillow Cushion Star",
     "source": "inaturalist-curated"
   },
   {
@@ -64730,16 +63150,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 5216248,
-    "inat_taxon_id": 69677,
-    "photo_id": 70551905,
-    "extension": "jpg",
-    "licence": "CC BY-NC-SA",
-    "credit": "Obra Shalom Campo Grande",
-    "vernacular_en": "Shortfin Mako",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 5216368,
     "inat_taxon_id": 52306,
     "photo_id": 394671370,
@@ -64910,16 +63320,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 5228034,
-    "inat_taxon_id": 1230,
-    "photo_id": 233914195,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "Xiaogang Zhou",
-    "vernacular_en": "Golden Pheasant",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 5228228,
     "inat_taxon_id": 132,
     "photo_id": 5149984,
@@ -64970,16 +63370,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 5229055,
-    "inat_taxon_id": 18904,
-    "photo_id": 61055458,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "jageshwerverma",
-    "vernacular_en": "Alexandrine Parakeet",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 5229138,
     "inat_taxon_id": 4858,
     "photo_id": 320127133,
@@ -65007,16 +63397,6 @@
     "licence": "CC BY-NC",
     "credit": "Pravin Kawale",
     "vernacular_en": "White-tailed Lapwing",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 5229165,
-    "inat_taxon_id": 5382,
-    "photo_id": 192396793,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "rociomar",
-    "vernacular_en": "Cinereous Vulture",
     "source": "inaturalist-curated"
   },
   {
@@ -65167,16 +63547,6 @@
     "licence": "CC BY-NC",
     "credit": "Mikhail Ezdakov",
     "vernacular_en": "Eurasian Pygmy-Owl",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 5232428,
-    "inat_taxon_id": 7117,
-    "photo_id": 63806694,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "Nick Leggatt",
-    "vernacular_en": "Upland Goose",
     "source": "inaturalist-curated"
   },
   {
@@ -70430,26 +68800,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 5284231,
-    "inat_taxon_id": 69150,
-    "photo_id": 285729025,
-    "extension": "jpeg",
-    "licence": "CC BY",
-    "credit": "W Rao",
-    "vernacular_en": "dawn redwood",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 5284237,
-    "inat_taxon_id": 71147,
-    "photo_id": 98528458,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "cspons",
-    "vernacular_en": "sugi",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 5284745,
     "inat_taxon_id": 117326,
     "photo_id": 10737093,
@@ -70690,16 +69040,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 5290052,
-    "inat_taxon_id": 48448,
-    "photo_id": 12293878,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "Ken",
-    "vernacular_en": "Maize",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 5290068,
     "inat_taxon_id": 78347,
     "photo_id": 1035548,
@@ -70767,16 +69107,6 @@
     "licence": "CC BY",
     "credit": "Cheng-Tao Lin",
     "vernacular_en": "Slender False Brome",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 5290177,
-    "inat_taxon_id": 61068,
-    "photo_id": 109390616,
-    "extension": "jpeg",
-    "licence": "CC BY",
-    "credit": "Arnim Littek",
-    "vernacular_en": "Hare's Tail Grass",
     "source": "inaturalist-curated"
   },
   {
@@ -70980,16 +69310,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 5303933,
-    "inat_taxon_id": 411038,
-    "photo_id": 84744870,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "空猫",
-    "vernacular_en": "Siebold's Plantain Lily",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 5310578,
     "inat_taxon_id": 243592,
     "photo_id": 28809961,
@@ -71087,16 +69407,6 @@
     "licence": "CC BY-NC-SA",
     "credit": "Rob Palmer",
     "vernacular_en": "holly-leaved water nymph",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 5330085,
-    "inat_taxon_id": 79528,
-    "photo_id": 28423169,
-    "extension": "jpg",
-    "licence": "CC BY-SA",
-    "credit": "Stefan.lefnaer",
-    "vernacular_en": "Columbian Watermeal",
     "source": "inaturalist-curated"
   },
   {
@@ -71270,16 +69580,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 5341387,
-    "inat_taxon_id": 164026,
-    "photo_id": 237272406,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "Jordi Bassols Garcia",
-    "vernacular_en": "Hyssop",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 5341442,
     "inat_taxon_id": 85469,
     "photo_id": 48088,
@@ -71307,26 +69607,6 @@
     "licence": "CC BY-NC",
     "credit": "Mark Kluge",
     "vernacular_en": "Catnip",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 5341540,
-    "inat_taxon_id": 51098,
-    "photo_id": 129493864,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "Stacie Wolny",
-    "vernacular_en": "California gilia",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 5341558,
-    "inat_taxon_id": 50832,
-    "photo_id": 27083,
-    "extension": "jpg",
-    "licence": "CC BY",
-    "credit": "Ken-ichi Ueda",
-    "vernacular_en": "bird's-eye gilia",
     "source": "inaturalist-curated"
   },
   {
@@ -71387,26 +69667,6 @@
     "licence": "CC BY-NC",
     "credit": "enkidoo",
     "vernacular_en": "German Greenweed",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 5350452,
-    "inat_taxon_id": 122850,
-    "photo_id": 96848588,
-    "extension": "jpeg",
-    "licence": "CC BY-SA",
-    "credit": "M. Socorro González Elizondo",
-    "vernacular_en": "Common Bean",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 5356343,
-    "inat_taxon_id": 371837,
-    "photo_id": 80065793,
-    "extension": "jpeg",
-    "licence": "CC BY",
-    "credit": "Tommy Andriollo",
-    "vernacular_en": "Alpine Laburnum",
     "source": "inaturalist-curated"
   },
   {
@@ -71530,16 +69790,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 5360475,
-    "inat_taxon_id": 122771,
-    "photo_id": 608355623,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "Franck Le Driant",
-    "vernacular_en": "Fenugreek",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 5361773,
     "inat_taxon_id": 165601,
     "photo_id": 114769680,
@@ -71600,16 +69850,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 5361909,
-    "inat_taxon_id": 60218,
-    "photo_id": 87770239,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "richardpatters",
-    "vernacular_en": "common fig",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 5362046,
     "inat_taxon_id": 58886,
     "photo_id": 41857044,
@@ -71637,16 +69877,6 @@
     "licence": "CC BY-NC",
     "credit": "Sylvain Piry",
     "vernacular_en": "Mossy Stonecrop",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 5362215,
-    "inat_taxon_id": 82853,
-    "photo_id": 123379615,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "Nicolas Lagière",
-    "vernacular_en": "Quince",
     "source": "inaturalist-curated"
   },
   {
@@ -71740,26 +69970,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 5371709,
-    "inat_taxon_id": 158029,
-    "photo_id": 18357502,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "Marco Bonifacino",
-    "vernacular_en": "Pheasant's-eye",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 5371716,
-    "inat_taxon_id": 79480,
-    "photo_id": 203106606,
-    "extension": "jpeg",
-    "licence": "CC BY",
-    "credit": "Gavin Slater",
-    "vernacular_en": "White Inside-out Flower",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 5371743,
     "inat_taxon_id": 52846,
     "photo_id": 25575053,
@@ -71777,16 +69987,6 @@
     "licence": "CC BY-NC",
     "credit": "Krylenko VV",
     "vernacular_en": "Garden Chervil",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 5371772,
-    "inat_taxon_id": 59432,
-    "photo_id": 142335753,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "kingamatanina",
-    "vernacular_en": "Lovage",
     "source": "inaturalist-curated"
   },
   {
@@ -71827,16 +70027,6 @@
     "licence": "CC BY-NC",
     "credit": "Sylvain Piry",
     "vernacular_en": "Tubular Water-dropwort",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 5372392,
-    "inat_taxon_id": 79519,
-    "photo_id": 197483971,
-    "extension": "jpeg",
-    "licence": "CC BY",
-    "credit": "Andrey Polstianoi",
-    "vernacular_en": "wine grape",
     "source": "inaturalist-curated"
   },
   {
@@ -71990,16 +70180,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 5375920,
-    "inat_taxon_id": 77058,
-    "photo_id": 280772297,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "Víctor González García",
-    "vernacular_en": "rocketsalad",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 5376337,
     "inat_taxon_id": 76664,
     "photo_id": 60530896,
@@ -72120,26 +70300,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 5377395,
-    "inat_taxon_id": 165202,
-    "photo_id": 33710279,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "Steve Jones",
-    "vernacular_en": "Evening Stock",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 5377778,
-    "inat_taxon_id": 64616,
-    "photo_id": 932775,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "Biopix",
-    "vernacular_en": "Gold-dust",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 5383969,
     "inat_taxon_id": 931700,
     "photo_id": 2982153,
@@ -72167,16 +70327,6 @@
     "licence": "CC BY-NC",
     "credit": "Adid Jimenez",
     "vernacular_en": "Smooth Pigweed",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 5384466,
-    "inat_taxon_id": 77314,
-    "photo_id": 25954337,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "André Nagelhout",
-    "vernacular_en": "showy baby's-breath",
     "source": "inaturalist-curated"
   },
   {
@@ -72270,16 +70420,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 5384931,
-    "inat_taxon_id": 157642,
-    "photo_id": 48161522,
-    "extension": "jpeg",
-    "licence": "CC0",
-    "credit": "葉子",
-    "vernacular_en": "Chameleon Plant",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 5386903,
     "inat_taxon_id": 361312,
     "photo_id": 1628263,
@@ -72287,16 +70427,6 @@
     "licence": "CC BY-NC-SA",
     "credit": "Amadej Trnkoczy",
     "vernacular_en": "Eastern Goat's-beard",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 5387821,
-    "inat_taxon_id": 51768,
-    "photo_id": 75102458,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "TexasEagle",
-    "vernacular_en": "firewheel",
     "source": "inaturalist-curated"
   },
   {
@@ -72407,16 +70537,6 @@
     "licence": "CC BY-NC-SA",
     "credit": "Eva the Weaver",
     "vernacular_en": null,
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 5396474,
-    "inat_taxon_id": 130382,
-    "photo_id": 309143453,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "Chuck Cantley",
-    "vernacular_en": "false sunflower",
     "source": "inaturalist-curated"
   },
   {
@@ -72550,26 +70670,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 5415056,
-    "inat_taxon_id": 163058,
-    "photo_id": 729689,
-    "extension": "jpg",
-    "licence": "CC BY-NC-SA",
-    "credit": "Nemo's great uncle",
-    "vernacular_en": "Golden-bell",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 5415455,
-    "inat_taxon_id": 70045,
-    "photo_id": 8352674,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "James Bailey",
-    "vernacular_en": "Bear's breeches",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 5420853,
     "inat_taxon_id": 127391,
     "photo_id": 3957259,
@@ -72577,36 +70677,6 @@
     "licence": "CC BY-SA",
     "credit": "Fabien Piednoir",
     "vernacular_en": "Spurge-laurel",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 5420957,
-    "inat_taxon_id": 51735,
-    "photo_id": 132050835,
-    "extension": "jpg",
-    "licence": "CC BY",
-    "credit": "Don Loarie",
-    "vernacular_en": "Elegant Clarkia",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 5420978,
-    "inat_taxon_id": 61048,
-    "photo_id": 397513326,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "Colton Veltkamp",
-    "vernacular_en": "Farewell-To-Spring",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 5421180,
-    "inat_taxon_id": 58320,
-    "photo_id": 334531030,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "Charles",
-    "vernacular_en": "golden rain tree",
     "source": "inaturalist-curated"
   },
   {
@@ -73120,36 +71190,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 5554574,
-    "inat_taxon_id": 418653,
-    "photo_id": 113153871,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "小铖/Smalltown",
-    "vernacular_en": "New Zealand Spinach",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 5561475,
-    "inat_taxon_id": 501464,
-    "photo_id": 125396714,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "Venti",
-    "vernacular_en": "Bacopa",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 5568339,
-    "inat_taxon_id": 76751,
-    "photo_id": 229416,
-    "extension": "jpg",
-    "licence": "CC BY-NC-SA",
-    "credit": "Valter Jacinto | Portugal",
-    "vernacular_en": "Clammy goosefoot",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 5582546,
     "inat_taxon_id": 773660,
     "photo_id": 3138901,
@@ -73170,16 +71210,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 5586962,
-    "inat_taxon_id": 836902,
-    "photo_id": 177109414,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "Вадим",
-    "vernacular_en": "Fine-leaved Sandwort",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 5609333,
     "inat_taxon_id": 631567,
     "photo_id": 61067296,
@@ -73187,16 +71217,6 @@
     "licence": "CC BY-NC",
     "credit": "Светлана Нестерова",
     "vernacular_en": "Norfolk Skullcap",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 5615962,
-    "inat_taxon_id": 361315,
-    "photo_id": 961385,
-    "extension": "jpg",
-    "licence": "CC BY",
-    "credit": "Nuuuuuuuuuuul",
-    "vernacular_en": "Rue-leaved Isopyrum",
     "source": "inaturalist-curated"
   },
   {
@@ -73287,26 +71307,6 @@
     "licence": "CC BY-NC",
     "credit": "sebefrej",
     "vernacular_en": "Wood Barley",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 5676003,
-    "inat_taxon_id": 1100482,
-    "photo_id": 79602586,
-    "extension": "jpg",
-    "licence": "CC BY-SA",
-    "credit": "Krzysztof Ziarnek",
-    "vernacular_en": "Chinese fountain-bamboo",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 5676092,
-    "inat_taxon_id": 480755,
-    "photo_id": 47323432,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "Mikkel Dybdal",
-    "vernacular_en": "Umbrella Bamboo",
     "source": "inaturalist-curated"
   },
   {
@@ -75340,16 +73340,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 5844936,
-    "inat_taxon_id": 339684,
-    "photo_id": 268681418,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "Angel",
-    "vernacular_en": "Iberian Magpie",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 5845386,
     "inat_taxon_id": 145108,
     "photo_id": 299373712,
@@ -76187,16 +74177,6 @@
     "licence": "CC BY-NC",
     "credit": "Almantas Kulbis",
     "vernacular_en": "Broad-leaved Sermountain",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 6026490,
-    "inat_taxon_id": 359468,
-    "photo_id": 200822760,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "Ludwig Treuter",
-    "vernacular_en": "Spignel",
     "source": "inaturalist-curated"
   },
   {
@@ -77490,16 +75470,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 7127810,
-    "inat_taxon_id": 127355,
-    "photo_id": 110836055,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "fotis-samaritakis",
-    "vernacular_en": "Ivy-leaved cyclamen",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 7156841,
     "inat_taxon_id": 460571,
     "photo_id": 114981058,
@@ -78060,16 +76030,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 7307327,
-    "inat_taxon_id": 506801,
-    "photo_id": 32892928,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "V.S. Volkotrub",
-    "vernacular_en": "Korean Mint",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 7307492,
     "inat_taxon_id": 603675,
     "photo_id": 313926021,
@@ -78120,16 +76080,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 7322122,
-    "inat_taxon_id": 128506,
-    "photo_id": 1540727,
-    "extension": "jpg",
-    "licence": "CC BY-NC-SA",
-    "credit": "marie",
-    "vernacular_en": "Dove tree",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 7322563,
     "inat_taxon_id": 56622,
     "photo_id": 305889763,
@@ -78147,16 +76097,6 @@
     "licence": "CC BY-NC",
     "credit": "Sébastien SANT",
     "vernacular_en": "Thistle Broomrape",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 7339484,
-    "inat_taxon_id": 746748,
-    "photo_id": 22126224,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "Wolf-Achim and Hanna Roland",
-    "vernacular_en": "featherleaf rodgersia",
     "source": "inaturalist-curated"
   },
   {
@@ -78647,16 +76587,6 @@
     "licence": "CC BY-NC",
     "credit": "vlad50",
     "vernacular_en": "Large-leaved Spindle",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 7434815,
-    "inat_taxon_id": 732964,
-    "photo_id": 162918670,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "swsankt",
-    "vernacular_en": "Variable Cockroach",
     "source": "inaturalist-curated"
   },
   {
@@ -79280,16 +77210,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 7547256,
-    "inat_taxon_id": 1110635,
-    "photo_id": 503767436,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "Światopelk Smoczyński",
-    "vernacular_en": null,
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 7547277,
     "inat_taxon_id": 351744,
     "photo_id": 109668786,
@@ -79447,16 +77367,6 @@
     "licence": "CC BY-NC",
     "credit": "wolff christiane",
     "vernacular_en": "Trunk Pawwort",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 7588138,
-    "inat_taxon_id": 215238,
-    "photo_id": 117262970,
-    "extension": "jpeg",
-    "licence": "CC BY",
-    "credit": "Will Linnard",
-    "vernacular_en": null,
     "source": "inaturalist-curated"
   },
   {
@@ -79900,16 +77810,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 7664179,
-    "inat_taxon_id": 69578,
-    "photo_id": 113074943,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "juju98",
-    "vernacular_en": "Fijian white-footed ant",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 7666664,
     "inat_taxon_id": 131622,
     "photo_id": 107085903,
@@ -79917,16 +77817,6 @@
     "licence": "CC BY-NC",
     "credit": "cpu",
     "vernacular_en": "Large Self-heal",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 7671397,
-    "inat_taxon_id": 362520,
-    "photo_id": 285758379,
-    "extension": "jpeg",
-    "licence": "CC0",
-    "credit": "Wouter Van Landuyt",
-    "vernacular_en": "Caucasian Crosswort",
     "source": "inaturalist-curated"
   },
   {
@@ -80910,16 +78800,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 7844167,
-    "inat_taxon_id": 76422,
-    "photo_id": 221940,
-    "extension": "jpg",
-    "licence": "CC BY",
-    "credit": "Radio Tonreg",
-    "vernacular_en": "Bladder-senna",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 7844497,
     "inat_taxon_id": 58677,
     "photo_id": 171535975,
@@ -81540,16 +79420,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 7952471,
-    "inat_taxon_id": 167508,
-    "photo_id": 181582821,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "kelseyreznick",
-    "vernacular_en": "Arrow Bamboo",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 7954748,
     "inat_taxon_id": 1438032,
     "photo_id": 552610580,
@@ -81940,16 +79810,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 8014163,
-    "inat_taxon_id": 448331,
-    "photo_id": 247850399,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "Yan Cai",
-    "vernacular_en": "Striped Greenhouse Slug",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 8014166,
     "inat_taxon_id": 834329,
     "photo_id": 30665552,
@@ -82270,16 +80130,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 8069977,
-    "inat_taxon_id": 138470,
-    "photo_id": 19143349,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "mhays",
-    "vernacular_en": "Mountain goldenbean",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 8071344,
     "inat_taxon_id": 351596,
     "photo_id": 134888463,
@@ -82327,16 +80177,6 @@
     "licence": "CC BY-NC",
     "credit": "esdena",
     "vernacular_en": null,
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 8078925,
-    "inat_taxon_id": 82271,
-    "photo_id": 26318999,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "Mauricio Uhle",
-    "vernacular_en": "giant rhubarb",
     "source": "inaturalist-curated"
   },
   {
@@ -82607,16 +80447,6 @@
     "licence": "CC BY",
     "credit": "Ian Manning",
     "vernacular_en": "Rough Periwinkle",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 8116963,
-    "inat_taxon_id": 782674,
-    "photo_id": 60838642,
-    "extension": "jpg",
-    "licence": "CC BY",
-    "credit": "Karsten Rohweder",
-    "vernacular_en": "Hungarian Bear’s-Breeches",
     "source": "inaturalist-curated"
   },
   {
@@ -83650,16 +81480,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 8245539,
-    "inat_taxon_id": 803760,
-    "photo_id": 390263368,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "Václav Dvořák",
-    "vernacular_en": "Yarrow Broomrape",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 8250249,
     "inat_taxon_id": 372726,
     "photo_id": 29239298,
@@ -84450,16 +82270,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 8362005,
-    "inat_taxon_id": 168441,
-    "photo_id": 54781625,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "David Earl",
-    "vernacular_en": "Broad-leaved Bamboo",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 8365581,
     "inat_taxon_id": 154291,
     "photo_id": 457255427,
@@ -84890,16 +82700,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 8411755,
-    "inat_taxon_id": 900799,
-    "photo_id": 76073229,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "profpiper",
-    "vernacular_en": "Whitebeam",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 8411912,
     "inat_taxon_id": 865812,
     "photo_id": 331354523,
@@ -85277,16 +83077,6 @@
     "licence": "CC BY-NC",
     "credit": "cjlewis",
     "vernacular_en": null,
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 8584304,
-    "inat_taxon_id": 163437,
-    "photo_id": 200451,
-    "extension": "jpg",
-    "licence": "CC BY-NC-SA",
-    "credit": "Colin Jacobs",
-    "vernacular_en": "Niger",
     "source": "inaturalist-curated"
   },
   {
@@ -86020,16 +83810,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 8848208,
-    "inat_taxon_id": 768203,
-    "photo_id": 97664785,
-    "extension": "jpg",
-    "licence": "CC BY",
-    "credit": "Dee Shea Himes",
-    "vernacular_en": "Himalayan knotweed",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 8849982,
     "inat_taxon_id": 351520,
     "photo_id": 58531152,
@@ -86197,16 +83977,6 @@
     "licence": "CC BY-NC",
     "credit": "Светлана Нестерова",
     "vernacular_en": "redleg jellybelly",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 8909809,
-    "inat_taxon_id": 39867,
-    "photo_id": 230597692,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "Laurent Barthe",
-    "vernacular_en": "European Pond Turtle",
     "source": "inaturalist-curated"
   },
   {
@@ -87670,16 +85440,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 9182765,
-    "inat_taxon_id": 59260,
-    "photo_id": 178438724,
-    "extension": "png",
-    "licence": "CC0",
-    "credit": "Anna C",
-    "vernacular_en": "field marigold",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 9183851,
     "inat_taxon_id": 382604,
     "photo_id": 4136191,
@@ -87990,16 +85750,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 9228211,
-    "inat_taxon_id": 39847,
-    "photo_id": 330780522,
-    "extension": "jpeg",
-    "licence": "CC BY",
-    "credit": "Charlotte Kirchner",
-    "vernacular_en": "False Map Turtle",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 9235549,
     "inat_taxon_id": 558428,
     "photo_id": 169169606,
@@ -88047,16 +85797,6 @@
     "licence": "CC BY-NC-SA",
     "credit": "Reiner Richter",
     "vernacular_en": null,
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 9251540,
-    "inat_taxon_id": 1277857,
-    "photo_id": 50093279,
-    "extension": "jpg",
-    "licence": "CC BY",
-    "credit": "Michael D. Pirie",
-    "vernacular_en": "Austrian Whitebeam",
     "source": "inaturalist-curated"
   },
   {
@@ -88150,16 +85890,6 @@
     "source": "inaturalist-curated"
   },
   {
-    "taxon_id": 9306058,
-    "inat_taxon_id": 1277876,
-    "photo_id": 425156542,
-    "extension": "jpeg",
-    "licence": "CC BY-NC",
-    "credit": "jltasset",
-    "vernacular_en": "service tree of Fontainebleau",
-    "source": "inaturalist-curated"
-  },
-  {
     "taxon_id": 9307632,
     "inat_taxon_id": 532161,
     "photo_id": 59117631,
@@ -88177,16 +85907,6 @@
     "licence": "CC BY-NC",
     "credit": "Antoine Lantin",
     "vernacular_en": "Maple-seed Pigmy Moth",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 9312105,
-    "inat_taxon_id": 1141128,
-    "photo_id": 3723995,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "Muriel Bendel",
-    "vernacular_en": "Mougeot's Whitebeam",
     "source": "inaturalist-curated"
   },
   {
@@ -88597,16 +86317,6 @@
     "licence": "CC BY-NC",
     "credit": "Marco Floriani",
     "vernacular_en": null,
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 9476062,
-    "inat_taxon_id": 9607,
-    "photo_id": 191985938,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "Ad Konings",
-    "vernacular_en": "Great-tailed Grackle",
     "source": "inaturalist-curated"
   },
   {
@@ -89416,16 +87126,6 @@
     "extension": "jpg",
     "licence": "CC BY-NC",
     "credit": "Kåre Würtz Strandhave",
-    "vernacular_en": null,
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 9762031,
-    "inat_taxon_id": 359990,
-    "photo_id": 410114140,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "PeterKamen",
     "vernacular_en": null,
     "source": "inaturalist-curated"
   },
@@ -92997,16 +90697,6 @@
     "licence": "CC BY-NC",
     "credit": "Marsel",
     "vernacular_en": "Wavy Beard-moss",
-    "source": "inaturalist-curated"
-  },
-  {
-    "taxon_id": 12256841,
-    "inat_taxon_id": 1354234,
-    "photo_id": 247573545,
-    "extension": "jpg",
-    "licence": "CC BY-NC",
-    "credit": "Mason Salem",
-    "vernacular_en": null,
     "source": "inaturalist-curated"
   },
   {
