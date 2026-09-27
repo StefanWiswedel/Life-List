@@ -3747,6 +3747,63 @@ answer rather than a gap: a Danish dandelion microspecies has no English article
 
 ---
 
+## 88. "I don't see any difference" — 27 Sep 2026
+
+Stefan, on v0.14.0, with a screenshot of the home screen: *I don't see any difference. Maybe have
+the version number next to the title?*
+
+He was right twice.
+
+**The version request is the smaller half and is now done.** The only way to install this app is
+to sideload a 936 MB APK, so "I don't see any difference" and "I am still on last week's build"
+are the same sentence from the outside. `BuildConfig.VERSION_NAME` now sits next to the title.
+CI already passes `-PversionName` from the tag, so a release build says `0.14.1` and a local
+debug one says `0.0.0-dev`, which is also worth being able to tell at a glance.
+
+**The bigger half: he was right that nothing had changed, on the screen he was looking at.** The
+checklist (§81), the index (§82), 22,387 photographs (§83) and now 18,345 articles (§87) all
+shipped, and the only route to any of it was: open a group you have *already collected*, find a
+segmented control, flip it. Every group you have never found anything in — every amphibian, every
+reptile, every mollusc in Denmark — was represented on the home screen by one grey sentence:
+
+> Nothing yet in amphibians, reptiles, molluscs.
+
+That sentence reads as an apology. It is also the exact opposite of what he asked for in §81,
+which was *"where you can also see the things you haven't."* I built the denominator and then put
+it behind the numerator.
+
+**So home now shows every group, with Denmark's number on it.** A card is `0 of 18 · Amphibians ·
+8 families to start on`, and it is a door into the index rather than a line of regret. Three
+decisions inside that, each of which could have gone the other way:
+
+- **The numerator is the checklist's, not the tally's.** `distinctTaxa` counts what is on your
+  list, including a bush-cricket you only got to family; `GroupLine.found` counts Danish *species*
+  ticked. Printing the first over the second gives "21 of 10,296" where the two numbers count
+  different kinds of thing. The hero already says how many records are held broader (§19); the
+  card says how many are settled.
+- **The gaps are sorted smallest first**, which is the opposite of the rest of this screen and
+  deliberate. 18 amphibians is a summer and 10,296 insects is a life, and the card worth putting
+  in front of someone is the one they could finish.
+- **The bar is not a percentage.** 21 of 8,912 is 0.2%, and a label reading "0%" beside a real
+  afternoon's work is a lie about the afternoon. A sliver of colour with a 3% floor says the same
+  thing without passing judgement.
+
+Also: opening a group you have nothing in now lands on the checklist side rather than on "0 kinds
+· 0 sightings", which is not a screen anyone walked into a group to read.
+
+**Rendered before it shipped**, against Denmark's real per-group totals counted off
+`shared/model/checklist.json` — 10,296 insects, 7,079 fungi, 4,998 plants, 705 birds, 30 reptiles,
+18 amphibians — so the picture is the arithmetic the phone will do rather than a plausible
+mock-up. The first render caught its own fixture: I had hand-written a standings list whose
+numerator disagreed with its own records, and the card drew "0 of 769" with a rust sliver under
+it, a state that cannot happen on a phone.
+
+**The lesson is not about this screen.** Four sections of work were invisible from the surface the
+app opens on, and the only reason I found out is that he said so. A feature reachable only from a
+screen you get to by already having succeeded is a feature for people who do not need it.
+
+---
+
 ---
 
 ## Open questions

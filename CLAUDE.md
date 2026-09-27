@@ -53,6 +53,8 @@ When trading off, trade in favour of a record being keepable at the rank the evi
 | rarity | Red List badge, family progress, and **Danish recording effort per species** (§55, §72) |
 | checklist | **26,722 Danish species in 2,461 families** from GBIF — the denominator for what you have *not* found (§81) |
 | index | families fullest first, species commonest first, the unfound shown and the un-nameable marked (§82) |
+| home | **every group, with Denmark's number on it** — `0 of 18 · Amphibians`, gaps sorted smallest first (§88) |
+| which build | the version sits next to the title, because sideloading makes that unknowable otherwise (§88) |
 | checklist photos | **22,387 of 26,722 species have one** — 500 px for the model's, 240 px for the rest (§83) |
 | the one network call | a species page upgrades its 240 px photo to 1024 px when online, and nothing waits for it (§85) |
 | certainty | **the dial is an accuracy, not a probability** — one threshold per group (§58, §59) |

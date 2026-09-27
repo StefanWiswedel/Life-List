@@ -25,6 +25,9 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
@@ -563,7 +566,21 @@ fun App() {
         topBar = {
             when (screen) {
                 Screen.HOME -> TopAppBar(
-                    title = { Text("Life List", style = MaterialTheme.typography.titleLarge) },
+                    // The version rides next to the title because the only way to install this
+                    // app is to sideload an APK, and "I don't see any difference" is otherwise
+                    // impossible to tell apart from "I am still on last week's build".
+                    title = {
+                        Row(verticalAlignment = Alignment.Bottom) {
+                            Text("Life List", style = MaterialTheme.typography.titleLarge)
+                            Spacer(Modifier.width(8.dp))
+                            Text(
+                                BuildConfig.VERSION_NAME,
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.outline,
+                                modifier = Modifier.padding(bottom = 3.dp),
+                            )
+                        }
+                    },
                     actions = {
                         IconButton(onClick = { thresholdSheet = true }) {
                             Icon(Icons.Outlined.Tune, contentDescription = "How sure before it commits")
@@ -637,6 +654,9 @@ fun App() {
                             // A recent card is 116dp, so it asks for a bigger decode than the
                             // 44dp roster does. The cache is keyed by size, so both are right.
                             referencePhotoFor = { references.thumbnail(it, pixels = 360) },
+                            standings = remember(checklist, records) {
+                                Index.groups(checklist, records)
+                            },
                         )
                     }
                     WaysIn(

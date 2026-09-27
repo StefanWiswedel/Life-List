@@ -77,7 +77,11 @@ fun GroupScreen(
     // Yours, or everything there is. One screen with two states rather than two screens: the
     // life list and the checklist are the same data seen from opposite sides, and a second
     // home would undo §32's argument for having one surface.
-    var everything by rememberSaveable(label) { mutableStateOf(false) }
+    //
+    // Opens on the checklist side when you have nothing here yet, because "0 kinds · 0
+    // sightings" is not a screen anyone walked into a group to read. With a record in it, it
+    // opens on yours.
+    var everything by rememberSaveable(label) { mutableStateOf(records.isEmpty()) }
 
     // Which family's species list is open, if any. Remembered by label so walking into
     // Insects, opening Katydids, going back and returning does not lose your place.

@@ -14,6 +14,7 @@ import dk.lifelist.core.AnswerKind
 import dk.lifelist.core.Candidate
 import dk.lifelist.core.Determiner
 import dk.lifelist.core.Presentation
+import dk.lifelist.core.Index
 import dk.lifelist.core.Record
 import dk.lifelist.core.RollupResult
 import dk.lifelist.core.Taxon
@@ -156,6 +157,50 @@ class ScreenshotTest {
                 HomeScreen(
                     taxonomy, records, onOpenRecord = {}, onOpenGroup = {},
                     referencePhotoFor = { photo(Color.rgb(104, 92, 70), Color.rgb(44, 38, 28)) },
+                )
+            }
+        }
+    }
+
+    @Test
+    fun `home carries the denominator`() {
+        // The complaint this answers: "I don't see any difference." The index and the
+        // checklist shipped in v0.13 and v0.14 and are reachable only by opening a group you
+        // have already collected and flipping a toggle, so the home screen of a 936 MB build
+        // looked exactly like the home screen of the one before it.
+        //
+        // The totals are Denmark's real ones, counted off shared/model/checklist.json, so
+        // this render is the arithmetic the phone will do rather than a plausible mock-up.
+        val records = listOf(
+            record("a", 1688020, 1_755_000_000_000),
+            record("b", 9761484, 1_754_000_000_000),
+            record("c", 600, 1_753_000_000_000),
+            record("d", 1692898, 1_752_000_000_000),
+        )
+        // `found` matches what these four records actually are — two insects settled to
+        // species and one to family, and one duck — because a fixture whose numerator
+        // disagrees with its own records renders a screen that cannot happen.
+        val denmark = listOf(
+            Index.GroupLine("Insects", 2, 10296, 456),
+            Index.GroupLine("Birds", 1, 705, 90),
+            Index.GroupLine("Fungi", 0, 7079, 543),
+            Index.GroupLine("Plants", 0, 4998, 381),
+            Index.GroupLine("Other", 0, 865, 360),
+            Index.GroupLine("Arachnids", 0, 769, 96),
+            Index.GroupLine("Molluscs", 0, 518, 180),
+            Index.GroupLine("Worms", 0, 467, 62),
+            Index.GroupLine("Crustaceans", 0, 349, 118),
+            Index.GroupLine("Fish", 0, 312, 121),
+            Index.GroupLine("Mammals", 0, 137, 40),
+            Index.GroupLine("Reptiles", 0, 30, 6),
+            Index.GroupLine("Amphibians", 0, 18, 8),
+        )
+        paparazzi.snapshot {
+            LifeListTheme {
+                HomeScreen(
+                    taxonomy, records, onOpenRecord = {}, onOpenGroup = {},
+                    referencePhotoFor = { photo(Color.rgb(104, 92, 70), Color.rgb(44, 38, 28)) },
+                    standings = denmark,
                 )
             }
         }

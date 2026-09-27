@@ -44,6 +44,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dk.lifelist.core.GroupTally
+import dk.lifelist.core.Index
 import dk.lifelist.core.LifeList
 import dk.lifelist.core.Presentation
 import dk.lifelist.core.Record
@@ -71,6 +72,13 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
     /** The species' own picture, for a record that has none of yours. */
     referencePhotoFor: (Int) -> Bitmap? = { null },
+    /**
+     * What Denmark has in each group, so a card can show the denominator.
+     *
+     * Empty until the 4.7 MB checklist has parsed, and the cards render without it — the home
+     * screen is not allowed to wait on an asset it only decorates with.
+     */
+    standings: List<Index.GroupLine> = emptyList(),
 ) {
     val totals = remember(records) { LifeList.totals(taxonomy, records) }
     val tallies = remember(records) { LifeList.tally(taxonomy, records) }
@@ -79,6 +87,25 @@ fun HomeScreen(
     // "Nothing yet in … other" is not a gap anyone can go and fill. UNGROUPED exists so a
     // record never falls off the list; it is not a thing to go looking for.
     val unseen = empty.filter { it.label != dk.lifelist.core.UNGROUPED }
+    val denmark = remember(standings) { standings.associateBy { it.label } }
+
+    /**
+     * Every group, yours first and then the ones you have never found anything in.
+     *
+     * The ones you have not found used to be a single grey sentence — "Nothing yet in
+     * amphibians, reptiles, molluscs." That reads as an apology. A card saying *0 of 62* is
+     * the same fact and is an invitation, and it is the only route from this screen into
+     * Denmark's checklist, which was the point of building the checklist at all.
+     */
+    val cards = remember(seen, unseen, denmark) {
+        // Yours in the order the list already uses. The ones you have never found are sorted
+        // *smallest first*, which is the opposite of the rest of this screen and deliberate:
+        // 18 amphibians is a summer, 10,296 insects is a life, and the card most worth putting
+        // in front of someone is the one they could actually finish.
+        seen.map { it to denmark[it.label] } +
+            unseen.mapNotNull { tally -> denmark[tally.label]?.let { tally to it } }
+                .sortedBy { (_, line) -> line.total }
+    }
 
     LazyColumn(
         modifier.fillMaxSize(),
@@ -101,37 +128,25 @@ fun HomeScreen(
             }
         }
 
-        // No label over an empty grid: "YOUR GROUPS" above nothing at all is the first thing
-        // a new user reads, and it announces a section that is not there.
-        if (seen.isNotEmpty()) item { SectionLabel("Your groups") }
+        // No label over an empty grid: a heading above nothing at all is the first thing a
+        // new user reads, and it announces a section that is not there.
+        if (cards.isNotEmpty()) item { SectionLabel("Denmark, group by group") }
 
-        items(seen.chunked(2)) { pair ->
+        items(cards.chunked(2)) { pair ->
             Row(
                 Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 5.5.dp),
                 horizontalArrangement = Arrangement.spacedBy(11.dp),
             ) {
-                pair.forEach { tally ->
-                    GroupCard(taxonomy, tally, Modifier.weight(1f)) { onOpenGroup(tally.label) }
+                pair.forEach { (tally, line) ->
+                    GroupCard(taxonomy, tally, line, Modifier.weight(1f)) {
+                        onOpenGroup(tally.label)
+                    }
                 }
                 if (pair.size == 1) Spacer(Modifier.weight(1f))
             }
         }
 
-        item {
-            if (seen.isEmpty()) {
-                EmptyInvitation()
-            } else if (unseen.isNotEmpty()) {
-                // One quiet line rather than ten rows of "Nothing here yet". The gap is worth
-                // naming — it is what sends someone looking for an amphibian — but it does not
-                // deserve more of the screen than the things you have actually found.
-                Text(
-                    "Nothing yet in " + unseen.joinToString(", ") { it.label.lowercase() } + ".",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.outline,
-                    modifier = Modifier.padding(horizontal = 18.dp, vertical = 14.dp),
-                )
-            }
-        }
+        if (seen.isEmpty()) item { EmptyInvitation() }
     }
 }
 
@@ -321,35 +336,113 @@ fun NotYoursMark(heard: Boolean, modifier: Modifier = Modifier) {
 private fun GroupCard(
     taxonomy: Taxonomy,
     tally: GroupTally,
+    denmark: Index.GroupLine?,
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
 ) {
+    // The checklist's own count where there is one, not the tally's.
+    //
+    // They are different numbers and the difference is the whole argument of this app:
+    // `distinctTaxa` counts what is on your list, which includes a bush-cricket you only got
+    // to family, and `GroupLine.found` counts Danish *species* you have ticked. Printing the
+    // first over the second would read "21 of 10,296" where the 21 and the 10,296 are counting
+    // different kinds of thing. The hero says how many are held broader; this says how many
+    // are settled.
+    val yours = denmark?.found ?: tally.distinctTaxa()
+    val found = tally.records.isNotEmpty()
     Card(
         modifier.clickable(onClick = onClick),
         shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceContainerLowest
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = if (found) 1.dp else 0.dp),
     ) {
         Column(Modifier.padding(14.dp)) {
-            Text(
-                "${tally.distinctTaxa()}",
-                style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.SemiBold,
-            )
+            Row(verticalAlignment = Alignment.Bottom) {
+                Text(
+                    "$yours",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.SemiBold,
+                    color = if (found) {
+                        MaterialTheme.colorScheme.onSurface
+                    } else {
+                        MaterialTheme.colorScheme.outline
+                    },
+                )
+                // The denominator, small and alongside. It is the number that makes 21 mean
+                // something: twenty-one insects is a good afternoon or a rounding error
+                // depending on what is out there, and the app is the only one that knows.
+                denmark?.let {
+                    Spacer(Modifier.width(5.dp))
+                    Text(
+                        "of ${thousands(it.total)}",
+                        style = MaterialTheme.typography.bodySmall,
+                        fontSize = 11.5.sp,
+                        color = MaterialTheme.colorScheme.outline,
+                        modifier = Modifier.padding(bottom = 3.dp),
+                    )
+                }
+            }
             Spacer(Modifier.height(5.dp))
             Text(tally.label, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
-            Spacer(Modifier.height(4.dp))
+            if (denmark != null) {
+                Spacer(Modifier.height(8.dp))
+                Bar(denmark.fraction)
+                Spacer(Modifier.height(7.dp))
+            } else {
+                Spacer(Modifier.height(4.dp))
+            }
             Text(
-                "${tally.records.size} ${if (tally.records.size == 1) "sighting" else "sightings"}" +
-                    if (tally.coarser(taxonomy) > 0) " · ${tally.coarser(taxonomy)} open" else "",
+                when {
+                    !found && denmark != null ->
+                        "${thousands(denmark.families)} families to start on"
+                    !found -> "nothing yet"
+                    else ->
+                        "${tally.records.size} ${if (tally.records.size == 1) "sighting" else "sightings"}" +
+                            if (tally.coarser(taxonomy) > 0) " · ${tally.coarser(taxonomy)} open" else ""
+                },
                 style = MaterialTheme.typography.bodySmall,
                 fontSize = 11.5.sp,
                 color = MaterialTheme.colorScheme.outline,
             )
         }
     }
+}
+
+/**
+ * How far along this group is.
+ *
+ * Deliberately not a percentage. 21 of 8,912 is 0.2%, and a label reading "0%" beside a real
+ * afternoon's work is a lie about the afternoon rather than a fact about the group. A sliver
+ * of colour says the same thing without passing judgement, and it has a floor so a group you
+ * have opened at all never draws as empty.
+ */
+@Composable
+private fun Bar(fraction: Float) {
+    Box(
+        Modifier
+            .fillMaxWidth()
+            .height(3.dp)
+            .clip(CircleShape)
+            .background(MaterialTheme.colorScheme.surfaceVariant)
+    ) {
+        if (fraction > 0f) {
+            Box(
+                Modifier
+                    .fillMaxWidth(fraction.coerceIn(0.03f, 1f))
+                    .height(3.dp)
+                    .clip(CircleShape)
+                    .background(Warm.Rust)
+            )
+        }
+    }
+}
+
+/** 8912 reads as a serial number; 8,912 reads as a number of species. */
+private fun thousands(n: Int): String {
+    val digits = n.toString()
+    return digits.reversed().chunked(3).joinToString(",").reversed()
 }
 
 @Composable
