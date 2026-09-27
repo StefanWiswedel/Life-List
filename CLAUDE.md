@@ -51,11 +51,11 @@ When trading off, trade in favour of a record being keepable at the rank the evi
 | corrections | rename to any taxon, or retreat to a rank you trust; the model's answer is kept (§38, §40) |
 | coverage | **3,482 leaves, 676 Lepidoptera** at ≥20 observations (§44) — up from 2,294 and 468 |
 | rarity | Red List badge, family progress, and **Danish recording effort per species** (§55, §72) |
-| checklist | **26,722 Danish species in 2,461 families** from GBIF — the denominator for what you have *not* found (§81) |
+| checklist | **14,876 Danish species in 1,654 families** — GBIF occurrences people actually *saw*, not museum drawers (§81, §89) |
 | index | families fullest first, species commonest first, the unfound shown and the un-nameable marked (§82) |
 | home | **every group, with Denmark's number on it** — `0 of 18 · Amphibians`, gaps sorted smallest first (§88) |
 | which build | the version sits next to the title, because sideloading makes that unknowable otherwise (§88) |
-| checklist photos | **22,387 of 26,722 species have one** — 500 px for the model's, 240 px for the rest (§83) |
+| checklist photos | **12,738 of 14,876 species have one** (86%) — 500 px for the model's, 240 px for the rest (§83, §89) |
 | the one network call | a species page upgrades its 240 px photo to 1024 px when online, and nothing waits for it (§85) |
 | certainty | **the dial is an accuracy, not a probability** — one threshold per group (§58, §59) |
 | audio | §4A in both languages with a golden fixture; **801 BirdNET classes crossed, 795 leaves** (§60–62) |

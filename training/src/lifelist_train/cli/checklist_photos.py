@@ -205,17 +205,28 @@ def main(argv: list[str] | None = None) -> int:
     session.mount("https://", HTTPAdapter(pool_connections=WORKERS, pool_maxsize=WORKERS))
 
     rows = fetch(sorted(crossed.items()), args.cache, session)
-    with_photo = [row for row in rows.values() if row.get("photo_id")]
+
+    # Only the species this checklist asked about.
+    #
+    # `fetch` returns its whole cache, which is right for resuming and wrong for writing an
+    # index: the cache only ever grows, so when the checklist *shrank* from 26,722 to 14,876
+    # (§89) this wrote 18,960 photographs for a 14,876-species list — four thousand pictures
+    # of things the app would never offer, carried in the APK. It was invisible while the
+    # checklist only grew, which is the kind of bug that waits.
+    with_photo = [
+        row for gbif, row in rows.items()
+        if gbif in crossed and row.get("photo_id")
+    ]
     write_json(args.out, sorted(with_photo, key=lambda row: row["taxon_id"]))
 
-    named = sum(1 for row in rows.values() if row.get("vernacular_en"))
+    named = sum(1 for row in with_photo if row.get("vernacular_en"))
     LOG.info(
         "%s: %d of %d crossed species have a licensed curated photograph (%d%%); "
         "%d carry an English name",
         args.out,
         len(with_photo),
-        len(rows),
-        100 * len(with_photo) // max(len(rows), 1),
+        len(crossed),
+        100 * len(with_photo) // max(len(crossed), 1),
         named,
     )
     return 0

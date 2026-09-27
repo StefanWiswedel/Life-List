@@ -40,6 +40,17 @@ def build_parser() -> argparse.ArgumentParser:
             "and taxonomic noise; 50 gives 12,505 and starts losing real ones."
         ),
     )
+    parser.add_argument(
+        "--all-records",
+        action="store_true",
+        help=(
+            "count every kind of GBIF record, not only observations. This is what the first "
+            "version did and it put the African buffalo, the lowland anoa and a Pleistocene "
+            "bison on Denmark's mammal list, because a museum drawer in Copenhagen is an "
+            "occurrence 'in Denmark'. 7,006 of the 26,722 species it produced had never been "
+            "seen alive here at all. See VERIFICATION.md section 89."
+        ),
+    )
     parser.add_argument("--taxonomy", type=Path, default=shared_model("taxonomy.json"))
     parser.add_argument("--out", type=Path, default=shared_model("checklist.json"))
     parser.add_argument("--cache-dir", type=Path, default=Path("cache"))
@@ -107,10 +118,16 @@ def main(argv: list[str] | None = None) -> int:
     setup_logging(args.verbose)
     client = GbifClient(pool_size=max(32, args.workers * 2))
 
-    LOG.info("fetching %s occurrence facets", args.country)
+    basis = None if args.all_records else GbifClient.SEEN
+    LOG.info(
+        "fetching %s occurrence facets (%s)",
+        args.country, "every record" if basis is None else "observations only",
+    )
     counted = {
         key: count
-        for key, count in client.occurrence_species_keys(country=args.country)
+        for key, count in client.occurrence_species_keys(
+            country=args.country, basis=basis, present_only=not args.all_records
+        )
         if count >= args.min_records
     }
     LOG.info("%d species keys at or above %d records", len(counted), args.min_records)

@@ -10,7 +10,7 @@ GBIF API reference: https://techdocs.gbif.org/en/openapi/
 from __future__ import annotations
 
 import time
-from collections.abc import Iterable, Iterator
+from collections.abc import Iterable, Iterator, Sequence
 from dataclasses import dataclass, field, replace
 from typing import Any
 
@@ -340,15 +340,38 @@ class GbifClient:
         time.sleep(self.pause_s)  # be a good citizen against a free public API
         return response.json()
 
+    #: What counts as somebody having seen the thing.
+    #:
+    #: A GBIF occurrence in Denmark is not the same claim as an organism living in Denmark.
+    #: The country's records include the Natural History Museum's drawers, and a drawer is
+    #: "recorded in Denmark" in exactly GBIF's sense and exactly not a life list's: the African
+    #: buffalo has seven Danish records and all seven are preserved specimens, the lowland anoa
+    #: five and all five, *Bos priscus* seven and it has been extinct since the Pleistocene.
+    #: See VERIFICATION.md section 89.
+    SEEN = ("HUMAN_OBSERVATION", "MACHINE_OBSERVATION")
+
     def occurrence_species_keys(
         self,
         country: str = "DK",
         limit: int = 1000,
         max_pages: int | None = None,
+        basis: Sequence[str] | None = SEEN,
+        present_only: bool = True,
     ) -> Iterator[tuple[int, int]]:
-        """Yield (species key, occurrence count) for a country, commonest first."""
+        """Yield (species key, occurrence count) for a country, commonest first.
+
+        `basis` restricts which kinds of record count; None asks for all of them, which is
+        what the first version of this did and is why the mammal roster opened on an aurochs.
+        `present_only` drops records that assert an *absence*, which are surveys reporting
+        that a thing was looked for and not found — the exact opposite of a sighting.
+        """
         offset = 0
         pages = 0
+        filters: dict[str, Any] = {}
+        if basis:
+            filters["basisOfRecord"] = list(basis)
+        if present_only:
+            filters["occurrenceStatus"] = "PRESENT"
         while True:
             payload = self._get(
                 "/occurrence/search",
@@ -357,6 +380,7 @@ class GbifClient:
                 facetLimit=limit,
                 facetOffset=offset,
                 limit=0,
+                **filters,
             )
             facets = payload.get("facets") or []
             counts = next(

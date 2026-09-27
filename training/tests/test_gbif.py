@@ -10,6 +10,7 @@ from __future__ import annotations
 import pytest
 
 from lifelist_train.gbif import (
+    GbifClient,
     GbifTaxon,
     assign_leaf_indices,
     build_taxonomy_nodes,
@@ -454,3 +455,67 @@ def test_an_indeterminate_leaf_takes_its_genus_common_name():
     assert nodes[-3097].scientific_name == "Arctium sp."
     assert nodes[-3097].vernacular_en == "Burdocks"
     assert nodes[-3097].vernacular_da == "Burrer"
+
+
+# -- the occurrence facets, and what counts as having been seen -----------------------
+
+
+class _Recorder:
+    """A GbifClient with the network replaced by a note of what it was asked."""
+
+    def __init__(self, pages):
+        self.pages = list(pages)
+        self.calls = []
+
+    def __call__(self, path, **params):
+        self.calls.append((path, params))
+        counts = self.pages.pop(0) if self.pages else []
+        return {"facets": [{"field": "SPECIES_KEY", "counts": counts}]}
+
+
+def _client(recorder):
+    client = GbifClient()
+    client._get = recorder  # noqa: SLF001 — replacing the network is the point
+    return client
+
+
+def test_the_facets_ask_only_for_things_somebody_saw():
+    # The bug this pins: without these two filters, Denmark's occurrence records include the
+    # Natural History Museum's drawers, and the app offered the African buffalo, the lowland
+    # anoa and a Pleistocene bison as Danish mammals you had not found yet (§89).
+    recorder = _Recorder([[{"name": "5", "count": 9}]])
+    list(_client(recorder).occurrence_species_keys(country="DK"))
+    _, params = recorder.calls[0]
+    assert params["basisOfRecord"] == ["HUMAN_OBSERVATION", "MACHINE_OBSERVATION"]
+    assert params["occurrenceStatus"] == "PRESENT"
+
+
+def test_an_absence_is_not_a_sighting():
+    # occurrenceStatus=ABSENT is a survey saying it looked and did not find the thing. Counting
+    # one towards "recorded in Denmark" inverts its meaning exactly.
+    recorder = _Recorder([[]])
+    list(_client(recorder).occurrence_species_keys(present_only=True))
+    assert recorder.calls[0][1]["occurrenceStatus"] == "PRESENT"
+
+
+def test_every_record_can_still_be_asked_for():
+    recorder = _Recorder([[]])
+    list(_client(recorder).occurrence_species_keys(basis=None, present_only=False))
+    _, params = recorder.calls[0]
+    assert "basisOfRecord" not in params
+    assert "occurrenceStatus" not in params
+
+
+def test_the_facets_page_until_they_run_out():
+    recorder = _Recorder([
+        [{"name": "1", "count": 30}, {"name": "2", "count": 20}],
+        [{"name": "3", "count": 10}],
+    ])
+    got = list(_client(recorder).occurrence_species_keys())
+    assert got == [(1, 30), (2, 20), (3, 10)]
+    assert [c[1]["facetOffset"] for c in recorder.calls] == [0, 1000, 2000]
+
+
+def test_a_malformed_facet_entry_does_not_end_the_run():
+    recorder = _Recorder([[{"name": "not a key", "count": 9}, {"name": "7", "count": 8}]])
+    assert list(_client(recorder).occurrence_species_keys()) == [(7, 8)]

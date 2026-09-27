@@ -3804,6 +3804,96 @@ screen you get to by already having succeeded is a feature for people who do not
 
 ---
 
+## 89. A museum drawer is an occurrence in Denmark — 27 Sep 2026
+
+Stefan opened the Bovidae roster and found the African Buffalo, the Lowland Anoa, the Aoudad, the
+Alpine Ibex, the Muskox and something called Steppe Wisent listed as Danish mammals he had not
+found yet. *Where does this list of "Danish" mammals come from?*
+
+From one GBIF query: `/occurrence/search?country=DK&facet=speciesKey`, everything at five records
+or more, filtered to accepted species in Animalia, Fungi and Plantae. What it never filtered on is
+**what kind of record**.
+
+**Measured, per species, before changing anything:**
+
+| | DK records | basis of record |
+|---|---|---|
+| *Syncerus caffer* | 7 | 7 preserved specimens |
+| *Bubalus depressicornis* | 5 | 5 preserved specimens |
+| *Ammotragus lervia* | 15 | 15 preserved specimens |
+| *Capra ibex* | 9 | 9 preserved specimens |
+| *Ovibos moschatus* | 23 | 23 preserved specimens |
+| *Bos priscus* | 7 | 7 preserved — extinct since the Pleistocene |
+| *Bos taurus* | 1,928 | 1,542 preserved, 351 tissue samples, 12 fossils, 23 observations |
+
+The Natural History Museum of Denmark's collection is "recorded in Denmark" in exactly the sense
+GBIF means and exactly not the sense a life list means. The index was offering people a skull in a
+drawer as a thing to go and find.
+
+**The scale of it, across the whole 26,722:**
+
+- **7,006 species (26%) had never been observed alive in Denmark at all** — zero human or machine
+  observations, only specimens, samples and fossils.
+- Only 14,871 (56%) had five or more observations.
+
+By group, the shrink when only observations of present organisms count:
+
+| | was | now | |
+|---|---|---|---|
+| Reptiles | 30 | **6** | −80% |
+| Worms | 467 | 129 | −72% |
+| Crustaceans | 349 | 104 | −70% |
+| Molluscs | 518 | 251 | −52% |
+| Insects | 10,296 | 5,430 | −47% |
+| Plants | 4,998 | 2,827 | −43% |
+| Fish | 312 | 184 | −41% |
+| Fungi | 7,079 | 4,410 | −38% |
+| Mammals | 137 | 93 | −32% |
+| Birds | 705 | 520 | −26% |
+| Amphibians | 18 | **16** | −11% |
+
+Reptiles is the tell. Denmark has five native reptiles; the list said thirty. Amphibians barely
+moves, because amphibians are things people actually see. **A denominator that is wrong is worse
+than a denominator that is small**, and this one was wrong by a factor of five in the group where
+it was easiest to check.
+
+**The fix is two parameters** on that one query — `basisOfRecord=HUMAN_OBSERVATION,
+MACHINE_OBSERVATION` and `occurrenceStatus=PRESENT` — and a `--all-records` flag to ask for the
+old behaviour on purpose. The second parameter matters on its own: an `ABSENT` record is a survey
+reporting that it looked and did **not** find the thing, and counting one towards "recorded in
+Denmark" inverts its meaning exactly.
+
+**The checklist is now 14,876 species in 1,654 families**, 12,738 of them with a photograph (86%,
+unchanged), and Bovidae is six rows instead of thirteen.
+
+**A bug the shrink exposed.** `checklist_photos` wrote its *whole cache* rather than the species
+this checklist asked about, so the first re-run produced 18,960 photographs for a 14,876-species
+list — four thousand pictures of things the app would never offer, carried in the APK. It had been
+invisible for as long as the checklist only ever grew. That is the kind of bug that waits: a
+resumable job whose cache is also its output is correct only while its input is monotone.
+
+**Two things this does not fix, both now visible rather than hidden.**
+
+*Livestock.* Six bovids remain and four are farm animals: `Bos taurus` (23 observations),
+`Ovis aries` (39), `Capra hircus` (9), and `Ovis ammon` (16, at Æbelø and Ejlinge, which are
+Danish islands with feral sheep). GBIF's `establishmentMeans` is empty on essentially every Danish
+record — checked, not assumed — so there is no field to filter on. The European Bison and the
+mouflon that survive alongside them are genuinely free-ranging here, so a blanket cut would take
+real records with it. This wants a decision, not a heuristic.
+
+*The vernacular.* `Bos taurus` is labelled **Aurochs**, because §28's rule is that the
+most-repeated English name wins and GBIF's sources offer "Aurochs" three times against "Cattle"
+once. The rule is right in general and adversarial for domesticates, whose wild ancestor shares
+their binomial. Same reason `Ovis aries` reads "Red Sheep".
+
+**And one process note.** I re-folded the Wikipedia bundle against the new checklist in the cloud
+container, where the article cache holds 1,946 entries rather than the laptop's 18,345, and wrote
+a bundle one twelfth the size of the shipped one before noticing. Restored from git. The bundle
+did not need re-folding at all — the new checklist is a strict subset, so the old one already
+covers it — and **a job whose real input is a cache must run where the cache is**.
+
+---
+
 ---
 
 ## Open questions
