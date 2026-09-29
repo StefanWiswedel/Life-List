@@ -223,6 +223,17 @@ fun App() {
     val tape = remember { java.util.ArrayDeque<FloatArray>() }
     var taped by remember { mutableIntStateOf(0) }
     var savedTape by remember { mutableStateOf<String?>(null) }
+    /** Characters answered about the sighting on screen, by character key (§95). */
+    var answers by remember { mutableStateOf<Map<String, String>>(emptyMap()) }
+    /**
+     * Whether the thing on screen might still be in front of you.
+     *
+     * The whole of §95 turns on this. A sighting that came from the camera a moment ago can be
+     * photographed again and a photograph beats a memory; one opened from the camera roll
+     * cannot, and then asking is all there is.
+     */
+    var fromCamera by remember { mutableStateOf(false) }
+    val characterAssets = remember { CharacterAssets(context) }
     // Adding something you identified yourself, with no photograph and no model.
     var addingByName by remember { mutableStateOf(false) }
     val clipPlayer = rememberClipPlayer()
@@ -328,8 +339,10 @@ fun App() {
         }
     }
 
-    fun identify(bitmaps: List<Bitmap>) {
+    fun identify(bitmaps: List<Bitmap>, justTaken: Boolean = false) {
         photos = bitmaps
+        fromCamera = justTaken
+        answers = emptyMap()
         leafProbabilities = null
         failure = null
         kept = false
@@ -359,13 +372,16 @@ fun App() {
         }
         // Straight to the camera roll, before anything else can go wrong. Losing a photograph
         // by backing out of the wrong screen is not a trade-off anyone agreed to.
-        val fromCamera = shots.filter { it.fromCamera }
-        if (fromCamera.isNotEmpty()) {
-            thread { fromCamera.forEach { Gallery.save(context, it.bitmap) } }
+        val shot = shots.filter { it.fromCamera }
+        if (shot.isNotEmpty()) {
+            thread { shot.forEach { Gallery.save(context, it.bitmap) } }
         }
         // A picture knows where it was taken; the phone only knows where it is now.
         shots.firstNotNullOfOrNull { it.coordinates }?.let { shotCoordinates = it }
-        identify((photos + shots.map { it.bitmap }).take(MAX_PHOTOS))
+        identify(
+            (photos + shots.map { it.bitmap }).take(MAX_PHOTOS),
+            justTaken = shot.isNotEmpty(),
+        )
     }
 
     // Straight from the home screen into an identification, skipping the camera entirely.
@@ -852,6 +868,12 @@ fun App() {
                 )
 
                 Screen.RESULT -> ResultScreen(
+                    narrowing = remember(answer, answers, fromCamera, characterAssets) {
+                        narrowingFor(
+                            answer, answerTaxonomy, characterAssets, answers,
+                            fresh = fromCamera,
+                        ) { character, chosen -> answers = answers + (character.key to chosen) }
+                    },
                     answer = answer,
                     isFirst = LifeList.isFirst(records, picked?.taxonId ?: answer.taxonId),
                     photos = photos,

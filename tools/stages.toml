@@ -91,6 +91,16 @@ wikipedia-write = ["-m", "lifelist_train.cli.wikipedia", "--from-cache", "-v"]
 # genera the checklist filter needs. Seconds, and it is what tells cattle from a crow (§90).
 register = ["-m", "lifelist_train.cli.register", "-v"]
 
+# The differences between look-alikes, quoted out of the Wikipedia article bodies we already
+# fetch and otherwise discard. Only genera holding two or more species the camera can name —
+# 258 of them are insects, and the commonest 50 cover 77% of Danish insect records (§95).
+characters = [
+    "-m", "lifelist_train.cli.characters",
+    "--seed", "../shared/characters-seed.json",
+    "--out", "../app/src/main/assets/characters.json",
+    "-v",
+]
+
 # Where the checklist is weakest, as a page: species Denmark's register knows only by
 # genus, rarest first. Not a list to read — a list sorted so the questionable part is a
 # few hundred rows instead of fourteen thousand (§92).

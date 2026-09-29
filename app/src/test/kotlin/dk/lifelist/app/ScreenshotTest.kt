@@ -12,6 +12,7 @@ import androidx.compose.ui.text.AnnotatedString
 import dk.lifelist.core.Answer
 import dk.lifelist.core.AnswerKind
 import dk.lifelist.core.Candidate
+import dk.lifelist.core.Characters
 import dk.lifelist.core.Determiner
 import dk.lifelist.core.Presentation
 import dk.lifelist.core.Index
@@ -752,6 +753,46 @@ class ScreenshotTest {
                     canKeepSample = true,
                     onStart = {}, onStop = {}, onSave = {},
                 )
+            }
+        }
+    }
+
+    @Test
+    fun `narrowing a wasp the photograph could not settle`() {
+        // "I tried to ID a wasp today and couldn't." The camera names seven of Denmark's
+        // eleven Vespidae and stops at Vespula, because what separates vulgaris from
+        // germanica is on the clypeus and is not in a photograph taken from above (§95).
+        val vulgaris = 1311671
+        val germanica = 1311649
+        val clypeus = Characters.Character(
+            key = "clypeus",
+            prompt = "What does the face look like?",
+            options = listOf(
+                Characters.Option("One black mark, anchor- or dagger-shaped", listOf(vulgaris), 0.85f),
+                Characters.Option("Three small black dots", listOf(germanica), 0.85f),
+            ),
+            source = "https://en.wikipedia.org/wiki/Vespula_germanica",
+            note = "The mark can appear broken, particularly in males, which makes the two " +
+                "look extremely similar — so this narrows the answer without settling it.",
+        )
+        paparazzi.snapshot {
+            LifeListTheme {
+                Box(Modifier.background(MaterialTheme.colorScheme.background)) {
+                    NarrowSection(
+                        guide = Characters.Guide(1311631, "the face, from the front", listOf(clypeus)),
+                        differences = listOf(
+                            Narrow.RawDifference(
+                                germanica, "Vespula germanica",
+                                listOf("Unlike the common wasp, it has three tiny black dots on the clypeus."),
+                                "https://en.wikipedia.org/wiki/Vespula_germanica",
+                            ),
+                        ),
+                        fresh = true,
+                        candidates = listOf(vulgaris, germanica, 1311676),
+                        answered = mapOf("clypeus" to "Three small black dots"),
+                        onAnswer = { _, _ -> }, onAddPhoto = {},
+                    )
+                }
             }
         }
     }

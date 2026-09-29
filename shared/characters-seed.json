@@ -1,0 +1,26 @@
+{
+  "1311631": {
+    "genus": "Vespula",
+    "view": "the face, from the front",
+    "characters": [
+      {
+        "key": "clypeus",
+        "prompt": "What does the face look like?",
+        "source": "https://en.wikipedia.org/wiki/Vespula_germanica",
+        "note": "The mark can appear broken, particularly in males, which makes the two look extremely similar — so this narrows the answer without settling it.",
+        "options": [
+          {
+            "label": "One black mark, anchor- or dagger-shaped",
+            "taxa": [1311671],
+            "reliability": 0.85
+          },
+          {
+            "label": "Three small black dots",
+            "taxa": [1311649],
+            "reliability": 0.85
+          }
+        ]
+      }
+    ]
+  }
+}

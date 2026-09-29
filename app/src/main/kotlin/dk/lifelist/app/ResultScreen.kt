@@ -66,6 +66,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dk.lifelist.core.Answer
+import dk.lifelist.core.Characters
 import dk.lifelist.core.AnswerKind
 
 /**
@@ -102,6 +103,22 @@ data class Choice(
  *   something you read into something you do, and a choice made here is stored as *yours*
  *   with the model's number kept beside it (§20).
  */
+/**
+ * What the screen needs to offer a narrowing, gathered so the screen itself stays a screen.
+ *
+ * `fresh` is the one that decides the shape of the offer: a record made from the camera a
+ * moment ago can still be photographed again, and a photograph beats a memory. One from the
+ * camera roll cannot, and then the question is all there is.
+ */
+data class Narrowing(
+    val guide: Characters.Guide,
+    val differences: List<Narrow.RawDifference>,
+    val fresh: Boolean,
+    val candidates: List<Int>,
+    val answered: Map<String, String>,
+    val onAnswer: (Characters.Character, String) -> Unit,
+)
+
 @Composable
 fun ResultScreen(
     answer: Answer,
@@ -124,6 +141,11 @@ fun ResultScreen(
     kept: Boolean,
     modelNote: String?,
     keepable: Boolean = true,
+    /**
+     * Going deeper than the photograph could (§95). Null when the answer reached species, when
+     * nothing was written for this branch, or when there is nothing left to ask.
+     */
+    narrowing: Narrowing? = null,
     modifier: Modifier = Modifier,
 ) {
     var showingReference by remember(answer.taxonId) { mutableStateOf(false) }
@@ -283,6 +305,21 @@ fun ResultScreen(
                     scientificName = (picked?.name?.text ?: answer.scientificName.plain()),
                     articleUrl = article.url,
                     modifier = Modifier.padding(horizontal = 18.dp).padding(top = 12.dp),
+                )
+            }
+
+            // Before "why this answer", because the question a person has when the app stops
+            // at a genus is "so which one is it" and not "how did you decide".
+            narrowing?.let {
+                Spacer(Modifier.height(18.dp))
+                NarrowSection(
+                    guide = it.guide,
+                    differences = it.differences,
+                    fresh = it.fresh,
+                    candidates = it.candidates,
+                    answered = it.answered,
+                    onAnswer = it.onAnswer,
+                    onAddPhoto = onAddPhoto,
                 )
             }
 

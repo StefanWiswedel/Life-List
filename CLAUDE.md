@@ -49,6 +49,8 @@ When trading off, trade in favour of a record being keepable at the rank the evi
 | reference photos | iNaturalist's curated pick — **3,462 vision leaves and 790 audio ones** (§37, §50, §66); stands in for a record with no photo of yours, always marked (§78) |
 | reference sound | xeno-canto, **731 of 795 species**, ten-second Opus clips (§69) |
 | corrections | rename to any taxon, or retreat to a rank you trust; the model's answer is kept (§38, §40) |
+| going deeper | when the answer stops above species: **photograph the face** if it may still be there, the question if not. Quoted, sourced, a likelihood never a mask (§95) |
+| character data | `lifelist-characters` mines the Wikipedia bodies we already fetch — 42 genera, 107 quoted comparisons, 1 structured question so far (§95) |
 | coverage | **3,482 leaves, 676 Lepidoptera** at ≥20 observations (§44) — up from 2,294 and 468 |
 | rarity | Red List badge, family progress, and **Danish recording effort per species** (§55, §72) |
 | checklist | **14,541 Danish species in 1,591 families** — seen in GBIF *and* vouched for by Denmark's national register (§81, §89, §90) |

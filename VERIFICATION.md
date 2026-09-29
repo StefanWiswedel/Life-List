@@ -4261,6 +4261,96 @@ explain was by definition the case where nothing happened.
 
 ---
 
+## 95. The wasp, and the question worth asking — 29 Sep 2026
+
+*"I tried to ID a wasp today and couldn't. A feature where it identifies to family or genus and
+then asks for defining features (are the antenna yellow or black) to help ID further would be
+amazing but I imagine very difficult."*
+
+Less difficult than it sounds, because **the hard half already exists**. The rollup stops above
+species precisely when it was choosing between a known, small, taxonomically coherent set
+(§3.3, §4A.2). The app already knew *Vespula vulgaris* against *V. germanica* was the question.
+What it lacked was the answer, and the answer is one sentence.
+
+**The content is finite and steeply distributed**, which is the measurement that turns "very
+difficult" into a number. Genera holding two or more species the camera can name: **565** across
+all groups, **258** of them insects, 783 species. By Danish records:
+
+| | of insect records in ambiguous genera |
+|---|---|
+| top 10 genera | 44% |
+| top 25 | 62% |
+| **top 50** | **77%** |
+| top 100 | 92% |
+
+Fifty couplets to be genuinely useful, not fourteen thousand. His wasp is a three-way *Vespula*
+and a three-way *Dolichovespula*.
+
+**And some of the content was already in a file we fetch and throw away.** The app ships
+Wikipedia *intros* (§31, §87). The diagnostics are in the bodies:
+
+> *V. germanica* — "unlike the common wasp, has three tiny black dots on the clypeus"
+> *V. vulgaris* — "only one black mark on its clypeus, usually anchor or dagger-shaped"
+> and then — "can sometimes appear broken… making it look extremely similar"
+
+That third sentence is the argument for quoting rather than summarising. A hand-written couplet
+loses the caveat. **`lifelist-characters`** now mines those sentences for the ambiguous genera:
+**42 genera, 41 with quoted comparisons, 107 sentences, 20 with a derived view hint, 30 KB.**
+
+**Three passes to get the extraction honest, each caught by reading the output.**
+
+1. Free-text cues only: **14%** of species yielded anything.
+2. Targeting Wikipedia's `== Similar species ==` section convention: far more, and full of
+   junk — *"the upper wing-coverts are brownish-black and similar to the outer primaries"* is a
+   true sentence about one thrush and no help at all in telling it from another.
+3. Requiring a real comparison even inside that section, where "real" means a comparative verb
+   or a **parenthesised binomial** — Wikipedia's own convention for naming the other animal.
+   The obvious regex for a binomial, `[A-Z][a-z]+ [a-z]+`, also matches "The upper", which is
+   exactly how the junk survived pass two.
+
+**The update is a likelihood, never a mask** — the rule the geo prior earned (§4A.4), and it
+binds harder here. Wikipedia says the *vulgaris* clypeus mark can appear broken, so somebody
+answering honestly may still be holding one. Each option carries a `reliability` (0.85 for this
+one, below the 0.92 default, because the source says so); a contradicted species is multiplied
+by 0.06 and never zeroed. **A species the character does not mention is left exactly alone** —
+silence is not contradiction, and the alternative quietly deletes every candidate no key covers.
+Two answers take a 50/50 past 0.99 without ever reaching certainty. Pinned by tests in both
+languages.
+
+**The design decision that came from his reply**, which was better than my question: *"I want
+both 'photograph the face' and an interactive key if I'm working on older photos or something I
+can't photograph."* So the app asks **which** to offer by whether the animal might still be
+there:
+
+- From the camera a moment ago → *"If it is still there, photograph the face, from the front."*
+  Multi-photo fusion already exists (§3.2), and **a picture is evidence where a memory is a
+  guess wearing evidence's clothes**.
+- From the camera roll, or revisited later → the question, because asking is all that is left
+  and a weak answer beats none.
+
+One boolean, `fromCamera`, set where the photographs enter. That distinction is the feature.
+
+**What this is not, and the bar it has to clear.** Every other failure in this app degrades to
+"I am not sure". This one would degrade to *lying* — a confident wrong identification, the one
+output the whole project exists to avoid. So: every sentence is quoted, every claim names its
+URL on screen, every caveat the source gives is shown rather than swallowed, and the single
+structured question that ships was hand-checked against a page that was actually read. Nothing
+here is written from memory. **A character I wrote myself is an error nobody can trace.**
+
+**A design mistake worth naming**, found while sharpening the extraction: the cache holds the
+*extracted sentences* rather than the articles they came from, so improving the rule would mean
+re-fetching 256 pages from an API that throttles. Re-filtering on the way out is exact here only
+because every later rule narrowed the first. **A cache should hold the input**, so the thing it
+makes can be improved without asking the network again — the same shape as §89's resumable job
+whose cache was also its output.
+
+**Still to do**, and stated rather than implied: one genus has a structured question. The other
+41 have quoted prose and no question, and 20 have a view hint. Turning prose into questions is
+judgement, not extraction, and it is the part I would want checked by somebody who knows the
+group before it ships as an answer.
+
+---
+
 ---
 
 ## Open questions
