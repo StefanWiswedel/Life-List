@@ -4351,6 +4351,51 @@ group before it ships as an answer.
 
 ---
 
+## 96. Thirty-eight genera of birds — 29 Sep 2026
+
+*"The latest APK doesn't appear any different."*
+
+It wouldn't. v0.20.0 built and shipped correctly, and §95's narrowing is real, but I pointed it
+at the wrong forty-two genera. Of the guides that shipped, **38 of 42 were birds** — *Larus*,
+*Turdus*, *Anas*, *Anser*, *Cygnus*, *Sylvia*, *Falco* — and the camera already names birds to
+species. Two were insects. The feature was invisible because it had almost nothing to fire on.
+
+**The mistake is in the ranking, and it is one I had already measured past.** I ordered the
+ambiguous genera by *Danish occurrence records* and took the global top 60. But Danish
+occurrence records measure **recording effort**, and recording effort in Denmark is
+birdwatchers submitting checklists — 1.5 million *Larus* records against 112,215 for *Pieris*.
+That number has almost nothing to do with **what gets photographed and cannot be identified**,
+which is the only thing this feature is about. §95 even contains the right table, insects only,
+and I then ran the tool against the wrong population.
+
+The same error in one sentence: *a proxy that was right for one question was reused for a
+different one without rechecking that it still measured the thing.* §91 was the same shape —
+BirdNET-Analyzer's floor, right for batch analysis, wrong for a live screen.
+
+**Fixed by selecting rather than re-ranking.** `--group` fetches within a clade, and the guides
+are now built from **everything cached** rather than only the current run's selection, so a
+second run adds to the file instead of replacing it. Run for Insecta:
+
+| | before | after |
+|---|---|---|
+| guides | 42 | **82** |
+| insect genera | 2 | **42** |
+| bird genera | 38 | 38 |
+| with a view hint | 20 | 44 |
+
+The insect list is now the things people actually photograph and cannot name: *Bombus*,
+*Andrena*, *Eristalis*, *Vespula*, *Coccinella*, the darters and hawkers — *Sympetrum*,
+*Aeshna*, *Libellula*, *Ischnura*, *Coenagrion* — and thirty genera of moths and butterflies.
+56 KB.
+
+**And the discoverability lesson, for the third time.** §88 was a denominator behind a
+numerator; §94 was a diagnostic that only fired on success; this is a feature aimed at the
+species the model already gets right. Each time the code was correct and the thing was
+unreachable, and each time it took Stefan saying *"it doesn't appear any different"* to find
+out. **Shipping is not the same as being reachable, and I keep needing to be told.**
+
+---
+
 ---
 
 ## Open questions

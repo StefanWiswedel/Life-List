@@ -92,7 +92,19 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--workers", type=int, default=8)
     parser.add_argument(
-        "--limit", type=int, default=0, help="only the N commonest genera; 0 for all"
+        "--limit", type=int, default=0, help="fetch only the N commonest genera; 0 for all"
+    )
+    parser.add_argument(
+        "--group",
+        type=int,
+        default=None,
+        help=(
+            "a GBIF key to fetch within — 216 for insects, 212 for birds. Ranking every genus "
+            "together ranks them by Danish *recording effort*, which is birdwatchers: the "
+            "first run took the global top 60 and got 38 genera of birds, which the camera "
+            "already names to species. The ambiguity this answers is overwhelmingly insects. "
+            "See VERIFICATION.md section 96."
+        ),
     )
     return add_common_args(parser)
 
@@ -202,10 +214,28 @@ def main(argv: list[str] | None = None) -> int:
     checklist = json.loads(args.checklist.read_text(encoding="utf-8")).get("species", {})
     records = {int(k): int(v.get("records") or 0) for k, v in checklist.items()}
     genera = ambiguous_genera(taxonomy, records)
+    by_id = {int(n["taxon_id"]): n for n in taxonomy}
+
+    def under(node: dict, ancestor: int) -> bool:
+        parent = node.get("parent_id")
+        while parent is not None:
+            if int(parent) == ancestor:
+                return True
+            parent = (by_id.get(int(parent)) or {}).get("parent_id")
+        return False
+
+    # Selection decides what to *fetch*. The guides are built from everything cached, below,
+    # so a second run for a different group adds to the file rather than replacing it.
+    selected = genera
+    if args.group is not None:
+        selected = [row for row in selected if under(by_id[row[0]], args.group)]
     if args.limit:
-        genera = genera[: args.limit]
-    wanted = {int(m["taxon_id"]): m["scientific_name"] for _, _, ms in genera for m in ms}
-    LOG.info("%d ambiguous genera, %d species to read", len(genera), len(wanted))
+        selected = selected[: args.limit]
+    wanted = {int(m["taxon_id"]): m["scientific_name"] for _, _, ms in selected for m in ms}
+    LOG.info(
+        "%d ambiguous genera in all, %d selected, %d species to read",
+        len(genera), len(selected), len(wanted),
+    )
 
     cached: dict[int, dict] = {}
     if args.cache.exists():
@@ -251,7 +281,7 @@ def main(argv: list[str] | None = None) -> int:
 
     guides = {}
     with_text = 0
-    for key, name, members in genera:
+    for key, name, members in genera:  # every ambiguous genus, not only this run's selection
         rows = [cached.get(int(m["taxon_id"]), {}) for m in members]
         # Filtered again on the way out, not only on the way in.
         #
